@@ -1,11 +1,13 @@
-// @ts-check
 // 折线图 计算 和 绘制
-
 import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { drawArc, drawBezier, drawSegmentLine } from '../utils.js'
 
-export function calcMain(dataSource, xAxis, yAxis) {
+export function calcMain(
+  dataSource: number[],
+  xAxis: TCharts.IRenderTree['xAxis'],
+  yAxis: TCharts.IRenderTree['yAxis']
+) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
   const xAxisTicks = xAxis.ticks
@@ -19,12 +21,12 @@ export function calcMain(dataSource, xAxis, yAxis) {
   })
 }
 
-export function calcInitRafValue(chartArray, otherConfig) {
+export function calcInitRafValue(chartArray: TCharts.ICoord[], otherConfig) {
   const { xAxisInterval } = otherConfig
 
-  const first_point_x = chartArray[0][0]
+  const first_point_x = chartArray[0].x
   const per = xAxisInterval / 23
-  const last_end_x = chartArray[chartArray.length - 1][0]
+  const last_end_x = chartArray[chartArray.length - 1].x
 
   const aniConfig = {
     start_x: first_point_x,
@@ -38,7 +40,7 @@ export function calcInitRafValue(chartArray, otherConfig) {
   return { aniConfig, checkStop }
 }
 
-export function drawMain(ctx, chartArray, otherConfig) {
+export function drawMain(ctx: CanvasRenderingContext2D, chartArray: TCharts.ICoord[], otherConfig) {
   const { smooth, xAxisInterval } = otherConfig
 
   // 画圆
@@ -72,7 +74,7 @@ export function drawMain(ctx, chartArray, otherConfig) {
 
       const end_x = start_x + per
 
-      function drawBitLine(start, end) {
+      function drawBitLine(start: TCharts.ICoord, end: TCharts.ICoord) {
         drawSegmentLine(ctx, start, end, primaryColor, 2)
       }
     }

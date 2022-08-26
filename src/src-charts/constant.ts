@@ -1,5 +1,3 @@
-// @ts-check
-
 // 图表距离canvas元素的内边距
 export const canvasPaddingTop = 20
 export const canvasPaddingRight = 20

@@ -8,6 +8,8 @@ import * as barMethod from './calcMain/calcBar'
 import * as pieMethod from './calcMain/calcPie'
 import { createCanvas } from './initElement'
 
+const methodMap = { line: lineMethod, bar: barMethod, pie: pieMethod }
+
 const tCharts = {
   init: initCanvas
 }
@@ -23,18 +25,19 @@ function initCanvas(canvasContainer: HTMLElement) {
   return {
     canvasElement,
     ctx,
-    setOption: option => {
+    setOption: (option: TCharts.IOption) => {
       setOption(ctx, option, offsetWidth, offsetHeight)
     }
   }
 }
 
-const methodMap = { line: lineMethod, bar: barMethod, pie: pieMethod }
-
-function setOption(ctx: CanvasRenderingContext2D, option, offsetWidth: number, offsetHeight: number) {
+function setOption(
+  ctx: CanvasRenderingContext2D,
+  option: TCharts.IOption,
+  offsetWidth: number,
+  offsetHeight: number
+) {
   ctx.clearRect(0, 0, offsetWidth, offsetHeight)
-
-  console.log(option)
 
   const { series } = option
 
@@ -42,7 +45,7 @@ function setOption(ctx: CanvasRenderingContext2D, option, offsetWidth: number, o
   drawCharts(renderTree)
 
   function calcRenderTree() {
-    const renderTree = {} as Chants.IRenderTree
+    const renderTree = {} as TCharts.IRenderTree
 
     if (series.type !== 'pie') renderTree.xAxis = getXAxis(ctx, option.xAxis.data, offsetWidth, offsetHeight)
     if (series.type !== 'pie') renderTree.yAxis = getYAxis(ctx, series.data, offsetHeight)
@@ -51,8 +54,7 @@ function setOption(ctx: CanvasRenderingContext2D, option, offsetWidth: number, o
     return renderTree
   }
 
-  function drawCharts(renderTree) {
-    console.log(renderTree)
+  function drawCharts(renderTree: TCharts.IRenderTree) {
     const { xAxis, yAxis, chartArray } = renderTree
     const { xAxisInterval } = xAxis?.axis ?? {}
 

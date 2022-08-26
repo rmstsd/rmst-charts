@@ -1,7 +1,5 @@
-// @ts-check
-
 // 在鼠标移动过程中 计算鼠标在那个蜡烛上, 返回索引
-export function getActiveIndexFromOffsetX(offsetX, xAxis_start_x, xAxisInterval) {
+export function getActiveIndexFromOffsetX(offsetX: number, xAxis_start_x: number, xAxisInterval: number) {
   // 除以的是 半个刻度的距离px
   const tickCount = (offsetX - xAxis_start_x) / (xAxisInterval / 2)
   const index = Math.floor(tickCount / 2)
@@ -9,7 +7,14 @@ export function getActiveIndexFromOffsetX(offsetX, xAxis_start_x, xAxisInterval)
 }
 
 // 在鼠标移动过程中 计算图表坐标系中 y轴的真实刻度值 (鼠标位置 -> canvas坐标)
-export function getYTickFromOffsetY(offsetY, yAxis_start_y, tickInterval, realInterval, min, yTicks) {
+export function getYTickFromOffsetY(
+  offsetY: number,
+  yAxis_start_y: number,
+  tickInterval: number,
+  realInterval: number,
+  min: number,
+  yTicks: number
+) {
   const tickCount = (yAxis_start_y - offsetY) / tickInterval
   const offsetRatio = tickCount - Math.floor(tickCount)
 
@@ -31,7 +36,13 @@ export function getYTickFromOffsetY(offsetY, yAxis_start_y, tickInterval, realIn
 }
 
 // 初始化的时候 把真实数据(价格)转换成canvas中的像素位置
-export function getCanvasPxFromRealNumber(realNumber, yAxis_start_y, min, realInterval, tickInterval) {
+export function getCanvasPxFromRealNumber(
+  realNumber: number,
+  yAxis_start_y: number,
+  min: number,
+  realInterval: number,
+  tickInterval: number
+) {
   const tickCount = (realNumber - min) / realInterval
   const tickDistance = tickCount * tickInterval
   return yAxis_start_y - tickDistance

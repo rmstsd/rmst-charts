@@ -1,9 +1,7 @@
-// @ts-check
-
 import { tickColor } from './constant.js'
 
 // 测量文本宽高
-export function measureText(ctx, text) {
+export function measureText(ctx: CanvasRenderingContext2D, text: string) {
   const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)
 
   // qq 浏览器只返回了 `width`
@@ -13,7 +11,13 @@ export function measureText(ctx, text) {
 }
 
 // 绘制线段
-export function drawSegmentLine(ctx, start, end, strokeStyle = tickColor, lineWidth = 1) {
+export function drawSegmentLine(
+  ctx: CanvasRenderingContext2D,
+  start: TCharts.ICoord,
+  end: TCharts.ICoord,
+  strokeStyle = tickColor,
+  lineWidth = 1
+) {
   ctx.beginPath()
   ctx.moveTo(start.x, start.y)
   ctx.lineTo(end.x, end.y)
@@ -23,8 +27,14 @@ export function drawSegmentLine(ctx, start, end, strokeStyle = tickColor, lineWi
 }
 
 // 绘制圆
-/** @param { CanvasRenderingContext2D } ctx */
-export function drawArc(ctx, x, y, radius = 3, strokeStyle = 'purple', lineWidth = 1) {
+export function drawArc(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  radius = 3,
+  strokeStyle = 'purple',
+  lineWidth = 1
+) {
   ctx.beginPath()
   ctx.arc(x, y, radius, 0, Math.PI * 2)
   ctx.strokeStyle = strokeStyle
@@ -35,7 +45,7 @@ export function drawArc(ctx, x, y, radius = 3, strokeStyle = 'purple', lineWidth
 }
 
 // 计算理想的 y轴最大值, 最小值, 刻度间隔
-export function calcPerfect(max, min) {
+export function calcPerfect(max: number, min: number) {
   const intervals = [300, 200, 100, 50, 30, 20, 10, 5, 4, 3, 2, 1]
   const minCount = 4
   const maxCount = 7
@@ -84,7 +94,7 @@ export function calcPerfect(max, min) {
 }
 
 // 计算 和 绘制贝塞尔曲线
-export function drawBezier(ctx, points, distance) {
+export function drawBezier(ctx: CanvasRenderingContext2D, points, distance: number) {
   const allControlPoint = calcAllControlPoint()
   const finalPoint = calcFinalPoint()
 
@@ -92,16 +102,16 @@ export function drawBezier(ctx, points, distance) {
     drawBezier(item.start, item.end, item.cp1, item.cp2)
   })
 
-  function drawBezier(start, end, cp1, cp2) {
+  function drawBezier(start: TCharts.ICoord, end: TCharts.ICoord, cp1: TCharts.ICoord, cp2: TCharts.ICoord) {
     ctx.strokeStyle = 'black'
     ctx.beginPath()
-    ctx.moveTo(start[0], start[1])
-    ctx.bezierCurveTo(cp1[0], cp1[1], cp2[0], cp2[1], end[0], end[1])
+    ctx.moveTo(start.x, start.y)
+    ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y)
     ctx.stroke()
 
     // 画控制点
-    drawArc(ctx, cp1[0], cp1[1], 2, 'red')
-    drawArc(ctx, cp2[0], cp2[1], 2, 'red')
+    drawArc(ctx, cp1.x, cp1.y, 2, 'red')
+    drawArc(ctx, cp2.x, cp2.y, 2, 'red')
   }
 
   function calcAllControlPoint() {
@@ -116,7 +126,7 @@ export function drawBezier(ctx, points, distance) {
       const slope = (next[1] - prev[1]) / (next[0] - prev[0]) // 直线的斜率
       const b = curr[1] - slope * curr[0] // 经过做标点的 y = kx + b
 
-      const pow2 = num => Math.pow(num, 2)
+      const pow2 = (num: number) => Math.pow(num, 2)
 
       // y = slope * x + b    // 二元一次方程
       // (curr[0] - x) ** 2 + (curr[1] - slope * x - b) ** 2 = distance ** 2 // 勾股定理

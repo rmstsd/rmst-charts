@@ -8,7 +8,7 @@ import {
 } from '../constant.js'
 import { measureText, drawSegmentLine, calcPerfect } from '../utils.js'
 
-export function getYAxis(ctx, dataSource, containerHeight) {
+export function getYAxis(ctx: CanvasRenderingContext2D, dataSource, containerHeight: number) {
   const axis_x = canvasPaddingLeft
   const start_y = containerHeight - canvasPaddingBottom
   const end_y = canvasPaddingTop
