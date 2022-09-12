@@ -1,4 +1,3 @@
-// @ts-check
 // 饼图 计算 和 绘制
 
 import { primaryColor, pieColors } from '../constant.js'

@@ -1,4 +1,3 @@
-// @ts-check
 import {
   canvasPaddingBottom,
   canvasPaddingLeft,
@@ -8,7 +7,12 @@ import {
 } from '../constant.js'
 import { measureText, drawSegmentLine, calcPerfect } from '../utils.js'
 
-export function getYAxis(ctx: CanvasRenderingContext2D, dataSource, containerHeight: number) {
+export function getYAxis(
+  ctx: CanvasRenderingContext2D,
+  dataSource: ICharts.IOption['series']['data'],
+  containerHeight: number,
+  xAxisEndX: number
+) {
   const axis_x = canvasPaddingLeft
   const start_y = containerHeight - canvasPaddingBottom
   const end_y = canvasPaddingTop
@@ -30,7 +34,7 @@ export function getYAxis(ctx: CanvasRenderingContext2D, dataSource, containerHei
 
   const ticks = tickValues.map((tickValue, index) => {
     const start_x = axis_x
-    const end_x = axis_x + 10
+    const end_x = xAxisEndX // axis_x + 100
     const tick_y = start_y - tickInterval * index
 
     const { textWidth, textHeight } = measureText(ctx, tickValue)
@@ -44,15 +48,17 @@ export function getYAxis(ctx: CanvasRenderingContext2D, dataSource, containerHei
   return { axis, ticks, tickConstant: { min, realInterval, tickInterval } }
 }
 
-export function drawYAxis(ctx, yAxis) {
+export function drawYAxis(ctx: CanvasRenderingContext2D, yAxis: ICharts.IRenderTree['yAxis']) {
   const { axis, ticks } = yAxis
-  drawSegmentLine(ctx, axis.start, axis.end)
+
+  // drawSegmentLine(ctx, axis.start, axis.end)
+
   ticks.forEach(tick => {
     const { start, end, text } = tick
     const { x, y, value } = text
-    drawSegmentLine(ctx, start, end)
+    drawSegmentLine(ctx, start, end, '#ddd', 0.8)
     ctx.textAlign = 'left'
     ctx.fillStyle = tickColor
-    ctx.fillText(value, x, y)
+    ctx.fillText(String(value), x, y)
   })
 }

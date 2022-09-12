@@ -1,4 +1,4 @@
-namespace TCharts {
+namespace ICharts {
   type ICoord = { x: number; y: number } // 坐标
 
   type IRenderTree = {

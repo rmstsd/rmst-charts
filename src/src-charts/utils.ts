@@ -13,8 +13,8 @@ export function measureText(ctx: CanvasRenderingContext2D, text: string) {
 // 绘制线段
 export function drawSegmentLine(
   ctx: CanvasRenderingContext2D,
-  start: TCharts.ICoord,
-  end: TCharts.ICoord,
+  start: ICharts.ICoord,
+  end: ICharts.ICoord,
   strokeStyle = tickColor,
   lineWidth = 1
 ) {
@@ -102,7 +102,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points, distance: numb
     drawBezier(item.start, item.end, item.cp1, item.cp2)
   })
 
-  function drawBezier(start: TCharts.ICoord, end: TCharts.ICoord, cp1: TCharts.ICoord, cp2: TCharts.ICoord) {
+  function drawBezier(start: ICharts.ICoord, end: ICharts.ICoord, cp1: ICharts.ICoord, cp2: ICharts.ICoord) {
     ctx.strokeStyle = 'black'
     ctx.beginPath()
     ctx.moveTo(start.x, start.y)

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 
-import Line from './demo/Line'
+import LineDemo from './demo/LineDemo'
 
 function App() {
   return (
     <div className="App">
-      <Line />
+      <LineDemo />
     </div>
   )
 }

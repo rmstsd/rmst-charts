@@ -5,8 +5,8 @@ import { drawArc, drawBezier, drawSegmentLine } from '../utils.js'
 
 export function calcMain(
   dataSource: number[],
-  xAxis: TCharts.IRenderTree['xAxis'],
-  yAxis: TCharts.IRenderTree['yAxis']
+  xAxis: ICharts.IRenderTree['xAxis'],
+  yAxis: ICharts.IRenderTree['yAxis']
 ) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
@@ -21,7 +21,7 @@ export function calcMain(
   })
 }
 
-export function calcInitRafValue(chartArray: TCharts.ICoord[], otherConfig) {
+export function calcInitRafValue(chartArray: ICharts.ICoord[], otherConfig) {
   const { xAxisInterval } = otherConfig
 
   const first_point_x = chartArray[0].x
@@ -40,18 +40,12 @@ export function calcInitRafValue(chartArray: TCharts.ICoord[], otherConfig) {
   return { aniConfig, checkStop }
 }
 
-export function drawMain(ctx: CanvasRenderingContext2D, chartArray: TCharts.ICoord[], otherConfig) {
+export function drawMain(ctx: CanvasRenderingContext2D, chartArray: ICharts.ICoord[], otherConfig) {
   const { smooth, xAxisInterval } = otherConfig
 
-  // 画圆
-  chartArray.forEach(item => {
-    drawArc(ctx, item.x, item.y, 3, primaryColor, 2)
-  })
-
-  // 画线段
   if (smooth) drawBezier(ctx, chartArray, xAxisInterval)
   else {
-    const lineArr = chartArray.reduce(
+    const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = chartArray.reduce(
       (acc, item, idx, originArr) =>
         idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
       []
@@ -59,23 +53,77 @@ export function drawMain(ctx: CanvasRenderingContext2D, chartArray: TCharts.ICoo
 
     function drawNoRaf() {
       lineArr.forEach(item => drawSegmentLine(ctx, item.start, item.end, primaryColor, 2))
+
+      chartArray.forEach(item => {
+        drawArc(ctx, item.x, item.y, 3, primaryColor, 1.5)
+      })
     }
 
+    console.log(lineArr)
     drawRaf()
 
     function drawRaf() {
-      console.log(lineArr)
+      const per = 5 // xAxisInterval / segmentCount
 
-      const per = xAxisInterval / 3
+      const first_x = lineArr[0].start.x
+      const last_x = lineArr.at(-1).end.x
 
-      const start_x = lineArr[0].start[0]
+      let bitStart: ICharts.ICoord = { x: lineArr[0].start.x, y: lineArr[0].start.y }
 
-      const lineItem = lineArr[0]
+      incrementExec()
+      drawArcRafTask(0)
 
-      const end_x = start_x + per
+      function incrementExec() {
+        requestAnimationFrame(() => {
+          drawBitTask()
 
-      function drawBitLine(start: TCharts.ICoord, end: TCharts.ICoord) {
-        drawSegmentLine(ctx, start, end, primaryColor, 2)
+          if (bitStart.x === last_x) return
+          incrementExec()
+        })
+
+        function drawBitTask() {
+          const idx1 = Math.floor((bitStart.x - first_x) / xAxisInterval)
+
+          const bit_end_x = bitStart.x + per
+          const idx2 = Math.floor((bit_end_x - first_x) / xAxisInterval)
+
+          let bitEnd: ICharts.ICoord = {} as ICharts.ICoord
+
+          // 如果没有跨过某个点
+          if (idx1 === idx2) {
+            const lineIndex = Math.floor((bit_end_x - first_x) / xAxisInterval)
+            const currLine = lineArr[lineIndex]
+
+            const k = (currLine.end.y - currLine.start.y) / (currLine.end.x - currLine.start.x)
+            const b = currLine.start.y - currLine.start.x * k
+
+            bitEnd = { x: bit_end_x, y: k * bit_end_x + b }
+          } else {
+            bitEnd = chartArray[idx2]
+
+            drawArcRafTask(idx2)
+          }
+
+          drawSegmentLine(ctx, bitStart, bitEnd, primaryColor, 2)
+
+          bitStart = bitEnd
+        }
+      }
+
+      function drawArcRafTask(index: number) {
+        const currentPoint = chartArray[index]
+        let radius = 0
+        exec()
+
+        function exec() {
+          requestAnimationFrame(() => {
+            radius += 0.05
+            drawArc(ctx, currentPoint.x, currentPoint.y, radius, primaryColor, 2)
+            if (radius >= 2) return
+
+            exec()
+          })
+        }
       }
     }
   }

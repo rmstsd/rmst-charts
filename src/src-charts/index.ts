@@ -1,20 +1,19 @@
-import { dpr, canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight } from './constant'
-import { drawSegmentLine, measureText } from './utils'
 import { drawXAxis, getXAxis } from './calcAxis/calcXAxis'
 import { drawYAxis, getYAxis } from './calcAxis/calcYAxis'
 
 import * as lineMethod from './calcMain/calcLine'
 import * as barMethod from './calcMain/calcBar'
 import * as pieMethod from './calcMain/calcPie'
-import { createCanvas } from './initElement'
+
+import { createCanvas } from './domHelper'
 
 const methodMap = { line: lineMethod, bar: barMethod, pie: pieMethod }
 
-const tCharts = {
+const ICharts = {
   init: initCanvas
 }
 
-export default tCharts
+export default ICharts
 
 function initCanvas(canvasContainer: HTMLElement) {
   const { offsetWidth, offsetHeight } = canvasContainer
@@ -25,7 +24,7 @@ function initCanvas(canvasContainer: HTMLElement) {
   return {
     canvasElement,
     ctx,
-    setOption: (option: TCharts.IOption) => {
+    setOption: (option: ICharts.IOption) => {
       setOption(ctx, option, offsetWidth, offsetHeight)
     }
   }
@@ -33,7 +32,7 @@ function initCanvas(canvasContainer: HTMLElement) {
 
 function setOption(
   ctx: CanvasRenderingContext2D,
-  option: TCharts.IOption,
+  option: ICharts.IOption,
   offsetWidth: number,
   offsetHeight: number
 ) {
@@ -45,16 +44,17 @@ function setOption(
   drawCharts(renderTree)
 
   function calcRenderTree() {
-    const renderTree = {} as TCharts.IRenderTree
+    const renderTree = {} as ICharts.IRenderTree
 
     if (series.type !== 'pie') renderTree.xAxis = getXAxis(ctx, option.xAxis.data, offsetWidth, offsetHeight)
-    if (series.type !== 'pie') renderTree.yAxis = getYAxis(ctx, series.data, offsetHeight)
+    if (series.type !== 'pie')
+      renderTree.yAxis = getYAxis(ctx, series.data, offsetHeight, renderTree.xAxis.axis.end.x)
     renderTree.chartArray = lineMethod.calcMain(series.data, renderTree.xAxis, renderTree.yAxis)
 
     return renderTree
   }
 
-  function drawCharts(renderTree: TCharts.IRenderTree) {
+  function drawCharts(renderTree: ICharts.IRenderTree) {
     const { xAxis, yAxis, chartArray } = renderTree
     const { xAxisInterval } = xAxis?.axis ?? {}
 

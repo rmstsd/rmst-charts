@@ -11,7 +11,7 @@ export function createCanvas(containerWidth: number, containerHeight: number) {
   canvasElement.style.height = '100%'
 
   const ctx = canvasElement.getContext('2d')
-  ctx.font = '16px 微软雅黑'
+  ctx.font = '14px 微软雅黑'
   ctx.scale(dpr, dpr)
 
   return { canvasElement, ctx }

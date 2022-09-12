@@ -1,4 +1,3 @@
-// @ts-check
 // 柱状图 计算 和 绘制
 
 import { primaryColor } from '../constant.js'
