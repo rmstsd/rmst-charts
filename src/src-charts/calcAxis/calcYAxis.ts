@@ -56,7 +56,7 @@ export function drawYAxis(ctx: CanvasRenderingContext2D, yAxis: ICharts.IRenderT
   ticks.forEach(tick => {
     const { start, end, text } = tick
     const { x, y, value } = text
-    drawSegmentLine(ctx, start, end, '#ddd', 0.8)
+    drawSegmentLine(ctx, start, end, '#e0e6f1', 0.8)
     ctx.textAlign = 'left'
     ctx.fillStyle = tickColor
     ctx.fillText(String(value), x, y)
