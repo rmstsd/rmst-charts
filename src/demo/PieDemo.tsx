@@ -1,19 +1,20 @@
-// 折线图
+// 饼图
 import { useEffect } from 'react'
 import srcCharts from '../src-charts'
 
 const option = {
-  xAxis: {
-    data: ['a', 'b', 'c', 'd', 'e', 'f']
-  },
   series: {
-    type: 'line' as const,
-    data: [600, 932, 901, 934, 800, 650]
-    // smooth: true
+    type: 'pie' as const,
+    data: [
+      { value: 1, name: 'Search Engine' },
+      { value: 2, name: 'Direct' },
+      { value: 3, name: 'Email' },
+      { value: 4, name: 'Union Ads' },
+      { value: 5, name: 'Video Ads' }
+    ]
   }
 }
-
-const LineDemo = () => {
+const PieDemo = () => {
   useEffect(() => {
     const ins = srcCharts.init(document.querySelector('.canvas-container'))
 
@@ -27,4 +28,4 @@ const LineDemo = () => {
   return <div className="canvas-container"></div>
 }
 
-export default LineDemo
+export default PieDemo

@@ -40,8 +40,12 @@ export function calcInitRafValue(chartArray: ICharts.ICoord[], otherConfig) {
   return { aniConfig, checkStop }
 }
 
-export function drawMain(ctx: CanvasRenderingContext2D, chartArray: ICharts.ICoord[], otherConfig) {
-  const { smooth, xAxisInterval } = otherConfig
+export function drawMain(
+  ctx: CanvasRenderingContext2D,
+  chartArray: ICharts.ICoord[],
+  { renderTree, option }: { renderTree: ICharts.IRenderTree; option: ICharts.IOption }
+) {
+  const { smooth, xAxisInterval } = renderTree.xAxis.axis
 
   if (smooth) drawBezier(ctx, chartArray, xAxisInterval)
   else {
@@ -104,7 +108,7 @@ export function drawMain(ctx: CanvasRenderingContext2D, chartArray: ICharts.ICoo
             drawArcRafTask(idx2)
           }
 
-          drawSegmentLine(ctx, bitStart, bitEnd, primaryColor, 2)
+          drawSegmentLine(ctx, bitStart, bitEnd, primaryColor, 2) // rgba(0, 16, 128, 0.5)
 
           bitStart = bitEnd
         }

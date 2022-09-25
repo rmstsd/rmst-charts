@@ -1,14 +1,12 @@
 // 饼图 计算 和 绘制
 
 import { primaryColor, pieColors } from '../constant.js'
-import { getCanvasPxFromRealNumber } from '../convert.js'
-import { drawArc, drawBezier, drawSegmentLine } from '../utils.js'
 
 export function calcMain(dataSource, end_angle = Math.PI * 2) {
   const sum = dataSource.reduce((acc, item) => acc + item.value, 0)
   const radianArray = dataSource.map(item => (item.value / sum) * end_angle)
 
-  const finalRadianArray = []
+  const finalRadianArray: { startAngle: number; endAngle: number; color: string }[] = []
   radianArray.forEach((item, index) => {
     const lastItem = finalRadianArray[finalRadianArray.length - 1]
 
@@ -29,27 +27,52 @@ export function calcInitRafValue() {
   return { aniConfig, checkStop }
 }
 
-export function drawMain(ctx, chartArray, otherConfig) {
-  const { circleCenter, aniConfig, dataSource } = otherConfig
+export function drawMain(
+  ctx: CanvasRenderingContext2D,
+  chartArray,
+  { renderTree, option }: { renderTree: ICharts.IRenderTree; option: ICharts.IOption },
+  offsetWidth,
+  offsetHeight
+) {
+  const center_x = offsetWidth / 2
+  const center_y = offsetHeight / 2
 
-  aniConfig ? drawRaf() : drawPie(chartArray)
+  const radius = 100
 
-  function drawRaf() {
-    aniConfig.end_angle = aniConfig.end_angle + 0.1
-    if (aniConfig.end_angle > Math.PI * 2) aniConfig.end_angle = Math.PI * 2
+  // drawPie()
 
-    const rafChartArray = calcMain(dataSource, aniConfig.end_angle)
+  const per = Math.PI / 10
+  let end_angle = per
 
-    drawPie(rafChartArray)
+  drawBitTask()
+
+  function drawBitTask() {
+    setTimeout(() => {
+      const array = calcMain(option.series.data, end_angle)
+      array.forEach(item => {
+        ctx.beginPath()
+        ctx.arc(center_x, center_y, radius, item.startAngle, item.endAngle)
+        ctx.lineTo(center_x, center_y)
+        ctx.fillStyle = item.color
+        ctx.fill()
+      })
+
+      if (end_angle === Math.PI * 2) return
+      // if (end_angle > Math.PI * 2) end_angle = Math.PI * 2
+      console.log(1)
+      end_angle += per
+
+      // drawBitTask()
+    }, 50)
   }
 
-  function drawPie(pieChartArray) {
-    pieChartArray.forEach(item => {
-      ctx.beginPath()
-      ctx.arc(circleCenter.x, circleCenter.y, 100, item.startAngle, item.endAngle)
-      ctx.lineTo(circleCenter.x, circleCenter.y)
-      ctx.fillStyle = item.color
-      ctx.fill()
-    })
-  }
+  // function drawPie() {
+  //   chartArray.forEach(item => {
+  //     ctx.beginPath()
+  //     ctx.arc(center_x, center_y, radius, item.startAngle, item.endAngle)
+  //     ctx.lineTo(center_x, center_y)
+  //     ctx.fillStyle = item.color
+  //     ctx.fill()
+  //   })
+  // }
 }

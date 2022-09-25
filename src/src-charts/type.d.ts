@@ -15,12 +15,12 @@ namespace ICharts {
   }
 
   type IOption = {
-    xAxis: {
+    xAxis?: {
       data: string[]
     }
     series: {
       type: 'line' | 'bar' | 'pie'
-      data: number[]
+      data: ({ value: number; name: string } | number)[]
       // smooth: true
     }
   }

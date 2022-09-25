@@ -1,19 +1,18 @@
-// 折线图
+// 柱状图
 import { useEffect } from 'react'
 import srcCharts from '../src-charts'
 
 const option = {
   xAxis: {
-    data: ['a', 'b', 'c', 'd', 'e', 'f']
+    data: ['2017-10-24', '2017-10-25', '2017-10-26', '2017-10-27']
   },
   series: {
-    type: 'line' as const,
-    data: [600, 932, 901, 934, 800, 650]
-    // smooth: true
+    type: 'bar' as const,
+    data: [200, 210, 300, 303]
   }
 }
 
-const LineDemo = () => {
+const BarDemo = () => {
   useEffect(() => {
     const ins = srcCharts.init(document.querySelector('.canvas-container'))
 
@@ -27,4 +26,4 @@ const LineDemo = () => {
   return <div className="canvas-container"></div>
 }
 
-export default LineDemo
+export default BarDemo

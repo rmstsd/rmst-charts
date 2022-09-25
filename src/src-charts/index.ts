@@ -9,12 +9,6 @@ import { createCanvas } from './domHelper'
 
 const methodMap = { line: lineMethod, bar: barMethod, pie: pieMethod }
 
-const ICharts = {
-  init: initCanvas
-}
-
-export default ICharts
-
 function initCanvas(canvasContainer: HTMLElement) {
   const { offsetWidth, offsetHeight } = canvasContainer
   const { canvasElement, ctx } = createCanvas(offsetWidth, offsetHeight)
@@ -39,6 +33,7 @@ function setOption(
   ctx.clearRect(0, 0, offsetWidth, offsetHeight)
 
   const { series } = option
+  const { calcMain, drawMain } = methodMap[series.type]
 
   const renderTree = calcRenderTree()
   drawCharts(renderTree)
@@ -46,32 +41,28 @@ function setOption(
   function calcRenderTree() {
     const renderTree = {} as ICharts.IRenderTree
 
-    if (series.type !== 'pie') renderTree.xAxis = getXAxis(ctx, option.xAxis.data, offsetWidth, offsetHeight)
-    if (series.type !== 'pie')
+    if (series.type !== 'pie') {
+      renderTree.xAxis = getXAxis(ctx, option.xAxis.data, offsetWidth, offsetHeight)
       renderTree.yAxis = getYAxis(ctx, series.data, offsetHeight, renderTree.xAxis.axis.end.x)
-    renderTree.chartArray = lineMethod.calcMain(series.data, renderTree.xAxis, renderTree.yAxis)
+    }
+
+    renderTree.chartArray = calcMain(series.data, renderTree.xAxis, renderTree.yAxis)
 
     return renderTree
   }
 
   function drawCharts(renderTree: ICharts.IRenderTree) {
     const { xAxis, yAxis, chartArray } = renderTree
-    const { xAxisInterval } = xAxis?.axis ?? {}
 
-    const { aniConfig, checkStop } = lineMethod.calcInitRafValue(chartArray, { xAxisInterval })
+    if (xAxis) drawXAxis(ctx, xAxis)
+    if (yAxis) drawYAxis(ctx, yAxis)
 
-    draw()
-
-    function draw() {
-      if (xAxis) drawXAxis(ctx, xAxis)
-      if (yAxis) drawYAxis(ctx, yAxis)
-
-      lineMethod.drawMain(ctx, chartArray, {
-        // smooth: series.smooth,
-        xAxisInterval,
-        // circleCenter: { x: offsetWidth / 2, y: offsetHeight / 2 },
-        dataSource: series.data
-      })
-    }
+    drawMain(ctx, chartArray, { renderTree, option }, offsetWidth, offsetHeight)
   }
 }
+
+const srcCharts = {
+  init: initCanvas
+}
+
+export default srcCharts

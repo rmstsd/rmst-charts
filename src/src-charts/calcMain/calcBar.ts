@@ -3,23 +3,29 @@
 import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 
-export function calcMain(dataSource, xAxis, yAxis) {
+export function calcMain(
+  dataSource: number[],
+  xAxis: ICharts.IRenderTree['xAxis'],
+  yAxis: ICharts.IRenderTree['yAxis']
+) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
   const { axis, ticks } = xAxis
-  const yAxis_start_y = yAxis.axis.start[1]
+  const yAxis_start_y = yAxis.axis.start.y
 
   const padding = axis.xAxisInterval / 5
 
-  return dataSource.map((dataItem, index) => {
-    const x = ticks[index].start[0] - axis.xAxisInterval / 2 + padding
+  const res = dataSource.map((dataItem, index) => {
+    const x = ticks[index].start.x - axis.xAxisInterval / 2 + padding
     const y = getCanvasPxFromRealNumber(dataItem, yAxis_start_y, min, realInterval, tickInterval)
 
     const width = axis.xAxisInterval - padding * 2
-    const height = axis.start[1] - y
+    const height = axis.start.y - y
 
     return { x, y, width, height }
   })
+
+  return res
 }
 
 export function calcInitRafValue(chartArray) {
@@ -33,26 +39,60 @@ export function calcInitRafValue(chartArray) {
   return { aniConfig, checkStop }
 }
 
-export function drawMain(ctx, chartArray, otherConfig) {
-  const { aniConfig } = otherConfig
+type IChartBar = ICharts.ICoord & { width: number; height: number }
+export function drawMain(
+  ctx: CanvasRenderingContext2D,
+  chartArray: IChartBar[],
+  { renderTree, option }: { renderTree: ICharts.IRenderTree; option: ICharts.IOption }
+) {
+  console.log(chartArray)
 
-  aniConfig ? drawRaf() : drawNoRaf()
+  drawRaf()
 
   function drawRaf() {
-    const { changeValue, initHeight, initY } = aniConfig
+    const time = 10
 
-    chartArray.forEach((item, index) => {
-      initHeight[index] += changeValue[index]
-      initY[index] -= changeValue[index]
+    chartArray.forEach(incrementExec)
 
-      if (initHeight[index] > item.height) {
-        initHeight[index] = item.height
-        initY[index] = item.y
+    function incrementExec(item: IChartBar, index) {
+      const per = item.height / time
+
+      const bitRect = {
+        x: item.x,
+        y: renderTree.xAxis.axis.start.y - per,
+        width: item.width,
+        height: per
       }
 
-      ctx.fillStyle = primaryColor
-      ctx.fillRect(item.x, initY[index], item.width, initHeight[index])
-    })
+      drawBitTask()
+
+      function drawBitTask() {
+        setTimeout(() => {
+          ctx.fillStyle = 'rgba(0, 0, 255, 0.3)'
+          ctx.fillRect(bitRect.x, bitRect.y, bitRect.width, bitRect.height)
+
+          bitRect.y -= per
+          if (bitRect.y === item.y) {
+            console.log(bitRect.y === item.y)
+          }
+
+          if (bitRect.y < item.y) {
+            // console.log(index, bitRect.y, item.y)
+            bitRect.y = item.y
+            bitRect.height = per - (item.y - bitRect.y)
+
+            setTimeout(() => {
+              // ctx.fillRect(bitRect.x, bitRect.y, bitRect.width, bitRect.height)
+              ctx.fillText('s', bitRect.x, bitRect.y)
+            }, 16)
+
+            return
+          }
+
+          drawBitTask()
+        }, 16)
+      }
+    }
   }
 
   function drawNoRaf() {
