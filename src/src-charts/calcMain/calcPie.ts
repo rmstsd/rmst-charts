@@ -39,15 +39,22 @@ export function drawMain(
 
   const radius = 100
 
-  // drawPie()
-
-  const per = Math.PI / 10
-  let end_angle = per
+  const per = Math.PI / 20
+  let end_angle = 0
 
   drawBitTask()
 
   function drawBitTask() {
-    setTimeout(() => {
+    console.log('drawBitTask')
+
+    requestAnimationFrame(() => {
+      if (end_angle === Math.PI * 2) return
+
+      end_angle += per
+      if (end_angle > Math.PI * 2) end_angle = Math.PI * 2
+
+      ctx.clearRect(center_x - radius - 1, center_y - radius - 1, radius * 2 + 2, radius * 2 + 2)
+
       const array = calcMain(option.series.data, end_angle)
       array.forEach(item => {
         ctx.beginPath()
@@ -57,13 +64,8 @@ export function drawMain(
         ctx.fill()
       })
 
-      if (end_angle === Math.PI * 2) return
-      // if (end_angle > Math.PI * 2) end_angle = Math.PI * 2
-      console.log(1)
-      end_angle += per
-
-      // drawBitTask()
-    }, 50)
+      drawBitTask()
+    })
   }
 
   // function drawPie() {
