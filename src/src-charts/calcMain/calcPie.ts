@@ -39,7 +39,7 @@ export function drawMain(
 
   const radius = 100
 
-  const per = Math.PI / 20
+  const per = Math.PI / 50
   let end_angle = 0
 
   drawBitTask()
@@ -67,14 +67,4 @@ export function drawMain(
       drawBitTask()
     })
   }
-
-  // function drawPie() {
-  //   chartArray.forEach(item => {
-  //     ctx.beginPath()
-  //     ctx.arc(center_x, center_y, radius, item.startAngle, item.endAngle)
-  //     ctx.lineTo(center_x, center_y)
-  //     ctx.fillStyle = item.color
-  //     ctx.fill()
-  //   })
-  // }
 }

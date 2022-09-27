@@ -59,7 +59,7 @@ export function drawMain(
 
       const bitRect = {
         x: item.x,
-        y: renderTree.xAxis.axis.start.y - per,
+        y: renderTree.xAxis.axis.start.y,
         width: item.width,
         height: per
       }
@@ -67,30 +67,25 @@ export function drawMain(
       drawBitTask()
 
       function drawBitTask() {
+        console.log('drawBitTask')
+
         setTimeout(() => {
-          ctx.fillStyle = 'rgba(0, 0, 255, 0.3)'
-          ctx.fillRect(bitRect.x, bitRect.y, bitRect.width, bitRect.height)
+          if (bitRect.y === item.y) return
 
           bitRect.y -= per
-          if (bitRect.y === item.y) {
-            console.log(bitRect.y === item.y)
-          }
 
-          if (bitRect.y < item.y) {
-            // console.log(index, bitRect.y, item.y)
+          if (bitRect.y <= item.y) {
             bitRect.y = item.y
             bitRect.height = per - (item.y - bitRect.y)
 
-            setTimeout(() => {
-              // ctx.fillRect(bitRect.x, bitRect.y, bitRect.width, bitRect.height)
-              ctx.fillText('s', bitRect.x, bitRect.y)
-            }, 16)
-
-            return
+            console.log(index, bitRect.y, item.y)
           }
 
+          ctx.fillStyle = 'rgba(0, 0, 255, 0.3)'
+          ctx.fillRect(bitRect.x, bitRect.y, bitRect.width, bitRect.height)
+
           drawBitTask()
-        }, 16)
+        }, 500)
       }
     }
   }

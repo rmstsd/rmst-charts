@@ -8,7 +8,7 @@ const option = {
   },
   series: {
     type: 'bar' as const,
-    data: [200, 210, 300, 303]
+    data: [200, 300]
   }
 }
 
