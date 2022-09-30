@@ -21,7 +21,7 @@ namespace ICharts {
     series: {
       type: 'line' | 'bar' | 'pie'
       data: ({ value: number; name: string } | number)[]
-      // smooth: true
+      smooth?: boolean
     }
   }
 }

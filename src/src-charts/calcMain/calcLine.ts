@@ -45,7 +45,9 @@ export function drawMain(
   chartArray: ICharts.ICoord[],
   { renderTree, option }: { renderTree: ICharts.IRenderTree; option: ICharts.IOption }
 ) {
-  const { smooth, xAxisInterval } = renderTree.xAxis.axis
+  const { xAxisInterval } = renderTree.xAxis.axis
+
+  const { smooth } = option.series
 
   if (smooth) drawBezier(ctx, chartArray, xAxisInterval)
   else {
@@ -86,6 +88,8 @@ export function drawMain(
         })
 
         function drawBitTask() {
+          console.log('drawBitTask')
+
           const idx1 = Math.floor((bitStart.x - first_x) / xAxisInterval)
 
           const bit_end_x = bitStart.x + per

@@ -47,15 +47,15 @@ export function drawMain(
 ) {
   console.log(chartArray)
 
+  // drawNoRaf()
+
   drawRaf()
 
   function drawRaf() {
-    const time = 10
-
     chartArray.forEach(incrementExec)
 
     function incrementExec(item: IChartBar, index) {
-      const per = item.height / time
+      const per = item.height / 23
 
       const bitRect = {
         x: item.x,
@@ -69,23 +69,24 @@ export function drawMain(
       function drawBitTask() {
         console.log('drawBitTask')
 
-        setTimeout(() => {
-          if (bitRect.y === item.y) return
+        requestAnimationFrame(() => {
+          if (bitRect.y === item.y) {
+            ctx.fillText(String(option.series.data[index] as number), item.x, item.y)
+            return
+          }
 
           bitRect.y -= per
 
-          if (bitRect.y <= item.y) {
+          if (bitRect.y < item.y) {
+            bitRect.height = bitRect.y + per - item.y
             bitRect.y = item.y
-            bitRect.height = per - (item.y - bitRect.y)
-
-            console.log(index, bitRect.y, item.y)
           }
 
           ctx.fillStyle = 'rgba(0, 0, 255, 0.3)'
           ctx.fillRect(bitRect.x, bitRect.y, bitRect.width, bitRect.height)
 
           drawBitTask()
-        }, 500)
+        })
       }
     }
   }

@@ -1,4 +1,4 @@
-import { tickColor } from './constant.js'
+import { primaryColor, tickColor } from './constant.js'
 
 // 测量文本宽高
 export function measureText(ctx: CanvasRenderingContext2D, text: string) {
@@ -94,16 +94,23 @@ export function calcPerfect(max: number, min: number) {
 }
 
 // 计算 和 绘制贝塞尔曲线
-export function drawBezier(ctx: CanvasRenderingContext2D, points, distance: number) {
+export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord[], distance: number) {
   const allControlPoint = calcAllControlPoint()
   const finalPoint = calcFinalPoint()
 
+  // 画曲线
   finalPoint.forEach(item => {
     drawBezier(item.start, item.end, item.cp1, item.cp2)
   })
 
+  // 画实际的数值点
+  points.forEach(item => {
+    drawArc(ctx, item.x, item.y, 2, primaryColor, 2)
+  })
+
   function drawBezier(start: ICharts.ICoord, end: ICharts.ICoord, cp1: ICharts.ICoord, cp2: ICharts.ICoord) {
-    ctx.strokeStyle = 'black'
+    ctx.strokeStyle = primaryColor
+    ctx.lineWidth = 2
     ctx.beginPath()
     ctx.moveTo(start.x, start.y)
     ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y)
@@ -117,26 +124,26 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points, distance: numb
   function calcAllControlPoint() {
     distance = distance / 2
 
-    const ans = []
+    const ans: ICharts.ICoord[] = []
     for (let i = 1; i < points.length - 1; i++) {
       const prev = points[i - 1]
       const curr = points[i]
       const next = points[i + 1]
 
-      const slope = (next[1] - prev[1]) / (next[0] - prev[0]) // 直线的斜率
-      const b = curr[1] - slope * curr[0] // 经过做标点的 y = kx + b
+      const slope = (next.y - prev.y) / (next.x - prev.x) // 直线的斜率
+      const b = curr.y - slope * curr.x // 经过做标点的 y = kx + b
 
       const pow2 = (num: number) => Math.pow(num, 2)
 
       // y = slope * x + b    // 二元一次方程
-      // (curr[0] - x) ** 2 + (curr[1] - slope * x - b) ** 2 = distance ** 2 // 勾股定理
+      // (curr.x - x) ** 2 + (curr.y - slope * x - b) ** 2 = distance ** 2 // 勾股定理
 
-      // (pow2(slope) + 1)*pow2(x) +  (2*slope*b -  2*curr[0] - 2*curr[1]*slope)*x + pow2(curr[0]) - 2*curr[1]*b  + pow2(curr[1]) + pow2(b) - distance ** 2 = 0
+      // (pow2(slope) + 1)*pow2(x) +  (2*slope*b -  2*curr.x - 2*curr.y*slope)*x + pow2(curr.x) - 2*curr.y*b  + pow2(curr.y) + pow2(b) - distance ** 2 = 0
 
       const four_ac =
-        4 * (pow2(slope) + 1) * (pow2(curr[0]) - 2 * curr[1] * b + pow2(curr[1]) + pow2(b) - distance ** 2) // 4ac
-      const det = Math.sqrt(pow2(2 * slope * b - 2 * curr[0] - 2 * curr[1] * slope) - four_ac) // 根号下(b方 - 4ac)
-      const fb = -(2 * slope * b - 2 * curr[0] - 2 * curr[1] * slope) // -b
+        4 * (pow2(slope) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
+      const det = Math.sqrt(pow2(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) - four_ac) // 根号下(b方 - 4ac)
+      const fb = -(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) // -b
       const two_a = 2 * (pow2(slope) + 1) // 2a
 
       let cp1_x = (fb - det) / two_a
@@ -146,15 +153,15 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points, distance: numb
       let cp2_y = slope * cp2_x + b
 
       // 如果是峰值 直接拉平
-      if ((curr[1] >= prev[1] && curr[1] >= next[1]) || (curr[1] <= prev[1] && curr[1] <= next[1])) {
-        cp1_x = curr[0] - distance
-        cp1_y = curr[1]
+      if ((curr.y >= prev.y && curr.y >= next.y) || (curr.y <= prev.y && curr.y <= next.y)) {
+        cp1_x = curr.x - distance
+        cp1_y = curr.y
 
-        cp2_x = curr[0] + distance
-        cp2_y = curr[1]
+        cp2_x = curr.x + distance
+        cp2_y = curr.y
       }
 
-      ans.push([cp1_x, cp1_y], [cp2_x, cp2_y])
+      ans.push({ x: cp1_x, y: cp1_y }, { x: cp2_x, y: cp2_y })
     }
 
     ans.unshift(points[0])
