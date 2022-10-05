@@ -3,11 +3,8 @@
 import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 
-export function calcMain(
-  dataSource: number[],
-  xAxis: ICharts.IRenderTree['xAxis'],
-  yAxis: ICharts.IRenderTree['yAxis']
-) {
+export function calcMain(dataSource: number[], renderTree: ICharts.IRenderTree) {
+  const { xAxis, yAxis } = renderTree
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
   const { axis, ticks } = xAxis
@@ -26,17 +23,6 @@ export function calcMain(
   })
 
   return res
-}
-
-export function calcInitRafValue(chartArray) {
-  const changeValue = chartArray.map(item => item.height / 40) // 每次的增量
-  const initHeight = chartArray.map(() => 0)
-  const initY = chartArray.map(item => item.y + item.height)
-
-  const aniConfig = { changeValue, initHeight, initY }
-  const checkStop = () => chartArray.every((item, index) => initHeight[index] === item.height)
-
-  return { aniConfig, checkStop }
 }
 
 type IChartBar = ICharts.ICoord & { width: number; height: number }
@@ -67,7 +53,7 @@ export function drawMain(
       drawBitTask()
 
       function drawBitTask() {
-        console.log('drawBitTask')
+        console.log('drawBitTask bar')
 
         requestAnimationFrame(() => {
           if (bitRect.y === item.y) {

@@ -1,4 +1,5 @@
 import { dpr } from './constant.js'
+import { setCtxFontSize } from './utils.js'
 
 export function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')
@@ -11,7 +12,8 @@ export function createCanvas(containerWidth: number, containerHeight: number) {
   canvasElement.style.height = '100%'
 
   const ctx = canvasElement.getContext('2d')
-  ctx.font = '14px 微软雅黑'
+
+  setCtxFontSize(ctx, 14)
   ctx.scale(dpr, dpr)
 
   return { canvasElement, ctx }

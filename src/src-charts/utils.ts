@@ -184,3 +184,29 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
     return ans
   }
 }
+
+// 绘制圆角矩形
+export function fillRoundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number
+) {
+  ctx.beginPath()
+  ctx.moveTo(x + radius, y)
+  ctx.lineTo(x + width - radius, y)
+  ctx.arc(x + width - radius, y + radius, radius, (Math.PI / 2) * 3, 0)
+  ctx.lineTo(x + width, y + height - radius)
+  ctx.arc(x + width - radius, y + height - radius, radius, 0, Math.PI / 2)
+  ctx.lineTo(x + radius, y + height)
+  ctx.arc(x + radius, y + height - radius, radius, Math.PI / 2, Math.PI)
+  ctx.lineTo(x, y + radius)
+  ctx.arc(x + radius, y + radius, radius, Math.PI, (Math.PI / 2) * 3)
+  ctx.fill()
+}
+
+export function setCtxFontSize(ctx: CanvasRenderingContext2D, fontSize: number = 14) {
+  ctx.font = `${fontSize}px 微软雅黑`
+}

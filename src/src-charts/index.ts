@@ -46,7 +46,9 @@ function setOption(
       renderTree.yAxis = getYAxis(ctx, series.data, offsetHeight, renderTree.xAxis.axis.end.x)
     }
 
-    renderTree.chartArray = calcMain(series.data, renderTree.xAxis, renderTree.yAxis)
+    const parameter = [series.data]
+    if (series.type !== 'pie') parameter.push(renderTree)
+    renderTree.chartArray = calcMain(...parameter)
 
     return renderTree
   }

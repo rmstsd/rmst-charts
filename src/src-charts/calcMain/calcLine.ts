@@ -3,11 +3,8 @@ import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { drawArc, drawBezier, drawSegmentLine } from '../utils.js'
 
-export function calcMain(
-  dataSource: number[],
-  xAxis: ICharts.IRenderTree['xAxis'],
-  yAxis: ICharts.IRenderTree['yAxis']
-) {
+export function calcMain(dataSource: number[], renderTree: ICharts.IRenderTree) {
+  const { xAxis, yAxis } = renderTree
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
   const xAxisTicks = xAxis.ticks
@@ -19,25 +16,6 @@ export function calcMain(
 
     return { x: tick_x, y: y }
   })
-}
-
-export function calcInitRafValue(chartArray: ICharts.ICoord[], otherConfig) {
-  const { xAxisInterval } = otherConfig
-
-  const first_point_x = chartArray[0].x
-  const per = xAxisInterval / 23
-  const last_end_x = chartArray[chartArray.length - 1].x
-
-  const aniConfig = {
-    start_x: first_point_x,
-    end_x: first_point_x,
-    per,
-    first_point_x,
-    last_end_x
-  }
-  const checkStop = () => aniConfig.end_x === last_end_x
-
-  return { aniConfig, checkStop }
 }
 
 export function drawMain(
@@ -88,7 +66,7 @@ export function drawMain(
         })
 
         function drawBitTask() {
-          console.log('drawBitTask')
+          console.log('drawBitTask line')
 
           const idx1 = Math.floor((bitStart.x - first_x) / xAxisInterval)
 

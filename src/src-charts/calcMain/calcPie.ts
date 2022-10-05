@@ -1,8 +1,9 @@
 // 饼图 计算 和 绘制
 
 import { primaryColor, pieColors } from '../constant.js'
+import { fillRoundRect, measureText, setCtxFontSize } from '../utils.js'
 
-export function calcMain(dataSource, end_angle = Math.PI * 2) {
+export function calcMain(dataSource: { value: number; name: string }[], end_angle = Math.PI * 2) {
   const sum = dataSource.reduce((acc, item) => acc + item.value, 0)
   const radianArray = dataSource.map(item => (item.value / sum) * end_angle)
 
@@ -12,19 +13,12 @@ export function calcMain(dataSource, end_angle = Math.PI * 2) {
 
     const startAngle = index === 0 ? 0 : lastItem.endAngle
     const endAngle = index === 0 ? item : lastItem.endAngle + item
-    const nvItem = { startAngle, endAngle, color: pieColors[index] }
+    const nvItem = { startAngle, endAngle, color: pieColors[index], label: dataSource[index].name }
 
     finalRadianArray.push(nvItem)
   })
 
   return finalRadianArray
-}
-
-export function calcInitRafValue() {
-  const aniConfig = { end_angle: 0 }
-  const checkStop = () => aniConfig.end_angle === Math.PI * 2
-
-  return { aniConfig, checkStop }
 }
 
 export function drawMain(
@@ -45,7 +39,7 @@ export function drawMain(
   drawBitTask()
 
   function drawBitTask() {
-    console.log('drawBitTask')
+    console.log('drawBitTask pie')
 
     requestAnimationFrame(() => {
       if (end_angle === Math.PI * 2) return
@@ -65,6 +59,28 @@ export function drawMain(
       })
 
       drawBitTask()
+    })
+  }
+
+  setCtxFontSize(ctx, 13)
+  drawLegend()
+  setCtxFontSize(ctx, 14)
+
+  // 绘制图例
+  function drawLegend() {
+    const padding = 10
+    const width = 35
+    const height = 15
+
+    chartArray.forEach((item, index) => {
+      const y = padding + height * index + index * 10
+      ctx.fillStyle = item.color
+
+      fillRoundRect(ctx, padding, y, width, height, 3)
+
+      const { textHeight } = measureText(ctx, item.label)
+
+      ctx.fillText(item.label, padding + width + 5, y + textHeight)
     })
   }
 }
