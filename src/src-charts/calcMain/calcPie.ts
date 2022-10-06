@@ -1,7 +1,8 @@
 // 饼图 计算 和 绘制
 
-import { primaryColor, pieColors } from '../constant.js'
-import { fillRoundRect, measureText, setCtxFontSize } from '../utils.js'
+import { pieColors } from '../constant.js'
+import { measureText, setCtxFontSize } from '../utils/canvasUtil.js'
+import { fillRoundRect } from '../utils/drawHelpers.js'
 
 export function calcMain(dataSource: { value: number; name: string }[], end_angle = Math.PI * 2) {
   const sum = dataSource.reduce((acc, item) => acc + item.value, 0)
@@ -62,15 +63,15 @@ export function drawMain(
     })
   }
 
-  setCtxFontSize(ctx, 13)
+  setCtxFontSize(ctx, 12)
   drawLegend()
   setCtxFontSize(ctx, 14)
 
   // 绘制图例
   function drawLegend() {
     const padding = 10
-    const width = 35
-    const height = 15
+    const width = 26
+    const height = 12
 
     chartArray.forEach((item, index) => {
       const y = padding + height * index + index * 10
@@ -80,7 +81,7 @@ export function drawMain(
 
       const { textHeight } = measureText(ctx, item.label)
 
-      ctx.fillText(item.label, padding + width + 5, y + textHeight)
+      ctx.fillText(item.label, padding + width + 5, y + height / 2 - textHeight / 2 + textHeight)
     })
   }
 }

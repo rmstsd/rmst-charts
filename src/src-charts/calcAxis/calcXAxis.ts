@@ -1,7 +1,8 @@
 // @ts-check
 
 import { dpr, canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from '../constant.js'
-import { drawSegmentLine, measureText } from '../utils.js'
+import { measureText } from '../utils/canvasUtil.js'
+import { drawSegmentLine } from '../utils/drawHelpers.js'
 
 export function getXAxis(ctx, dataSource, containerWidth, containerHeight) {
   const start_x = canvasPaddingLeft

@@ -1,5 +1,5 @@
-import { dpr } from './constant.js'
-import { setCtxFontSize } from './utils.js'
+import { dpr } from '../constant.js'
+import { setCtxFontSize } from './canvasUtil.js'
 
 export function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')

@@ -1,7 +1,8 @@
 // 折线图 计算 和 绘制
 import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
-import { drawArc, drawBezier, drawSegmentLine } from '../utils.js'
+import { drawArc, drawSegmentLine } from '../utils/drawHelpers.js'
+import { drawBezier } from '../utils/utils.js'
 
 export function calcMain(dataSource: number[], renderTree: ICharts.IRenderTree) {
   const { xAxis, yAxis } = renderTree

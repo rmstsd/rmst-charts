@@ -5,11 +5,13 @@ import {
   tickColor,
   yAxisPadding
 } from '../constant.js'
-import { measureText, drawSegmentLine, calcPerfect } from '../utils.js'
+import { measureText } from '../utils/canvasUtil.js'
+import { drawSegmentLine } from '../utils/drawHelpers.js'
+import { calcPerfect } from '../utils/utils.js'
 
 export function getYAxis(
   ctx: CanvasRenderingContext2D,
-  dataSource: ICharts.IOption['series']['data'],
+  dataSource: number[],
   containerHeight: number,
   xAxisEndX: number
 ) {

@@ -1,48 +1,5 @@
-import { primaryColor, tickColor } from './constant.js'
-
-// 测量文本宽高
-export function measureText(ctx: CanvasRenderingContext2D, text: string) {
-  const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)
-
-  // qq 浏览器只返回了 `width`
-  const textHeight = actualBoundingBoxAscent + actualBoundingBoxDescent || parseInt(ctx.font)
-
-  return { textWidth, textHeight }
-}
-
-// 绘制线段
-export function drawSegmentLine(
-  ctx: CanvasRenderingContext2D,
-  start: ICharts.ICoord,
-  end: ICharts.ICoord,
-  strokeStyle = tickColor,
-  lineWidth = 1
-) {
-  ctx.beginPath()
-  ctx.moveTo(start.x, start.y)
-  ctx.lineTo(end.x, end.y)
-  ctx.strokeStyle = strokeStyle
-  ctx.lineWidth = lineWidth
-  ctx.stroke()
-}
-
-// 绘制圆
-export function drawArc(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  radius = 3,
-  strokeStyle = 'purple',
-  lineWidth = 1
-) {
-  ctx.beginPath()
-  ctx.arc(x, y, radius, 0, Math.PI * 2)
-  ctx.strokeStyle = strokeStyle
-  ctx.lineWidth = lineWidth
-  ctx.fillStyle = '#fff'
-  ctx.fill()
-  ctx.stroke()
-}
+import { primaryColor, tickColor } from '../constant.js'
+import { drawArc } from './drawHelpers.js'
 
 // 计算理想的 y轴最大值, 最小值, 刻度间隔
 export function calcPerfect(max: number, min: number) {
@@ -183,30 +140,4 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
     }
     return ans
   }
-}
-
-// 绘制圆角矩形
-export function fillRoundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  radius: number
-) {
-  ctx.beginPath()
-  ctx.moveTo(x + radius, y)
-  ctx.lineTo(x + width - radius, y)
-  ctx.arc(x + width - radius, y + radius, radius, (Math.PI / 2) * 3, 0)
-  ctx.lineTo(x + width, y + height - radius)
-  ctx.arc(x + width - radius, y + height - radius, radius, 0, Math.PI / 2)
-  ctx.lineTo(x + radius, y + height)
-  ctx.arc(x + radius, y + height - radius, radius, Math.PI / 2, Math.PI)
-  ctx.lineTo(x, y + radius)
-  ctx.arc(x + radius, y + radius, radius, Math.PI, (Math.PI / 2) * 3)
-  ctx.fill()
-}
-
-export function setCtxFontSize(ctx: CanvasRenderingContext2D, fontSize: number = 14) {
-  ctx.font = `${fontSize}px 微软雅黑`
 }

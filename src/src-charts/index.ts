@@ -5,7 +5,7 @@ import * as lineMethod from './calcMain/calcLine'
 import * as barMethod from './calcMain/calcBar'
 import * as pieMethod from './calcMain/calcPie'
 
-import { createCanvas } from './domHelper'
+import { createCanvas } from './utils/domHelper'
 
 const methodMap = { line: lineMethod, bar: barMethod, pie: pieMethod }
 
