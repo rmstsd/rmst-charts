@@ -55,3 +55,15 @@ export function fillRoundRect(
   ctx.arc(x + radius, y + radius, radius, Math.PI, (Math.PI / 2) * 3)
   ctx.fill()
 }
+
+// 绘制虚线
+export default function drawDashLine(
+  ctx: CanvasRenderingContext2D,
+  start: ICharts.ICoord,
+  end: ICharts.ICoord,
+  strokeStyle = '#aaa'
+) {
+  ctx.setLineDash([4])
+  drawSegmentLine(ctx, start, end, strokeStyle)
+  ctx.setLineDash([])
+}

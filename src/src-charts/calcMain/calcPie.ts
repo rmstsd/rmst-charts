@@ -85,3 +85,6 @@ export function drawMain(
     })
   }
 }
+
+// canvas 的 mousemove 事件
+export function canvasMousemove(evt) {}

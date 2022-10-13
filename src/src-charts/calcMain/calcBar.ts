@@ -1,7 +1,8 @@
 // 柱状图 计算 和 绘制
 
 import { primaryColor } from '../constant.js'
-import { getCanvasPxFromRealNumber } from '../convert.js'
+import { getActiveIndexFromOffsetX, getCanvasPxFromRealNumber, getYTickFromOffsetY } from '../convert.js'
+import drawDashLine, { drawSegmentLine } from '../utils/drawHelpers.js'
 
 export function calcMain(dataSource: number[], renderTree: ICharts.IRenderTree) {
   const { xAxis, yAxis } = renderTree
@@ -84,4 +85,41 @@ export function drawMain(
       ctx.fillRect(x, y, width, height)
     })
   }
+}
+
+// canvas 的 mousemove 事件
+export function canvasMousemove(
+  evt: MouseEvent,
+  ctx: CanvasRenderingContext2D,
+  option: ICharts.IOption,
+  renderTree: ICharts.IRenderTree
+) {
+  const { offsetX, offsetY } = evt
+
+  const { xAxis, yAxis } = renderTree
+
+  const xAxis_start_x = xAxis.axis.start.x
+  const xAxis_end_x = xAxis.axis.end.x
+  const yAxis_start_y = yAxis.axis.start.y
+  const yAxis_end_y = yAxis.axis.end.y
+
+  const { xAxisInterval } = xAxis.axis
+
+  const { tickInterval, realInterval, min } = yAxis.tickConstant
+
+  const { assistY, realTickValue } = getYTickFromOffsetY(
+    offsetY,
+    yAxis_start_y,
+    tickInterval,
+    realInterval,
+    min,
+    yAxis.ticks
+  )
+
+  const activeIndex = getActiveIndexFromOffsetX(offsetX, xAxis_start_x, xAxisInterval)
+  const verticalX = xAxis.ticks[activeIndex].start.x
+
+  console.log(activeIndex, verticalX)
+
+  drawDashLine(ctx, xAxis.ticks[activeIndex].start, { x: verticalX, y: 0 })
 }
