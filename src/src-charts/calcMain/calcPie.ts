@@ -34,7 +34,7 @@ export function drawMain(
 
   const radius = 100
 
-  const per = Math.PI / 30
+  const per = Math.PI / 100
   let end_angle = 0
 
   drawBitTask()

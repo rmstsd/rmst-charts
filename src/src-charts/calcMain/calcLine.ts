@@ -48,7 +48,7 @@ export function drawMain(
     drawRaf()
 
     function drawRaf() {
-      const per = 5 // xAxisInterval / segmentCount
+      const per = 3 // xAxisInterval / 30
 
       const first_x = lineArr[0].start.x
       const last_x = lineArr.at(-1).end.x
@@ -66,6 +66,7 @@ export function drawMain(
           incrementExec()
         })
 
+        // 绘制每一小段 (不是两个点之间)
         function drawBitTask() {
           console.log('drawBitTask line')
 
