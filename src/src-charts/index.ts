@@ -22,9 +22,9 @@ function initCanvas(canvasContainer: HTMLElement) {
 
   let handleCanvasMousemove = null
 
-  canvasElement.addEventListener('mousemove', evt => {
-    handleCanvasMousemove(evt, ctx, option, renderTree)
-  })
+  // canvasElement.addEventListener('mousemove', evt => {
+  //   handleCanvasMousemove(evt, ctx, option, renderTree)
+  // })
 
   return {
     canvasElement,
