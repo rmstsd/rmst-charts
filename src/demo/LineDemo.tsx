@@ -24,7 +24,11 @@ const LineDemo = () => {
     }
   }, [])
 
-  return <div className="canvas-container"></div>
+  return (
+    <>
+      <div className="canvas-container"></div>
+    </>
+  )
 }
 
 export default LineDemo

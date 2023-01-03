@@ -41,7 +41,7 @@ export function drawMain(
   function drawRaf() {
     chartArray.forEach(incrementExec)
 
-    function incrementExec(item: IChartBar, index) {
+    function incrementExec(item: IChartBar, index: number) {
       const per = item.height / 100
 
       const bitRect = {

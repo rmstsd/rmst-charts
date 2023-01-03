@@ -36,14 +36,6 @@ export function drawMain(
       []
     )
 
-    function drawNoRaf() {
-      lineArr.forEach(item => drawSegmentLine(ctx, item.start, item.end, primaryColor, 2))
-
-      chartArray.forEach(item => {
-        drawArc(ctx, item.x, item.y, 3, primaryColor, 1.5)
-      })
-    }
-
     console.log(lineArr)
     drawRaf()
 
@@ -113,6 +105,14 @@ export function drawMain(
           })
         }
       }
+    }
+
+    function drawNoRaf() {
+      lineArr.forEach(item => drawSegmentLine(ctx, item.start, item.end, primaryColor, 2))
+
+      chartArray.forEach(item => {
+        drawArc(ctx, item.x, item.y, 3, primaryColor, 1.5)
+      })
     }
   }
 }
