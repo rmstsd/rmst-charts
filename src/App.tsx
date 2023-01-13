@@ -4,6 +4,8 @@ import LineDemo from './demo/LineDemo'
 import BarDemo from './demo/BarDemo'
 import PieDemo from './demo/PieDemo'
 
+import ArcAnimate from './demo/ArcAnimate'
+
 const chartMap = {
   Line: LineDemo,
   Bar: BarDemo,
@@ -48,7 +50,9 @@ function App() {
 
       <hr />
 
-      <ChartComponent />
+      {/* <ChartComponent /> */}
+
+      <ArcAnimate />
     </div>
   )
 }
