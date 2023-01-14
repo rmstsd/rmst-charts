@@ -9,50 +9,41 @@ import ArcAnimate from './demo/ArcAnimate'
 const chartMap = {
   Line: LineDemo,
   Bar: BarDemo,
-  Pie: PieDemo
+  Pie: PieDemo,
+  ArcAnimate
 }
 
 function App() {
-  const [bool, update] = useState(true)
-
   const chartType = location.hash.slice(1) || 'Line'
 
   const ChartComponent = chartMap[chartType]
 
+  const buttons = [
+    { value: 'Line', label: '折线图' },
+    { value: 'Bar', label: '柱状图' },
+    { value: 'Pie', label: '饼图' },
+    { value: 'ArcAnimate', label: 'arcAnimate' }
+  ]
+
   return (
     <div className="App">
-      <aside>
-        <button
-          onClick={() => {
-            location.hash = 'Line'
-            update(!bool)
-          }}
-        >
-          折线图
-        </button>
-        <button
-          onClick={() => {
-            location.hash = 'Bar'
-            update(!bool)
-          }}
-        >
-          柱状图
-        </button>
-        <button
-          onClick={() => {
-            location.hash = 'Pie'
-            update(!bool)
-          }}
-        >
-          饼图
-        </button>
+      <aside style={{ display: 'flex', gap: 3 }}>
+        {buttons.map(item => (
+          <button
+            key={item.value}
+            onClick={() => {
+              location.hash = item.value
+              location.reload()
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
       </aside>
 
       <hr />
 
-      {/* <ChartComponent /> */}
-
-      <ArcAnimate />
+      <ChartComponent />
     </div>
   )
 }

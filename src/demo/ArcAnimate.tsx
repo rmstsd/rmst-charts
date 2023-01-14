@@ -1,4 +1,6 @@
 import { useEffect } from 'react'
+import srcCharts from '../src-charts'
+import { calcColorRgba } from '../src-charts/utils/calcColorRgba'
 
 const arcAnimate = () => {
   useEffect(() => {
@@ -10,7 +12,8 @@ const arcAnimate = () => {
       circleData = { x: 100, y: 100, radius: 10, index: 0, bgColor: '' }
 
       animateState = {
-        rafTimer: null
+        rafTimer: null,
+        curr: 0
       }
 
       isMouseInner = false
@@ -20,7 +23,7 @@ const arcAnimate = () => {
 
         const targetRadius = isReset ? 10 : 20
 
-        const per = 0.2
+        const per = 0.1
         let currRadius = this.circleData.radius
 
         const sizeAnimate = () => {
@@ -36,24 +39,35 @@ const arcAnimate = () => {
           }
         }
 
-        let curr = 0
         const colorAnimate = () => {
-          curr += 4
-          if (curr > 255) curr = 255
+          const per = 2
+          if (isReset) this.animateState.curr -= per
+          else this.animateState.curr += per
 
-          const args = isReset ? ['red', 'pink'] : ['pink', 'red']
+          if (isReset) {
+            if (this.animateState.curr < 0) this.animateState.curr = 0
+          } else {
+            if (this.animateState.curr > 255) this.animateState.curr = 255
+          }
 
-          const { height, rgba } = rgbaCanvas(curr, ...args)
+          const args = ['pink', 'red'] as const
+          const { rgba } = calcColorRgba(this.animateState.curr, ...args)
 
           this.circleData.bgColor = rgba
 
-          if (curr >= 255) return true
+          if (isReset) {
+            if (this.animateState.curr <= 0) return true
+          } else {
+            if (this.animateState.curr >= 255) return true
+          }
         }
 
         const drawAnimate = () => {
           const isAnimateFinish = colorAnimate()
+          const isSizeFinish = sizeAnimate()
+
           renderMain()
-          if (isAnimateFinish) return
+          if (isAnimateFinish && isSizeFinish) return
 
           this.animateState.rafTimer = requestAnimationFrame(drawAnimate)
         }
@@ -94,42 +108,20 @@ const arcAnimate = () => {
 
       handleEnter() {
         console.log('enter')
-        canvas.style.cursor = 'pointer'
+        canvasElement.style.cursor = 'pointer'
         this.animateExec()
       }
 
       handleLeave() {
         console.log('leave')
-        canvas.style.cursor = ''
+        canvasElement.style.cursor = ''
         this.animateExec(true)
       }
     }
 
     // class Circle
 
-    const canvas = document.querySelector('canvas')
-    const ctx = canvas.getContext('2d')
-
-    function rgbaCanvas(curr: number, initColor: string, finishColor: string) {
-      const canvas = document.createElement('canvas')
-      const width = 2
-      const height = 256
-
-      canvas.width = width
-      canvas.height = height
-      const ctx = canvas.getContext('2d')
-
-      const grad = ctx.createLinearGradient(0, 0, 0, height)
-      grad.addColorStop(0, initColor)
-      grad.addColorStop(1, finishColor)
-
-      ctx.fillStyle = grad
-      ctx.fillRect(0, 0, width, height)
-      const { data } = ctx.getImageData(1, curr, 1, 1)
-      const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`
-
-      return { height, rgba }
-    }
+    const { canvasElement, ctx } = srcCharts.init(document.querySelector('.canvas-container'))
 
     const circleCoords = [
       new Circle({ x: 0, y: 66, radius: 10, index: 0, bgColor: 'pink' }),
@@ -149,7 +141,7 @@ const arcAnimate = () => {
       })
     }
 
-    canvas.addEventListener('mousemove', evt => {
+    canvasElement.addEventListener('mousemove', evt => {
       const { offsetX, offsetY } = evt
 
       const index = Math.round(offsetX / 50)
@@ -175,16 +167,12 @@ const arcAnimate = () => {
         console.log('isMouseInner', circleCoords)
       }
       if (evt.key === 'b') {
-        canvas.style.cursor = 'pointer'
+        canvasElement.style.cursor = 'pointer'
       }
     })
   }, [])
 
-  return (
-    <div>
-      <canvas width="500" height="400" style={{ border: '1px solid #333' }}></canvas>
-    </div>
-  )
+  return <div className="canvas-container"></div>
 }
 
 export default arcAnimate
