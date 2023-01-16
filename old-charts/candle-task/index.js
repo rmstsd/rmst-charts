@@ -1,4 +1,3 @@
-// @ts-check
 import { initCanvas, initToolTip } from './initElement.js'
 import { getXAxis, drawXAxis } from './calcXAxis.js'
 import { getYAxis, drawYAxis } from './calcYAxis.js'
@@ -11,7 +10,11 @@ import { getYTickFromOffsetY, getActiveIndexFromOffsetX } from './convert.js'
 import { defaultCandleCount, minCandleCount } from './constant.js'
 import { isOuterRect } from './utils.js'
 
-onload = () => {
+try {
+  initDraw()
+} catch (error) {}
+
+export function initDraw() {
   const canvasContainer = document.querySelector('.canvas-container')
   const { canvasElement, ctx } = initCanvas(canvasContainer)
   const { clientWidth, clientHeight } = canvasElement
@@ -102,7 +105,14 @@ onload = () => {
   }
 
   // 更新 tooltip 容器的位置 与 显示隐藏
-  function updateTooltipContainer(visible, toolTipElement, canvasWidth, canvasHeight, translateX, translateY) {
+  function updateTooltipContainer(
+    visible,
+    toolTipElement,
+    canvasWidth,
+    canvasHeight,
+    translateX,
+    translateY
+  ) {
     toolTipElement.style.display = visible ? 'block' : 'none'
     if (!visible) return
 
@@ -159,7 +169,14 @@ onload = () => {
 
     const { tickInterval, realInterval, min } = yAxis.tickConstant
 
-    const { assistY, realTickValue } = getYTickFromOffsetY(offsetY, yAxis_start_y, tickInterval, realInterval, min, yAxis.ticks)
+    const { assistY, realTickValue } = getYTickFromOffsetY(
+      offsetY,
+      yAxis_start_y,
+      tickInterval,
+      realInterval,
+      min,
+      yAxis.ticks
+    )
 
     activeIndex = getActiveIndexFromOffsetX(offsetX, xAxis_start_x, xAxisInterval)
     const verticalX = xAxis.ticks[activeIndex].start[0]

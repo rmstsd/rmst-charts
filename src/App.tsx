@@ -1,16 +1,16 @@
-import { useState } from 'react'
-
 import LineDemo from './demo/LineDemo'
 import BarDemo from './demo/BarDemo'
 import PieDemo from './demo/PieDemo'
 
 import ArcAnimate from './demo/ArcAnimate'
+import CandleTask from './demo/CandleTask'
 
 const chartMap = {
   Line: LineDemo,
   Bar: BarDemo,
   Pie: PieDemo,
-  ArcAnimate
+  ArcAnimate,
+  CandleTask
 }
 
 function App() {
@@ -22,7 +22,8 @@ function App() {
     { value: 'Line', label: '折线图' },
     { value: 'Bar', label: '柱状图' },
     { value: 'Pie', label: '饼图' },
-    { value: 'ArcAnimate', label: 'arcAnimate' }
+    { value: 'ArcAnimate', label: 'arcAnimate' },
+    { value: 'CandleTask', label: 'k线图' }
   ]
 
   return (
