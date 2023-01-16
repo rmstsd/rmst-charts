@@ -1,6 +1,5 @@
 {
-  "name": "charts-thunder-vite",
-  "private": true,
+  "name": "rmst-charts",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
