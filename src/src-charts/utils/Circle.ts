@@ -9,11 +9,11 @@ export default class Circle {
 
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
+  circleData = { x: 100, y: 100, radius: 10, index: 0, bgColor: '' }
+
   onChange = () => {}
 
   onClick = () => {}
-
-  circleData = { x: 100, y: 100, radius: 10, index: 0, bgColor: '' }
 
   animateState = {
     rafTimer: null,
@@ -22,7 +22,7 @@ export default class Circle {
 
   isMouseInner = false
 
-  isInnerCircle(x, y) {
+  isInnerCircle(x: number, y: number) {
     const distance = Math.sqrt((x - this.circleData.x) ** 2 + (y - this.circleData.y) ** 2)
 
     return distance <= this.circleData.radius
@@ -73,6 +73,7 @@ export default class Circle {
     }
 
     const drawAnimate = () => {
+      // console.log('raf')
       const isAnimateFinish = colorAnimate()
       const isSizeFinish = sizeAnimate()
 
@@ -97,7 +98,9 @@ export default class Circle {
     this.ctx.fillText(String(index), circleData.x, circleData.y)
   }
 
-  handleMove(offsetX, offsetY) {
+  handleMove(offsetX: number, offsetY: number) {
+    // console.log('move')
+
     const isInSingleCircle = this.isInnerCircle(offsetX, offsetY)
 
     if (isInSingleCircle) {
@@ -106,8 +109,6 @@ export default class Circle {
 
         this.handleEnter()
       }
-
-      console.log('move')
     } else {
       if (this.isMouseInner) {
         this.isMouseInner = false
@@ -118,13 +119,13 @@ export default class Circle {
   }
 
   handleEnter() {
-    console.log('enter')
+    // console.log('enter')
     this.canvasElement.style.cursor = 'pointer'
     this.animateExec()
   }
 
   handleLeave() {
-    console.log('leave')
+    // console.log('leave')
     this.canvasElement.style.cursor = ''
     this.animateExec(true)
   }
