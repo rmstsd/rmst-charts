@@ -1,46 +1,65 @@
 import LineDemo from './demo/LineDemo'
 import BarDemo from './demo/BarDemo'
 import PieDemo from './demo/PieDemo'
-
 import ArcAnimate from './demo/ArcAnimate'
 import CandleTask from './demo/CandleTask'
 
-const chartMap = {
-  Line: LineDemo,
-  Bar: BarDemo,
-  Pie: PieDemo,
-  ArcAnimate,
-  CandleTask
-}
+import BaseRenderDemo from './demo/BaseRenderDemo'
+
+const dirTree = [
+  {
+    label: 'charts',
+    value: 'charts',
+    children: [
+      { value: 'line', label: '折线图', ChartComponent: LineDemo },
+      { value: 'bar', label: '柱状图', ChartComponent: BarDemo },
+      { value: 'pie', label: '饼图', ChartComponent: PieDemo },
+      { value: 'arcAnimate', label: 'arcAnimate', ChartComponent: ArcAnimate },
+      { value: 'candleTask', label: 'k线图', ChartComponent: CandleTask }
+    ]
+  },
+  {
+    label: '基础图形',
+    value: 'baseRender',
+    children: [{ value: 'baseRender', label: '基础图形', ChartComponent: BaseRenderDemo }]
+  }
+]
 
 function App() {
-  const chartType = location.hash.slice(1) || 'Line'
-
-  const ChartComponent = chartMap[chartType]
-
-  const buttons = [
-    { value: 'Line', label: '折线图' },
-    { value: 'Bar', label: '柱状图' },
-    { value: 'Pie', label: '饼图' },
-    { value: 'ArcAnimate', label: 'arcAnimate' },
-    { value: 'CandleTask', label: 'k线图' }
-  ]
+  const [mainIndex, childIndex] = (location.hash.slice(1) || '0_0').split('_').map(Number)
+  const ChartComponent = dirTree[mainIndex].children[childIndex].ChartComponent
 
   return (
     <div className="App">
-      <aside style={{ display: 'flex', gap: 3 }}>
-        {buttons.map(item => (
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+        {dirTree.map((item, index) => (
           <button
             key={item.value}
             onClick={() => {
-              location.hash = item.value
+              location.hash = `${index}_0`
               location.reload()
             }}
           >
             {item.label}
           </button>
         ))}
-      </aside>
+      </div>
+
+      <hr />
+
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
+        {dirTree[mainIndex].children.map((item, index) => (
+          <button
+            key={item.value}
+            onClick={() => {
+              location.hash = `${mainIndex}_${index}`
+              location.reload()
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
 
       <hr />
 

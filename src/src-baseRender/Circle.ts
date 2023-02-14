@@ -1,19 +1,25 @@
-import { calcColorRgba } from './calcColorRgba'
+import { calcColorRgba } from '../src-charts/utils/calcColorRgba'
 
 export default class Circle {
-  constructor(parent: HTMLCanvasElement, circleData: Circle['circleData']) {
-    this.canvasElement = parent
-    this.ctx = parent.getContext('2d')
-    this.circleData = circleData
+  constructor(data: Circle['data']) {
+    this.data = data
   }
 
-  canvasElement: HTMLCanvasElement
-  ctx: CanvasRenderingContext2D
-  circleData = { x: 100, y: 100, radius: 10, index: 0, bgColor: '' }
+  data: { x: number; y: number; radius: number; bgColor: string; [key: string]: any }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    const { x, y, radius, bgColor } = this.data
+    ctx.beginPath()
+    ctx.arc(x, y, radius, 0, Math.PI * 2)
+    ctx.fillStyle = bgColor
+    ctx.fill()
+  }
 
   onChange = () => {}
-
   onClick = () => {}
+  onMove = () => {}
+  onEnter = () => {}
+  onLeave = () => {}
 
   animateState = {
     rafTimer: null,
@@ -23,9 +29,9 @@ export default class Circle {
   isMouseInner = false
 
   isInnerCircle(x: number, y: number) {
-    const distance = Math.sqrt((x - this.circleData.x) ** 2 + (y - this.circleData.y) ** 2)
+    const distance = Math.sqrt((x - this.data.x) ** 2 + (y - this.data.y) ** 2)
 
-    return distance <= this.circleData.radius
+    return distance <= this.data.radius
   }
 
   animateExec(isReset?: boolean): void {
@@ -34,12 +40,12 @@ export default class Circle {
     const targetRadius = isReset ? 10 : 20
 
     const per = 0.1
-    let currRadius = this.circleData.radius
+    let currRadius = this.data.radius
 
     const sizeAnimate = () => {
       if (isReset) currRadius -= per
       else currRadius += per
-      this.circleData.radius = currRadius
+      this.data.radius = currRadius
 
       // 返回动画是否完成
       if (isReset) {
@@ -63,7 +69,7 @@ export default class Circle {
       const args = ['pink', 'red'] as const
       const { rgba } = calcColorRgba(this.animateState.curr, ...args)
 
-      this.circleData.bgColor = rgba
+      this.data.bgColor = rgba
 
       if (isReset) {
         if (this.animateState.curr <= 0) return true
@@ -87,46 +93,28 @@ export default class Circle {
     drawAnimate()
   }
 
-  drawArc(circleData: Circle['circleData']) {
-    const { x, y, radius, index, bgColor } = circleData
-    this.ctx.beginPath()
-    this.ctx.arc(x, y, radius, 0, Math.PI * 2)
-    this.ctx.fillStyle = bgColor
-    this.ctx.fill()
-
-    this.ctx.fillStyle = '#000'
-    this.ctx.fillText(String(index), circleData.x, circleData.y)
+  handleClick(offsetX: number, offsetY: number) {
+    const isInSingleCircle = this.isInnerCircle(offsetX, offsetY)
+    if (isInSingleCircle) this.onClick()
   }
 
   handleMove(offsetX: number, offsetY: number) {
-    // console.log('move')
-
     const isInSingleCircle = this.isInnerCircle(offsetX, offsetY)
 
     if (isInSingleCircle) {
       if (!this.isMouseInner) {
         this.isMouseInner = true
 
-        this.handleEnter()
+        this.onEnter()
       }
+
+      this.onMove()
     } else {
       if (this.isMouseInner) {
         this.isMouseInner = false
 
-        this.handleLeave()
+        this.onLeave()
       }
     }
-  }
-
-  handleEnter() {
-    // console.log('enter')
-    this.canvasElement.style.cursor = 'pointer'
-    this.animateExec()
-  }
-
-  handleLeave() {
-    // console.log('leave')
-    this.canvasElement.style.cursor = '' // 这一行为应该在 layer 设置
-    this.animateExec(true)
   }
 }

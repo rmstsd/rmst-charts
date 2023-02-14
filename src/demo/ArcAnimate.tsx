@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import srcCharts from '../src-charts'
-import { calcColorRgba } from '../src-charts/utils/calcColorRgba'
 import Circle from '../src-charts/utils/Circle'
 
 const arcAnimate = () => {
