@@ -117,4 +117,9 @@ export default class Circle {
       }
     }
   }
+
+  remove() {
+    this.stage.elements = this.stage.elements.filter(item => item !== this)
+    this.stage.renderStage()
+  }
 }

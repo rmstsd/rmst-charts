@@ -23,11 +23,13 @@ export default class Stage {
 
   append(element) {
     this.elements = this.elements.concat(element)
+    this.elements = this.elements.map(item => Object.assign(item, { stage: this }))
 
     this.renderStage()
   }
 
   renderStage() {
+    this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
     this.elements.forEach(elementItem => {
       elementItem.draw(this.ctx)
     })

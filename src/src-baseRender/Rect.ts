@@ -53,4 +53,6 @@ export default class Rect {
       }
     }
   }
+
+  remove() {}
 }

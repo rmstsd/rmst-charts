@@ -19,26 +19,29 @@ const BaseRenderDemo = () => {
     ]
 
     // 注册鼠标事件
-    graphArray.forEach(circleItem => {
-      circleItem.onClick = () => {
-        console.log('onClick', circleItem.data.onlyId)
+    graphArray.forEach(item => {
+      item.onClick = () => {
+        console.log('onClick', item.data.onlyId)
+        item.remove()
       }
 
-      circleItem.onEnter = () => {
+      item.onEnter = () => {
         stage.canvasElement.style.cursor = 'pointer'
-        console.log('onEnter', circleItem.data.onlyId)
+        console.log('onEnter', item.data.onlyId)
       }
 
-      circleItem.onMove = () => {
-        console.log('onMove', circleItem.data.onlyId)
+      item.onMove = () => {
+        console.log('onMove', item.data.onlyId)
       }
-      circleItem.onLeave = () => {
+      item.onLeave = () => {
         stage.canvasElement.style.cursor = null
-        console.log('onLeave', circleItem.data.onlyId)
+        console.log('onLeave', item.data.onlyId)
       }
     })
 
     stage.append(graphArray)
+
+    console.log(graphArray)
   }, [])
 
   return <div className="canvas-container" ref={canvasRef}></div>
