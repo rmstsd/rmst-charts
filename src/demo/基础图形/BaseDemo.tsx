@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 
-import Circle from '../src-baseRender/Circle'
-import Rect from '../src-baseRender/Rect'
-import Stage from '../src-baseRender/Stage'
+import Circle from '../../rmst-render/Circle'
+import Rect from '../../rmst-render/Rect'
+import Stage from '../../rmst-render/Stage'
 
 const BaseRenderDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -12,30 +12,31 @@ const BaseRenderDemo = () => {
     })
 
     const graphArray = [
-      new Circle({ x: 100, y: 100, radius: 50, bgColor: 'pink', onlyId: 0 }),
-      new Circle({ x: 300, y: 100, radius: 50, bgColor: 'purple', onlyId: 1 }),
-      new Rect({ x: 20, y: 200, width: 100, height: 50, bgColor: 'pink', onlyId: 2 }),
-      new Rect({ x: 20, y: 300, width: 100, height: 50, bgColor: 'purple', onlyId: 3 })
+      new Circle({ x: 60, y: 60, radius: 50, bgColor: 'pink' }),
+      new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple' }),
+      new Rect({ x: 210, y: 10, width: 120, height: 80, bgColor: '#a18cd1' }),
+      new Circle({ x: 400, y: 60, radius: 50, startAngle: 30, endAngle: 60, bgColor: '#fcb69f' })
     ]
 
     // 注册鼠标事件
     graphArray.forEach(item => {
       item.onClick = () => {
-        console.log('onClick', item.data.onlyId)
+        console.log('onClick', item.constructor.name)
         item.remove()
       }
 
       item.onEnter = () => {
         stage.canvasElement.style.cursor = 'pointer'
-        console.log('onEnter', item.data.onlyId)
+        console.log('onEnter', item.constructor.name)
       }
 
-      item.onMove = () => {
-        console.log('onMove', item.data.onlyId)
-      }
+      // item.onMove = () => {
+      //   console.log('onMove', item.data.onlyId)
+      // }
+
       item.onLeave = () => {
         stage.canvasElement.style.cursor = null
-        console.log('onLeave', item.data.onlyId)
+        console.log('onLeave', item.constructor.name)
       }
     })
 

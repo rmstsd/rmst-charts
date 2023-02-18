@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { initDraw } from '../../old-charts/candle-task'
+import { initDraw } from '../../../old-charts/candle-task'
 
 const CandleTask = () => {
   useEffect(() => {

@@ -1,4 +1,8 @@
 import Circle from './Circle'
+import Path from './Path'
+import Rect from './Rect'
+
+type IGraph = Circle | Rect | Path
 
 type IOption = {
   container: HTMLElement
@@ -16,12 +20,11 @@ export default class Stage {
   }
 
   canvasElement: HTMLCanvasElement
-
   ctx: CanvasRenderingContext2D
 
-  elements: Circle[] = []
+  elements: IGraph[] = []
 
-  append(element) {
+  append(element: IGraph | IGraph[]) {
     this.elements = this.elements.concat(element)
     this.elements = this.elements.map(item => Object.assign(item, { stage: this }))
 

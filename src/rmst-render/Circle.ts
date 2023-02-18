@@ -1,37 +1,65 @@
 import { calcColorRgba } from '../src-charts/utils/calcColorRgba'
+import Path from './Path'
 
-export default class Circle {
+const defaultData = { startAngle: 0, endAngle: 360 } as Circle['data']
+export default class Circle extends Path {
   constructor(data: Circle['data']) {
-    this.data = data
+    super()
+
+    this.data = { ...defaultData, ...data }
   }
 
-  data: { x: number; y: number; radius: number; bgColor: string; [key: string]: any }
+  data: {
+    x: number
+    y: number
+    radius: number
+    bgColor: string
+    startAngle?: number // 圆弧 饼图
+    endAngle?: number // 圆弧 饼图
+    [key: string]: any
+  }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, radius, bgColor } = this.data
+    const { x, y, radius, bgColor, startAngle, endAngle } = this.data
+
+    // 传入角度 返回 弧度
+    const radian = (angle: number) => (Math.PI * angle) / 180
+
     ctx.beginPath()
-    ctx.arc(x, y, radius, 0, Math.PI * 2)
+    ctx.arc(x, y, radius, radian(startAngle), radian(endAngle))
+    ctx.lineTo(x, y)
     ctx.fillStyle = bgColor
     ctx.fill()
   }
 
   onChange = () => {}
-  onClick = () => {}
-  onMove = () => {}
-  onEnter = () => {}
-  onLeave = () => {}
 
   animateState = {
     rafTimer: null,
     curr: 0
   }
 
-  isMouseInner = false
+  calcAngle(x: number, y: number) {
+    const sinOfAngleX = (y - this.data.y) / (x - this.data.x)
+    const angle = Math.round((Math.atan(sinOfAngleX) * 180) / Math.PI)
+    return angle
+  }
 
-  isInnerCircle(x: number, y: number) {
-    const distance = Math.sqrt((x - this.data.x) ** 2 + (y - this.data.y) ** 2)
+  isInner(offsetX, offsetY) {
+    const { x, y, radius, startAngle, endAngle } = this.data
 
-    return distance <= this.data.radius
+    const distance = Math.sqrt((offsetX - x) ** 2 + (offsetY - y) ** 2)
+    const isRadiusInner = distance <= radius
+
+    if (!isRadiusInner) return
+
+    const angle = this.calcAngle(offsetX, offsetY) - startAngle
+
+    if (angle > 0 && angle < endAngle - startAngle) {
+      return true
+    }
+
+    return false
   }
 
   animateExec(isReset?: boolean): void {
@@ -91,35 +119,5 @@ export default class Circle {
     }
 
     drawAnimate()
-  }
-
-  handleClick(offsetX: number, offsetY: number) {
-    const isInSingleCircle = this.isInnerCircle(offsetX, offsetY)
-    if (isInSingleCircle) this.onClick()
-  }
-
-  handleMove(offsetX: number, offsetY: number) {
-    const isInSingleCircle = this.isInnerCircle(offsetX, offsetY)
-
-    if (isInSingleCircle) {
-      if (!this.isMouseInner) {
-        this.isMouseInner = true
-
-        this.onEnter()
-      }
-
-      this.onMove()
-    } else {
-      if (this.isMouseInner) {
-        this.isMouseInner = false
-
-        this.onLeave()
-      }
-    }
-  }
-
-  remove() {
-    this.stage.elements = this.stage.elements.filter(item => item !== this)
-    this.stage.renderStage()
   }
 }

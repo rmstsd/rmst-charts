@@ -1,6 +1,6 @@
 // 折线图
 import { useEffect } from 'react'
-import srcCharts from '../src-charts'
+import srcCharts from '../../src-charts'
 
 const option = {
   xAxis: {
