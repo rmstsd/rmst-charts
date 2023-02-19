@@ -5,6 +5,7 @@ import ArcAnimate from './demo/charts/ArcAnimate'
 import CandleTask from './demo/charts/CandleTask'
 
 import BaseRenderDemo from './demo/基础图形/BaseDemo'
+import GroupDemo from './demo/基础图形/GroupDemo'
 
 const dirTree = [
   {
@@ -21,7 +22,10 @@ const dirTree = [
   {
     label: '基础图形',
     value: 'baseRender',
-    children: [{ value: 'baseRender', label: '基础图形', ChartComponent: BaseRenderDemo }]
+    children: [
+      { value: 'baseRender', label: '基础图形', ChartComponent: BaseRenderDemo },
+      { value: 'GroupDemo', label: '成组', ChartComponent: GroupDemo }
+    ]
   }
 ]
 
@@ -39,6 +43,7 @@ function App() {
               location.hash = `${index}_0`
               location.reload()
             }}
+            style={{ border: mainIndex === index ? '2px solid blue' : '' }}
           >
             {item.label}
           </button>
@@ -55,6 +60,7 @@ function App() {
               location.hash = `${mainIndex}_${index}`
               location.reload()
             }}
+            style={{ border: childIndex === index ? '2px solid blue' : '' }}
           >
             {item.label}
           </button>

@@ -7,7 +7,7 @@ export default class Rect extends Path {
     this.data = data
   }
 
-  data: { x: number; y: number; width: number; height: number; bgColor: string; [key: string]: any }
+  declare data: { x: number; y: number; width: number; height: number; bgColor: string; [key: string]: any }
 
   draw(ctx: CanvasRenderingContext2D) {
     const { x, y, width, height, bgColor } = this.data
@@ -16,12 +16,12 @@ export default class Rect extends Path {
     ctx.fillRect(x, y, width, height)
   }
 
-  isInner(x: number, y: number) {
+  isInner(offsetX: number, offsetY: number) {
     const isInnerRect =
-      x >= this.data.x &&
-      x <= this.data.x + this.data.width &&
-      y >= this.data.y &&
-      y <= this.data.y + this.data.height
+      offsetX >= this.data.x &&
+      offsetX <= this.data.x + this.data.width &&
+      offsetY >= this.data.y &&
+      offsetY <= this.data.y + this.data.height
 
     return isInnerRect
   }
