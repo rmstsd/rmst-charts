@@ -8,7 +8,7 @@ type IOption = {
   container: HTMLElement
 }
 
-export default class Stage {
+export class Stage {
   constructor(option: IOption) {
     const { container } = option
     const stage = initStage(container)
@@ -23,6 +23,10 @@ export default class Stage {
   ctx: CanvasRenderingContext2D
 
   elements: IGraph[] = []
+
+  get center() {
+    return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
+  }
 
   append(element: IGraph | IGraph[]) {
     this.elements = this.elements.concat(element)
@@ -51,7 +55,30 @@ export default class Stage {
       })
     }
   }
+
+  setCursor(cursor: ICursor) {
+    this.canvasElement.style.cursor = cursor
+  }
 }
+
+type ICursor =
+  | 'url'
+  | 'default'
+  | 'auto'
+  | 'crosshair'
+  | 'pointer'
+  | 'move'
+  | 'e-resize'
+  | 'ne-resize'
+  | 'nw-resize'
+  | 'n-resize'
+  | 'se-resize'
+  | 'sw-resize'
+  | 's-resize'
+  | 'w-resize'
+  | 'text'
+  | 'wait'
+  | 'help'
 
 const dpr = 1.5
 function createCanvas(containerWidth: number, containerHeight: number) {
@@ -79,3 +106,5 @@ function initStage(canvasContainer: HTMLElement) {
 
   return { canvasElement, ctx }
 }
+
+export default Stage

@@ -1,6 +1,6 @@
 import Path from './Path'
 
-export default class Rect extends Path {
+export class Rect extends Path {
   constructor(data: Rect['data']) {
     super()
 
@@ -26,3 +26,5 @@ export default class Rect extends Path {
     return isInnerRect
   }
 }
+
+export default Rect

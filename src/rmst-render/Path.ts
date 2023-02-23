@@ -2,7 +2,7 @@ import colorRgba from 'color-rgba'
 
 import Stage from './Stage'
 
-export default class Path {
+export class Path {
   onClick = () => {}
   onMove = () => {}
   onEnter = () => {}
@@ -67,7 +67,7 @@ export default class Path {
     const [propKey] = Object.keys(prop)
 
     return new Promise(resolve => {
-      const per = 0.1
+      const per = 0.5
 
       const exec = () => {
         const targetValue = calcCount(this.data[propKey], prop[propKey], per)
@@ -86,6 +86,8 @@ export default class Path {
     })
   }
 }
+
+export default Path
 
 const calcCount = (initCount: number, targetCount: number, per: number) => {
   if (initCount < targetCount) {

@@ -1,7 +1,9 @@
 import Konva from 'konva'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 const KonvaBase = () => {
+  const groupRef = useRef<Konva.Group>()
+
   useEffect(() => {
     var width = 600
     var height = 400
@@ -16,6 +18,8 @@ const KonvaBase = () => {
     var group = new Konva.Group({
       draggable: true
     })
+    groupRef.current = group
+
     var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
 
     for (let i = 0; i < 4; i++) {
@@ -47,12 +51,32 @@ const KonvaBase = () => {
     })
 
     shapesLayer.add(group)
-    stage.add(shapesLayer)
+    // stage.add(shapesLayer)
   }, [])
+
+  const addToGroup = () => {
+    groupRef.current.add(
+      new Konva.Rect({
+        x: 200,
+        y: 100,
+        width: 100,
+        height: 50,
+        name: 'pink',
+        fill: 'pink',
+        stroke: 'black',
+        strokeWidth: 4
+      })
+    )
+
+    console.log(groupRef.current)
+  }
+
   return (
-    <div id="container" className="canvas-container">
-      KonvaBase
-    </div>
+    <>
+      <div id="container" className="border-shadow inline-block"></div>
+
+      <button onClick={addToGroup}>向组添加元素</button>
+    </>
   )
 }
 

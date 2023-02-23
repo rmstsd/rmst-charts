@@ -6,6 +6,7 @@ import Stage from '../../rmst-render/Stage'
 
 const GroupDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
+  const groupRef = useRef<Group>()
 
   useEffect(() => {
     const stage = new Stage({
@@ -16,6 +17,7 @@ const GroupDemo = () => {
     const arc = new Circle({ x: 200, y: 100, radius: 50, bgColor: 'blue' })
 
     const group = new Group()
+    groupRef.current = group
     group.append(rect)
     group.append(arc)
 
@@ -34,7 +36,25 @@ const GroupDemo = () => {
     stage.append(group)
   }, [])
 
-  return <div className="canvas-container" ref={canvasRef}></div>
+  const addToGroup = () => {
+    groupRef.current.append(
+      new Circle({
+        x: 200,
+        y: 200,
+        radius: 50,
+        bgColor: 'pink'
+      })
+    )
+
+    console.log(groupRef.current)
+  }
+
+  return (
+    <>
+      <button onClick={addToGroup}>向组添加元素</button>
+      <div className="canvas-container" ref={canvasRef}></div>
+    </>
+  )
 }
 
 export default GroupDemo

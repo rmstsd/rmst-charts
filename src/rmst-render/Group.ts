@@ -1,8 +1,10 @@
 import Path from './Path'
 
-export default class Group extends Path {
-  constructor() {
+export class Group extends Path {
+  constructor(data?: any) {
     super()
+
+    this.data = data
   }
 
   elements = []
@@ -14,14 +16,17 @@ export default class Group extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    console.log(this)
-
     this.elements.forEach(item => {
       item.draw(ctx)
     })
   }
 
   append(element) {
-    this.elements.push(element)
+    this.elements = this.elements.concat(element)
+    this.elements = this.elements.map(item => Object.assign(item, { stage: this }))
+
+    this.stage?.renderStage()
   }
 }
+
+export default Group

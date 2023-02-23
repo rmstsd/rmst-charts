@@ -1,6 +1,7 @@
+import { measureText } from '../rmst-charts-old/utils/canvasUtil'
 import Path from './Path'
 
-export default class Text extends Path {
+export class Text extends Path {
   constructor(data: Text['data']) {
     super()
 
@@ -16,6 +17,17 @@ export default class Text extends Path {
     [key: string]: any
   }
 
+  isInner(offsetX: any, offsetY: any): boolean {
+    const { textWidth, textHeight } = measureText(this.stage.stage.ctx, this.data.content)
+
+    return (
+      offsetX >= this.data.x &&
+      offsetX <= this.data.x + textWidth &&
+      offsetY >= this.data.y &&
+      offsetY <= this.data.y + textHeight
+    )
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
     const { x, y, content, color, fontSize } = this.data
 
@@ -26,3 +38,5 @@ export default class Text extends Path {
     ctx.fillText(content, x, y)
   }
 }
+
+export default Text

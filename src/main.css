@@ -3,3 +3,11 @@
   height: 350px;
   box-shadow: 0px 0px 0 1px #c3c0c0;
 }
+
+.border-shadow {
+  box-shadow: 0px 0px 0 1px #c3c0c0;
+}
+
+.inline-block {
+  display: inline-block;
+}

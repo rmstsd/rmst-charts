@@ -1,5 +1,6 @@
 // 饼图
 import { useEffect } from 'react'
+import rmstCharts from '../../rmst-charts-new'
 
 const option = {
   series: {
@@ -14,7 +15,11 @@ const option = {
   }
 }
 const Pie = () => {
-  useEffect(() => {}, [])
+  useEffect(() => {
+    const ins = rmstCharts.init(document.querySelector('.canvas-container'))
+
+    ins.setOption(option)
+  }, [])
 
   return <div className="canvas-container"></div>
 }

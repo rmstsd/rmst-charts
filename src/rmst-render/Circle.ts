@@ -1,8 +1,8 @@
-import { calcColorRgba } from '../src-charts/utils/calcColorRgba'
 import Path from './Path'
 
 const defaultData = { startAngle: 0, endAngle: 360 } as Circle['data']
-export default class Circle extends Path {
+
+export class Circle extends Path {
   constructor(data: Circle['data']) {
     super()
 
@@ -42,7 +42,7 @@ export default class Circle extends Path {
 
     const angle = this.calcAngle(offsetX, offsetY) - startAngle
 
-    if (angle > 0 && angle < endAngle - startAngle) {
+    if (angle >= 0 && angle <= endAngle - startAngle) {
       return true
     }
 
@@ -53,20 +53,24 @@ export default class Circle extends Path {
     const sinOfAngleX = Math.abs((offsetY - this.data.y) / (offsetX - this.data.x))
     const angle = Math.round((Math.atan(sinOfAngleX) * 180) / Math.PI)
 
-    if (offsetX > this.data.x && offsetY > this.data.y) {
+    // 第四象限
+    if (offsetX >= this.data.x && offsetY >= this.data.y) {
       return angle
     }
 
-    if (offsetX < this.data.x && offsetY > this.data.y) {
+    // 第
+    if (offsetX <= this.data.x && offsetY >= this.data.y) {
       return 180 - angle
     }
 
-    if (offsetX < this.data.x && offsetY < this.data.y) {
+    if (offsetX <= this.data.x && offsetY <= this.data.y) {
       return 180 + angle
     }
 
-    if (offsetX > this.data.x && offsetY < this.data.y) {
+    if (offsetX >= this.data.x && offsetY <= this.data.y) {
       return 360 - angle
     }
   }
 }
+
+export default Circle

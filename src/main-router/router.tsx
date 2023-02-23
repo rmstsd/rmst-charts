@@ -32,18 +32,7 @@ export const routes: IRouteObject[] = [
       { path: 'pie', element: <Pie /> }
     ]
   },
-  {
-    path: '/old-charts',
-    element: <LayoutView />,
-    uiConfig: { title: 'charts' },
-    children: [
-      { path: 'old-line', element: <LineDemo /> },
-      { path: 'old-bar', element: <BarDemo /> },
-      { path: 'old-pie', element: <PieDemo /> },
-      { path: 'old-arcAnimate', element: <ArcAnimate /> },
-      { path: 'old-K线图', element: <CandleTask /> }
-    ]
-  },
+
   {
     path: '/rmst-render',
     element: <LayoutView />,
@@ -71,6 +60,18 @@ export const routes: IRouteObject[] = [
         element: <KonvaBase />,
         uiConfig: { title: 'konva-体验' }
       }
+    ]
+  },
+  {
+    path: '/old-charts',
+    element: <LayoutView />,
+    uiConfig: { title: 'charts' },
+    children: [
+      { path: 'old-line', element: <LineDemo /> },
+      { path: 'old-bar', element: <BarDemo /> },
+      { path: 'old-pie', element: <PieDemo /> },
+      { path: 'old-arcAnimate', element: <ArcAnimate /> },
+      { path: 'old-K线图', element: <CandleTask /> }
     ]
   }
 ]
