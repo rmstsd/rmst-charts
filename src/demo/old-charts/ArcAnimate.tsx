@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import srcCharts from '../../src-charts'
-import Circle from '../../src-charts/utils/Circle'
+import srcCharts from '../../rmst-charts-old'
+import Circle from '../../rmst-charts-old/utils/Circle'
 
 const arcAnimate = () => {
   useEffect(() => {

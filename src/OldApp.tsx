@@ -1,11 +1,11 @@
-import LineDemo from './demo/charts/LineDemo'
-import BarDemo from './demo/charts/BarDemo'
-import PieDemo from './demo/charts/PieDemo'
-import ArcAnimate from './demo/charts/ArcAnimate'
-import CandleTask from './demo/charts/CandleTask'
+import LineDemo from './demo/old-charts/LineDemo'
+import BarDemo from './demo/old-charts/BarDemo'
+import PieDemo from './demo/old-charts/PieDemo'
+import ArcAnimate from './demo/old-charts/ArcAnimate'
+import CandleTask from './demo/old-charts/CandleTask'
 
-import BaseRenderDemo from './demo/基础图形/BaseDemo'
-import GroupDemo from './demo/基础图形/GroupDemo'
+import BaseRenderDemo from './demo/render/BaseDemo'
+import GroupDemo from './demo/render/GroupDemo'
 
 const dirTree = [
   {

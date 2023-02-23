@@ -19,6 +19,18 @@ const GroupDemo = () => {
     group.append(rect)
     group.append(arc)
 
+    group.onEnter = () => {
+      console.log('enter')
+    }
+
+    group.onLeave = () => {
+      console.log('onLeave')
+    }
+
+    group.onClick = () => {
+      console.log('g')
+    }
+
     stage.append(group)
   }, [])
 

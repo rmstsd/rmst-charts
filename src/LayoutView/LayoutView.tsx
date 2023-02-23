@@ -1,33 +1,52 @@
-import { Menu, MenuProps } from 'antd'
-import { Outlet, useLocation, useMatches, RouteObject } from 'react-router-dom'
-import { routes } from '../App'
+import { Layout, Menu, MenuProps } from 'antd'
+import { Outlet, useLocation, useMatches, useNavigate, matchRoutes } from 'react-router-dom'
+import { IRouteObject, routes } from '../main-router/router'
 
-const convertAntd = (array: RouteObject[]) => {
-  return array.map(item => ({ label: item.path, key: item.path }))
+const convertAntd = (array: IRouteObject[]): MenuProps['items'] => {
+  return array
+    .filter(item => !item.uiConfig?.hidden)
+    .map(item =>
+      Object.assign(
+        { label: item.uiConfig?.title || item.path, key: item.path },
+        item.children && { children: convertAntd(item.children) }
+      )
+    )
 }
 
 const LayoutView = () => {
   const location = useLocation()
-  console.log(location)
+  const navigate = useNavigate()
 
-  const [mainName] = location.pathname.split('/').filter(Boolean)
+  const mRoutes = matchRoutes(routes, location.pathname)
+  const routePathArray = mRoutes.map(item => item.route.path)
 
   const items: MenuProps['items'] = convertAntd(routes)
 
-  const erItems = convertAntd(routes.find(item => item.path === mainName).children)
-
   const onMenuClick = info => {
     const { key, keyPath } = info
-    console.log(info)
+    const path = keyPath.reverse().join('/')
+    navigate(path)
+
+    window.location.reload()
   }
 
   return (
-    <div>
-      <Menu mode="horizontal" items={items} onClick={onMenuClick} />
-      <Menu items={erItems} onClick={onMenuClick} style={{ width: 200 }} />
-      Layout
-      <Outlet />
-    </div>
+    <Layout style={{ height: '100vh', backgroundColor: 'white' }}>
+      <Layout.Sider style={{ overflow: 'auto', height: '100%' }}>
+        <Menu
+          mode="inline"
+          defaultOpenKeys={items.map(o => o.key) as any}
+          selectedKeys={routePathArray}
+          items={items}
+          onClick={onMenuClick}
+          theme="dark"
+        />
+      </Layout.Sider>
+
+      <Layout.Content style={{ margin: 15 }}>
+        <Outlet />
+      </Layout.Content>
+    </Layout>
   )
 }
 
