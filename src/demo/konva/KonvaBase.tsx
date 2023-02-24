@@ -51,7 +51,7 @@ const KonvaBase = () => {
     })
 
     shapesLayer.add(group)
-    // stage.add(shapesLayer)
+    stage.add(shapesLayer)
   }, [])
 
   const addToGroup = () => {

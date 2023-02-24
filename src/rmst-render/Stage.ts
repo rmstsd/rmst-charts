@@ -30,7 +30,7 @@ export class Stage {
 
   append(element: IGraph | IGraph[]) {
     this.elements = this.elements.concat(element)
-    this.elements = this.elements.map(item => Object.assign(item, { stage: this }))
+    this.elements = this.elements.map(item => Object.assign(item, { parent: this }))
 
     this.renderStage()
   }

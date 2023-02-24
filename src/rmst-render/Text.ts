@@ -18,7 +18,8 @@ export class Text extends Path {
   }
 
   isInner(offsetX: any, offsetY: any): boolean {
-    const { textWidth, textHeight } = measureText(this.stage.stage.ctx, this.data.content)
+    const stage = this.findStage()
+    const { textWidth, textHeight } = measureText(stage.ctx, this.data.content)
 
     return (
       offsetX >= this.data.x &&

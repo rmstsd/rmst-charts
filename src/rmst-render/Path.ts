@@ -1,4 +1,5 @@
 import colorRgba from 'color-rgba'
+import Group from './Group'
 
 import Stage from './Stage'
 
@@ -11,6 +12,18 @@ export class Path {
   isMouseInner = false
 
   stage: Stage
+
+  parent: Group = null
+
+  findStage() {
+    let stage = this.parent
+
+    while (stage.parent) {
+      stage = stage.parent
+    }
+
+    return stage as unknown as Stage
+  }
 
   data: { x: number; y: number; [key: string]: any }
 
@@ -28,7 +41,8 @@ export class Path {
 
   attr(data) {
     this.data = { ...this.data, ...data }
-    this.stage.renderStage()
+
+    this.findStage().renderStage()
   }
 
   handleClick(offsetX: number, offsetY: number) {

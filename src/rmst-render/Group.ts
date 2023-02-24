@@ -23,9 +23,11 @@ export class Group extends Path {
 
   append(element) {
     this.elements = this.elements.concat(element)
-    this.elements = this.elements.map(item => Object.assign(item, { stage: this }))
+    this.elements = this.elements.map(item => Object.assign(item, { parent: this }))
 
-    this.stage?.renderStage()
+    // console.log(this.elements)
+
+    this.findStage().renderStage()
   }
 }
 

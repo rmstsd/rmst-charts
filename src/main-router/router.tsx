@@ -9,7 +9,10 @@ import CandleTask from '../demo/old-charts/CandleTask'
 
 import RenderDemo from '../demo/render/BaseDemo'
 import GroupDemo from '../demo/render/GroupDemo'
+
 import Pie from '../demo/new-charts/Pie'
+import Line from '../demo/new-charts/Line'
+
 import KonvaBase from '../demo/konva/KonvaBase'
 
 export type IRouteObject = RouteObject & {
@@ -28,7 +31,7 @@ export const routes: IRouteObject[] = [
     element: <LayoutView />,
     uiConfig: { title: 'new-charts' },
     children: [
-      { path: 'line', element: <Pie /> },
+      { path: 'line', element: <Line /> },
       { path: 'pie', element: <Pie /> }
     ]
   },
