@@ -14,6 +14,8 @@ import Pie from '../demo/new-charts/Pie'
 import Line from '../demo/new-charts/Line'
 
 import KonvaBase from '../demo/konva/KonvaBase'
+import Plum from '../demo/other/Plum'
+import Animate from '../demo/render/Animate'
 
 export type IRouteObject = RouteObject & {
   uiConfig?: { hidden?: boolean; title?: string; icon?: any }
@@ -50,6 +52,12 @@ export const routes: IRouteObject[] = [
         path: 'render-group',
         element: <GroupDemo />,
         uiConfig: { title: '成组' }
+      },
+
+      {
+        path: 'render-animate',
+        element: <Animate />,
+        uiConfig: { title: 'Animate' }
       }
     ]
   },
@@ -68,7 +76,7 @@ export const routes: IRouteObject[] = [
   {
     path: '/old-charts',
     element: <LayoutView />,
-    uiConfig: { title: 'charts' },
+    uiConfig: { title: 'old-charts' },
     children: [
       { path: 'old-line', element: <LineDemo /> },
       { path: 'old-bar', element: <BarDemo /> },
@@ -76,5 +84,11 @@ export const routes: IRouteObject[] = [
       { path: 'old-arcAnimate', element: <ArcAnimate /> },
       { path: 'old-K线图', element: <CandleTask /> }
     ]
+  },
+  {
+    path: '/other',
+    element: <LayoutView />,
+    uiConfig: { title: '杂项' },
+    children: [{ path: 'plum', element: <Plum /> }]
   }
 ]

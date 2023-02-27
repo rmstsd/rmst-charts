@@ -58,15 +58,15 @@ export class Circle extends Path {
       return angle
     }
 
-    // 第
+    // 第三象限
     if (offsetX <= this.data.x && offsetY >= this.data.y) {
       return 180 - angle
     }
-
+    // 第二象限
     if (offsetX <= this.data.x && offsetY <= this.data.y) {
       return 180 + angle
     }
-
+    // 第一象限
     if (offsetX >= this.data.x && offsetY <= this.data.y) {
       return 360 - angle
     }

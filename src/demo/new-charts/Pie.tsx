@@ -14,6 +14,7 @@ const option = {
     ]
   }
 }
+
 const Pie = () => {
   useEffect(() => {
     const ins = rmstCharts.init(document.querySelector('.canvas-container'))

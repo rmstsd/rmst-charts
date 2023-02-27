@@ -27,7 +27,7 @@ export class Group extends Path {
 
     // console.log(this.elements)
 
-    this.findStage().renderStage()
+    this.findStage()?.renderStage()
   }
 }
 

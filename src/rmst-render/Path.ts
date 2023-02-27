@@ -18,7 +18,7 @@ export class Path {
   findStage() {
     let stage = this.parent
 
-    while (stage.parent) {
+    while (stage && stage.parent) {
       stage = stage.parent
     }
 
@@ -42,7 +42,7 @@ export class Path {
   attr(data) {
     this.data = { ...this.data, ...data }
 
-    this.findStage().renderStage()
+    this.findStage()?.renderStage()
   }
 
   handleClick(offsetX: number, offsetY: number) {
@@ -76,12 +76,20 @@ export class Path {
   }
 
   animate(prop) {
+    if (!this.findStage()) {
+      console.warn('还没有 append 到 stage 上')
+      return
+    }
+
     cancelAnimationFrame(this.animateState.rafTimer)
 
+    const { animateCallback } = prop
     const [propKey] = Object.keys(prop)
 
+    const totalTime = 1000 // 毫秒
+
     return new Promise(resolve => {
-      const per = 0.5
+      const per = Math.abs(this.data[propKey] - prop[propKey]) / (totalTime / (1000 / 60))
 
       const exec = () => {
         const targetValue = calcCount(this.data[propKey], prop[propKey], per)
@@ -91,6 +99,9 @@ export class Path {
           return
         }
 
+        if (typeof animateCallback === 'function') {
+          animateCallback({ [propKey]: targetValue })
+        }
         this.attr({ ...this.data, [propKey]: targetValue })
 
         this.animateState.rafTimer = requestAnimationFrame(exec)

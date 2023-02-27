@@ -1,14 +1,14 @@
-import { Layout, Menu, MenuProps } from 'antd'
+import { Divider, Layout, Menu, MenuProps } from 'antd'
 import { Outlet, useLocation, useMatches, useNavigate, matchRoutes } from 'react-router-dom'
 import { IRouteObject, routes } from '../main-router/router'
 
-const convertAntd = (array: IRouteObject[]): MenuProps['items'] => {
+const convertToAntdData = (array: IRouteObject[], recur: boolean): MenuProps['items'] => {
   return array
     .filter(item => !item.uiConfig?.hidden)
     .map(item =>
       Object.assign(
         { label: item.uiConfig?.title || item.path, key: item.path },
-        item.children && { children: convertAntd(item.children) }
+        recur && item.children && { children: convertToAntdData(item.children, recur) }
       )
     )
 }
@@ -18,34 +18,54 @@ const LayoutView = () => {
   const navigate = useNavigate()
 
   const mRoutes = matchRoutes(routes, location.pathname)
+
   const routePathArray = mRoutes.map(item => item.route.path)
+  const [mainPath, erPath] = routePathArray
 
-  const items: MenuProps['items'] = convertAntd(routes)
+  const headerItems: MenuProps['items'] = convertToAntdData(routes, false)
+  const siderItems: MenuProps['items'] = convertToAntdData(
+    routes.find(item => item.path === mainPath).children,
+    false
+  )
 
-  const onMenuClick = info => {
+  const onHeaderMenuClick = info => {
     const { key, keyPath } = info
-    const path = keyPath.reverse().join('/')
-    navigate(path)
+    const erPath = routes.find(item => item.path === key).children[0].path
+    navigate(key + '/' + erPath)
+  }
 
-    window.location.reload()
+  const onErMenuClick = info => {
+    const { key, keyPath } = info
+    navigate(mainPath + '/' + key)
   }
 
   return (
     <Layout style={{ height: '100vh', backgroundColor: 'white' }}>
-      <Layout.Sider style={{ overflow: 'auto', height: '100%' }}>
+      <Layout.Header
+        style={{
+          backgroundColor: 'transparent',
+          padding: '0 200px'
+        }}
+      >
         <Menu
-          mode="inline"
-          defaultOpenKeys={items.map(o => o.key) as any}
+          mode="horizontal"
           selectedKeys={routePathArray}
-          items={items}
-          onClick={onMenuClick}
-          theme="dark"
+          items={headerItems}
+          onClick={onHeaderMenuClick}
+          style={{ border: 'none' }}
         />
-      </Layout.Sider>
+      </Layout.Header>
 
-      <Layout.Content style={{ margin: 15 }}>
-        <Outlet />
-      </Layout.Content>
+      <Divider style={{ margin: 0 }} />
+      <Layout style={{ backgroundColor: '#f9f9f9' }}>
+        <Layout.Sider style={{ overflow: 'auto', height: '100%' }} theme="light">
+          <Menu mode="inline" selectedKeys={routePathArray} items={siderItems} onClick={onErMenuClick} />
+        </Layout.Sider>
+
+        <Layout.Content style={{ margin: 10, padding: 10, borderRadius: 5, backgroundColor: '#fff' }}>
+          <Outlet />
+        </Layout.Content>
+      </Layout>
     </Layout>
   )
 }
