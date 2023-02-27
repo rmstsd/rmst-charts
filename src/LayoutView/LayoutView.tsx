@@ -40,13 +40,9 @@ const LayoutView = () => {
   }
 
   return (
-    <Layout style={{ height: '100vh', backgroundColor: 'white' }}>
-      <Layout.Header
-        style={{
-          backgroundColor: 'transparent',
-          padding: '0 200px'
-        }}
-      >
+    <Layout style={{ height: '100%', backgroundColor: 'white' }}>
+      <Layout.Header style={{ backgroundColor: 'transparent', display: 'flex', padding: 0 }}>
+        <div style={{ width: 200 }}></div>
         <Menu
           mode="horizontal"
           selectedKeys={routePathArray}
@@ -58,7 +54,10 @@ const LayoutView = () => {
 
       <Divider style={{ margin: 0 }} />
       <Layout style={{ backgroundColor: '#f9f9f9' }}>
-        <Layout.Sider style={{ overflow: 'auto', height: '100%' }} theme="light">
+        <Layout.Sider
+          style={{ overflow: 'auto', height: '100%', maxWidth: 'initial', minWidth: 'initial' }}
+          theme="light"
+        >
           <Menu mode="inline" selectedKeys={routePathArray} items={siderItems} onClick={onErMenuClick} />
         </Layout.Sider>
 
