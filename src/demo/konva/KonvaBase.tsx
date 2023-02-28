@@ -33,22 +33,22 @@ const KonvaBase = () => {
         stroke: 'black',
         strokeWidth: 4
       })
-      box.on('click', () => {
-        console.log('box', i)
-      })
+      // box.on('click', () => {
+      //   console.log('box', i)
+      // })
       group.add(box)
     }
 
-    group.on('mouseover', function () {
-      document.body.style.cursor = 'pointer'
-    })
-    group.on('mouseout', function () {
-      document.body.style.cursor = 'default'
-    })
+    // group.on('mouseover', function () {
+    //   document.body.style.cursor = 'pointer'
+    // })
+    // group.on('mouseout', function () {
+    //   document.body.style.cursor = 'default'
+    // })
 
-    group.on('click', function () {
-      console.log('g')
-    })
+    // group.on('click', function () {
+    //   console.log('g')
+    // })
 
     shapesLayer.add(group)
     stage.add(shapesLayer)

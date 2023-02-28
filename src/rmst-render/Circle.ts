@@ -38,7 +38,7 @@ export class Circle extends Path {
     const distance = Math.sqrt((offsetX - x) ** 2 + (offsetY - y) ** 2)
     const isRadiusInner = distance <= radius
 
-    if (!isRadiusInner) return
+    if (!isRadiusInner) return false
 
     const angle = this.calcAngle(offsetX, offsetY) - startAngle
 

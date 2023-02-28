@@ -8,8 +8,12 @@ export class Path {
   onMove = () => {}
   onEnter = () => {}
   onLeave = () => {}
+  onDown = () => {}
+  onUp = () => {}
 
-  isMouseInner = false
+  isMouseInner = false // 鼠标是否已经移入某个元素
+
+  isMouseDown = false // 鼠标是否处于按下状态
 
   stage: Stage
 
@@ -50,8 +54,31 @@ export class Path {
     if (isInner) this.onClick()
   }
 
+  handleMouseDown(offsetX: number, offsetY: number) {
+    const isInner = this.isInner(offsetX, offsetY)
+    if (isInner) {
+      this.onDown()
+      this.isMouseDown = true
+    }
+  }
+
+  handleMouseUp(offsetX: number, offsetY: number) {
+    const isInner = this.isInner(offsetX, offsetY)
+
+    if (isInner) {
+      this.onUp()
+      this.isMouseDown = false
+    }
+  }
+
   handleMove(offsetX: number, offsetY: number) {
     const isInner = this.isInner(offsetX, offsetY)
+
+    if (this.isMouseDown && this.data.draggable) {
+      this.attr({ x: offsetX, y: offsetY })
+
+      console.log(this.data.x, this.data.y)
+    }
 
     if (isInner) {
       if (!this.isMouseInner) {

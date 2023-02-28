@@ -49,6 +49,18 @@ export class Stage {
       })
     }
 
+    this.canvasElement.onmousedown = evt => {
+      this.elements.forEach(elementItem => {
+        elementItem.handleMouseDown(evt.offsetX, evt.offsetY)
+      })
+    }
+
+    this.canvasElement.onmouseup = evt => {
+      this.elements.forEach(elementItem => {
+        elementItem.handleMouseUp(evt.offsetX, evt.offsetY)
+      })
+    }
+
     this.canvasElement.onclick = evt => {
       this.elements.forEach(elementItem => {
         elementItem.handleClick(evt.offsetX, evt.offsetY)
