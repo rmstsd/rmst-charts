@@ -14,6 +14,7 @@ export class Path {
   isMouseInner = false // 鼠标是否已经移入某个元素
 
   isMouseDown = false // 鼠标是否处于按下状态
+  mouseDownOffset: { x: number; y: number } = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
 
   stage: Stage
 
@@ -59,6 +60,9 @@ export class Path {
     if (isInner) {
       this.onDown()
       this.isMouseDown = true
+
+      this.mouseDownOffset.x = offsetX - this.data.x
+      this.mouseDownOffset.y = offsetY - this.data.y
     }
   }
 
@@ -75,9 +79,10 @@ export class Path {
     const isInner = this.isInner(offsetX, offsetY)
 
     if (this.isMouseDown && this.data.draggable) {
-      this.attr({ x: offsetX, y: offsetY })
+      const x = offsetX - this.mouseDownOffset.x
+      const y = offsetY - this.mouseDownOffset.y
 
-      console.log(this.data.x, this.data.y)
+      this.attr({ x, y })
     }
 
     if (isInner) {

@@ -40,6 +40,9 @@ export class Circle extends Path {
 
     if (!isRadiusInner) return false
 
+    // 如果正好在圆心, 认为在扇形内, 或者在圆内
+    if (offsetX === this.data.x && offsetY === this.data.y) return true
+
     const angle = this.calcAngle(offsetX, offsetY) - startAngle
 
     if (angle >= 0 && angle <= endAngle - startAngle) {
@@ -51,6 +54,7 @@ export class Circle extends Path {
 
   calcAngle(offsetX: number, offsetY: number) {
     const sinOfAngleX = Math.abs((offsetY - this.data.y) / (offsetX - this.data.x))
+
     const angle = Math.round((Math.atan(sinOfAngleX) * 180) / Math.PI)
 
     // 第四象限

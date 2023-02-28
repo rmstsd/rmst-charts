@@ -13,24 +13,23 @@ const Draggable = () => {
       container: canvasRef.current
     })
 
-    const rect = new Rect({ x: 10, y: 10, width: 100, height: 100, bgColor: 'red' })
+    const rect = new Rect({
+      x: 10,
+      y: 10,
+      width: 100,
+      height: 100,
+      bgColor: 'purple',
+      draggable: true
+    })
     const arc = new Circle({
       x: 200,
       y: 100,
       radius: 50,
-      bgColor: 'pink'
-      //  draggable: true
+      bgColor: 'pink',
+      draggable: true
     })
 
-    arc.onDown = () => {
-      console.log('arc down')
-    }
-
-    arc.onUp = () => {
-      console.log('arc up')
-    }
-
-    stage.append(arc)
+    stage.append([arc, rect])
   }, [])
 
   const addToGroup = () => {
