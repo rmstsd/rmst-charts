@@ -20,7 +20,7 @@ const KonvaBase = () => {
     })
     groupRef.current = group
 
-    var colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+    var colors = ['red', 'orange', 'purple', 'green', 'blue', 'purple']
 
     for (let i = 0; i < 4; i++) {
       var box = new Konva.Rect({
@@ -28,14 +28,11 @@ const KonvaBase = () => {
         y: i * 78 + 40,
         width: 100,
         height: 50,
-        name: colors[i],
-        fill: colors[i],
-        stroke: 'black',
-        strokeWidth: 4
+        fill: colors[i]
       })
-      // box.on('click', () => {
-      //   console.log('box', i)
-      // })
+      box.on('click', evt => {
+        console.log('box', i)
+      })
       group.add(box)
     }
 
@@ -46,12 +43,45 @@ const KonvaBase = () => {
     //   document.body.style.cursor = 'default'
     // })
 
-    // group.on('click', function () {
-    //   console.log('g')
-    // })
+    group.on('click', function () {
+      console.log('g')
+    })
 
     shapesLayer.add(group)
     stage.add(shapesLayer)
+
+    var box1 = new Konva.Rect({
+      x: 400,
+      y: 100,
+      width: 100,
+      height: 50,
+      fill: 'purple',
+      draggable: true
+    })
+    box1.on('click', evt => {
+      console.log('box', 1)
+    })
+    var box2 = new Konva.Rect({
+      x: 450,
+      y: 120,
+      width: 100,
+      height: 50,
+      fill: 'coral',
+      draggable: true
+    })
+    box2.on('click', evt => {
+      console.log('box', 2)
+    })
+    box1.on('mouseup', () => {
+      console.log('box1 mouseup')
+    })
+
+    box2.on('mouseup', () => {
+      console.log('box2 mouseup')
+    })
+
+    shapesLayer.add(box1)
+    shapesLayer.add(box2)
   }, [])
 
   const addToGroup = () => {

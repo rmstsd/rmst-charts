@@ -22,10 +22,17 @@ export class Stage {
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
 
+  parent: null
   elements: IGraph[] = []
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
+  }
+
+  removeAllElements() {
+    this.elements = []
+
+    this.renderStage()
   }
 
   append(element: IGraph | IGraph[]) {
@@ -50,21 +57,33 @@ export class Stage {
     }
 
     this.canvasElement.onmousedown = evt => {
-      this.elements.forEach(elementItem => {
-        elementItem.handleMouseDown(evt.offsetX, evt.offsetY)
-      })
+      for (const elementItem of this.elements.slice(0).reverse()) {
+        const isInner = elementItem.handleMouseDown(evt.offsetX, evt.offsetY)
+
+        if (isInner) {
+          break
+        }
+      }
     }
 
     this.canvasElement.onmouseup = evt => {
-      this.elements.forEach(elementItem => {
-        elementItem.handleMouseUp(evt.offsetX, evt.offsetY)
-      })
+      for (const elementItem of this.elements.slice(0).reverse()) {
+        const isInner = elementItem.handleMouseUp(evt.offsetX, evt.offsetY)
+
+        if (isInner) {
+          break
+        }
+      }
     }
 
     this.canvasElement.onclick = evt => {
-      this.elements.forEach(elementItem => {
-        elementItem.handleClick(evt.offsetX, evt.offsetY)
-      })
+      for (const elementItem of this.elements.slice(0).reverse()) {
+        const isInner = elementItem.handleClick(evt.offsetX, evt.offsetY)
+
+        if (isInner) {
+          break
+        }
+      }
     }
   }
 

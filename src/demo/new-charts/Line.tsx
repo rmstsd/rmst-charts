@@ -1,14 +1,36 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import rmstCharts, { IChartInstance } from '../../rmst-charts-new'
+
+const option = {
+  xAxis: {
+    data: ['a', 'b', 'c', 'd', 'e', 'f']
+  },
+  series: {
+    type: 'line' as const,
+    data: [600, 932, 901, 934, 800, 800]
+    // smooth: true
+  }
+}
 
 const Line = () => {
+  const insRef = useRef<IChartInstance>()
   useEffect(() => {
-    let curr = performance.now()
-    requestAnimationFrame(() => {
-      console.log(performance.now() - curr)
-    })
+    const ins = rmstCharts.init(document.querySelector('.canvas-container'))
+    insRef.current = ins
+
+    ins.setOption(option)
   }, [])
 
-  return <div>Line</div>
+  const setOption = () => {
+    insRef.current.setOption(option)
+  }
+
+  return (
+    <>
+      <button onClick={setOption}>setOption</button>
+      <div className="canvas-container"></div>
+    </>
+  )
 }
 
 export default Line

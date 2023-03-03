@@ -1,6 +1,10 @@
 import Path from './Path'
 
-const defaultData = { startAngle: 0, endAngle: 360 } as Circle['data']
+const defaultData = {
+  startAngle: 0,
+  endAngle: 360,
+  shadowColor: '#333'
+}
 
 export class Circle extends Path {
   constructor(data: Circle['data']) {
@@ -24,6 +28,8 @@ export class Circle extends Path {
 
     // 传入角度 返回 弧度
     const radian = (angle: number) => (Math.PI * angle) / 180
+
+    this.setShadow(ctx, this.data)
 
     ctx.beginPath()
     ctx.arc(x, y, radius, radian(startAngle), radian(endAngle))

@@ -1,18 +1,24 @@
 import Path from './Path'
 
 export class Group extends Path {
-  constructor(data?: any) {
+  constructor(data: any = {}) {
     super()
 
-    this.data = data
+    this.data = { ...data }
   }
-
+  isGroup = true
   elements = []
 
-  isInner(offsetX: any, offsetY: any): boolean {
+  isInner(offsetX: number, offsetY: number): boolean {
     if (!this.elements.length) return false
 
     return this.elements.some(item => item.isInner(offsetX, offsetY))
+  }
+
+  findActualShape(offsetX: number, offsetY: number) {
+    if (!this.elements.length) return null
+
+    return this.elements.find(item => item.isInner(offsetX, offsetY))
   }
 
   draw(ctx: CanvasRenderingContext2D): void {

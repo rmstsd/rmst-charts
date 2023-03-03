@@ -13,24 +13,30 @@ const GroupDemo = () => {
       container: canvasRef.current
     })
 
-    const rect = new Rect({ x: 10, y: 10, width: 100, height: 100, bgColor: 'red' })
-    const arc = new Circle({ x: 200, y: 100, radius: 50, bgColor: 'blue' })
+    const rect = new Rect({ x: 10, y: 10, width: 100, height: 100, bgColor: 'pink' })
+    const arc = new Circle({ x: 200, y: 100, radius: 50, bgColor: 'purple' })
 
-    const group = new Group()
+    const group = new Group({
+      draggable: true
+    })
     groupRef.current = group
     group.append(rect)
     group.append(arc)
 
+    group.onDown = () => {
+      console.log('group down')
+    }
+
     group.onEnter = () => {
-      console.log('enter')
+      stage.setCursor('move')
     }
 
     group.onLeave = () => {
-      console.log('onLeave')
+      stage.setCursor('auto')
     }
 
     group.onClick = () => {
-      console.log('g')
+      console.log('group.onClick')
     }
 
     stage.append(group)
@@ -42,7 +48,7 @@ const GroupDemo = () => {
         x: 200,
         y: 200,
         radius: 50,
-        bgColor: 'pink'
+        bgColor: 'cornflowerblue'
       })
     )
 

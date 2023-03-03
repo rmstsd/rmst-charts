@@ -1,5 +1,13 @@
-import { Stage, Circle, Group, Rect, Text, Path } from '../rmst-render'
-import { calcMain } from './calcMain/calcPie'
+import { Stage } from '../rmst-render'
+
+import { createRenderElements as createXAxisElements, IXAxisElements } from './calcAxis/calcXAxis'
+import { createRenderElements as createYAxisElements, IYAxisElements } from './calcAxis/calcYAxis'
+
+import * as line from './calcMain/calcLine'
+import * as bar from './calcMain/calcBar'
+import * as pie from './calcMain/calcPie'
+
+const map = { line, bar, pie }
 
 const rmstCharts = {
   init: (canvasContainer: HTMLElement) => {
@@ -9,85 +17,53 @@ const rmstCharts = {
 
     return {
       setOption: innerOption => {
-        // ctx.clearRect(0, 0, offsetWidth, offsetHeight)
+        stage.removeAllElements()
 
-        const data = calcMain(innerOption.series.data)
+        console.log(innerOption)
 
-        const fakeArc = new Circle({
-          x: stage.center.x,
-          y: stage.center.y,
-          radius: 100,
-          startAngle: 0,
-          endAngle: 0,
-          bgColor: 'transparent'
-        })
+        const chartType = innerOption.series.type // pie line bar
 
-        const elements = data.reduce<Path[]>((acc, item, index) => {
-          const width = 40
-          const height = 20
+        const { createRenderElements } = map[chartType]
 
-          const gap = 10
-          const x = 10
-          const y = 10 + (height + gap) * index
+        const finalElements = []
 
-          const rect = new Rect({ x, y, width, height, bgColor: item.color })
-          const text = new Text({ x: x + width, y, content: item.label, color: item.color, fontSize: 16 })
-          const legend = new Group({ onlyKey: 'legend' })
-          legend.append([rect, text])
+        let XAxisShape: IXAxisElements
+        let YAxisShape: IYAxisElements
+        // 绘制坐标轴
+        if (chartType !== 'pie') {
+          XAxisShape = createXAxisElements(stage, innerOption)
+          YAxisShape = createYAxisElements(stage, innerOption)
 
-          const arc = new Circle({
-            onlyKey: 'main-pie',
-            x: stage.center.x,
-            y: stage.center.y,
-            radius: 100,
-            startAngle: 0,
-            endAngle: 0,
-            bgColor: item.color
-          })
+          finalElements.push(
+            XAxisShape.xAxisLine,
+            ...XAxisShape.ticksLines,
+            ...XAxisShape.tickTexts,
 
-          legend.onEnter = () => {
-            arc.animate({ radius: 105 })
-            stage.setCursor('pointer')
-          }
+            YAxisShape.yAxisLine,
+            ...YAxisShape.ticksLines,
+            ...YAxisShape.tickTexts
+          )
+        }
 
-          legend.onLeave = () => {
-            arc.animate({ radius: 100 })
-            stage.setCursor('auto')
-          }
+        const { elements, afterAppendStage } = createRenderElements(
+          stage,
+          innerOption,
+          XAxisShape?.xAxisData,
+          YAxisShape?.yAxisData
+        )
+        if (elements) finalElements.push(...elements)
 
-          arc.onEnter = () => {
-            arc.animate({ radius: 105 })
-            stage.setCursor('pointer')
-          }
+        console.log(finalElements)
+        stage.append(finalElements)
 
-          arc.onLeave = () => {
-            arc.animate({ radius: 100 })
-            stage.setCursor('auto')
-          }
-
-          return acc.concat([legend, arc])
-        }, [])
-
-        elements.push(fakeArc)
-        stage.append(elements)
-
-        fakeArc.animate({
-          endAngle: 360,
-          animateCallback(prop) {
-            const data = calcMain(innerOption.series.data, prop.endAngle)
-
-            elements
-              .filter(o => o.data.onlyKey === 'main-pie')
-              .forEach((element, index) => {
-                const curr = data[index]
-
-                element.attr({ startAngle: curr.startAngle, endAngle: curr.endAngle })
-              })
-          }
-        })
+        afterAppendStage?.()
       }
     }
   }
+}
+
+export type IChartInstance = {
+  setOption: (option) => void
 }
 
 export default rmstCharts

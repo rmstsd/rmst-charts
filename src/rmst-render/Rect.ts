@@ -12,6 +12,8 @@ export class Rect extends Path {
   draw(ctx: CanvasRenderingContext2D) {
     const { x, y, width, height, bgColor } = this.data
 
+    this.setShadow(ctx, this.data)
+
     ctx.fillStyle = bgColor
     ctx.fillRect(x, y, width, height)
   }

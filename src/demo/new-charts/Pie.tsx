@@ -1,6 +1,6 @@
 // 饼图
-import { useEffect } from 'react'
-import rmstCharts from '../../rmst-charts-new'
+import { useEffect, useRef } from 'react'
+import rmstCharts, { IChartInstance } from '../../rmst-charts-new'
 
 const option = {
   series: {
@@ -16,13 +16,24 @@ const option = {
 }
 
 const Pie = () => {
+  const insRef = useRef<IChartInstance>()
   useEffect(() => {
     const ins = rmstCharts.init(document.querySelector('.canvas-container'))
+    insRef.current = ins
 
     ins.setOption(option)
   }, [])
 
-  return <div className="canvas-container"></div>
+  const setOption = () => {
+    insRef.current.setOption(option)
+  }
+
+  return (
+    <>
+      <button onClick={setOption}>setOption</button>
+      <div className="canvas-container"></div>
+    </>
+  )
 }
 
 export default Pie

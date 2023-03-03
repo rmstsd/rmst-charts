@@ -32,6 +32,8 @@ export class Text extends Path {
   draw(ctx: CanvasRenderingContext2D) {
     const { x, y, content, color, fontSize } = this.data
 
+    this.setShadow(ctx, this.data)
+
     ctx.fillStyle = color
     ctx.textBaseline = 'top'
     ctx.font = `${fontSize}px 微软雅黑`
