@@ -1,5 +1,8 @@
 // 柱状图 计算 和 绘制
 
+import Stage from '../../rmst-render/Stage.js'
+import { IXAxisElements } from '../calcAxis/calcXAxis.js'
+import { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor } from '../constant.js'
 import { getActiveIndexFromOffsetX, getCanvasPxFromRealNumber, getYTickFromOffsetY } from '../convert.js'
 // import drawDashLine, { drawSegmentLine } from '../utils/drawHelpers.js'
@@ -24,6 +27,15 @@ export function calcMain(dataSource: number[], renderTree: ICharts.IRenderTree) 
   })
 
   return res
+}
+
+export function createRenderElements(
+  stage: Stage,
+  innerOption: ICharts.IOption,
+  xAxisData: IXAxisElements['xAxisData'],
+  yAxisData: IYAxisElements['yAxisData']
+) {
+  return { elements: [] }
 }
 
 // type IChartBar = ICharts.ICoord & { width: number; height: number }

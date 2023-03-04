@@ -36,8 +36,10 @@ export function createRenderElements(
 
   console.log(data)
 
+  const initRadius = 0
+  const normalRadius = 3
+
   const arcs = data.map(item => {
-    const initRadius = 0
     const arcItem = new Circle({ x: item.x, y: item.y, radius: initRadius, bgColor: primaryColor })
 
     arcItem.onEnter = () => {
@@ -47,7 +49,7 @@ export function createRenderElements(
 
     arcItem.onLeave = () => {
       stage.setCursor('auto')
-      arcItem.animate({ radius: initRadius }, 300)
+      arcItem.animate({ radius: normalRadius }, 300)
     }
 
     return arcItem
@@ -59,11 +61,24 @@ export function createRenderElements(
     []
   )
 
-  const lines = lineArr.map(item => new Line({ points: [item.start, item.start], bgColor: primaryColor }))
+  const lines = lineArr.map(
+    item =>
+      new Line({
+        points: [item.start.x, item.start.y, item.start.x, item.start.y],
+        bgColor: primaryColor,
+        lineWidth: 2
+      })
+  )
 
   async function afterAppendStage() {
-    for (const arcItem of arcs) {
-      await arcItem.animate({ radius: 5 })
+    const [firstArc, ...restArcs] = arcs
+    firstArc.animate({ radius: normalRadius })
+
+    for (let i = 0; i < lines.length; i++) {
+      const { start, end } = lineArr[i]
+
+      await lines[i].animate({ points: [start.x, start.y, end.x, end.y] })
+      restArcs[i].animate({ radius: normalRadius })
     }
   }
 

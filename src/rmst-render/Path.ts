@@ -175,16 +175,20 @@ export class Path {
     cancelAnimationFrame(this.animateState.rafTimer)
 
     const { animateCallback } = prop
-    const [propKey] = Object.keys(prop)
-
+    console.log(prop)
     return new Promise(resolve => {
       Object.keys(prop).forEach(propKey => {
-        const per = Math.abs(this.data[propKey] - prop[propKey]) / (totalTime / (1000 / 60))
+        // per 的计算要在递归外
+        const per = calcPer(this.data[propKey], prop[propKey], totalTime)
 
         const exec = () => {
-          const targetValue = calcCount(this.data[propKey], prop[propKey], per)
+          // console.log('exec')
 
-          if (this.data[propKey] === prop[propKey]) {
+          const targetValue = calcTargetValue(this.data[propKey], prop[propKey], per)
+
+          // 兼容数组的情况 (做法不太合理)
+          if (this.data[propKey].toString() === prop[propKey].toString()) {
+            console.log(`${propKey} 的动画结束`)
             resolve(true)
             return
           }
@@ -206,18 +210,39 @@ export class Path {
 
 export default Path
 
-const calcCount = (initCount: number, targetCount: number, per: number) => {
-  if (initCount < targetCount) {
-    const currCount = initCount + per
-
-    return currCount > targetCount ? targetCount : currCount
+// initCount 和 targetCount 目前只存在都为 number 或者 都为 number[] 的情况; 暂时不考虑字符串的情况(颜色)
+const calcTargetValue = (
+  initCount: number | number[],
+  targetCount: number | number[],
+  per: number | number[]
+) => {
+  if (typeof initCount === 'number' && typeof targetCount === 'number' && typeof per === 'number') {
+    return calcValue(initCount, targetCount, per)
+  } else if (Array.isArray(initCount) && Array.isArray(targetCount)) {
+    return initCount.map((item, index) => calcValue(item, targetCount[index], per[index]))
   }
 
-  if (initCount > targetCount) {
-    const currCount = initCount - per
+  function calcValue(initVal: number, targetVal: number, per: number) {
+    if (initVal < targetVal) {
+      const currCount = initVal + per
+      return currCount > targetVal ? targetVal : currCount
+    }
 
-    return currCount < targetCount ? targetCount : currCount
+    if (initVal > targetVal) {
+      const currCount = initVal - per
+
+      return currCount < targetVal ? targetVal : currCount
+    }
+
+    return targetVal
+  }
+}
+
+//
+function calcPer(initVal, targetVal, totalTime) {
+  if (Array.isArray(initVal)) {
+    return initVal.map((item, index) => Math.abs(item - targetVal[index]) / (totalTime / (1000 / 60)))
   }
 
-  return targetCount
+  return Math.abs(initVal - targetVal) / (totalTime / (1000 / 60))
 }

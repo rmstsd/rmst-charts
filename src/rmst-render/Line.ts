@@ -8,28 +8,34 @@ export class Line extends Path {
   }
 
   declare data: {
-    points: { x: number; y: number }[]
+    points: number[]
     bgColor?: string
     [key: string]: any
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { points, bgColor } = this.data
+    const { points, bgColor, lineWidth = 1 } = this.data
 
     this.setShadow(ctx, this.data)
 
     ctx.beginPath()
 
-    const [startPoint, ...restPoints] = points
+    const [start_x, start_y, ...restPoints] = points
 
-    ctx.moveTo(startPoint.x, startPoint.y)
+    const restPointsMatrix = restPoints.reduce((acc, item, index) => {
+      const tarIndex = Math.floor(index / 2)
+      if (index % 2 == 0) acc.push([item])
+      else acc[tarIndex].push(item)
+      return acc
+    }, [])
 
-    restPoints.forEach(item => {
-      ctx.lineTo(item.x, item.y)
+    ctx.moveTo(start_x, start_y)
+    restPointsMatrix.forEach(([x, y]) => {
+      ctx.lineTo(x, y)
     })
 
     ctx.strokeStyle = bgColor
-    ctx.lineWidth = 1
+    ctx.lineWidth = lineWidth
     ctx.stroke()
   }
 }

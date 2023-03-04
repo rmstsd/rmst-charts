@@ -68,13 +68,13 @@ export function createRenderElements(stage: Stage, innerOption) {
   console.log('yAxisData', yAxisData)
 
   const yAxisLine = new Line({
-    points: [yAxisData.axis.start, yAxisData.axis.end],
+    points: [yAxisData.axis.start.x, yAxisData.axis.start.y, yAxisData.axis.end.x, yAxisData.axis.end.x],
     bgColor: '#aaa'
   })
 
   const ticksLines = yAxisData.ticks.map(item => {
     return new Line({
-      points: [item.start, item.end],
+      points: [item.start.x, item.start.y, item.end.x, item.end.y],
       bgColor: '#aaa'
     })
   })
