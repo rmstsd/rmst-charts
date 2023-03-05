@@ -35,6 +35,7 @@ export class Line extends Path {
     })
 
     ctx.strokeStyle = bgColor
+    ctx.fillStyle = '#333'
     ctx.lineWidth = lineWidth
     ctx.stroke()
   }

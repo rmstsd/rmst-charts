@@ -175,19 +175,24 @@ export class Path {
     cancelAnimationFrame(this.animateState.rafTimer)
 
     const { animateCallback } = prop
-    console.log(prop)
+
+    const keys = Object.keys(prop).filter(item => item !== 'animateCallback')
+
     return new Promise(resolve => {
-      Object.keys(prop).forEach(propKey => {
+      keys.forEach(propKey => {
         // per 的计算要在递归外
         const per = calcPer(this.data[propKey], prop[propKey], totalTime)
 
         const exec = () => {
           // console.log('exec')
+          const currDataValue = this.data[propKey]
 
-          const targetValue = calcTargetValue(this.data[propKey], prop[propKey], per)
+          if (currDataValue === undefined) return
+
+          const targetValue = calcTargetValue(currDataValue, prop[propKey], per)
 
           // 兼容数组的情况 (做法不太合理)
-          if (this.data[propKey].toString() === prop[propKey].toString()) {
+          if (currDataValue.toString() === prop[propKey].toString()) {
             console.log(`${propKey} 的动画结束`)
             resolve(true)
             return

@@ -8,7 +8,7 @@ import Draggable from '../demo/render/Draggable'
 export default {
   path: '/rmst-render',
   element: <LayoutView />,
-  uiConfig: { title: 'render' },
+  uiConfig: { title: 'render(主要)' },
   children: [
     {
       path: 'render-base',

@@ -18,13 +18,14 @@ export class Circle extends Path {
     y: number
     radius: number
     bgColor: string
+    strokeStyle?: string
     startAngle?: number // 圆弧 饼图 角度 60 180 360
     endAngle?: number // 圆弧 饼图
     [key: string]: any
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, radius, bgColor, startAngle, endAngle } = this.data
+    const { x, y, radius, strokeStyle, bgColor, startAngle, endAngle } = this.data
 
     // 传入角度 返回 弧度
     const radian = (angle: number) => (Math.PI * angle) / 180
@@ -33,9 +34,15 @@ export class Circle extends Path {
 
     ctx.beginPath()
     ctx.arc(x, y, radius, radian(startAngle), radian(endAngle))
-    ctx.lineTo(x, y)
+
+    if (!(startAngle === 0 && endAngle === 360)) {
+      ctx.lineTo(x, y)
+    }
+
     ctx.fillStyle = bgColor
+    ctx.strokeStyle = strokeStyle
     ctx.fill()
+    ctx.stroke()
   }
 
   isInner(offsetX: number, offsetY: number) {

@@ -65,8 +65,6 @@ export function createRenderElements(stage: Stage, innerOption) {
     stage.canvasElement.offsetWidth - canvasPaddingRight
   )
 
-  console.log('yAxisData', yAxisData)
-
   const yAxisLine = new Line({
     points: [yAxisData.axis.start.x, yAxisData.axis.start.y, yAxisData.axis.end.x, yAxisData.axis.end.x],
     bgColor: '#aaa'

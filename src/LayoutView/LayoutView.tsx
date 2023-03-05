@@ -48,7 +48,7 @@ const LayoutView = () => {
           selectedKeys={routePathArray}
           items={headerItems}
           onClick={onHeaderMenuClick}
-          style={{ border: 'none' }}
+          style={{ border: 'none', flexGrow: 1 }}
         />
       </Layout.Header>
 

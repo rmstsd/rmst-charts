@@ -36,25 +36,6 @@ export function createRenderElements(
 
   console.log(data)
 
-  const initRadius = 0
-  const normalRadius = 3
-
-  const arcs = data.map(item => {
-    const arcItem = new Circle({ x: item.x, y: item.y, radius: initRadius, bgColor: primaryColor })
-
-    arcItem.onEnter = () => {
-      stage.setCursor('pointer')
-      arcItem.animate({ radius: 4 }, 300)
-    }
-
-    arcItem.onLeave = () => {
-      stage.setCursor('auto')
-      arcItem.animate({ radius: normalRadius }, 300)
-    }
-
-    return arcItem
-  })
-
   const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = data.reduce(
     (acc, item, idx, originArr) =>
       idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
@@ -70,6 +51,30 @@ export function createRenderElements(
       })
   )
 
+  const initRadius = 0
+  const normalRadius = 3
+  const arcs = data.map(item => {
+    const arcItem = new Circle({
+      x: item.x,
+      y: item.y,
+      radius: initRadius,
+      bgColor: 'white',
+      strokeStyle: primaryColor
+    })
+
+    arcItem.onEnter = () => {
+      stage.setCursor('pointer')
+      arcItem.animate({ radius: 4 }, 300)
+    }
+
+    arcItem.onLeave = () => {
+      stage.setCursor('auto')
+      arcItem.animate({ radius: normalRadius }, 300)
+    }
+
+    return arcItem
+  })
+
   async function afterAppendStage() {
     const [firstArc, ...restArcs] = arcs
     firstArc.animate({ radius: normalRadius })
@@ -82,7 +87,7 @@ export function createRenderElements(
     }
   }
 
-  return { elements: [...arcs, ...lines], afterAppendStage }
+  return { elements: [...lines, ...arcs], afterAppendStage }
 }
 
 // export function drawMain(

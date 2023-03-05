@@ -44,8 +44,6 @@ export function createRenderElements(stage: Stage, innerOption) {
     stage.canvasElement.offsetHeight
   )
 
-  console.log('xAxisData', xAxisData)
-
   const xAxisLine = new Line({
     points: [xAxisData.axis.start.x, xAxisData.axis.start.y, xAxisData.axis.end.x, xAxisData.axis.end.y],
     bgColor: '#333'

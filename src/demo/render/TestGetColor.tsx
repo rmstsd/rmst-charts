@@ -15,7 +15,7 @@ const TestGetColor: React.FC = props => {
     ctx.fillRect(0, 1, 1, 1)
 
     const { data } = ctx.getImageData(0, 0, 1, 2)
-    console.log(data)
+
     const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`
 
     setRgba(rgba)

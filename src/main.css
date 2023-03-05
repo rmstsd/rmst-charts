@@ -17,3 +17,8 @@ body,
 .inline-block {
   display: inline-block;
 }
+
+hr {
+  border: 1px solid #ddd;
+  border-top: none;
+}

@@ -31,6 +31,7 @@ const Pie = () => {
   return (
     <>
       <button onClick={setOption}>setOption</button>
+      <hr />
       <div className="canvas-container"></div>
     </>
   )
