@@ -1,3 +1,5 @@
+import type { MenuProps } from 'antd'
+
 import { RouteObject, Navigate } from 'react-router-dom'
 
 import newCharts from './router.newCharts'
@@ -23,3 +25,44 @@ export const routes: IRouteObject[] = [
   oldCharts,
   other
 ]
+
+export const convertToAntdData = (
+  array: IRouteObject[],
+  recur: boolean,
+  parentKey = ''
+): MenuProps['items'] => {
+  return array
+    .filter(item => !item.uiConfig?.hidden)
+    .map(item => {
+      const key = item.path.startsWith('/') ? item.path : `${parentKey}/${item.path}`
+
+      return Object.assign(
+        { label: item.uiConfig?.title || item.path, key },
+        recur && item.children && { children: convertToAntdData(item.children, recur, key) }
+      )
+    })
+}
+
+export function findPath(routeObject: IRouteObject) {
+  let path = ''
+
+  const dfs = routeObject => {
+    if (routeObject.path.startsWith('/')) {
+      path += routeObject.path
+    } else {
+      path += '/' + routeObject.path
+    }
+
+    if (routeObject.children) {
+      dfs(routeObject.children[0])
+    }
+  }
+
+  dfs(routeObject)
+
+  return path
+}
+
+function joinPath(...args) {
+  return args.map(item => item.replace(/(^\/)|(\/$)/g, '')).join('/')
+}
