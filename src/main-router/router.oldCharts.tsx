@@ -11,10 +11,10 @@ export default {
   element: <LayoutView />,
   uiConfig: { title: 'old-charts' },
   children: [
-    { path: 'old-line', element: <LineDemo /> },
-    { path: 'old-bar', element: <BarDemo /> },
-    { path: 'old-pie', element: <PieDemo /> },
-    { path: 'old-arcAnimate', element: <ArcAnimate /> },
-    { path: 'old-K线图', element: <CandleTask /> }
+    { path: 'line', element: <LineDemo /> },
+    { path: 'bar', element: <BarDemo /> },
+    { path: 'pie', element: <PieDemo /> },
+    { path: 'arcAnimate', element: <ArcAnimate /> },
+    { path: 'K线图', element: <CandleTask /> }
   ]
 }

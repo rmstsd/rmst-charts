@@ -9,7 +9,7 @@ export default {
   uiConfig: { title: 'konva' },
   children: [
     {
-      path: 'konva-base',
+      path: 'base',
       element: <KonvaBase />,
       uiConfig: { title: 'konva-体验' }
     },

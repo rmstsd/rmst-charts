@@ -4,6 +4,7 @@ import RenderDemo from '../demo/render/BaseDemo'
 import GroupDraggable from '../demo/render/GroupDraggable'
 import Animate from '../demo/render/Animate'
 import Draggable from '../demo/render/Draggable'
+import RmstLine from '../demo/render/RmstLine'
 
 export default {
   path: '/rmst-render',
@@ -11,24 +12,29 @@ export default {
   uiConfig: { title: 'render(主要)' },
   children: [
     {
-      path: 'render-base',
+      path: 'base',
       element: <RenderDemo />,
       uiConfig: { title: '基础图形' }
     },
     {
-      path: 'render-draggable',
+      path: 'draggable',
       element: <Draggable />,
       uiConfig: { title: 'draggable' }
     },
     {
-      path: 'render-group',
+      path: 'group',
       element: <GroupDraggable />,
       uiConfig: { title: '成组 draggable' }
     },
     {
-      path: 'render-animate',
+      path: 'animate',
       element: <Animate />,
       uiConfig: { title: 'Animate' }
+    },
+    {
+      path: 'rmst-line',
+      element: <RmstLine />,
+      uiConfig: { title: 'RmstLine' }
     }
   ]
 }

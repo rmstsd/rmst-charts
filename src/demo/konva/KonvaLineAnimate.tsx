@@ -17,7 +17,7 @@ const KonvaLineAnimate = () => {
     var layer = new Konva.Layer()
 
     var redLine = new Konva.Line({
-      points: [50, 50, 50, 50],
+      points: [50, 50, 50, 50, 50, 50],
       stroke: 'red',
       strokeWidth: 1,
       lineCap: 'round',
@@ -30,7 +30,10 @@ const KonvaLineAnimate = () => {
     var tween = new Konva.Tween({
       node: redLine,
       duration: 1,
-      points: [50, 50, 200, 200]
+      points: [50, 50, 200, 200, 200, 100],
+      onUpdate: () => {
+        console.log(123)
+      }
     })
 
     tween.play()
