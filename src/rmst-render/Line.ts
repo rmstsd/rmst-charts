@@ -10,11 +10,12 @@ export class Line extends Path {
   declare data: {
     points: number[]
     bgColor?: string
+    fillStyle?: string
     [key: string]: any
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { points, bgColor, lineWidth = 1 } = this.data
+    const { points, bgColor, fillStyle, lineWidth = 1 } = this.data
 
     this.setShadow(ctx, this.data)
 
@@ -35,7 +36,7 @@ export class Line extends Path {
     })
 
     ctx.strokeStyle = bgColor
-    ctx.fillStyle = '#333'
+    ctx.fillStyle = fillStyle || '#333'
     ctx.lineWidth = lineWidth
     ctx.stroke()
   }

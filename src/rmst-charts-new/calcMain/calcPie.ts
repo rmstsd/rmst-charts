@@ -1,4 +1,5 @@
 import { Stage, Circle, Group, Rect, Text, Path } from '../../rmst-render'
+import Line from '../../rmst-render/Line'
 import { pieColors } from '../constant'
 
 function calcMain(dataSource: { value: number; name: string }[], end_angle = 360) {
@@ -43,11 +44,49 @@ export function createRenderElements(stage, innerOption) {
     const legendGroup = new Group({ onlyKey: 'legend' })
     legendGroup.append([rect, text])
 
+    const radius = 100
+
+    // 圆弧中心点坐标
+    const radianCenterPoint = getPointOnArc(
+      stage.center.x,
+      stage.center.y,
+      radius,
+      item.startAngle,
+      item.endAngle
+    )
+
+    const extendLineLength = 15
+
+    const alpha = (deg2rad(item.startAngle) + deg2rad(item.endAngle)) / 2
+    const x_end = (radius + extendLineLength) * Math.cos(alpha) + stage.center.x
+    const y_end = (radius + extendLineLength) * Math.sin(alpha) + stage.center.y
+
+    const extendLine_1_end = [x_end, y_end]
+    const extendLine_1 = new Line({
+      onlyKey: 'extend-line_1',
+      points: [radianCenterPoint.x, radianCenterPoint.y, radianCenterPoint.x, radianCenterPoint.y],
+      fillStyle: item.color,
+      bgColor: item.color,
+      extraData: extendLine_1_end
+    })
+
+    const extendLine_2_end = [
+      x_end > stage.center.x ? x_end + extendLineLength : x_end - extendLineLength,
+      y_end
+    ]
+    const extendLine_2 = new Line({
+      onlyKey: 'extend-line_2',
+      points: [x_end, y_end, x_end, y_end],
+      fillStyle: item.color,
+      bgColor: item.color,
+      extraData: extendLine_2_end
+    })
+
     const arc = new Circle({
       onlyKey: 'main-pie',
       x: stage.center.x,
       y: stage.center.y,
-      radius: 100,
+      radius,
       startAngle: 0,
       endAngle: 0,
       bgColor: item.color
@@ -75,12 +114,34 @@ export function createRenderElements(stage, innerOption) {
       stage.setCursor('auto')
     }
 
-    return acc.concat([legendGroup, arc])
+    return acc.concat([legendGroup, arc, extendLine_1, extendLine_2])
   }, [])
 
   elements.push(fakeArc)
 
   function afterAppendStage() {
+    const extendLine_2s = elements.filter(o => o.data.onlyKey === 'extend-line_2')
+
+    elements
+      .filter(o => o.data.onlyKey === 'extend-line_1')
+      .forEach((item, index) => {
+        item
+          .animate({ points: [item.data.points[0], item.data.points[1], ...item.data.extraData] }, 300)
+          .then(() => {
+            const extendLine_2sItem = extendLine_2s[index]
+            extendLine_2sItem.animate(
+              {
+                points: [
+                  extendLine_2sItem.data.points[0],
+                  extendLine_2sItem.data.points[1],
+                  ...extendLine_2sItem.data.extraData
+                ]
+              },
+              300
+            )
+          })
+      })
+
     fakeArc.animate({
       endAngle: 360,
       animateCallback(prop) {
@@ -98,4 +159,28 @@ export function createRenderElements(stage, innerOption) {
   }
 
   return { elements, afterAppendStage }
+}
+
+function getPointOnArc(x0, y0, r, theta1, theta2) {
+  // 将角度转换为弧度制
+  // theta = (theta * Math.PI) / 180
+
+  // 计算圆弧的中心角度
+  const alpha = (deg2rad(theta1) + deg2rad(theta2)) / 2
+
+  // 计算圆弧的中心点坐标
+  const x = x0 + r * Math.cos(alpha) // 传入弧度
+  const y = y0 + r * Math.sin(alpha)
+
+  return { x, y }
+}
+
+// 角度转弧度
+function deg2rad(deg) {
+  return (deg * Math.PI) / 180
+}
+// 弧度转角度
+function rad2deg(radians) {
+  var degrees = (radians * 180) / Math.PI
+  return degrees
 }
