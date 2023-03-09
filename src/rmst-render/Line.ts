@@ -11,11 +11,12 @@ export class Line extends Path {
     points: number[]
     bgColor?: string
     fillStyle?: string
+    close?: boolean
     [key: string]: any
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { points, bgColor, fillStyle, lineWidth = 1 } = this.data
+    const { points, bgColor, fillStyle, close, lineWidth = 1 } = this.data
 
     this.setShadow(ctx, this.data)
 
@@ -34,10 +35,12 @@ export class Line extends Path {
     restPointsMatrix.forEach(([x, y]) => {
       ctx.lineTo(x, y)
     })
+    if (close) ctx.closePath()
 
     ctx.strokeStyle = bgColor
     ctx.fillStyle = fillStyle || '#333'
     ctx.lineWidth = lineWidth
+
     ctx.stroke()
   }
 }
