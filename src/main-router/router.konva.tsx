@@ -2,6 +2,7 @@ import LayoutView from '../LayoutView/LayoutView'
 
 import KonvaBase from '../demo/konva/KonvaBase'
 import KonvaLineAnimate from '../demo/konva/KonvaLineAnimate'
+import PolygonDe from '../demo/konva/PolygonDe'
 
 export default {
   path: '/konva',
@@ -16,6 +17,10 @@ export default {
     {
       path: 'KonvaLineAnimate',
       element: <KonvaLineAnimate />
+    },
+    {
+      path: 'PolygonDe',
+      element: <PolygonDe />
     }
   ]
 }
