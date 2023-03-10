@@ -36,7 +36,11 @@ function getYAxis(
   } = calcPerfect(maxRealValue, minRealValue)
 
   const intervalCount = (max - min) / realInterval // 间隔数量
-  const tickValues = Array.from({ length: intervalCount + 1 }, (_, index) => min + index * realInterval)
+  const tickValues: number[] = Array.from(
+    { length: intervalCount + 1 },
+    (_, index) => min + index * realInterval
+  )
+
   const tickInterval = (yAxisLength - yAxisPadding) / intervalCount
 
   const ticks = tickValues.map((tickValue, index) => {
@@ -44,7 +48,7 @@ function getYAxis(
     const end_x = xAxisEndX // axis_x + 100
     const tick_y = start_y - tickInterval * index
 
-    const { textWidth, textHeight } = measureText(ctx, tickValue)
+    const { textWidth, textHeight } = measureText(ctx, String(tickValue))
 
     return {
       start: { x: start_x, y: tick_y },

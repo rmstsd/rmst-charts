@@ -15,6 +15,8 @@ export class Stage {
 
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
+    this.ctx.textBaseline = 'top'
+    this.ctx.font = `${16}px 微软雅黑`
 
     this.addStageEventListener()
   }

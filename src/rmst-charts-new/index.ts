@@ -16,7 +16,7 @@ const rmstCharts = {
     })
 
     return {
-      setOption: innerOption => {
+      setOption: (innerOption: ICharts.IOption) => {
         stage.removeAllElements()
 
         const chartType = innerOption.series.type // pie line bar
@@ -51,7 +51,7 @@ const rmstCharts = {
         )
         if (elements) finalElements.push(...elements)
 
-        console.log('finalElements', finalElements)
+        // console.log('finalElements', finalElements)
         stage.append(finalElements)
 
         afterAppendStage?.()

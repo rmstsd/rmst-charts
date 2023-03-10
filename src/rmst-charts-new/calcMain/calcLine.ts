@@ -2,9 +2,9 @@
 import Circle from '../../rmst-render/Circle.js'
 import Line from '../../rmst-render/Line.js'
 import Stage from '../../rmst-render/Stage.js'
-import { IXAxisElements } from '../calcAxis/calcXAxis.js'
-import { IYAxisElements } from '../calcAxis/calcYAxis.js'
-import { primaryColor } from '../constant.js'
+import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
+import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
+import { primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 // import { drawArc, drawSegmentLine } from '../utils/drawHelpers.js'
 // import { drawBezier } from '../utils/utils.js'
@@ -32,15 +32,26 @@ export function createRenderElements(
   xAxisData: IXAxisElements['xAxisData'],
   yAxisData: IYAxisElements['yAxisData']
 ) {
-  const data = calcMain(innerOption.series.data, xAxisData, yAxisData)
+  const pointData = calcMain(innerOption.series.data, xAxisData, yAxisData)
 
-  console.log(data)
+  const { areaStyle } = innerOption.series
 
-  const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = data.reduce(
+  const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = pointData.reduce(
     (acc, item, idx, originArr) =>
       idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
     []
   )
+
+  function pointToArray(list: { x: number; y: number }[]) {
+    return list.reduce((acc, item) => acc.concat([item.x, item.y]), [])
+  }
+
+  const singleArea = new Line({
+    points: [],
+    fillStyle: primaryColorAlpha,
+    strokeStyle: 'transparent',
+    closed: true
+  })
 
   const lines = lineArr.map(
     item =>
@@ -53,7 +64,7 @@ export function createRenderElements(
 
   const initRadius = 0
   const normalRadius = 3
-  const arcs = data.map(item => {
+  const arcs = pointData.map(item => {
     const arcItem = new Circle({
       x: item.x,
       y: item.y,
@@ -78,16 +89,40 @@ export function createRenderElements(
   async function afterAppendStage() {
     const [firstArc, ...restArcs] = arcs
     firstArc.animate({ radius: normalRadius })
-
     for (let i = 0; i < lines.length; i++) {
       const { start, end } = lineArr[i]
+      await lines[i].animate({
+        points: [start.x, start.y, end.x, end.y],
+        animateCallback: prop => {
+          if (areaStyle) {
+            singleArea.attr({
+              points: [
+                // x轴起始的点
+                pointData[0].x,
+                xAxisData.axis.start.y,
 
-      await lines[i].animate({ points: [start.x, start.y, end.x, end.y] })
+                // 中间的数据点
+                ...pointToArray(pointData.slice(0, i + 1)),
+
+                prop.points[2],
+                prop.points[3],
+
+                // x轴结尾的点
+                prop.points[2],
+                xAxisData.axis.start.y
+              ]
+            })
+          }
+        }
+      })
       restArcs[i].animate({ radius: normalRadius })
     }
   }
 
-  return { elements: [...lines, ...arcs], afterAppendStage }
+  const elements = [...lines, ...arcs]
+  if (areaStyle) elements.unshift(singleArea)
+
+  return { elements, afterAppendStage }
 }
 
 // export function drawMain(

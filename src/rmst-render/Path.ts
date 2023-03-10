@@ -193,7 +193,8 @@ export class Path {
 
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {
-            console.log(`${propKey} 的动画结束`)
+            // console.log(`${propKey} 的动画结束`)
+
             resolve(true)
             return
           }

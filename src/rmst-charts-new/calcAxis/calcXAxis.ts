@@ -31,6 +31,7 @@ function getXAxis(ctx, dataSource, containerWidth, containerHeight) {
       text: { x, y: y_start + textHeight + tickLength + 5, value: valueString }
     }
   })
+
   return { axis, ticks }
 }
 

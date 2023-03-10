@@ -11,7 +11,7 @@ const RmstLine = () => {
 
     const line = new Line({
       points: [0, 0, 100, 100, 200, 100, 200, 300],
-      close: true
+      closed: true
     })
 
     stage.append(line)

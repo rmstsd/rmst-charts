@@ -22,6 +22,7 @@ namespace ICharts {
       type: 'line' | 'bar' | 'pie'
       data: ({ value: number; name: string } | number)[]
       smooth?: boolean
+      areaStyle?: {}
     }
   }
 }

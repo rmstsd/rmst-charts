@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import rmstCharts, { IChartInstance } from '../../rmst-charts-new'
+import rmstCharts, { IChartInstance } from '../../../rmst-charts-new'
 
 const option = {
   xAxis: {
@@ -7,12 +7,13 @@ const option = {
   },
   series: {
     type: 'line' as const,
-    data: [600, 932, 901, 934, 800, 800]
+    data: [620, 932, 901, 934, 800, 800],
+    areaStyle: {}
     // smooth: true
   }
 }
 
-const Line = () => {
+const Area = () => {
   const insRef = useRef<IChartInstance>()
   useEffect(() => {
     const ins = rmstCharts.init(document.querySelector('.canvas-container'))
@@ -34,4 +35,4 @@ const Line = () => {
   )
 }
 
-export default Line
+export default Area

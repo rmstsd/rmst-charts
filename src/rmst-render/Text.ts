@@ -35,8 +35,6 @@ export class Text extends Path {
     this.setShadow(ctx, this.data)
 
     ctx.fillStyle = color
-    ctx.textBaseline = 'top'
-    ctx.font = `${fontSize}px 微软雅黑`
 
     ctx.fillText(content, x, y)
   }
