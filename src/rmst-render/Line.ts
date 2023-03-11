@@ -1,10 +1,14 @@
 import Path from './Path'
 
+const defaultData = {
+  lineWidth: 1
+}
+
 export class Line extends Path {
   constructor(data: Line['data']) {
     super()
 
-    this.data = { ...data }
+    this.data = { ...defaultData, ...data }
   }
 
   declare data: {
@@ -12,12 +16,13 @@ export class Line extends Path {
     bgColor?: string
     fillStyle?: string
     strokeStyle?: string
+    lineWidth?: number
     closed?: boolean
     [key: string]: any
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { points, bgColor, fillStyle, strokeStyle, closed, lineWidth = 1 } = this.data
+    const { points, bgColor, fillStyle, strokeStyle, lineWidth, closed } = this.data
 
     this.setShadow(ctx, this.data)
 
@@ -44,8 +49,12 @@ export class Line extends Path {
 
     ctx.lineWidth = lineWidth
 
+    if (ctx.isCtx2) {
+      this.setFillStyle(ctx)
+    }
+
     ctx.stroke()
-    ctx.fill()
+    // ctx.fill()
   }
 }
 

@@ -68,6 +68,7 @@ export class Path {
 
   setFillStyle(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.extraData.rgb
+    ctx.strokeStyle = this.extraData.rgb
   }
 
   // 获取组内的具体的某个图形 请查看Group类

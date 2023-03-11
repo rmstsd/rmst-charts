@@ -11,8 +11,19 @@ const RmstLine = () => {
 
     const line = new Line({
       points: [0, 0, 100, 100, 200, 100, 200, 300],
+      lineWidth: 5,
       closed: true
     })
+
+    line.onEnter = () => {
+      line.attr({ lineWidth: 10 })
+      stage.setCursor('pointer')
+    }
+
+    line.onLeave = () => {
+      line.attr({ lineWidth: 5 })
+      stage.setCursor('auto')
+    }
 
     stage.append(line)
   }, [])

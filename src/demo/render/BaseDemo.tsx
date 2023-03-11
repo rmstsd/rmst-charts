@@ -15,8 +15,8 @@ const BaseRenderDemo = () => {
     })
 
     const rects = [
-      new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple', cornerRadius: 20 })
-      // new Rect({ x: 210, y: 10, width: 120, height: 80, bgColor: '#a18cd1' })
+      new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple', cornerRadius: 20 }),
+      new Rect({ x: 210, y: 10, width: 120, height: 80, bgColor: '#a18cd1' })
     ]
 
     const arcs = [
@@ -33,10 +33,7 @@ const BaseRenderDemo = () => {
       new Text({ x: 210, y: 10, content: '君不见黄河之水天上来', color: '#333' })
     ]
 
-    const shapeArray = [
-      ...rects
-      // ...arcs, ...texts
-    ]
+    const shapeArray = [...rects, ...arcs, ...texts]
 
     stage.append(shapeArray)
 
