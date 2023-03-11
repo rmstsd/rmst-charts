@@ -7,11 +7,12 @@ import {
   canvasPaddingLeft,
   canvasPaddingRight,
   canvasPaddingTop,
+  splitLineColor,
   tickColor,
   yAxisPadding
 } from '../constant.js'
 import { measureText } from '../utils/canvasUtil.js'
-import { calcPerfect } from '../utils/utils.js'
+import { calcPerfect, pointToArray } from '../utils/utils.js'
 
 function getYAxis(
   ctx: CanvasRenderingContext2D,
@@ -52,7 +53,7 @@ function getYAxis(
     return {
       start: { x: start_x, y: tick_y },
       end: { x: end_x, y: tick_y },
-      text: { x: start_x - textWidth - 3, y: tick_y + textHeight / 2, value: tickValue }
+      text: { x: start_x - textWidth - 3, y: tick_y - textHeight / 2, value: tickValue }
     }
   })
   return { axis, ticks, tickConstant: { min, realInterval, tickInterval } }
@@ -73,25 +74,19 @@ export function createRenderElements(stage: Stage, innerOption) {
   )
 
   const yAxisLine = new Line({
-    points: [yAxisData.axis.start.x, yAxisData.axis.start.y, yAxisData.axis.end.x, yAxisData.axis.end.x],
-    bgColor: tickColor
+    points: pointToArray([yAxisData.axis.start, yAxisData.axis.end]),
+    bgColor: splitLineColor
   })
 
   const ticksLines = yAxisData.ticks.map(item => {
     return new Line({
       points: [item.start.x, item.start.y, item.end.x, item.end.y],
-      bgColor: tickColor
+      bgColor: splitLineColor
     })
   })
 
   const tickTexts = yAxisData.ticks.map(item => {
-    return new Text({
-      x: item.text.x,
-      y: item.text.y,
-      content: String(item.text.value),
-      fontSize: 16,
-      color: '#333'
-    })
+    return new Text({ x: item.text.x, y: item.text.y, content: String(item.text.value), color: tickColor })
   })
 
   return { yAxisLine, ticksLines, tickTexts, yAxisData }

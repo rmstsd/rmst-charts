@@ -5,7 +5,7 @@ export class Text extends Path {
   constructor(data: Text['data']) {
     super()
 
-    this.data = data
+    this.data = { ...data }
   }
 
   declare data: {

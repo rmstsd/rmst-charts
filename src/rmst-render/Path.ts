@@ -1,9 +1,13 @@
 import colorRgba from 'color-rgba'
 import Group from './Group'
 
-import Stage from './Stage'
+import Stage, { createExtraData, dpr, IExtraData } from './Stage'
 
 export class Path {
+  constructor() {
+    this.extraData = createExtraData()
+  }
+
   onClick = () => {}
   onMove = () => {}
   onEnter = () => {}
@@ -16,6 +20,8 @@ export class Path {
   isMouseInner = false // 鼠标是否已经移入某个元素
 
   mouseDownOffset: { x: number; y: number } = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
+
+  extraData: IExtraData
 
   stage: Stage
 
@@ -46,9 +52,22 @@ export class Path {
     curr: 0
   }
 
-  // 不规则图形 离屏canvas 对比颜色值
   isInner(offsetX, offsetY) {
+    const stage = this.findStage()
+
+    if (!stage) return
+    const pixel = stage.ctx2.getImageData(offsetX * dpr, offsetY * dpr, 1, 1)
+
+    const [r, g, b, a] = pixel.data
+
+    const rgb = `rgb(${[r, g, b].toString()})`
+    if (rgb === this.extraData.rgb) return true
+
     return false
+  }
+
+  setFillStyle(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = this.extraData.rgb
   }
 
   // 获取组内的具体的某个图形 请查看Group类

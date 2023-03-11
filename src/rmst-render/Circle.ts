@@ -27,20 +27,23 @@ export class Circle extends Path {
   draw(ctx: CanvasRenderingContext2D) {
     const { x, y, radius, strokeStyle, bgColor, startAngle, endAngle } = this.data
 
-    // 传入角度 返回 弧度
-    const radian = (angle: number) => (Math.PI * angle) / 180
-
     this.setShadow(ctx, this.data)
 
     ctx.beginPath()
-    ctx.arc(x, y, radius, radian(startAngle), radian(endAngle))
+    ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
 
-    if (!(startAngle === 0 && endAngle === 360)) {
+    const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
+    if (!isWholeArc) {
       ctx.lineTo(x, y)
+
+      // 获取圆弧的起始点
+      const { x: start_x, y: start_y } = getPointOnArc(x, y, radius, startAngle)
+      ctx.lineTo(start_x, start_y)
     }
 
     ctx.fillStyle = bgColor
     ctx.strokeStyle = strokeStyle
+
     ctx.fill()
     ctx.stroke()
   }
@@ -91,3 +94,24 @@ export class Circle extends Path {
 }
 
 export default Circle
+
+// 获取圆弧上的点 圆心 半径 角度-60°
+export function getPointOnArc(x0, y0, r, deg) {
+  const alpha = deg2rad(deg)
+
+  const x = x0 + r * Math.cos(alpha) // Math.cos 传入弧度
+  const y = y0 + r * Math.sin(alpha)
+
+  return { x, y }
+}
+
+// 角度转弧度
+export function deg2rad(deg) {
+  return (deg * Math.PI) / 180
+}
+
+// 弧度转角度
+export function rad2deg(radian) {
+  var degrees = (radian * 180) / Math.PI
+  return degrees
+}

@@ -7,14 +7,16 @@ import Text from '../../rmst-render/Text'
 
 const BaseRenderDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
+  const canvasRef2 = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     const stage = new Stage({
       container: canvasRef.current
     })
 
     const rects = [
-      new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple' }),
-      new Rect({ x: 210, y: 10, width: 120, height: 80, bgColor: '#a18cd1' })
+      new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple', cornerRadius: 20 })
+      // new Rect({ x: 210, y: 10, width: 120, height: 80, bgColor: '#a18cd1' })
     ]
 
     const arcs = [
@@ -27,11 +29,14 @@ const BaseRenderDemo = () => {
     ]
 
     const texts = [
-      new Text({ x: 0, y: 0, content: '人美声甜', color: '#333', fontSize: 16 }),
-      new Text({ x: 210, y: 10, content: '君不见黄河之水天上来', color: '#333', fontSize: 16 })
+      new Text({ x: 0, y: 0, content: '人美声甜', color: '#333' }),
+      new Text({ x: 210, y: 10, content: '君不见黄河之水天上来', color: '#333' })
     ]
 
-    const shapeArray = [...rects, ...arcs, ...texts]
+    const shapeArray = [
+      ...rects
+      // ...arcs, ...texts
+    ]
 
     stage.append(shapeArray)
 
@@ -48,10 +53,18 @@ const BaseRenderDemo = () => {
         stage.canvasElement.style.cursor = null
         console.log('onLeave', item.constructor.name)
       }
+
+      item.onClick = () => {
+        console.log('c')
+      }
     })
   }, [])
 
-  return <div className="canvas-container" ref={canvasRef}></div>
+  return (
+    <>
+      <div className="canvas-container" ref={canvasRef}></div>
+    </>
+  )
 }
 
 export default BaseRenderDemo

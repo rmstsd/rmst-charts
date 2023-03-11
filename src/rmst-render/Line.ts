@@ -4,7 +4,7 @@ export class Line extends Path {
   constructor(data: Line['data']) {
     super()
 
-    this.data = data
+    this.data = { ...data }
   }
 
   declare data: {
@@ -39,8 +39,9 @@ export class Line extends Path {
 
     if (closed) ctx.closePath()
 
-    ctx.strokeStyle = bgColor || strokeStyle
     ctx.fillStyle = fillStyle || '#333'
+    ctx.strokeStyle = bgColor || strokeStyle
+
     ctx.lineWidth = lineWidth
 
     ctx.stroke()

@@ -1,11 +1,35 @@
 import Circle from './Circle'
+import Line from './Line'
 import Path from './Path'
 import Rect from './Rect'
 
-type IGraph = Circle | Rect | Path
+type IGraph = Circle | Rect | Path | Line
 
 type IOption = {
   container: HTMLElement
+}
+
+export const stageConstant = {
+  _id: 0,
+  r: 0,
+  g: 0,
+  b: 0
+}
+
+export type IExtraData = ReturnType<typeof createExtraData>
+export function createExtraData() {
+  stageConstant.r += 100
+
+  return {
+    _id: ++stageConstant._id,
+    rgb: `rgb(${[stageConstant.r, stageConstant.g, stageConstant.b].toString()})`
+  }
+}
+
+declare global {
+  interface CanvasRenderingContext2D {
+    isCtx2?: boolean
+  }
 }
 
 export class Stage {
@@ -15,14 +39,21 @@ export class Stage {
 
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
-    this.ctx.textBaseline = 'top'
-    this.ctx.font = `${16}px 微软雅黑`
+
+    const canvas2 = createCanvas(container.offsetWidth, container.offsetHeight)
+    this.canvasElement2 = canvas2.canvasElement
+    this.ctx2 = canvas2.ctx
+
+    this.ctx2.isCtx2 = true
 
     this.addStageEventListener()
   }
 
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
+
+  canvasElement2: HTMLCanvasElement
+  ctx2: CanvasRenderingContext2D
 
   parent: null
   elements: IGraph[] = []
@@ -46,8 +77,12 @@ export class Stage {
 
   renderStage() {
     this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
+    this.ctx.clearRect(0, 0, this.canvasElement2.width, this.canvasElement2.height)
+
     this.elements.forEach(elementItem => {
       elementItem.draw(this.ctx)
+
+      elementItem.draw(this.ctx2)
     })
   }
 
@@ -113,7 +148,7 @@ type ICursor =
   | 'wait'
   | 'help'
 
-const dpr = 1.5
+export const dpr = 1.5 // window.devicePixelRatio
 function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')
   const canvasWidth = containerWidth * dpr
@@ -127,6 +162,8 @@ function createCanvas(containerWidth: number, containerHeight: number) {
   const ctx = canvasElement.getContext('2d')
 
   ctx.scale(dpr, dpr)
+  ctx.textBaseline = 'top'
+  ctx.font = `${14}px 微软雅黑`
 
   return { canvasElement, ctx }
 }

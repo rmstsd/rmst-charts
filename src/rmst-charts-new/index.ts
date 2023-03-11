@@ -37,7 +37,7 @@ const rmstCharts = {
             ...XAxisShape.ticksLines,
             ...XAxisShape.tickTexts,
 
-            YAxisShape.yAxisLine,
+            // YAxisShape.yAxisLine,
             ...YAxisShape.ticksLines,
             ...YAxisShape.tickTexts
           )
@@ -50,25 +50,15 @@ const rmstCharts = {
         })
 
         const afterAppendStageTasks = []
+
         renderElements.forEach(item => {
           if (item.elements) finalElements.push(...item.elements)
           if (item.afterAppendStage) afterAppendStageTasks.push(item.afterAppendStage)
         })
 
-        // const { elements, afterAppendStage } = createRenderElements(
-        //   stage,
-        //   innerOption,
-        //   XAxisShape?.xAxisData,
-        //   YAxisShape?.yAxisData
-        // )
-        // if (elements) finalElements.push(...elements)
-
-        // console.log('finalElements', finalElements)
         stage.append(finalElements)
 
         afterAppendStageTasks.forEach(task => task?.())
-
-        // afterAppendStage?.()
       }
     }
   }

@@ -48,18 +48,18 @@ export function createRenderElements(stage: Stage, innerOption) {
 
   const xAxisLine = new Line({
     points: [xAxisData.axis.start.x, xAxisData.axis.start.y, xAxisData.axis.end.x, xAxisData.axis.end.y],
-    bgColor: '#333'
+    strokeStyle: tickColor
   })
 
   const ticksLines = xAxisData.ticks.map(item => {
     return new Line({
       points: pointToArray([item.start, item.end]),
-      bgColor: '#333'
+      strokeStyle: tickColor
     })
   })
 
   const tickTexts = xAxisData.ticks.map(item => {
-    return new Text({ x: item.text.x, y: item.text.y, content: item.text.value, fontSize: 16 })
+    return new Text({ x: item.text.x, y: item.text.y, content: item.text.value, color: tickColor })
   })
 
   return { xAxisLine, ticksLines, tickTexts, xAxisData }

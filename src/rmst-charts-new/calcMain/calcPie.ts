@@ -1,4 +1,4 @@
-import { Stage, Circle, Group, Rect, Text, Path } from '../../rmst-render'
+import { Stage, Circle, Group, Rect, Text, Path, getPointOnArc, deg2rad } from '../../rmst-render'
 import Line from '../../rmst-render/Line'
 import { pieColors } from '../constant'
 
@@ -51,8 +51,7 @@ export function createRenderElements(stage, seriesItem) {
       stage.center.x,
       stage.center.y,
       radius,
-      item.startAngle,
-      item.endAngle
+      (item.startAngle + item.endAngle) / 2
     )
 
     const extendLineLength = 15
@@ -159,28 +158,4 @@ export function createRenderElements(stage, seriesItem) {
   }
 
   return { elements, afterAppendStage }
-}
-
-function getPointOnArc(x0, y0, r, theta1, theta2) {
-  // 将角度转换为弧度制
-  // theta = (theta * Math.PI) / 180
-
-  // 计算圆弧的中心角度
-  const alpha = (deg2rad(theta1) + deg2rad(theta2)) / 2
-
-  // 计算圆弧的中心点坐标
-  const x = x0 + r * Math.cos(alpha) // 传入弧度
-  const y = y0 + r * Math.sin(alpha)
-
-  return { x, y }
-}
-
-// 角度转弧度
-function deg2rad(deg) {
-  return (deg * Math.PI) / 180
-}
-// 弧度转角度
-function rad2deg(radians) {
-  var degrees = (radians * 180) / Math.PI
-  return degrees
 }

@@ -22,4 +22,5 @@ export const primaryColorAlpha = colorAlpha(primaryColor, 0.7)
 
 export const pieColors = ['#EE6666', '#73C0DE', '#5470C6', '#91CC75', '#FAC858', 'red', 'purple', 'pink']
 
-export const tickColor = '#6e7079' // 坐标轴颜色 和 刻度颜色
+export const tickColor = '#555' // 坐标轴颜色 和 刻度颜色
+export const splitLineColor = '#E0E6F1'
