@@ -4,6 +4,7 @@ import Pie from '../demo/new-charts/Pie'
 import Line from '../demo/new-charts/line/Line'
 import Bar from '../demo/new-charts/Bar'
 import Area from '../demo/new-charts/line/Area'
+import Stack from '../demo/new-charts/line/Stack'
 
 export default {
   path: '/new-charts',
@@ -16,7 +17,8 @@ export default {
       uiConfig: { title: '折线图' },
       children: [
         { path: 'base', element: <Line />, uiConfig: { title: '基础折线图' } },
-        { path: 'area', element: <Area />, uiConfig: { title: '基础面积图' } }
+        { path: 'area', element: <Area />, uiConfig: { title: '基础面积图' } },
+        { path: 'stack', element: <Stack />, uiConfig: { title: '折线图堆叠' } }
       ]
     },
     {

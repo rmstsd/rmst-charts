@@ -19,16 +19,16 @@ const rmstCharts = {
       setOption: (innerOption: ICharts.IOption) => {
         stage.removeAllElements()
 
-        const chartType = innerOption.series.type // pie line bar
+        const series = [].concat(innerOption.series)
 
-        const { createRenderElements } = map[chartType]
+        const chartTypes = series.map(item => item.type) // pie line bar
 
         const finalElements = []
 
         let XAxisShape: IXAxisElements
         let YAxisShape: IYAxisElements
         // 绘制坐标轴
-        if (chartType !== 'pie') {
+        if (!chartTypes.includes('pie')) {
           XAxisShape = createXAxisElements(stage, innerOption)
           YAxisShape = createYAxisElements(stage, innerOption)
 
@@ -43,18 +43,32 @@ const rmstCharts = {
           )
         }
 
-        const { elements, afterAppendStage } = createRenderElements(
-          stage,
-          innerOption,
-          XAxisShape?.xAxisData,
-          YAxisShape?.yAxisData
-        )
-        if (elements) finalElements.push(...elements)
+        const renderElements = series.map(seriesItem => {
+          const { createRenderElements } = map[seriesItem.type]
+
+          return createRenderElements(stage, seriesItem, XAxisShape?.xAxisData, YAxisShape?.yAxisData)
+        })
+
+        const afterAppendStageTasks = []
+        renderElements.forEach(item => {
+          if (item.elements) finalElements.push(...item.elements)
+          if (item.afterAppendStage) afterAppendStageTasks.push(item.afterAppendStage)
+        })
+
+        // const { elements, afterAppendStage } = createRenderElements(
+        //   stage,
+        //   innerOption,
+        //   XAxisShape?.xAxisData,
+        //   YAxisShape?.yAxisData
+        // )
+        // if (elements) finalElements.push(...elements)
 
         // console.log('finalElements', finalElements)
         stage.append(finalElements)
 
-        afterAppendStage?.()
+        afterAppendStageTasks.forEach(task => task?.())
+
+        // afterAppendStage?.()
       }
     }
   }

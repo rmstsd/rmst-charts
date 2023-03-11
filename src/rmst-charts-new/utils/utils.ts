@@ -141,3 +141,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
     return ans
   }
 }
+
+export function pointToArray(list: { x: number; y: number }[]) {
+  return list.reduce((acc, item) => acc.concat([item.x, item.y]), [])
+}

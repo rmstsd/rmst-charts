@@ -6,6 +6,7 @@ import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
 import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
+import { pointToArray } from '../utils/utils.js'
 // import { drawArc, drawSegmentLine } from '../utils/drawHelpers.js'
 // import { drawBezier } from '../utils/utils.js'
 
@@ -28,23 +29,19 @@ export function calcMain(
 
 export function createRenderElements(
   stage: Stage,
-  innerOption: ICharts.IOption,
+  seriesItem,
   xAxisData: IXAxisElements['xAxisData'],
   yAxisData: IYAxisElements['yAxisData']
 ) {
-  const pointData = calcMain(innerOption.series.data, xAxisData, yAxisData)
+  const pointData = calcMain(seriesItem.data, xAxisData, yAxisData)
 
-  const { areaStyle } = innerOption.series
+  const { areaStyle } = seriesItem
 
   const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = pointData.reduce(
     (acc, item, idx, originArr) =>
       idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
     []
   )
-
-  function pointToArray(list: { x: number; y: number }[]) {
-    return list.reduce((acc, item) => acc.concat([item.x, item.y]), [])
-  }
 
   const singleArea = new Line({
     points: [],

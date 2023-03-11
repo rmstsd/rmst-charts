@@ -11,7 +11,6 @@ import {
   yAxisPadding
 } from '../constant.js'
 import { measureText } from '../utils/canvasUtil.js'
-import { drawSegmentLine } from '../utils/drawHelpers.js'
 import { calcPerfect } from '../utils/utils.js'
 
 function getYAxis(
@@ -62,22 +61,26 @@ function getYAxis(
 export type IYAxisElements = ReturnType<typeof createRenderElements>
 
 export function createRenderElements(stage: Stage, innerOption) {
+  const series = [].concat(innerOption.series)
+
+  const seriesData = series.reduce((acc, item) => acc.concat(item.data), [])
+
   const yAxisData = getYAxis(
     stage.ctx,
-    innerOption.series.data,
+    seriesData,
     stage.canvasElement.offsetHeight,
     stage.canvasElement.offsetWidth - canvasPaddingRight
   )
 
   const yAxisLine = new Line({
     points: [yAxisData.axis.start.x, yAxisData.axis.start.y, yAxisData.axis.end.x, yAxisData.axis.end.x],
-    bgColor: '#aaa'
+    bgColor: tickColor
   })
 
   const ticksLines = yAxisData.ticks.map(item => {
     return new Line({
       points: [item.start.x, item.start.y, item.end.x, item.end.y],
-      bgColor: '#aaa'
+      bgColor: tickColor
     })
   })
 
@@ -85,30 +88,11 @@ export function createRenderElements(stage: Stage, innerOption) {
     return new Text({
       x: item.text.x,
       y: item.text.y,
-      content: item.text.value,
+      content: String(item.text.value),
       fontSize: 16,
       color: '#333'
     })
   })
 
-  const elements = [].concat(yAxisLine, ticksLines, tickTexts)
-
   return { yAxisLine, ticksLines, tickTexts, yAxisData }
 }
-
-// export function drawYAxis(ctx: CanvasRenderingContext2D, yAxis: ICharts.IRenderTree['yAxis']) {
-//   const { axis, ticks } = yAxis
-
-//   // drawSegmentLine(ctx, axis.start, axis.end)
-
-//   ticks.forEach((tick, index) => {
-//     const { start, end, text } = tick
-//     const { x, y, value } = text
-
-//     if (index != 0) drawSegmentLine(ctx, start, end, '#e0e6f1', 0.8)
-
-//     ctx.textAlign = 'left'
-//     ctx.fillStyle = tickColor
-//     ctx.fillText(String(value), x, y)
-//   })
-// }

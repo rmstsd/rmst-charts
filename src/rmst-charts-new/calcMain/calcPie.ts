@@ -20,8 +20,8 @@ function calcMain(dataSource: { value: number; name: string }[], end_angle = 360
   return finalRadianArray
 }
 
-export function createRenderElements(stage, innerOption) {
-  const data = calcMain(innerOption.series.data)
+export function createRenderElements(stage, seriesItem) {
+  const data = calcMain(seriesItem.data)
   const fakeArc = new Circle({
     x: stage.center.x,
     y: stage.center.y,
@@ -145,7 +145,7 @@ export function createRenderElements(stage, innerOption) {
     fakeArc.animate({
       endAngle: 360,
       animateCallback(prop) {
-        const data = calcMain(innerOption.series.data, prop.endAngle)
+        const data = calcMain(seriesItem.data, prop.endAngle)
 
         elements
           .filter(o => o.data.onlyKey === 'main-pie')

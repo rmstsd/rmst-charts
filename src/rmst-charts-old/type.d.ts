@@ -14,15 +14,17 @@ namespace ICharts {
     chartArray: ICoord[]
   }
 
+  type series = {
+    type: 'line' | 'bar' | 'pie'
+    data: ({ value: number; name: string } | number)[]
+    smooth?: boolean
+    areaStyle?: {}
+  }
+
   type IOption = {
     xAxis?: {
       data: string[]
     }
-    series: {
-      type: 'line' | 'bar' | 'pie'
-      data: ({ value: number; name: string } | number)[]
-      smooth?: boolean
-      areaStyle?: {}
-    }
+    series: series[]
   }
 }
