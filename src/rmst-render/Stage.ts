@@ -9,22 +9,7 @@ type IOption = {
   container: HTMLElement
 }
 
-export const stageConstant = {
-  _id: 0,
-  r: 0,
-  g: 0,
-  b: 0
-}
-
-export type IExtraData = ReturnType<typeof createExtraData>
-export function createExtraData() {
-  stageConstant.r += 100
-
-  return {
-    _id: ++stageConstant._id,
-    rgb: `rgb(${[stageConstant.r, stageConstant.g, stageConstant.b].toString()})`
-  }
-}
+export type IExtraData = ReturnType<typeof Stage.createExtraData>
 
 declare global {
   interface CanvasRenderingContext2D {
@@ -33,6 +18,23 @@ declare global {
 }
 
 export class Stage {
+  static stageConstant = {
+    _id: 0,
+    r: 0,
+    g: 0,
+    b: 0
+  }
+
+  // TODO: rbg不能大于255
+  static createExtraData() {
+    this.stageConstant.r += 2
+
+    return {
+      _id: ++this.stageConstant._id,
+      rgb: `rgb(${[this.stageConstant.r, this.stageConstant.g, this.stageConstant.b].toString()})`
+    }
+  }
+
   constructor(option: IOption) {
     const { container } = option
     const stage = initStage(container)
@@ -128,6 +130,8 @@ export class Stage {
     this.canvasElement.style.cursor = cursor
   }
 }
+
+window.Stage = Stage
 
 type ICursor =
   | 'url'

@@ -1,11 +1,11 @@
 import colorRgba from 'color-rgba'
 import Group from './Group'
 
-import Stage, { createExtraData, dpr, IExtraData } from './Stage'
+import Stage, { dpr, IExtraData } from './Stage'
 
 export class Path {
   constructor() {
-    this.extraData = createExtraData()
+    this.extraData = Stage.createExtraData()
   }
 
   onClick = () => {}
