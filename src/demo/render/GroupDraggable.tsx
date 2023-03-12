@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react'
-import Circle from '../../rmst-render/Circle'
-import Group from '../../rmst-render/Group'
-import Rect from '../../rmst-render/Rect'
-import Stage from '../../rmst-render/Stage'
+
+import { Stage, Group, Rect, Circle, Text } from '@/rmst-render'
 
 const GroupDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)

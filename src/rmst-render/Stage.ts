@@ -1,7 +1,7 @@
-import Circle from './Circle'
-import Line from './Line'
-import Path from './Path'
-import Rect from './Rect'
+import Circle from './shape/Circle'
+import Line from './shape/Line'
+import Path from './shape/Path'
+import Rect from './shape/Rect'
 
 type IGraph = Circle | Rect | Path | Line
 

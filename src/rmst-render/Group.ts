@@ -1,4 +1,4 @@
-import Path from './Path'
+import Path from './shape/Path'
 
 export class Group extends Path {
   constructor(data: any = {}) {

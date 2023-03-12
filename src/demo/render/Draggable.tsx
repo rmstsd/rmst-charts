@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
-import Circle from '../../rmst-render/Circle'
-import Rect from '../../rmst-render/Rect'
-import Stage from '../../rmst-render/Stage'
+
+import { Stage, Rect, Circle, Text } from '@/rmst-render'
 
 const Draggable = () => {
   const canvasRef = useRef<HTMLDivElement>(null)

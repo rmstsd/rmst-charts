@@ -1,7 +1,7 @@
 // 折线图 计算 和 绘制
-import Circle from '../../rmst-render/Circle.js'
-import Line from '../../rmst-render/Line.js'
-import Stage from '../../rmst-render/Stage.js'
+
+import { Stage, Circle, Line } from '../../rmst-render'
+
 import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
 import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor, primaryColorAlpha } from '../constant.js'

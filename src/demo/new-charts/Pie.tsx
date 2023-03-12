@@ -1,6 +1,6 @@
 // 饼图
 import { useEffect, useRef } from 'react'
-import rmstCharts, { IChartInstance } from '../../rmst-charts-new'
+import rmstCharts, { IChartInstance } from '@/rmst-charts-new'
 
 const option = {
   series: {

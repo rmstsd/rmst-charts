@@ -1,4 +1,3 @@
-import { measureText } from '../rmst-charts-old/utils/canvasUtil'
 import Path from './Path'
 
 export class Text extends Path {
@@ -41,3 +40,13 @@ export class Text extends Path {
 }
 
 export default Text
+
+// 测量文本宽高
+function measureText(ctx: CanvasRenderingContext2D, text: string) {
+  const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)
+
+  // qq 浏览器只返回了 `width`
+  const textHeight = actualBoundingBoxAscent + actualBoundingBoxDescent || parseInt(ctx.font)
+
+  return { textWidth, textHeight }
+}

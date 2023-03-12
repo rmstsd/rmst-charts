@@ -1,7 +1,7 @@
 // 柱状图 计算 和 绘制
 
-import Rect from '../../rmst-render/Rect.js'
-import Stage from '../../rmst-render/Stage.js'
+import { Stage, Rect, Text } from '../../rmst-render'
+
 import { IXAxisElements } from '../calcAxis/calcXAxis.js'
 import { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor } from '../constant.js'

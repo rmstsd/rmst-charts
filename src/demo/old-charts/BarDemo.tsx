@@ -1,6 +1,6 @@
 // 柱状图
 import { useEffect } from 'react'
-import srcCharts from '../../rmst-charts-old'
+import srcCharts from '@/rmst-charts-old'
 
 const option = {
   xAxis: {

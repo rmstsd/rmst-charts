@@ -1,6 +1,6 @@
 // 柱状图
 import { useEffect, useRef } from 'react'
-import srcCharts, { IChartInstance } from '../../rmst-charts-new'
+import srcCharts, { IChartInstance } from '@/rmst-charts-new'
 
 const option = {
   xAxis: {

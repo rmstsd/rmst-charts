@@ -1,5 +1,5 @@
-import { Stage, Circle, Group, Rect, Text, Path, getPointOnArc, deg2rad } from '../../rmst-render'
-import Line from '../../rmst-render/Line'
+import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad } from '../../rmst-render'
+
 import { pieColors } from '../constant'
 
 function calcMain(dataSource: { value: number; name: string }[], end_angle = 360) {

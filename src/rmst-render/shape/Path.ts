@@ -1,7 +1,7 @@
 import colorRgba from 'color-rgba'
-import Group from './Group'
+import Group from '../Group'
 
-import Stage, { dpr, IExtraData } from './Stage'
+import Stage, { dpr, IExtraData } from '../Stage'
 
 export class Path {
   constructor() {
