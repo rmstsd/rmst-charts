@@ -18,16 +18,11 @@ declare global {
 }
 
 export class Stage {
-  static stageConstant = {
-    _id: 0,
-    r: 0,
-    g: 0,
-    b: 0
-  }
+  static stageConstant = { _id: 0, r: 0, g: 0, b: 0 }
 
   // TODO: rbg不能大于255
   static createExtraData() {
-    this.stageConstant.r += 2
+    this.stageConstant.r += 1
 
     return {
       _id: ++this.stageConstant._id,
@@ -79,7 +74,7 @@ export class Stage {
 
   renderStage() {
     this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
-    this.ctx.clearRect(0, 0, this.canvasElement2.width, this.canvasElement2.height)
+    this.ctx2.clearRect(0, 0, this.canvasElement2.width, this.canvasElement2.height)
 
     this.elements.forEach(elementItem => {
       elementItem.draw(this.ctx)
