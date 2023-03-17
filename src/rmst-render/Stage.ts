@@ -11,12 +11,6 @@ type IOption = {
 
 export type IExtraData = ReturnType<typeof Stage.createExtraData>
 
-declare global {
-  interface CanvasRenderingContext2D {
-    isCtx2?: boolean
-  }
-}
-
 export class Stage {
   static stageConstant = { _id: 0, r: 0, g: 0, b: 0 }
 
@@ -37,20 +31,11 @@ export class Stage {
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
 
-    const canvas2 = createCanvas(container.offsetWidth, container.offsetHeight)
-    this.canvasElement2 = canvas2.canvasElement
-    this.ctx2 = canvas2.ctx
-
-    this.ctx2.isCtx2 = true
-
     this.addStageEventListener()
   }
 
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
-
-  canvasElement2: HTMLCanvasElement
-  ctx2: CanvasRenderingContext2D
 
   parent: null
   elements: IGraph[] = []
@@ -74,12 +59,9 @@ export class Stage {
 
   renderStage() {
     this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
-    this.ctx2.clearRect(0, 0, this.canvasElement2.width, this.canvasElement2.height)
 
     this.elements.forEach(elementItem => {
       elementItem.draw(this.ctx)
-
-      elementItem.draw(this.ctx2)
     })
   }
 
@@ -125,8 +107,6 @@ export class Stage {
     this.canvasElement.style.cursor = cursor
   }
 }
-
-window.Stage = Stage
 
 type ICursor =
   | 'url'

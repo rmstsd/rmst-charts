@@ -9,7 +9,7 @@ import RmstLine from '../demo/render/RmstLine'
 export default {
   path: '/rmst-render',
   element: <LayoutView />,
-  uiConfig: { title: 'render(主要)' },
+  uiConfig: { title: 'render(primary)' },
   children: [
     {
       path: 'base',

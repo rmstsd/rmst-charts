@@ -64,16 +64,11 @@ const RmstLine = () => {
     }
 
     stage.append([line, rect, rect_2])
-
-    //
-    ;(document.querySelector('.uui') as HTMLDivElement).append(stage.canvasElement2)
   }, [])
 
   return (
     <>
       <div className="canvas-container" ref={canvasRef}></div>
-
-      <div className="canvas-container uui"></div>
     </>
   )
 }

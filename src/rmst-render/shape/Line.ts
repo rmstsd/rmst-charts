@@ -37,24 +37,27 @@ export class Line extends Path {
       return acc
     }, [])
 
-    ctx.moveTo(start_x, start_y)
+    const path2D = new Path2D()
+    path2D.moveTo(start_x, start_y)
     restPointsMatrix.forEach(([x, y]) => {
-      ctx.lineTo(x, y)
+      path2D.lineTo(x, y)
     })
+    if (closed) path2D.closePath()
 
-    if (closed) ctx.closePath()
+    // ctx.moveTo(start_x, start_y)
+    // restPointsMatrix.forEach(([x, y]) => {
+    //   ctx.lineTo(x, y)
+    // })
+    // if (closed) ctx.closePath()
 
     ctx.fillStyle = fillStyle || '#333'
     ctx.strokeStyle = bgColor || strokeStyle
 
     ctx.lineWidth = lineWidth
 
-    if (ctx.isCtx2) {
-      this.setFillStyle(ctx)
-    }
-
-    ctx.stroke()
-    // ctx.fill()
+    this.path2D = path2D
+    ctx.stroke(path2D)
+    ctx.fill(path2D)
   }
 }
 

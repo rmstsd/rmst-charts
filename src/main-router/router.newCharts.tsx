@@ -9,7 +9,7 @@ import Stack from '../demo/new-charts/line/Stack'
 export default {
   path: '/new-charts',
   element: <LayoutView />,
-  uiConfig: { title: 'charts(主要)' },
+  uiConfig: { title: 'charts(primary)' },
   children: [
     {
       path: 'line',

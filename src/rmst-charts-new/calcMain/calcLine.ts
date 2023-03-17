@@ -49,6 +49,14 @@ export function createRenderElements(
     strokeStyle: 'transparent',
     closed: true
   })
+  singleArea.onEnter = () => {
+    stage.setCursor('pointer')
+    singleArea.attr({ fillStyle: primaryColor })
+  }
+  singleArea.onLeave = () => {
+    stage.setCursor('auto')
+    singleArea.attr({ fillStyle: primaryColorAlpha })
+  }
 
   const lines = lineArr.map(
     item =>

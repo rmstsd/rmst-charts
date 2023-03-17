@@ -23,6 +23,8 @@ export class Path {
 
   extraData: IExtraData
 
+  path2D: Path2D
+
   stage: Stage
 
   parent: Stage | Group = null
@@ -56,14 +58,11 @@ export class Path {
     const stage = this.findStage()
 
     if (!stage) return
-    const pixel = stage.ctx2.getImageData(offsetX * dpr, offsetY * dpr, 1, 1)
 
-    const [r, g, b, a] = pixel.data
-
-    const rgb = `rgb(${[r, g, b].toString()})`
-    if (rgb === this.extraData.rgb) return true
-
-    return false
+    return (
+      stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr) ||
+      stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
+    )
   }
 
   setFillStyle(ctx: CanvasRenderingContext2D) {
