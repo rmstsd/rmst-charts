@@ -5,6 +5,7 @@ import Line from '../demo/new-charts/line/Line'
 import Bar from '../demo/new-charts/Bar'
 import Area from '../demo/new-charts/line/Area'
 import Stack from '../demo/new-charts/line/Stack'
+import LineSmooth from '@/demo/new-charts/line/LineSmooth'
 
 export default {
   path: '/new-charts',
@@ -17,6 +18,7 @@ export default {
       uiConfig: { title: '折线图' },
       children: [
         { path: 'base', element: <Line />, uiConfig: { title: '基础折线图' } },
+        { path: 'line-smooth', element: <LineSmooth />, uiConfig: { title: '基础平滑折线图' } },
         { path: 'area', element: <Area />, uiConfig: { title: '基础面积图' } },
         { path: 'stack', element: <Stack />, uiConfig: { title: '折线图堆叠' } }
       ]

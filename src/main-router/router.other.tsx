@@ -1,7 +1,7 @@
 import LayoutView from '../LayoutView/LayoutView'
 
 import Plum from '@/demo/other/Plum'
-import SelfTry from '@/demo/other/SelfTry'
+import AniCurve from '@/demo/other/AniCurve'
 
 export default {
   path: '/other',
@@ -9,6 +9,6 @@ export default {
   uiConfig: { title: '杂项' },
   children: [
     { path: 'plum', element: <Plum /> },
-    { path: 'selfTry', element: <SelfTry /> }
+    { path: 'aniCurve', element: <AniCurve /> }
   ]
 }

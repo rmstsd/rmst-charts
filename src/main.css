@@ -22,3 +22,7 @@ hr {
   border: 1px solid #ddd;
   border-top: none;
 }
+
+.border {
+  border: 1px solid #333;
+}

@@ -8,8 +8,8 @@ const option = {
   },
   series: {
     type: 'line' as const,
-    data: [600, 932, 901, 934, 800, 800]
-    // smooth: true
+    data: [600, 932, 901, 934, 800, 800],
+    smooth: true
   }
 }
 

@@ -7,6 +7,7 @@ import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
 import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
+import { drawArc } from '../utils/drawHelpers'
 import { pointToArray } from '../utils/utils.js'
 // import { drawArc, drawSegmentLine } from '../utils/drawHelpers.js'
 // import { drawBezier } from '../utils/utils.js'
@@ -30,13 +31,13 @@ export function calcMain(
 
 export function createRenderElements(
   stage: Stage,
-  seriesItem,
+  seriesItem: ICharts.series,
   xAxisData: IXAxisElements['xAxisData'],
   yAxisData: IYAxisElements['yAxisData']
 ) {
-  const pointData = calcMain(seriesItem.data, xAxisData, yAxisData)
+  const pointData = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 
-  const { areaStyle } = seriesItem
+  const { areaStyle, smooth } = seriesItem
 
   const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = pointData.reduce(
     (acc, item, idx, originArr) =>
@@ -44,6 +45,7 @@ export function createRenderElements(
     []
   )
 
+  // 面积图区域
   const singleArea = new Line({
     points: [],
     fillStyle: primaryColorAlpha,
@@ -59,6 +61,7 @@ export function createRenderElements(
     singleArea.attr({ fillStyle: primaryColorAlpha })
   }
 
+  // 每一段线
   const lines = lineArr.map(
     item =>
       new Line({
@@ -74,25 +77,30 @@ export function createRenderElements(
     const arcItem = new Circle({
       x: item.x,
       y: item.y,
-      radius: initRadius,
+      radius: smooth ? 5 : initRadius,
       bgColor: 'white',
       strokeStyle: primaryColor
     })
 
-    arcItem.onEnter = () => {
-      stage.setCursor('pointer')
-      arcItem.animate({ radius: 4 }, 300)
-    }
+    // arcItem.onEnter = () => {
+    //   stage.setCursor('pointer')
+    //   arcItem.animate({ radius: 4 }, 300)
+    // }
 
-    arcItem.onLeave = () => {
-      stage.setCursor('auto')
-      arcItem.animate({ radius: normalRadius }, 300)
-    }
+    // arcItem.onLeave = () => {
+    //   stage.setCursor('auto')
+    //   arcItem.animate({ radius: normalRadius }, 300)
+    // }
 
     return arcItem
   })
 
   async function afterAppendStage() {
+    if (smooth) {
+      drawBezier(stage.ctx, pointData, xAxisData.axis.xAxisInterval)
+      return
+    }
+
     const [firstArc, ...restArcs] = arcs
     firstArc.animate({ radius: normalRadius })
     for (let i = 0; i < lines.length; i++) {
@@ -131,103 +139,89 @@ export function createRenderElements(
   return { elements, afterAppendStage }
 }
 
-// export function drawMain(
-//   ctx: CanvasRenderingContext2D,
-//   chartArray: ICharts.ICoord[],
-//   { renderTree, option }: { renderTree: ICharts.IRenderTree; option: ICharts.IOption }
-// ) {
-//   const { xAxisInterval } = renderTree.xAxis.axis
+// 计算 和 绘制贝塞尔曲线
+function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord[], distance: number) {
+  const allControlPoint = calcAllControlPoint()
+  const finalPoint = calcFinalPoint()
 
-//   const { smooth } = option.series
+  // 画曲线
+  finalPoint.forEach(item => {
+    drawBezierInner(item.start, item.end, item.cp1, item.cp2)
+  })
 
-//   if (smooth) drawBezier(ctx, chartArray, xAxisInterval)
-//   else {
-//     const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = chartArray.reduce(
-//       (acc, item, idx, originArr) =>
-//         idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
-//       []
-//     )
+  function drawBezierInner(
+    start: ICharts.ICoord,
+    end: ICharts.ICoord,
+    cp1: ICharts.ICoord,
+    cp2: ICharts.ICoord
+  ) {
+    ctx.strokeStyle = primaryColor
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(start.x, start.y)
+    ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, end.x, end.y)
+    ctx.stroke()
 
-//     console.log(lineArr)
-//     drawRaf()
+    // 画控制点
+    drawArc(ctx, cp1.x, cp1.y, 2, 'red')
+    drawArc(ctx, cp2.x, cp2.y, 2, 'red')
+  }
 
-//     function drawRaf() {
-//       const per = 3 // xAxisInterval / 30
+  function calcAllControlPoint() {
+    distance = distance / 2
 
-//       const first_x = lineArr[0].start.x
-//       const last_x = lineArr.at(-1).end.x
+    const ans: ICharts.ICoord[] = []
+    for (let i = 1; i < points.length - 1; i++) {
+      const prev = points[i - 1]
+      const curr = points[i]
+      const next = points[i + 1]
 
-//       let bitStart: ICharts.ICoord = { x: lineArr[0].start.x, y: lineArr[0].start.y }
+      const slope = (next.y - prev.y) / (next.x - prev.x) // 直线的斜率
+      const b = curr.y - slope * curr.x // 经过做标点的 y = kx + b
 
-//       incrementExec()
-//       drawArcRafTask(0)
+      const pow2 = (num: number) => Math.pow(num, 2)
 
-//       function incrementExec() {
-//         requestAnimationFrame(() => {
-//           drawBitTask()
+      const four_ac =
+        4 * (pow2(slope) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
+      const det = Math.sqrt(pow2(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) - four_ac) // 根号下(b方 - 4ac)
+      const fb = -(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) // -b
+      const two_a = 2 * (pow2(slope) + 1) // 2a
 
-//           if (bitStart.x === last_x) return
-//           incrementExec()
-//         })
+      let cp1_x = (fb - det) / two_a
+      let cp1_y = slope * cp1_x + b
 
-//         // 绘制每一小段 (不是两个点之间)
-//         function drawBitTask() {
-//           console.log('drawBitTask line')
+      let cp2_x = (fb + det) / two_a
+      let cp2_y = slope * cp2_x + b
 
-//           const idx1 = Math.floor((bitStart.x - first_x) / xAxisInterval)
+      // 如果是峰值 直接拉平
+      if ((curr.y >= prev.y && curr.y >= next.y) || (curr.y <= prev.y && curr.y <= next.y)) {
+        cp1_x = curr.x - distance
+        cp1_y = curr.y
 
-//           const bit_end_x = bitStart.x + per
-//           const idx2 = Math.floor((bit_end_x - first_x) / xAxisInterval)
+        cp2_x = curr.x + distance
+        cp2_y = curr.y
+      }
 
-//           let bitEnd: ICharts.ICoord = {} as ICharts.ICoord
+      ans.push({ x: cp1_x, y: cp1_y }, { x: cp2_x, y: cp2_y })
+    }
 
-//           // 如果没有跨过某个点
-//           if (idx1 === idx2) {
-//             const lineIndex = Math.floor((bit_end_x - first_x) / xAxisInterval)
-//             const currLine = lineArr[lineIndex]
+    ans.unshift(points[0])
+    ans.push(points[points.length - 1])
 
-//             const k = (currLine.end.y - currLine.start.y) / (currLine.end.x - currLine.start.x)
-//             const b = currLine.start.y - currLine.start.x * k
+    return ans
+  }
 
-//             bitEnd = { x: bit_end_x, y: k * bit_end_x + b }
-//           } else {
-//             bitEnd = chartArray[idx2]
+  function calcFinalPoint() {
+    const ans = []
+    for (let i = 0; i < points.length - 1; i++) {
+      const start = points[i]
+      const end = points[i + 1]
 
-//             drawArcRafTask(idx2)
-//           }
+      const cp1 = allControlPoint[i * 2]
+      const cp2 = allControlPoint[i * 2 + 1]
 
-//           drawSegmentLine(ctx, bitStart, bitEnd, primaryColor, 2) // rgba(0, 16, 128, 0.5)
-
-//           bitStart = bitEnd
-//         }
-//       }
-
-//       function drawArcRafTask(index: number) {
-//         const currentPoint = chartArray[index]
-//         let radius = 0
-//         exec()
-
-//         function exec() {
-//           requestAnimationFrame(() => {
-//             radius += 0.05
-//             drawArc(ctx, currentPoint.x, currentPoint.y, radius, primaryColor, 2)
-//             if (radius >= 2) return
-
-//             exec()
-//           })
-//         }
-//       }
-//     }
-
-//     function drawNoRaf() {
-//       lineArr.forEach(item => drawSegmentLine(ctx, item.start, item.end, primaryColor, 2))
-
-//       chartArray.forEach(item => {
-//         drawArc(ctx, item.x, item.y, 3, primaryColor, 1.5)
-//       })
-//     }
-//   }
-// }
-
-// canvas 的 mousemove 事件
-// export function canvasMousemove(evt) {}
+      ans.push({ start, end, cp1, cp2 })
+    }
+    return ans
+  }
+}
