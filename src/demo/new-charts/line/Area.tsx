@@ -3,7 +3,8 @@ import rmstCharts, { IChartInstance } from '@/rmst-charts-new'
 
 const option = {
   xAxis: {
-    data: ['a', 'b', 'c', 'd', 'e', 'f']
+    data: ['a', 'b', 'c', 'd', 'e', 'f'],
+    boundaryGap: false
   },
   series: {
     type: 'line' as const,

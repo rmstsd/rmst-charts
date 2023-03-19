@@ -1,5 +1,6 @@
 // 折线图 计算 和 绘制
 
+import colorAlpha from 'color-alpha'
 import { Stage, Circle, Line } from '../../rmst-render'
 
 import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
@@ -51,7 +52,7 @@ export function createRenderElements(
   })
   singleArea.onEnter = () => {
     stage.setCursor('pointer')
-    singleArea.attr({ fillStyle: primaryColor })
+    singleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
   }
   singleArea.onLeave = () => {
     stage.setCursor('auto')

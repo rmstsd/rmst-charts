@@ -51,7 +51,7 @@ function getYAxis(
     return {
       start: { x: start_x, y: tick_y },
       end: { x: end_x, y: tick_y },
-      text: { x: start_x - textWidth - 3, y: tick_y - textHeight / 2, value: tickValue }
+      text: { x: start_x - textWidth - 5, y: tick_y - textHeight / 2, value: tickValue }
     }
   })
   return { axis, ticks, tickConstant: { min, realInterval, tickInterval } }

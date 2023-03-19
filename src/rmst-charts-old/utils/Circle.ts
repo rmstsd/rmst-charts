@@ -28,58 +28,45 @@ export default class Circle {
     return distance <= this.circleData.radius
   }
 
-  animateExec(isReset?: boolean): void {
+  animateExec(): void {
     cancelAnimationFrame(this.animateState.rafTimer)
 
-    const targetRadius = isReset ? 10 : 20
+    const targetRadius = 20
 
-    const per = 0.1
+    const per = 0.4
     let currRadius = this.circleData.radius
 
     const sizeAnimate = () => {
-      if (isReset) currRadius -= per
-      else currRadius += per
+      currRadius += per
       this.circleData.radius = currRadius
 
       // 返回动画是否完成
-      if (isReset) {
-        if (currRadius <= targetRadius) return true
-      } else {
-        if (currRadius >= targetRadius) return true
-      }
+
+      if (currRadius >= targetRadius) return true
     }
 
     const colorAnimate = () => {
       const per = 2
-      if (isReset) this.animateState.curr -= per
-      else this.animateState.curr += per
+      this.animateState.curr += per
 
-      if (isReset) {
-        if (this.animateState.curr < 0) this.animateState.curr = 0
-      } else {
-        if (this.animateState.curr > 255) this.animateState.curr = 255
-      }
+      if (this.animateState.curr > 255) this.animateState.curr = 255
 
       const args = ['pink', 'red'] as const
       const { rgba } = calcColorRgba(this.animateState.curr, ...args)
 
       this.circleData.bgColor = rgba
 
-      if (isReset) {
-        if (this.animateState.curr <= 0) return true
-      } else {
-        if (this.animateState.curr >= 255) return true
-      }
+      if (this.animateState.curr >= 255) return true
     }
 
     const drawAnimate = () => {
-      // console.log('raf')
-      const isAnimateFinish = colorAnimate()
+      console.log('raf')
+      // const isAnimateFinish = colorAnimate()
       const isSizeFinish = sizeAnimate()
 
       this.onChange()
 
-      if (isAnimateFinish && isSizeFinish) return
+      if (isSizeFinish) return
 
       this.animateState.rafTimer = requestAnimationFrame(drawAnimate)
     }
@@ -87,15 +74,15 @@ export default class Circle {
     drawAnimate()
   }
 
-  drawArc(circleData: Circle['circleData']) {
-    const { x, y, radius, index, bgColor } = circleData
+  drawArc() {
+    const { x, y, radius, index, bgColor } = this.circleData
     this.ctx.beginPath()
     this.ctx.arc(x, y, radius, 0, Math.PI * 2)
     this.ctx.fillStyle = bgColor
     this.ctx.fill()
 
     this.ctx.fillStyle = '#000'
-    this.ctx.fillText(String(index), circleData.x, circleData.y)
+    this.ctx.fillText(String(index), x, y)
   }
 
   handleMove(offsetX: number, offsetY: number) {

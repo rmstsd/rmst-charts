@@ -50,10 +50,9 @@ const LayoutView = () => {
       </Layout.Header>
 
       <Divider style={{ margin: 0 }} />
-      <Layout style={{ backgroundColor: '#f9f9f9' }}>
-        <Layout.Sider
-          style={{ overflow: 'auto', height: '100%', maxWidth: 'initial', minWidth: 'initial' }}
-          theme="light"
+      <section style={{ flexGrow: 1, display: 'flex', backgroundColor: '#f9f9f9' }}>
+        <aside
+          style={{ flexShrink: 0, overflow: 'auto', width: 200, height: '100%', backgroundColor: '#fff' }}
         >
           <Menu
             mode="inline"
@@ -61,13 +60,14 @@ const LayoutView = () => {
             selectedKeys={sideMenuKeys}
             items={siderItems}
             onClick={onErMenuClick}
+            style={{ height: '100%' }}
           />
-        </Layout.Sider>
+        </aside>
 
         <Layout.Content style={{ margin: 10, padding: 10, borderRadius: 5, backgroundColor: '#fff' }}>
           <Outlet />
         </Layout.Content>
-      </Layout>
+      </section>
     </Layout>
   )
 }

@@ -4,21 +4,24 @@ import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor }
 import { measureText } from '../utils/canvasUtil.js'
 import { pointToArray } from '../utils/utils.js'
 
-function getXAxis(ctx, dataSource, containerWidth, containerHeight) {
+function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
   const start_x = canvasPaddingLeft
   const axis_y = containerHeight - canvasPaddingBottom
   const end_x = containerWidth - canvasPaddingRight
 
-  const tickValues = dataSource
-  const xAxisInterval = (end_x - start_x) / tickValues.length
+  const { data, boundaryGap = true } = xAxis
+
+  const cartesianOriginPadding = boundaryGap ? 20 : 0 // x轴刻度值左右的空余距离
+
+  const xAxisInterval = (end_x - start_x - 2 * cartesianOriginPadding) / (data.length - 1)
 
   const axis = { start: { x: start_x, y: axis_y }, end: { x: end_x, y: axis_y }, xAxisInterval }
 
-  const ticks = tickValues.map((valueString, index) => {
+  const ticks = data.map((valueString, index) => {
     const { textWidth, textHeight } = measureText(ctx, valueString)
     const tickLength = 10
 
-    const x = canvasPaddingLeft + xAxisInterval / 2 + index * xAxisInterval
+    const x = start_x + cartesianOriginPadding + index * xAxisInterval
     const y_start = axis_y
     const y_end = axis_y + tickLength
 
@@ -38,7 +41,7 @@ export function createRenderElements(stage: Stage, innerOption) {
 
   const xAxisData = getXAxis(
     stage.ctx,
-    innerOption.xAxis.data,
+    innerOption.xAxis,
     stage.canvasElement.offsetWidth,
     stage.canvasElement.offsetHeight
   )

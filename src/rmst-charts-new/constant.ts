@@ -18,7 +18,7 @@ export const defaultCandleCount = 20 // 初始化默认显示的数量
 
 // 颜色
 export const primaryColor = '#5C7BD9'
-export const primaryColorAlpha = colorAlpha(primaryColor, 0.7)
+export const primaryColorAlpha = colorAlpha(primaryColor, 0.8)
 
 export const pieColors = ['#EE6666', '#73C0DE', '#5470C6', '#91CC75', '#FAC858', 'red', 'purple', 'pink']
 

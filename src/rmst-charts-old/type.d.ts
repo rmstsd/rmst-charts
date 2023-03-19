@@ -24,6 +24,7 @@ namespace ICharts {
   type IOption = {
     xAxis?: {
       data: string[]
+      boundaryGap?: boolean
     }
     series: series[]
   }
