@@ -31,7 +31,7 @@ const KonvaLineAnimate = () => {
       strokeWidth: 1,
       lineCap: 'round',
       lineJoin: 'round',
-      tension: 0.3
+      tension: 0.4
     })
 
     const arcs = points.map(item => new Konva.Circle({ x: item.x, y: item.y, radius: 3, fill: 'purple' }))

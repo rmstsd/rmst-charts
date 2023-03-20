@@ -3,6 +3,36 @@ import { useEffect } from 'react'
 // https://juejin.cn/post/7082701281969569829#heading-3
 // 某一帧的时候 终点是p, a b 是控制点
 
+type FinalPoint = {
+  start: ICharts.ICoord // 起点
+  p1: ICharts.ICoord // 控制点1 控制起点
+  p2: ICharts.ICoord // 控制点2 控制终点
+  end: ICharts.ICoord // 终点
+}
+export function calculateControlPoint(t: number, finalPoint: FinalPoint) {
+  const { start, p1, p2, end } = finalPoint
+
+  const a_x = (1 - t) * start.x + t * p1.x
+  const a_y = (1 - t) * start.y + t * p1.y
+
+  const b_x = (1 - t) * p1.x + t * p2.x
+  const b_y = (1 - t) * p1.y + t * p2.y
+
+  const c_x = (1 - t) * p2.x + t * end.x
+  const c_y = (1 - t) * p2.y + t * end.y
+
+  const d_x = (1 - t) * a_x + t * b_x
+  const d_y = (1 - t) * a_y + t * b_y
+
+  const e_x = (1 - t) * b_x + t * c_x
+  const e_y = (1 - t) * b_y + t * c_y
+
+  const p_x = (1 - t) * d_x + t * e_x
+  const p_y = (1 - t) * d_y + t * e_y
+
+  return { cp1: { x: a_x, y: a_y }, cp2: { x: d_x, y: d_y }, tempEnd: { x: p_x, y: p_y } }
+}
+
 const AniCurve = () => {
   useEffect(() => {
     const ctx = document.querySelector('canvas')?.getContext('2d')
@@ -18,42 +48,19 @@ const AniCurve = () => {
     ctx.stroke()
 
     let t = 0
-    let prev = { ...p0 }
     drdr()
     function drdr() {
       ctx.clearRect(0, 0, 500, 500)
-      const a_x = (1 - t) * p0.x + t * p1.x
-      const a_y = (1 - t) * p0.y + t * p1.y
 
-      const b_x = (1 - t) * p1.x + t * p2.x
-      const b_y = (1 - t) * p1.y + t * p2.y
-
-      const c_x = (1 - t) * p2.x + t * p3.x
-      const c_y = (1 - t) * p2.y + t * p3.y
-
-      const d_x = (1 - t) * a_x + t * b_x
-      const d_y = (1 - t) * a_y + t * b_y
-
-      const e_x = (1 - t) * b_x + t * c_x
-      const e_y = (1 - t) * b_y + t * c_y
-
-      const p_x = (1 - t) * d_x + t * e_x
-      const p_y = (1 - t) * d_y + t * e_y
+      const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
 
       ctx.beginPath()
 
       ctx.strokeStyle = 'red'
       ctx.lineWidth = 2
-      // ctx.moveTo(prev.x, prev.y)
-      // ctx.lineTo(p_x, p_y)
-
       ctx.moveTo(p0.x, p0.y)
-      ctx.bezierCurveTo(a_x, a_y, d_x, d_y, p_x, p_y)
-
+      ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, tempEnd.x, tempEnd.y)
       ctx.stroke()
-
-      prev.x = p_x
-      prev.y = p_y
 
       if (t < 1) {
         requestAnimationFrame(drdr)
