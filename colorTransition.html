@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>zz</title>
+
+    <style></style>
+  </head>
+
+  <body>
+    <div style="width: 100px; height: 100px" class="qwe"></div>
+
+    <script type="module">
+      function calculateColorTransition(startColor, endColor, percent) {
+        // 提取起始颜色和结束颜色的rgba值
+        const startRGBA = startColor.match(/\d+/g).map(Number)
+        const endRGBA = endColor.match(/\d+/g).map(Number)
+
+        // 计算中间颜色的rgba值
+        const rgba = startRGBA.map((start, i) => {
+          const end = endRGBA[i]
+          const diff = end - start
+          return Math.round(start + diff * percent)
+        })
+
+        // 将rgba值转换成rgba字符串
+        return `rgba(${rgba.join(', ')})`
+      }
+
+      const count = 100
+      const ans = Array.from({ length: count }, (_, index) =>
+        calculateColorTransition('rgba(0,0,0,1)', 'rgba(255,255,0,1)', (index + 1) / count)
+      )
+
+      console.log(ans)
+
+      for (const rgba of ans) {
+        await new Promise((resolve, reject) => {
+          setTimeout(() => {
+            document.querySelector('.qwe').style.backgroundColor = rgba
+            resolve()
+          }, 16.66666666666)
+        })
+      }
+    </script>
+  </body>
+</html>
