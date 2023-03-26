@@ -38,13 +38,9 @@ export function createRenderElements(
 ) {
   const pointData = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 
-  const { areaStyle, smooth } = seriesItem
+  const { areaStyle, smooth, step } = seriesItem
 
-  const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = pointData.reduce(
-    (acc, item, idx, originArr) =>
-      idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
-    []
-  )
+  const lineArr = calcLinesByPoints(pointData, step)
 
   // 面积图区域
   const singleArea = new Line({
@@ -181,7 +177,12 @@ export function createRenderElements(
         })
       }
 
-      restArcs[i].animate({ radius: normalRadius })
+      if (!step) restArcs[i].animate({ radius: normalRadius })
+      else {
+        if (i % 2 === 0) {
+          restArcs[i / 2].animate({ radius: normalRadius })
+        }
+      }
     }
   }
 
@@ -191,6 +192,7 @@ export function createRenderElements(
   return { elements, afterAppendStage }
 }
 
+// 计算 两个控制点 和 两个端点
 function calcAllControlPoint(points, distance) {
   distance = distance / 2
 
@@ -246,6 +248,31 @@ function calcAllControlPoint(points, distance) {
       ans.push({ start, end, cp1, cp2 })
     }
     return ans
+  }
+}
+
+function calcLinesByPoints(pointData, step) {
+  console.log(pointData)
+  if (!step) {
+    return pointData.reduce(
+      (acc, item, idx, originArr) =>
+        idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
+      []
+    ) as { start: ICharts.ICoord; end: ICharts.ICoord }[]
+  }
+
+  // 在某个点开始的时候 先垂直 后拐弯
+  if (step === 'start') {
+    return pointData.reduce((acc, item, idx, originArr) => {
+      if (idx === originArr.length - 1) return acc
+
+      const addPoint = { x: item.x, y: originArr[idx + 1].y }
+
+      return acc.concat([
+        { start: item, end: addPoint },
+        { start: addPoint, end: originArr[idx + 1] }
+      ])
+    }, []) as { start: ICharts.ICoord; end: ICharts.ICoord }[]
   }
 }
 

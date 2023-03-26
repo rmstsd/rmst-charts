@@ -19,6 +19,7 @@ namespace ICharts {
     data: ({ value: number; name: string } | number)[]
     smooth?: boolean
     areaStyle?: {}
+    step?: 'start' | 'middle' | 'end' // 折线图-阶梯折线图
   }
 
   type IOption = {

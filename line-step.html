@@ -1,0 +1,89 @@
+<!--
+	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=line-step&code=PYBwLglsB2AEC8sDeAoWtJgDYFMBcya6GOAHmAQOQDKYOIsAMhNDpUQL4A0RYwwWSCAKpiGAE4QA5lJziqAQ1IQAzu3TciuWdAAmIoul0KwCggG0adBrQXiwlLrCv1YAWQi7duR89quAUT1KAF1OHnQpSX1CMVwAMwpnAGYAUkdDWEkpAAskygAWdIjiACNgMD4AWyo0jLEAYxhTFkYFUpwsAjBxAFcccN5-LHLSAzF4nBNe8XxYsVgVBQA3HABBFQBJKoVZEQ5Mg40S0jXlFXHiMABPEDnKBpMcKWBxa_riY1MLSjcYX0oABV-gCAOo4XQAwE5XoAgBikgB1BMSN60FCg3Q1zOqku6BudyoywUWBBmMWcggOAusHMmVEC2gCiq938NlM9g-YgJ9ywLDYJTEKmsVGFdgcgs-JjMtIADE4AGyy-WwACMstVTlVyQKTgAnCqAEzJI3qsJiTToMIcADcQA
+	⚠ 请注意，该图表不是 Apache ECharts 官方示例，而是由用户代码生成的。请注意鉴别其内容。
+-->
+<!DOCTYPE html>
+<html lang="zh-CN" style="height: 100%">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%"></div>
+
+    <script
+      type="text/javascript"
+      src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"
+    ></script>
+    <!-- Uncomment this line if you want to dataTool extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/extension/dataTool.min.js"></script>
+  -->
+    <!-- Uncomment this line if you want to use gl extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"></script>
+  -->
+    <!-- Uncomment this line if you want to echarts-stat extension
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts-stat@latest/dist/ecStat.min.js"></script>
+  -->
+    <!-- Uncomment this line if you want to use map
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/china.js"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@4.9.0/map/js/world.js"></script>
+  -->
+    <!-- Uncomment these two lines if you want to use bmap extension
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=YOUR_API_KEY"></script>
+  <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/extension/bmap.min.js"></script>
+  -->
+
+    <script type="text/javascript">
+      var dom = document.getElementById('container')
+      var myChart = echarts.init(dom, null, {
+        renderer: 'canvas',
+        useDirtyRect: false
+      })
+      var app = {}
+
+      var option
+
+      option = {
+        title: {
+          text: 'Step Line'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['Step Start', 'Step Middle', 'Step End']
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {}
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        animationDuration: 10000,
+        series: [
+          {
+            name: 'Step Start',
+            type: 'line',
+            step: 'start',
+            data: [0, 600, 101, 134, 90, 230, 210]
+          }
+        ]
+      }
+
+      if (option && typeof option === 'object') {
+        myChart.setOption(option)
+      }
+    </script>
+  </body>
+</html>
