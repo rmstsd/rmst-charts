@@ -1,12 +1,10 @@
 // 柱状图 计算 和 绘制
+import { Stage, Rect, Text } from '@/rmst-render'
 
-import { Stage, Rect, Text } from '../../rmst-render'
-
-import { IXAxisElements } from '../calcAxis/calcXAxis.js'
-import { IYAxisElements } from '../calcAxis/calcYAxis.js'
+import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
+import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor } from '../constant.js'
-import { getActiveIndexFromOffsetX, getCanvasPxFromRealNumber, getYTickFromOffsetY } from '../convert.js'
-// import drawDashLine, { drawSegmentLine } from '../utils/drawHelpers.js'
+import { getCanvasPxFromRealNumber } from '../convert.js'
 
 export function calcMain(dataSource: number[], xAxisData, yAxis) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
@@ -14,13 +12,12 @@ export function calcMain(dataSource: number[], xAxisData, yAxis) {
   const { axis, ticks } = xAxisData
   const yAxis_start_y = yAxis.axis.start.y
 
-  const padding = axis.xAxisInterval / 5
-
   const res = dataSource.map((dataItem, index) => {
-    const x = ticks[index].start.x - axis.xAxisInterval / 2 + padding
+    const width = axis.xAxisInterval / 2
+
+    const x = ticks[index].start.x - width / 2
     const y = getCanvasPxFromRealNumber(dataItem, yAxis_start_y, min, realInterval, tickInterval)
 
-    const width = axis.xAxisInterval - padding * 2
     const height = axis.start.y - y
 
     return { x, y, width, height }

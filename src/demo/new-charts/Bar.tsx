@@ -5,6 +5,7 @@ import srcCharts, { IChartInstance } from '@/rmst-charts-new'
 const option = {
   xAxis: {
     data: ['2017-10-24', '2017-10-25', '2017-10-26', '2017-10-27']
+    // boundaryGap: false
   },
   series: {
     type: 'bar' as const,

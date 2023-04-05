@@ -11,6 +11,8 @@ export class Line extends Path {
     this.data = { ...defaultData, ...data }
   }
 
+  isLine = true
+
   declare data: {
     points: number[]
     bgColor?: string
@@ -50,6 +52,8 @@ export class Line extends Path {
     // })
     // if (closed) ctx.closePath()
 
+    // ctx.lineJoin = 'round'
+
     ctx.fillStyle = fillStyle || '#333'
     ctx.strokeStyle = bgColor || strokeStyle
 
@@ -57,7 +61,8 @@ export class Line extends Path {
 
     this.path2D = path2D
     ctx.stroke(path2D)
-    ctx.fill(path2D)
+
+    if (closed) ctx.fill(path2D)
   }
 }
 

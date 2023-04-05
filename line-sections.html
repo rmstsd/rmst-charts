@@ -1,5 +1,5 @@
 <!--
-	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=line-step&code=PYBwLglsB2AEC8sDeAoWtJgDYFMBcya6GOAHmAQOQDKYOIsAMhNDpUQL4A0RYwwWSCAKpiGAE4QA5lJziqAQ1IQAzu3TciuWdAAmIoul0KwCggG0adBrQXiwlLrCv1YAWQi7duR89quAUT1KAF1OHnQpSX1CMVwAMwpnAGYAUkdDWEkpAAskygAWdIjiACNgMD4AWyo0jLEAYxhTFkYFUpwsAjBxAFcccN5-LHLSAzF4nBNe8XxYsVgVBQA3HABBFQBJKoVZEQ5Mg40S0jXlFXHiMABPEDnKBpMcKWBxa_riY1MLSjcYX0oABV-gCAOo4XQAwE5XoAgBikgB1BMSN60FCg3Q1zOqku6BudyoywUWBBmMWcggOAusHMmVEC2gCiq938NlM9g-YgJ9ywLDYJTEKmsVGFdgcgs-JjMtIADE4AGyy-WwACMstVTlVyQKTgAnCqAEzJI3qsJiTToMIcADcQA
+	此示例下载自 https://echarts.apache.org/examples/zh/editor.html?c=line-sections&code=PYBwLglsB2AEC8sDeAoWtJgDYFMBcya6GOAHmAQOQAiEAzmAE4QBGArpDLMAGawCiuAMZMIQiGACelADRF0dNizBkKsSgDEAhgGscsalrBbKRAL5z0pAIKl6BVMQySQ-dUKM4A5sEbTLxCzAbNAAJlp-AOJaIAQ8Wlh0OAHoAPSpsCCMOGCQOIwAtBBe0L448rDhxgQA2pQADPV4jbLq9QCMeO0ArK0NAEx4AMz1ffVDeAAsvTJt3c2jsw0AbF0zbQDsw4ttABxT65TtTS1L7Z09fe2DI1cT01fzp-rtq5dnW7dn-w9L_Sc7Sj9C6Hfo3QH9e69AC65gCkls9kITikrioADcEmwcLI4UR0fQ2AkALIxBwVOgAC2AAHc4gkkilKhAALY4aB0KDQAj1JkgCA4IQ4Oi1CroRxOYhYFQESZMpxCYBYXxULzZdmmSWwCxi5Fa2BeNRy3XoaVuXby4iK5WMKjZUKayU6rUSrWGggWk2wM0EdrG_Wwa0q9RqnAa3XOyWuyXu2B-y2mmVxz0BoO29T2x1OSNOaNOWPtFP6tNUfnQHRZ4hmCqw9CRpLMYWi3O66BaNlUQSC0TiKS4rWotyULAQaA4y10FnAYBgSkEJjYy1VLS1Ea82D9Xbr_rdbfLbcbddr2bdXcnxqzSYX2BDACcR63szv66v6936_3642Z9gW6_18_S9GmheU6EkFkgiwKhSjHStq3QWEzAAbiAA
 	⚠ 请注意，该图表不是 Apache ECharts 官方示例，而是由用户代码生成的。请注意鉴别其内容。
 -->
 <!DOCTYPE html>
@@ -44,45 +44,38 @@
 
       option = {
         title: {
-          text: 'Step Line'
-        },
-        tooltip: {
-          trigger: 'axis'
-        },
-        legend: {
-          data: ['Step Start', 'Step Middle', 'Step End']
-        },
-        grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
-          containLabel: true
-        },
-        toolbox: {
-          feature: {
-            saveAsImage: {}
-          }
+          text: 'Distribution of Electricity',
+          subtext: 'Fake Data'
         },
         xAxis: {
           type: 'category',
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          boundaryGap: false,
+          // prettier-ignore
+          data: ['00:00', '01:15', '02:30', '03:45', '05:00', '06:15', '07:30', ]
         },
         yAxis: {
           type: 'value'
         },
-        animationDuration: 20000,
+        // visualMap: {
+        //   show: false,
+        //   dimension: 0,
+        //   pieces: [
+        //     { lte: 1, color: 'green' },
+        //     { gt: 1, lte: 2, color: 'red' },
+        //     { gt: 2, color: 'green' }
+        //   ]
+        // },
         series: [
           {
-            name: 'Step Start',
+            name: 'Electricity',
             type: 'line',
-            step: 'start',
-            data: [0, 600, 101, 134, 90, 230, 210],
+            data: [300, 400, 250, 260, 270, 300, 550],
             symbol: 'none',
-            lineStyle: {
-              width: 6
-            }
+            lineStyle: { width: 60, join: 'round', cap: 'round' },
+            color: 'rgba(255, 22, 0, 0.5)'
           }
-        ]
+        ],
+        animationDuration: 10000
       }
 
       if (option && typeof option === 'object') {

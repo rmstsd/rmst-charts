@@ -16,6 +16,7 @@ const rmstCharts = {
     })
 
     return {
+      stage,
       setOption: (innerOption: ICharts.IOption) => {
         stage.removeAllElements()
 

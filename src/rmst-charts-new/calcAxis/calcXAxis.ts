@@ -11,9 +11,9 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
 
   const { data, boundaryGap = true } = xAxis
 
-  const cartesianOriginPadding = boundaryGap ? 20 : 0 // x轴刻度值左右的空余距离
-
-  const xAxisInterval = (end_x - start_x - 2 * cartesianOriginPadding) / (data.length - 1)
+  const count = boundaryGap ? data.length : data.length - 1 // x轴刻度值左右的空余距离
+  const xAxisInterval = (end_x - start_x) / count
+  const firstPaddingLeft = boundaryGap ? xAxisInterval / 2 : 0
 
   const axis = { start: { x: start_x, y: axis_y }, end: { x: end_x, y: axis_y }, xAxisInterval }
 
@@ -21,7 +21,7 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
     const { textWidth, textHeight } = measureText(ctx, valueString)
     const tickLength = 10
 
-    const x = start_x + cartesianOriginPadding + index * xAxisInterval
+    const x = start_x + firstPaddingLeft + index * xAxisInterval
     const y_start = axis_y
     const y_end = axis_y + tickLength
 

@@ -28,10 +28,10 @@ const RmstLine = () => {
     }
 
     const line = new Line({
-      points: [0, 0, 100, 100, 200, 100, 200, 300],
+      points: [0, 0, 100, 100, 200, 100, 300, 300],
       lineWidth: 5,
-      strokeStyle: '#45eeb8',
-      closed: true
+      strokeStyle: '#45eeb8'
+      // closed: true
     })
 
     line.onEnter = () => {

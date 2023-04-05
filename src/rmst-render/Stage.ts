@@ -127,7 +127,7 @@ type ICursor =
   | 'wait'
   | 'help'
 
-export const dpr = 1.5 // window.devicePixelRatio
+export const dpr = window.devicePixelRatio
 function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')
   const canvasWidth = containerWidth * dpr

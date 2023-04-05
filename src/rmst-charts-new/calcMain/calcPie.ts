@@ -1,4 +1,5 @@
-import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad } from '../../rmst-render'
+import { measureText } from '@/rmst-charts-new/utils/canvasUtil'
+import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad } from '@/rmst-render'
 
 import { pieColors } from '../constant'
 
@@ -39,10 +40,12 @@ export function createRenderElements(stage, seriesItem) {
     const x = 10
     const y = 10 + (height + gap) * index
 
-    const rect = new Rect({ x, y, width, height, bgColor: item.color })
-    const text = new Text({ x: x + width + 5, y, content: item.label, color: item.color, fontSize: 16 })
+    const { textWidth, textHeight } = measureText(stage.ctx, item.label)
+
+    const legendRect = new Rect({ x, y, width, height, bgColor: item.color })
+    const legendText = new Text({ x: x + width + 5, y, content: item.label, color: item.color, fontSize: 16 })
     const legendGroup = new Group({ onlyKey: 'legend' })
-    legendGroup.append([rect, text])
+    legendGroup.append([legendRect, legendText])
 
     const radius = 100
 
@@ -66,19 +69,28 @@ export function createRenderElements(stage, seriesItem) {
       points: [radianCenterPoint.x, radianCenterPoint.y, radianCenterPoint.x, radianCenterPoint.y],
       fillStyle: item.color,
       bgColor: item.color,
-      extraData: extendLine_1_end
+      extraData: extendLine_1_end,
+      lineWidth: 2
     })
 
-    const extendLine_2_end = [
-      x_end > stage.center.x ? x_end + extendLineLength : x_end - extendLineLength,
-      y_end
-    ]
+    const isCenterRight = x_end > stage.center.x
+    const extendLine_2_x_end = isCenterRight ? x_end + extendLineLength : x_end - extendLineLength
+    const extendLine_2_end = [extendLine_2_x_end, y_end]
     const extendLine_2 = new Line({
       onlyKey: 'extend-line_2',
       points: [x_end, y_end, x_end, y_end],
       fillStyle: item.color,
       bgColor: item.color,
-      extraData: extendLine_2_end
+      extraData: extendLine_2_end,
+      lineWidth: 2
+    })
+
+    const labelText = new Text({
+      x: isCenterRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - textWidth - 5,
+      y: y_end - textHeight / 2,
+      content: item.label,
+      color: '#333',
+      fontSize: 16
     })
 
     const arc = new Circle({
@@ -91,29 +103,31 @@ export function createRenderElements(stage, seriesItem) {
       bgColor: item.color
     })
 
-    legendGroup.onEnter = () => {
+    function onPieActiveEnter() {
       arc.animate({ radius: 105, shadowBlur: 20 }, 200)
       stage.setCursor('pointer')
     }
-
-    legendGroup.onLeave = () => {
-      arc.animate({ radius: 100, shadowBlur: 0 }, 200)
-      stage.setCursor('auto')
-
-      console.log('legend.onLeave', index)
-    }
-
-    arc.onEnter = () => {
-      arc.animate({ radius: 105, shadowBlur: 20 }, 200)
-      stage.setCursor('pointer')
-    }
-
-    arc.onLeave = () => {
+    function onPieActiveLeave() {
       arc.animate({ radius: 100, shadowBlur: 0 }, 200)
       stage.setCursor('auto')
     }
 
-    return acc.concat([legendGroup, arc, extendLine_1, extendLine_2])
+    legendGroup.onEnter = onPieActiveEnter
+    legendGroup.onLeave = onPieActiveLeave
+
+    arc.onEnter = onPieActiveEnter
+    arc.onLeave = onPieActiveLeave
+
+    labelText.onEnter = onPieActiveEnter
+    labelText.onLeave = onPieActiveLeave
+
+    extendLine_1.onEnter = onPieActiveEnter
+    extendLine_1.onLeave = onPieActiveLeave
+
+    extendLine_2.onEnter = onPieActiveEnter
+    extendLine_2.onLeave = onPieActiveLeave
+
+    return acc.concat([legendGroup, extendLine_1, extendLine_2, labelText, arc])
   }, [])
 
   elements.push(fakeArc)

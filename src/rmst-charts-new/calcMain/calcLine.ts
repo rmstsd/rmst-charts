@@ -79,15 +79,15 @@ export function createRenderElements(
       strokeStyle: primaryColor
     })
 
-    // arcItem.onEnter = () => {
-    //   stage.setCursor('pointer')
-    //   arcItem.animate({ radius: 4 }, 300)
-    // }
+    arcItem.onEnter = () => {
+      stage.setCursor('pointer')
+      arcItem.animate({ radius: 4 }, 300)
+    }
 
-    // arcItem.onLeave = () => {
-    //   stage.setCursor('auto')
-    //   arcItem.animate({ radius: normalRadius }, 300)
-    // }
+    arcItem.onLeave = () => {
+      stage.setCursor('auto')
+      arcItem.animate({ radius: normalRadius }, 300)
+    }
 
     return arcItem
   })

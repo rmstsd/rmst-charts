@@ -15,24 +15,28 @@ const PolygonDe = () => {
     })
     const layer = new Konva.Layer()
 
-    const line = new Konva.Line({
-      points: [73, 70, 340, 300, 450, 60, 500, 20],
+    var redLine = new Konva.Line({
+      points: [30, 70, 140, 23, 250, 60],
       stroke: 'red',
-      strokeWidth: 2
-      // closed: true
+      strokeWidth: 30,
+      lineCap: 'round',
+      lineJoin: 'round'
     })
 
-    line.addEventListener('mouseenter', () => {
-      console.log('mouseenter')
-    })
-
-    line.addEventListener('mouseleave', () => {
-      console.log('mouseleave')
-    })
-
-    layer.add(line)
+    layer.add(redLine)
 
     stage.add(layer)
+
+    var tween = new Konva.Tween({
+      // list of tween specific properties
+      node: redLine,
+      duration: 1,
+      easing: Konva.Easings.EaseInOut,
+      points: [30, 70, 100, 0, 200, 100]
+    })
+
+    // play tween
+    tween.play()
   }, [])
 
   const addToGroup = () => {}

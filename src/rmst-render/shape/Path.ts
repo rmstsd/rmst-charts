@@ -17,6 +17,8 @@ export class Path {
 
   isGroup = false
 
+  isLine = false
+
   isMouseInner = false // 鼠标是否已经移入某个元素
 
   mouseDownOffset: { x: number; y: number } = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
@@ -59,10 +61,18 @@ export class Path {
 
     if (!stage) return
 
-    return (
-      stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr) ||
-      stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
-    )
+    const isInPath = () => {
+      return stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr)
+    }
+    const isInStroke = () => {
+      return stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
+    }
+
+    if (this.isLine && !this.data.closed) {
+      return isInStroke()
+    }
+
+    return isInPath() || isInStroke()
   }
 
   setFillStyle(ctx: CanvasRenderingContext2D) {
@@ -109,7 +119,7 @@ export class Path {
 
     if (this.data.draggable) {
       if (this.isGroup) {
-        this.elements.forEach(item => {
+        ;(this as unknown as Group).elements.forEach(item => {
           const x = offsetX - item.mouseDownOffset.x
           const y = offsetY - item.mouseDownOffset.y
           item.attr({ x, y })

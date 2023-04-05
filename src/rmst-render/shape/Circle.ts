@@ -42,10 +42,12 @@ export class Circle extends Path {
     }
 
     ctx.fillStyle = bgColor
-    ctx.strokeStyle = strokeStyle
-
     ctx.fill()
-    ctx.stroke()
+
+    if (strokeStyle) {
+      ctx.strokeStyle = strokeStyle
+      ctx.stroke()
+    }
   }
 
   isInner(offsetX: number, offsetY: number) {
