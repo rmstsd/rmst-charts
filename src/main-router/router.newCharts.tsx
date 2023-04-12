@@ -6,7 +6,8 @@ import Stack from '../demo/new-charts/line/Stack'
 import LineSmooth from '@/demo/new-charts/line/LineSmooth'
 import Step from '@/demo/new-charts/line/Step'
 
-import Bar from '../demo/new-charts/Bar'
+import Base from '../demo/new-charts/bar/Base'
+import Background from '../demo/new-charts/bar/Background'
 
 import Pie from '../demo/new-charts/Pie'
 
@@ -31,7 +32,10 @@ export default {
       path: 'bar',
       element: <LayoutOutlet />,
       uiConfig: { title: '柱状图' },
-      children: [{ path: 'base', element: <Bar />, uiConfig: { title: '柱状图' } }]
+      children: [
+        { path: 'base', element: <Base />, uiConfig: { title: '基础柱状图' } },
+        { path: 'background', element: <Background />, uiConfig: { title: '带背景色的柱状图' } }
+      ]
     },
 
     {

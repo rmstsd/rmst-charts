@@ -195,7 +195,7 @@ export class Path {
   }
 
   // totalTime 毫秒
-  animate(prop, totalTime = 1000) {
+  animate(prop, totalTime = 500) {
     if (!this.findStage()) {
       console.warn('还没有 append 到 stage 上')
       return

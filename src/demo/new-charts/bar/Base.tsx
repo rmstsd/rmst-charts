@@ -1,11 +1,10 @@
-// 柱状图
+// 基础柱状图
 import { useEffect, useRef } from 'react'
 import srcCharts, { IChartInstance } from '@/rmst-charts-new'
 
 const option = {
   xAxis: {
     data: ['2017-10-24', '2017-10-25', '2017-10-26', '2017-10-27']
-    // boundaryGap: false
   },
   series: {
     type: 'bar' as const,
@@ -13,7 +12,7 @@ const option = {
   }
 }
 
-const Bar = () => {
+const Base = () => {
   const insRef = useRef<IChartInstance>()
 
   useEffect(() => {
@@ -36,4 +35,4 @@ const Bar = () => {
   )
 }
 
-export default Bar
+export default Base

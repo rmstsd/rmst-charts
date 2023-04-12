@@ -17,9 +17,11 @@ namespace ICharts {
   type series = {
     type: 'line' | 'bar' | 'pie'
     data: ({ value: number; name: string } | number)[]
-    smooth?: boolean
-    areaStyle?: {}
+
+    smooth?: boolean // 折线图-平滑曲线
+    areaStyle?: {} // 折线图-面积图
     step?: 'start' | 'middle' | 'end' // 折线图-阶梯折线图
+    showBackground?: boolean // 柱状图-背景色
   }
 
   type IOption = {

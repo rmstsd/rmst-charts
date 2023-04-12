@@ -28,17 +28,31 @@ export function calcMain(dataSource: number[], xAxisData, yAxis) {
 
 export function createRenderElements(
   stage: Stage,
-  seriesItem,
+  seriesItem: ICharts.series,
   xAxisData: IXAxisElements['xAxisData'],
   yAxisData: IYAxisElements['yAxisData']
 ) {
   const data = calcMain(seriesItem.data, xAxisData, yAxisData)
 
+  // if (seriesItem.showBackground)
+
   console.log(data)
 
-  const rects = data.map((item, index) => {
-    const x_axis_start_y = xAxisData.axis.start.y
+  const x_axis_start_y = xAxisData.axis.start.y
 
+  const backgroundRects = seriesItem.showBackground
+    ? data.map(item => {
+        return new Rect({
+          x: item.x,
+          y: x_axis_start_y,
+          width: item.width,
+          height: yAxisData.axis.end.y - yAxisData.axis.start.y,
+          bgColor: 'rgba(180, 180, 180, 0.2)'
+        })
+      })
+    : []
+
+  const rects = data.map((item, index) => {
     const rectItem = new Rect({
       x: item.x,
       y: x_axis_start_y,
@@ -68,5 +82,5 @@ export function createRenderElements(
     }
   }
 
-  return { elements: [...rects], afterAppendStage }
+  return { elements: [...backgroundRects, ...rects], afterAppendStage }
 }
