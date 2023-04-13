@@ -8,27 +8,27 @@ const LinePath = () => {
 
     const { ctx } = stage
 
-    ctx.save()
+    ctx.moveTo(100, 100)
+    ctx.lineTo(200, 200)
+    ctx.lineTo(300, 40)
+    ctx.lineTo(400, 120)
 
-    // Create circular clipping region
-    ctx.beginPath()
-    ctx.arc(100, 75, 50, 0, Math.PI * 2)
-    ctx.clip()
+    const gradient = ctx.createLinearGradient(100, 0, 400, 0)
 
-    // Draw stuff that gets clipped
-    ctx.fillStyle = 'blue'
-    ctx.fillRect(0, 0, 300, 300)
-    ctx.fillStyle = 'orange'
-    ctx.fillRect(0, 0, 100, 100)
+    gradient.addColorStop(0, 'pink')
+    gradient.addColorStop(0.339999999999999999, 'pink')
+    gradient.addColorStop(0.34, 'blue')
+    gradient.addColorStop(1, 'blue')
 
-    ctx.restore()
-    ctx.fillStyle = 'pink'
-    ctx.fillRect(100, 75, 100, 100)
+    ctx.strokeStyle = gradient
+    ctx.lineWidth = 30
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.stroke()
   }, [])
 
   return (
     <div>
-      刮刮乐 与折线图
       <div className="canvas-container"></div>
     </div>
   )
