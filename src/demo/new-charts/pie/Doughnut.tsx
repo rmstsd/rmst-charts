@@ -1,10 +1,11 @@
-// 饼图
+// 饼图 - 环形图
 import { useEffect, useRef } from 'react'
 import rmstCharts, { IChartInstance } from '@/rmst-charts-new'
 
 const option = {
   series: {
     type: 'pie' as const,
+    radius: ['40%', '70%'],
     data: [
       { value: 1, name: 'pie-1' },
       { value: 2, name: 'pie-2' },
@@ -15,7 +16,7 @@ const option = {
   }
 }
 
-const Pie = () => {
+const Doughnut = () => {
   const insRef = useRef<IChartInstance>()
   useEffect(() => {
     const ins = rmstCharts.init(document.querySelector('.canvas-container'))
@@ -37,4 +38,4 @@ const Pie = () => {
   )
 }
 
-export default Pie
+export default Doughnut

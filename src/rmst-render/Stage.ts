@@ -44,6 +44,10 @@ export class Stage {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
   }
 
+  get canvasSize() {
+    return { width: this.canvasElement.offsetWidth, height: this.canvasElement.offsetHeight }
+  }
+
   removeAllElements() {
     this.elements = []
 

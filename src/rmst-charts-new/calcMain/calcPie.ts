@@ -1,5 +1,5 @@
 import { measureText } from '@/rmst-charts-new/utils/canvasUtil'
-import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad } from '@/rmst-render'
+import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad, Stage } from '@/rmst-render'
 
 import { pieColors } from '../constant'
 
@@ -21,7 +21,7 @@ function calcMain(dataSource: { value: number; name: string }[], end_angle = 360
   return finalRadianArray
 }
 
-export function createRenderElements(stage, seriesItem) {
+export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
   const data = calcMain(seriesItem.data)
   const fakeArc = new Circle({
     x: stage.center.x,
@@ -31,6 +31,8 @@ export function createRenderElements(stage, seriesItem) {
     endAngle: 0,
     bgColor: 'transparent'
   })
+
+  const smallerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)
 
   const elements = data.reduce<Path[]>((acc, item, index) => {
     const width = 40
@@ -47,21 +49,28 @@ export function createRenderElements(stage, seriesItem) {
     const legendGroup = new Group({ onlyKey: 'legend' })
     legendGroup.append([legendRect, legendText])
 
-    const radius = 100
+    const defaultPercent = '70%'
+
+    const a = seriesItem.radius
+
+    const ratioDecimal = parseInt(defaultPercent) / 100
+
+    const pieRadius = (smallerSize / 2) * ratioDecimal
+    const hoverRadius = pieRadius + 5
 
     // 圆弧中心点坐标
     const radianCenterPoint = getPointOnArc(
       stage.center.x,
       stage.center.y,
-      radius,
+      pieRadius,
       (item.startAngle + item.endAngle) / 2
     )
 
     const extendLineLength = 15
 
     const alpha = (deg2rad(item.startAngle) + deg2rad(item.endAngle)) / 2
-    const x_end = (radius + extendLineLength) * Math.cos(alpha) + stage.center.x
-    const y_end = (radius + extendLineLength) * Math.sin(alpha) + stage.center.y
+    const x_end = (pieRadius + extendLineLength) * Math.cos(alpha) + stage.center.x
+    const y_end = (pieRadius + extendLineLength) * Math.sin(alpha) + stage.center.y
 
     const extendLine_1_end = [x_end, y_end]
     const extendLine_1 = new Line({
@@ -97,18 +106,18 @@ export function createRenderElements(stage, seriesItem) {
       onlyKey: 'main-pie',
       x: stage.center.x,
       y: stage.center.y,
-      radius,
+      radius: pieRadius,
       startAngle: 0,
       endAngle: 0,
       bgColor: item.color
     })
 
     function onPieActiveEnter() {
-      arc.animate({ radius: 105, shadowBlur: 20 }, 200)
+      arc.animate({ radius: hoverRadius, shadowBlur: 20 }, 200)
       stage.setCursor('pointer')
     }
     function onPieActiveLeave() {
-      arc.animate({ radius: 100, shadowBlur: 0 }, 200)
+      arc.animate({ radius: pieRadius, shadowBlur: 0 }, 200)
       stage.setCursor('auto')
     }
 

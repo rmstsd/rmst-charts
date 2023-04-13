@@ -34,8 +34,6 @@ export function createRenderElements(
 ) {
   const data = calcMain(seriesItem.data, xAxisData, yAxisData)
 
-  // if (seriesItem.showBackground)
-
   console.log(data)
 
   const x_axis_start_y = xAxisData.axis.start.y

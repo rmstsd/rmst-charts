@@ -22,6 +22,7 @@ namespace ICharts {
     areaStyle?: {} // 折线图-面积图
     step?: 'start' | 'middle' | 'end' // 折线图-阶梯折线图
     showBackground?: boolean // 柱状图-背景色
+    radius?: string | string[] // 饼图-半径 百分比 (容器高宽中较小一项）的 20% 长度) '20%' | ['20%', '40%']
   }
 
   type IOption = {

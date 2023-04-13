@@ -6,10 +6,11 @@ import Stack from '../demo/new-charts/line/Stack'
 import LineSmooth from '@/demo/new-charts/line/LineSmooth'
 import Step from '@/demo/new-charts/line/Step'
 
-import Base from '../demo/new-charts/bar/Base'
+import BarBase from '../demo/new-charts/bar/Base'
 import Background from '../demo/new-charts/bar/Background'
 
-import Pie from '../demo/new-charts/Pie'
+import PieBase from '../demo/new-charts/pie/Base'
+import Doughnut from '../demo/new-charts/pie/Doughnut'
 
 export default {
   path: '/new-charts',
@@ -33,7 +34,7 @@ export default {
       element: <LayoutOutlet />,
       uiConfig: { title: '柱状图' },
       children: [
-        { path: 'base', element: <Base />, uiConfig: { title: '基础柱状图' } },
+        { path: 'base', element: <BarBase />, uiConfig: { title: '基础柱状图' } },
         { path: 'background', element: <Background />, uiConfig: { title: '带背景色的柱状图' } }
       ]
     },
@@ -42,7 +43,10 @@ export default {
       path: 'pie',
       element: <LayoutOutlet />,
       uiConfig: { title: '饼图' },
-      children: [{ path: 'base', element: <Pie />, uiConfig: { title: '饼图' } }]
+      children: [
+        { path: 'base', element: <PieBase />, uiConfig: { title: '基础饼图' } },
+        { path: 'doughnut', element: <Doughnut />, uiConfig: { title: '环形饼图' } }
+      ]
     }
   ]
 }

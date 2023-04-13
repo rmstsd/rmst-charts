@@ -29,8 +29,15 @@ export class Circle extends Path {
 
     this.setShadow(ctx, this.data)
 
+    const path = new Path2D(calcD(radius, startAngle, endAngle, x, y))
+    console.log(path)
+
     ctx.beginPath()
     ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
+
+    // todo: 0 - 180 的时候有问题
+
+    ctx.stroke(path)
 
     const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
     if (!isWholeArc) {
@@ -116,4 +123,24 @@ export function deg2rad(deg) {
 export function rad2deg(radian) {
   var degrees = (radian * 180) / Math.PI
   return degrees
+}
+
+// 返回 path 的 d属性 返回的是 圆弧  -起始角度遵循数学上的平面直角坐标系
+const calcD = (radius: number, startAngle: number, endAngle: number, centerX: number, centerY: number) => {
+  // 将角度转换为弧度
+  const startAngleRad = (startAngle * Math.PI) / 180
+  const endAngleRad = (endAngle * Math.PI) / 180
+
+  // 计算圆弧的起点和终点坐标
+  const startX = centerX + radius * Math.cos(startAngleRad)
+  const startY = centerY + radius * Math.sin(startAngleRad)
+  const endX = centerX + radius * Math.cos(endAngleRad)
+  const endY = centerY + radius * Math.sin(endAngleRad)
+
+  // 计算扇形所需的路径命令
+  const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1
+  const sweepFlag = 1
+  const path = `M${centerX},${centerY} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag},${sweepFlag} ${endX},${endY} Z`
+
+  return path
 }
