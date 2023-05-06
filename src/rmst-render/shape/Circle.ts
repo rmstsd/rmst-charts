@@ -17,6 +17,7 @@ export class Circle extends Path {
     x: number
     y: number
     radius: number
+    innerRadius?: number
     bgColor: string
     strokeStyle?: string
     startAngle?: number // 圆弧 饼图 角度 60 180 360
@@ -25,36 +26,38 @@ export class Circle extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, radius, strokeStyle, bgColor, startAngle, endAngle } = this.data
+    const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle } = this.data
+    const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
     this.setShadow(ctx, this.data)
 
-    const path = new Path2D(calcD(radius, startAngle, endAngle, x, y))
-    console.log(path)
+    const path = new Path2D(calcD(radius, startAngle, endAngle, x, y, isWholeArc))
+
+    const huanPath = new Path2D(calcHuan(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc))
 
     ctx.beginPath()
-    ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
-
-    // todo: 0 - 180 的时候有问题
-
-    ctx.stroke(path)
-
-    const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
-    if (!isWholeArc) {
-      ctx.lineTo(x, y)
-
-      // 获取圆弧的起始点
-      const { x: start_x, y: start_y } = getPointOnArc(x, y, radius, startAngle)
-      ctx.lineTo(start_x, start_y)
-    }
-
-    ctx.fillStyle = bgColor
-    ctx.fill()
+    // ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
 
     if (strokeStyle) {
       ctx.strokeStyle = strokeStyle
-      ctx.stroke()
+      ctx.stroke(path)
     }
+
+    ctx.fillStyle = bgColor
+    ctx.fill(path)
+
+    // if (!isWholeArc) {
+    //   ctx.lineTo(x, y)
+
+    //   // 获取圆弧的起始点
+    //   const { x: start_x, y: start_y } = getPointOnArc(x, y, radius, startAngle)
+    //   ctx.lineTo(start_x, start_y)
+    // }
+
+    // if (strokeStyle) {
+    //   ctx.strokeStyle = strokeStyle
+    //   ctx.stroke()
+    // }
   }
 
   isInner(offsetX: number, offsetY: number) {
@@ -125,8 +128,15 @@ export function rad2deg(radian) {
   return degrees
 }
 
-// 返回 path 的 d属性 返回的是 圆弧  -起始角度遵循数学上的平面直角坐标系
-const calcD = (radius: number, startAngle: number, endAngle: number, centerX: number, centerY: number) => {
+// 圆形/扇形 返回 path 的 d属性 返回的是 圆弧  -起始角度遵循数学上的平面直角坐标系
+const calcD = (
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+  centerX: number,
+  centerY: number,
+  isWholeArc: boolean
+) => {
   // 将角度转换为弧度
   const startAngleRad = (startAngle * Math.PI) / 180
   const endAngleRad = (endAngle * Math.PI) / 180
@@ -140,7 +150,33 @@ const calcD = (radius: number, startAngle: number, endAngle: number, centerX: nu
   // 计算扇形所需的路径命令
   const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1
   const sweepFlag = 1
-  const path = `M${centerX},${centerY} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag},${sweepFlag} ${endX},${endY} Z`
+
+  const path = isWholeArc
+    ? `M${centerX},${centerY} A${radius},${radius} 0 1 1, ${centerX - 0.0001},${centerY} Z`
+    : `M${centerX},${centerY} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag},${sweepFlag} ${endX},${endY} Z`
+
+  // M450 200 A226 226 0 1 1, 449.9774 200Z // echarts
+
+  return path
+}
+
+// 圆环/扇环
+const calcHuan = (
+  radius: number,
+  innerRadius: number,
+  startAngle: number,
+  endAngle: number,
+  centerX: number,
+  centerY: number,
+  isWholeArc: boolean
+) => {
+  const path = ` M 453 145 
+  A 317 317 0 1 1 452.9683 145
+
+  M 453 281 
+  A 181 181 0 1 0 
+
+  453.0181 281 Z"`
 
   return path
 }

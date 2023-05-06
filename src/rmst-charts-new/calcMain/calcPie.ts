@@ -23,16 +23,26 @@ function calcMain(dataSource: { value: number; name: string }[], end_angle = 360
 
 export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
   const data = calcMain(seriesItem.data)
+
+  const smallerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)
+
+  const defaultPercent = '70%'
+
+  const a = seriesItem.radius
+
+  const ratioDecimal = parseInt(defaultPercent) / 100
+
+  const pieRadius = (smallerSize / 2) * ratioDecimal
+  const hoverRadius = pieRadius + 5
+
   const fakeArc = new Circle({
     x: stage.center.x,
     y: stage.center.y,
-    radius: 100,
+    radius: pieRadius,
     startAngle: 0,
     endAngle: 0,
     bgColor: 'transparent'
   })
-
-  const smallerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)
 
   const elements = data.reduce<Path[]>((acc, item, index) => {
     const width = 40
@@ -48,15 +58,6 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     const legendText = new Text({ x: x + width + 5, y, content: item.label, color: item.color, fontSize: 16 })
     const legendGroup = new Group({ onlyKey: 'legend' })
     legendGroup.append([legendRect, legendText])
-
-    const defaultPercent = '70%'
-
-    const a = seriesItem.radius
-
-    const ratioDecimal = parseInt(defaultPercent) / 100
-
-    const pieRadius = (smallerSize / 2) * ratioDecimal
-    const hoverRadius = pieRadius + 5
 
     // 圆弧中心点坐标
     const radianCenterPoint = getPointOnArc(

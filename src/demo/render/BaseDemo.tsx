@@ -17,12 +17,20 @@ const BaseRenderDemo = () => {
     ]
 
     const arcs = [
-      new Circle({ x: 60, y: 60, radius: 50, bgColor: 'pink' }),
-      new Circle({ x: 400, y: 60, radius: 50, startsAngle: 30, endAngle: 70, bgColor: '#fcb69f' }),
-      new Circle({ x: 500, y: 60, radius: 50, startAngle: 100, endAngle: 150, bgColor: '#c2e9fb' }),
-      new Circle({ x: 560, y: 60, radius: 50, startAngle: 190, endAngle: 240, bgColor: '#764ba2' }),
-      new Circle({ x: 100, y: 170, radius: 50, startAngle: 0, endAngle: 160, bgColor: '#2575fc' }),
-      new Circle({ x: 240, y: 170, radius: 50, startAngle: 240, endAngle: 300, bgColor: '#ff0844' })
+      new Circle({ x: 60, y: 60, radius: 50, innerRadius: 20, bgColor: 'pink', strokeStyle: 'blue' })
+      // new Circle({ x: 400, y: 60, radius: 50, startsAngle: 30, endAngle: 70, bgColor: '#fcb69f' }),
+      // new Circle({ x: 500, y: 60, radius: 50, startAngle: 100, endAngle: 150, bgColor: '#c2e9fb' }),
+      // new Circle({ x: 560, y: 60, radius: 50, startAngle: 190, endAngle: 240, bgColor: '#764ba2' }),
+      // new Circle({ x: 100, y: 170, radius: 50, startAngle: 0, endAngle: 160, bgColor: '#2575fc' }),
+      // new Circle({
+      //   x: 240,
+      //   y: 170,
+      //   radius: 50,
+      //   startAngle: 240,
+      //   endAngle: 300,
+      //   bgColor: '#ff0844',
+      //   strokeStyle: 'blue'
+      // })
     ]
 
     const texts = [
@@ -57,6 +65,26 @@ const BaseRenderDemo = () => {
   return (
     <>
       <div className="canvas-container" ref={canvasRef}></div>
+
+      {/* <svg
+        xmlns="http://www.w3.org/2000/svg"
+        // xmlnsxlink="http://www.w3.org/1999/xlink"
+        version="1.1"
+        baseProfile="full"
+        width="906"
+        height="926"
+      >
+        <rect width="906" height="926" x="0" y="0" id="0" fill="none"></rect>
+        <g>
+          <path d="M450 200 A226 226 0 1 1, 449.9774 200Z" fill="rgb(84,112,198)"></path>
+        </g>
+      </svg>
+
+      <hr />
+
+      <svg width="325" height="325" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 80 80 A45 45 0 1 1, 79.99999 80Z" fill="green" />
+      </svg> */}
     </>
   )
 }
