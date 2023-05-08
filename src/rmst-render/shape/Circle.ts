@@ -32,7 +32,7 @@ export class Circle extends Path {
     this.setShadow(ctx, this.data)
 
     const d = innerRadius
-      ? calcHuan(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
+      ? calcAnnularD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
       : calcD(radius, startAngle, endAngle, x, y, isWholeArc)
 
     const path = new Path2D(d)
@@ -109,7 +109,7 @@ export class Circle extends Path {
 
 export default Circle
 
-// 获取圆弧上的点 圆心 半径 角度-60°
+// 获取圆弧上的点 圆心 半径 角度: 60°
 export function getPointOnArc(x0, y0, r, deg) {
   const alpha = deg2rad(deg)
 
@@ -165,7 +165,7 @@ const calcD = (
 }
 
 // 圆环/扇环
-const calcHuan = (
+const calcAnnularD = (
   outerRadius: number,
   innerRadius: number,
   startAngle: number,
@@ -174,29 +174,21 @@ const calcHuan = (
   centerY: number,
   isWholeArc: boolean
 ) => {
-  // const path = `M ${centerX} ${centerY - radius}
-  // A ${radius} ${radius} 0 1 1 ${centerX - 0.001} ${centerY - radius}
-
-  // M ${centerX} ${centerY - innerRadius}
-  // A ${innerRadius} ${innerRadius} 0 1 0
-
-  // ${centerX + 0.001} ${centerY - innerRadius} Z"`
-
-  // return path
-
   startAngle = deg2rad(startAngle)
   endAngle = deg2rad(endAngle)
 
-  // 计算圆环路径的 d 属性
-  const outerCircle = `M ${centerX - outerRadius} ${centerY} A ${outerRadius} ${outerRadius} 0 1 0 ${
-    centerX + outerRadius
-  } ${centerY} A ${outerRadius} ${outerRadius} 0 1 0 ${centerX - outerRadius} ${centerY}`
+  // 圆环
+  const calcCircleAnnularD = () => {
+    const outerM_y = centerY - outerRadius
 
-  const innerCircle = `M ${centerX - innerRadius} ${centerY} A ${innerRadius} ${innerRadius} 0 1 0 ${
-    centerX + innerRadius
-  } ${centerY} A ${innerRadius} ${innerRadius} 0 1 0 ${centerX - innerRadius} ${centerY}`
+    const outerM = `M ${centerX} ${outerM_y}`
+    const outerA = `A ${outerRadius} ${outerRadius} 0 1 1 ${centerX - 0.01} ${outerM_y}`
 
-  const d = `${outerCircle} ${innerCircle}`
+    const innerM = `M ${centerX} ${centerY - innerRadius}`
+    const innerA = `A ${innerRadius} ${innerRadius} 0 1 0 ${centerX + 0.01} ${centerY - innerRadius}`
 
-  return d
+    return `${outerM} ${outerA} ${innerM} ${innerA} Z`
+  }
+
+  return isWholeArc ? calcCircleAnnularD() : ''
 }
