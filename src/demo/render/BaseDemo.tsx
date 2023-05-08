@@ -17,7 +17,7 @@ const BaseRenderDemo = () => {
     ]
 
     const arcs = [
-      new Circle({ x: 60, y: 60, radius: 50, innerRadius: 20, bgColor: 'pink', strokeStyle: 'blue' })
+      new Circle({ x: 50, y: 50, radius: 50, innerRadius: 20, bgColor: 'pink', strokeStyle: 'blue' })
       // new Circle({ x: 400, y: 60, radius: 50, startsAngle: 30, endAngle: 70, bgColor: '#fcb69f' }),
       // new Circle({ x: 500, y: 60, radius: 50, startAngle: 100, endAngle: 150, bgColor: '#c2e9fb' }),
       // new Circle({ x: 560, y: 60, radius: 50, startAngle: 190, endAngle: 240, bgColor: '#764ba2' }),
@@ -38,7 +38,11 @@ const BaseRenderDemo = () => {
       new Text({ x: 210, y: 10, content: '君不见黄河之水天上来', color: '#333' })
     ]
 
-    const shapeArray = [...rects, ...arcs, ...texts]
+    const shapeArray = [
+      // ...rects,
+      ...arcs
+      // ...texts
+    ]
 
     stage.append(shapeArray)
 
@@ -47,12 +51,12 @@ const BaseRenderDemo = () => {
     // 注册鼠标事件
     shapeArray.forEach(item => {
       item.onEnter = () => {
-        stage.canvasElement.style.cursor = 'pointer'
+        stage.setCursor('pointer')
         console.log('onEnter', item.constructor.name)
       }
 
       item.onLeave = () => {
-        stage.canvasElement.style.cursor = null
+        stage.setCursor('auto')
         console.log('onLeave', item.constructor.name)
       }
 

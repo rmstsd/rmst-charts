@@ -31,12 +31,14 @@ export class Circle extends Path {
 
     this.setShadow(ctx, this.data)
 
-    const path = new Path2D(calcD(radius, startAngle, endAngle, x, y, isWholeArc))
+    const d = innerRadius
+      ? calcHuan(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
+      : calcD(radius, startAngle, endAngle, x, y, isWholeArc)
 
-    const huanPath = new Path2D(calcHuan(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc))
+    const path = new Path2D(d)
 
     ctx.beginPath()
-    // ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
+    ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
 
     if (strokeStyle) {
       ctx.strokeStyle = strokeStyle
@@ -61,10 +63,10 @@ export class Circle extends Path {
   }
 
   isInner(offsetX: number, offsetY: number) {
-    const { x, y, radius, startAngle, endAngle } = this.data
+    const { x, y, radius, innerRadius, startAngle, endAngle } = this.data
 
     const distance = Math.sqrt((offsetX - x) ** 2 + (offsetY - y) ** 2)
-    const isRadiusInner = distance <= radius
+    const isRadiusInner = innerRadius ? distance <= radius && distance >= innerRadius : distance <= radius
 
     if (!isRadiusInner) return false
 
@@ -151,8 +153,10 @@ const calcD = (
   const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1
   const sweepFlag = 1
 
+  const M_y = centerY - radius
+
   const path = isWholeArc
-    ? `M${centerX},${centerY} A${radius},${radius} 0 1 1, ${centerX - 0.0001},${centerY} Z`
+    ? `M${centerX},${M_y} A${radius},${radius} 0 1 1, ${centerX - 0.0001},${centerY - radius}Z`
     : `M${centerX},${centerY} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag},${sweepFlag} ${endX},${endY} Z`
 
   // M450 200 A226 226 0 1 1, 449.9774 200Z // echarts
@@ -162,7 +166,7 @@ const calcD = (
 
 // 圆环/扇环
 const calcHuan = (
-  radius: number,
+  outerRadius: number,
   innerRadius: number,
   startAngle: number,
   endAngle: number,
@@ -170,13 +174,29 @@ const calcHuan = (
   centerY: number,
   isWholeArc: boolean
 ) => {
-  const path = ` M 453 145 
-  A 317 317 0 1 1 452.9683 145
+  // const path = `M ${centerX} ${centerY - radius}
+  // A ${radius} ${radius} 0 1 1 ${centerX - 0.001} ${centerY - radius}
 
-  M 453 281 
-  A 181 181 0 1 0 
+  // M ${centerX} ${centerY - innerRadius}
+  // A ${innerRadius} ${innerRadius} 0 1 0
 
-  453.0181 281 Z"`
+  // ${centerX + 0.001} ${centerY - innerRadius} Z"`
 
-  return path
+  // return path
+
+  startAngle = deg2rad(startAngle)
+  endAngle = deg2rad(endAngle)
+
+  // 计算圆环路径的 d 属性
+  const outerCircle = `M ${centerX - outerRadius} ${centerY} A ${outerRadius} ${outerRadius} 0 1 0 ${
+    centerX + outerRadius
+  } ${centerY} A ${outerRadius} ${outerRadius} 0 1 0 ${centerX - outerRadius} ${centerY}`
+
+  const innerCircle = `M ${centerX - innerRadius} ${centerY} A ${innerRadius} ${innerRadius} 0 1 0 ${
+    centerX + innerRadius
+  } ${centerY} A ${innerRadius} ${innerRadius} 0 1 0 ${centerX - innerRadius} ${centerY}`
+
+  const d = `${outerCircle} ${innerCircle}`
+
+  return d
 }
