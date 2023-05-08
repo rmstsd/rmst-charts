@@ -24,21 +24,19 @@ function calcMain(dataSource: { value: number; name: string }[], end_angle = 360
 export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
   const data = calcMain(seriesItem.data)
 
-  const smallerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)
-
+  const smallerContainerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)
   const defaultPercent = '70%'
-
-  const a = seriesItem.radius
-
   const ratioDecimal = parseInt(defaultPercent) / 100
 
-  const pieRadius = (smallerSize / 2) * ratioDecimal
-  const hoverRadius = pieRadius + 5
+  const [innerRadius, outerRadiusOpt] = seriesItem.radius || []
+
+  const outerRadius = (smallerContainerSize / 2) * ratioDecimal
+  const hoverRadius = outerRadius + 5
 
   const fakeArc = new Circle({
     x: stage.center.x,
     y: stage.center.y,
-    radius: pieRadius,
+    radius: outerRadius,
     startAngle: 0,
     endAngle: 0,
     bgColor: 'transparent'
@@ -63,15 +61,15 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     const radianCenterPoint = getPointOnArc(
       stage.center.x,
       stage.center.y,
-      pieRadius,
+      outerRadius,
       (item.startAngle + item.endAngle) / 2
     )
 
     const extendLineLength = 15
 
     const alpha = (deg2rad(item.startAngle) + deg2rad(item.endAngle)) / 2
-    const x_end = (pieRadius + extendLineLength) * Math.cos(alpha) + stage.center.x
-    const y_end = (pieRadius + extendLineLength) * Math.sin(alpha) + stage.center.y
+    const x_end = (outerRadius + extendLineLength) * Math.cos(alpha) + stage.center.x
+    const y_end = (outerRadius + extendLineLength) * Math.sin(alpha) + stage.center.y
 
     const extendLine_1_end = [x_end, y_end]
     const extendLine_1 = new Line({
@@ -107,7 +105,8 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
       onlyKey: 'main-pie',
       x: stage.center.x,
       y: stage.center.y,
-      radius: pieRadius,
+      radius: outerRadius,
+      innerRadius: innerRadius ? outerRadius * 0.5 : undefined,
       startAngle: 0,
       endAngle: 0,
       bgColor: item.color
@@ -118,7 +117,7 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
       stage.setCursor('pointer')
     }
     function onPieActiveLeave() {
-      arc.animate({ radius: pieRadius, shadowBlur: 0 }, 200)
+      arc.animate({ radius: outerRadius, shadowBlur: 0 }, 200)
       stage.setCursor('auto')
     }
 

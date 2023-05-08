@@ -174,21 +174,38 @@ const calcAnnularD = (
   centerY: number,
   isWholeArc: boolean
 ) => {
-  startAngle = deg2rad(startAngle)
-  endAngle = deg2rad(endAngle)
+  return isWholeArc ? calcWholeAnnularD() : calcAnnularD()
 
-  // 圆环
-  const calcCircleAnnularD = () => {
+  function calcWholeAnnularD() {
     const outerM_y = centerY - outerRadius
 
     const outerM = `M ${centerX} ${outerM_y}`
     const outerA = `A ${outerRadius} ${outerRadius} 0 1 1 ${centerX - 0.01} ${outerM_y}`
 
-    const innerM = `M ${centerX} ${centerY - innerRadius}`
-    const innerA = `A ${innerRadius} ${innerRadius} 0 1 0 ${centerX + 0.01} ${centerY - innerRadius}`
+    const innerM_y = centerY - innerRadius
+
+    const innerM = `M ${centerX} ${innerM_y}`
+    const innerA = `A ${innerRadius} ${innerRadius} 0 1 0 ${centerX + 0.01} ${innerM_y}`
 
     return `${outerM} ${outerA} ${innerM} ${innerA} Z`
   }
 
-  return isWholeArc ? calcCircleAnnularD() : ''
+  function calcAnnularD() {
+    const outerStart = getPointOnArc(centerX, centerY, outerRadius, startAngle)
+    const outerEnd = getPointOnArc(centerX, centerY, outerRadius, endAngle)
+
+    const largeArcFlag = endAngle - startAngle >= 180 ? 1 : 0
+
+    const outerM = `M ${outerStart.x} ${outerStart.y}`
+    const outerA = `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}`
+
+    const innerStart = getPointOnArc(centerX, centerY, innerRadius, startAngle)
+    const innerEnd = getPointOnArc(centerX, centerY, innerRadius, endAngle)
+
+    const moveL = `L${innerEnd.x} ${innerEnd.y}`
+
+    const innerA = `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`
+
+    return `${outerM} ${outerA} ${moveL} ${innerA} Z`
+  }
 }
