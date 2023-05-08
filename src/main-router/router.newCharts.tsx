@@ -10,7 +10,7 @@ import BarBase from '../demo/new-charts/bar/Base'
 import Background from '../demo/new-charts/bar/Background'
 
 import PieBase from '../demo/new-charts/pie/Base'
-import Doughnut from '../demo/new-charts/pie/Doughnut'
+import Ring from '../demo/new-charts/pie/Ring'
 
 export default {
   path: '/new-charts',
@@ -45,7 +45,7 @@ export default {
       uiConfig: { title: '饼图' },
       children: [
         { path: 'base', element: <PieBase />, uiConfig: { title: '基础饼图' } },
-        { path: 'doughnut', element: <Doughnut />, uiConfig: { title: '环形饼图' } }
+        { path: 'doughnut', element: <Ring />, uiConfig: { title: '环形饼图' } }
       ]
     }
   ]

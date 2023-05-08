@@ -16,7 +16,7 @@ const option = {
   }
 }
 
-const Doughnut = () => {
+const Ring = () => {
   const insRef = useRef<IChartInstance>()
   useEffect(() => {
     const ins = rmstCharts.init(document.querySelector('.canvas-container'))
@@ -38,4 +38,4 @@ const Doughnut = () => {
   )
 }
 
-export default Doughnut
+export default Ring

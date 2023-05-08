@@ -32,7 +32,7 @@ export class Circle extends Path {
     this.setShadow(ctx, this.data)
 
     const d = innerRadius
-      ? calcAnnularD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
+      ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
       : calcD(radius, startAngle, endAngle, x, y, isWholeArc)
 
     const path = new Path2D(d)
@@ -165,7 +165,7 @@ const calcD = (
 }
 
 // 圆环/扇环
-const calcAnnularD = (
+const calcRingD = (
   outerRadius: number,
   innerRadius: number,
   startAngle: number,
@@ -174,9 +174,9 @@ const calcAnnularD = (
   centerY: number,
   isWholeArc: boolean
 ) => {
-  return isWholeArc ? calcWholeAnnularD() : calcAnnularD()
+  return isWholeArc ? calcWholeRingD() : calcRingSectorD()
 
-  function calcWholeAnnularD() {
+  function calcWholeRingD() {
     const outerM_y = centerY - outerRadius
 
     const outerM = `M ${centerX} ${outerM_y}`
@@ -190,7 +190,7 @@ const calcAnnularD = (
     return `${outerM} ${outerA} ${innerM} ${innerA} Z`
   }
 
-  function calcAnnularD() {
+  function calcRingSectorD() {
     const outerStart = getPointOnArc(centerX, centerY, outerRadius, startAngle)
     const outerEnd = getPointOnArc(centerX, centerY, outerRadius, endAngle)
 
