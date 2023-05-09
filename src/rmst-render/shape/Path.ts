@@ -48,6 +48,7 @@ export class Path {
     shadowBlur?: number
     shadowOffsetX?: number
     shadowOffsetY?: number
+    clip?: boolean
     [key: string]: any
   }
 
@@ -75,12 +76,13 @@ export class Path {
     return isInPath() || isInStroke()
   }
 
+  // 通过唯一颜色值拾取图形
   setFillStyle(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = this.extraData.rgb
     ctx.strokeStyle = this.extraData.rgb
   }
 
-  // 获取组内的具体的某个图形 请查看Group类
+  // 获取组内的具体的某个图形 查看Group类
   findActualShape(offsetX: number, offsetY: number) {
     return this
   }
@@ -108,7 +110,7 @@ export class Path {
   }
 
   documentMousemove(evt: MouseEvent) {
-    evt.preventDefault() // 防止选中
+    evt.preventDefault() // 防止选中文本
 
     const { pageX, pageY } = evt
 
@@ -198,6 +200,10 @@ export class Path {
   animate(prop, totalTime = 500) {
     if (!this.findStage()) {
       console.warn('还没有 append 到 stage 上')
+      return
+    }
+
+    if (this.data.clip) {
       return
     }
 
