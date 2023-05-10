@@ -1,10 +1,13 @@
-import LayoutView from '../LayoutView/LayoutView'
+import LayoutView, { LayoutOutlet } from '../LayoutView/LayoutView'
 
-import RenderDemo from '../demo/render/BaseDemo'
+import RectDemo from '../demo/render/base-shape/Rect'
+import Circle from '../demo/render/base-shape/Circle'
+
 import GroupDraggable from '../demo/render/GroupDraggable'
 import Animate from '../demo/render/Animate'
 import Draggable from '../demo/render/Draggable'
 import RmstLine from '../demo/render/RmstLine'
+import TextDemo from '@/demo/render/base-shape/Text'
 
 export default {
   path: '/rmst-render',
@@ -13,8 +16,13 @@ export default {
   children: [
     {
       path: 'base',
-      element: <RenderDemo />,
-      uiConfig: { title: '基础图形' }
+      element: <LayoutOutlet />,
+      uiConfig: { title: '基础图形' },
+      children: [
+        { path: 'rect', element: <RectDemo />, uiConfig: { title: '矩形' } },
+        { path: 'circle', element: <Circle />, uiConfig: { title: '圆, 环, 扇, 扇环' } },
+        { path: 'text', element: <TextDemo />, uiConfig: { title: '文本' } }
+      ]
     },
     {
       path: 'draggable',
