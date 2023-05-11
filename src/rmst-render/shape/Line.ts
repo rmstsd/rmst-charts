@@ -13,17 +13,17 @@ export class Line extends Path {
     console.log(normalPoints)
 
     const rr = {
-      lt_x: Math.min(...normalPoints.map(item => item.x)),
-      lt_y: Math.min(...normalPoints.map(item => item.y)),
-      rb_x: Math.max(...normalPoints.map(item => item.x)),
-      rb_y: Math.max(...normalPoints.map(item => item.y))
+      lt_x: Math.min(...normalPoints.map(item => item.x)) - data.lineWidth / 2,
+      lt_y: Math.min(...normalPoints.map(item => item.y)) - data.lineWidth / 2,
+      rb_x: Math.max(...normalPoints.map(item => item.x)) + data.lineWidth,
+      rb_y: Math.max(...normalPoints.map(item => item.y)) + data.lineWidth
     }
 
     this.surroundBoxData = {
-      x: rr.lt_x - data.lineWidth,
-      y: rr.lt_y - data.lineWidth,
-      width: rr.rb_x - rr.lt_x + data.lineWidth * 2,
-      height: rr.rb_y - rr.lt_y + data.lineWidth * 2
+      x: rr.lt_x,
+      y: rr.lt_y,
+      width: rr.rb_x - rr.lt_x,
+      height: rr.rb_y - rr.lt_y
     }
 
     this.data = { ...defaultData, ...data }
@@ -78,6 +78,16 @@ export class Line extends Path {
     ctx.stroke(path2D)
 
     if (closed) ctx.fill(path2D)
+
+    // 绘制辅助的包围盒
+    // ctx.lineWidth = 1
+    // ctx.strokeStyle = 'rgba(0,0,0,0.5)'
+    // ctx.strokeRect(
+    //   this.surroundBoxData.x,
+    //   this.surroundBoxData.y,
+    //   this.surroundBoxData.width,
+    //   this.surroundBoxData.height
+    // )
 
     ctx.restore() // 恢复clip
   }
