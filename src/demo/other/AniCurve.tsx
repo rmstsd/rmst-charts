@@ -57,7 +57,7 @@ const AniCurve = () => {
       ctx.beginPath()
 
       ctx.strokeStyle = 'red'
-      ctx.lineWidth = 2
+      ctx.lineWidth = 10
       ctx.moveTo(p0.x, p0.y)
       ctx.bezierCurveTo(cp1.x, cp1.y, cp2.x, cp2.y, tempEnd.x, tempEnd.y)
       ctx.stroke()

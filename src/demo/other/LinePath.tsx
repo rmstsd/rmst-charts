@@ -21,10 +21,16 @@ const LinePath = () => {
     gradient.addColorStop(1, 'blue')
 
     ctx.strokeStyle = gradient
-    ctx.lineWidth = 30
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
+    ctx.lineWidth = 50
+    ctx.lineCap = 'square'
+    // ctx.lineJoin = 'round'
     ctx.stroke()
+
+    ctx.beginPath()
+
+    ctx.fillStyle = 'red'
+    ctx.fillRect(100, 100, 2, 2)
+    ctx.fillRect(300, 40, 2, 2)
   }, [])
 
   return (
