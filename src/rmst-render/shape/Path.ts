@@ -21,7 +21,7 @@ export class Path {
 
   isMouseInner = false // 鼠标是否已经移入某个元素
 
-  mouseDownOffset: { x: number; y: number } = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
+  mouseDownOffset = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
 
   extraData: IExtraData
 
@@ -40,6 +40,10 @@ export class Path {
 
     return stage as unknown as Stage
   }
+
+  surroundBoxData = { x: 0, y: 0, width: 0, height: 0 } // 包围盒的信息 仅在设置 clip 属性后执行动画才有用
+  clipWidth = 0
+  clipHeight = 0
 
   data: {
     x?: number
@@ -87,6 +91,14 @@ export class Path {
     return this
   }
 
+  beforeDrawClip(ctx: CanvasRenderingContext2D) {
+    if (!this.data.clip) return
+
+    ctx.save()
+    ctx.beginPath()
+    ctx.rect(this.surroundBoxData.x, this.surroundBoxData.y, this.clipWidth, this.clipHeight)
+    ctx.clip()
+  }
   draw(ctx: CanvasRenderingContext2D) {}
 
   setShadow(ctx: CanvasRenderingContext2D, prop) {
@@ -197,15 +209,39 @@ export class Path {
   }
 
   // totalTime 毫秒
-  animate(prop, totalTime = 500) {
+  animate(prop, totalTime = 500, type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left') {
     if (!this.findStage()) {
       console.warn('还没有 append 到 stage 上')
       return
     }
 
     if (this.data.clip) {
+      if (type === 'left-right') {
+        const per = calcPer(0, this.surroundBoxData.width, totalTime)
+
+        const exec = () => {
+          const targetValue = calcTargetValue(this.clipWidth, this.surroundBoxData.width, per)
+
+          if (targetValue === this.surroundBoxData.width) {
+            console.log('结束')
+            return
+          }
+
+          this.clipWidth = targetValue as number
+          this.clipHeight = this.surroundBoxData.height
+
+          this.parent.renderStage()
+
+          this.animateState.rafTimer = requestAnimationFrame(exec)
+        }
+
+        exec()
+      }
+
       return
     }
+
+    if (!prop) return
 
     cancelAnimationFrame(this.animateState.rafTimer)
 

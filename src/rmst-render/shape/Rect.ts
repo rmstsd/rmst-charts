@@ -8,6 +8,8 @@ export class Rect extends Path {
   constructor(data: Rect['data']) {
     super()
 
+    this.surroundBoxData = { x: data.x, y: data.y, width: data.width, height: data.height }
+
     this.data = { ...defaultData, ...data }
   }
 
@@ -22,6 +24,8 @@ export class Rect extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    this.beforeDrawClip(ctx)
+
     const { x, y, width, height, bgColor, cornerRadius } = this.data
 
     this.setShadow(ctx, this.data)
@@ -53,6 +57,8 @@ export class Rect extends Path {
 
     this.path2D = path2D
     ctx.fill(path2D)
+
+    ctx.restore() // 恢复clip
   }
 
   // isInner(offsetX: number, offsetY: number) {
