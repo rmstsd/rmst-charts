@@ -9,7 +9,7 @@ import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { drawArc } from '../utils/drawHelpers'
-import { pointToArray } from '../utils/utils.js'
+import { pointToFlatArray } from '../utils/utils.js'
 // import { drawArc, drawSegmentLine } from '../utils/drawHelpers.js'
 // import { drawBezier } from '../utils/utils.js'
 
@@ -40,33 +40,48 @@ export function createRenderElements(
 
   const { areaStyle, smooth, step } = seriesItem
 
-  const lineArr = calcLinesByPoints(pointData, step)
+  const finalCoordPoints = calcPointsByUserPoints(pointData, step)
 
-  // 面积图区域
-  const singleArea = new Line({
-    points: [],
-    fillStyle: primaryColorAlpha,
-    strokeStyle: 'transparent',
-    closed: true
+  const mainLinePoints = pointToFlatArray(finalCoordPoints)
+
+  let singleArea
+  if (areaStyle) singleArea = createArea()
+  function createArea() {
+    // 面积图区域
+    const singleArea = new Line({
+      points: [
+        finalCoordPoints.at(0).x,
+        xAxisData.axis.start.y,
+
+        ...mainLinePoints,
+
+        finalCoordPoints.at(-1).x,
+        xAxisData.axis.end.y
+      ],
+      fillStyle: primaryColorAlpha,
+      strokeStyle: 'transparent',
+      closed: true,
+      clip: true
+    })
+    singleArea.onEnter = () => {
+      stage.setCursor('pointer')
+      singleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
+    }
+    singleArea.onLeave = () => {
+      stage.setCursor('auto')
+      singleArea.attr({ fillStyle: primaryColorAlpha })
+    }
+
+    return singleArea
+  }
+
+  // 主折线
+  const mainLine = new Line({
+    points: mainLinePoints,
+    bgColor: primaryColor,
+    lineWidth: 2,
+    clip: true
   })
-  singleArea.onEnter = () => {
-    stage.setCursor('pointer')
-    singleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
-  }
-  singleArea.onLeave = () => {
-    stage.setCursor('auto')
-    singleArea.attr({ fillStyle: primaryColorAlpha })
-  }
-
-  // 每一段线
-  const lines = lineArr.map(
-    item =>
-      new Line({
-        points: [item.start.x, item.start.y, item.start.x, item.start.y],
-        bgColor: primaryColor,
-        lineWidth: 2
-      })
-  )
 
   const initRadius = 0
   const normalRadius = 3
@@ -145,48 +160,11 @@ export function createRenderElements(
       return
     }
 
-    const [firstArc, ...restArcs] = arcs
-    firstArc.animate({ radius: normalRadius })
-    for (let i = 0; i < lines.length; i++) {
-      const { start, end } = lineArr[i]
-      if (smooth) {
-      } else {
-        await lines[i].animate({
-          points: [start.x, start.y, end.x, end.y],
-          animateCallback: prop => {
-            if (areaStyle) {
-              singleArea.attr({
-                points: [
-                  // x轴起始的点
-                  pointData[0].x,
-                  xAxisData.axis.start.y,
-
-                  // 中间的数据点
-                  ...pointToArray(pointData.slice(0, i + 1)),
-
-                  prop.points[2],
-                  prop.points[3],
-
-                  // x轴结尾的点
-                  prop.points[2],
-                  xAxisData.axis.start.y
-                ]
-              })
-            }
-          }
-        })
-      }
-
-      if (!step) restArcs[i].animate({ radius: normalRadius })
-      else {
-        if (i % 2 === 0) {
-          restArcs[i / 2].animate({ radius: normalRadius })
-        }
-      }
-    }
+    mainLine.animate(undefined, 5000, 'left-right')
+    if (areaStyle) singleArea.animate(undefined, 5000, 'left-right')
   }
 
-  const elements = [...lines, ...arcs]
+  const elements = [mainLine]
   if (areaStyle) elements.unshift(singleArea)
 
   return { elements, afterAppendStage }
@@ -251,31 +229,6 @@ function calcAllControlPoint(points, distance) {
   }
 }
 
-function calcLinesByPoints(pointData, step) {
-  console.log(pointData)
-  if (!step) {
-    return pointData.reduce(
-      (acc, item, idx, originArr) =>
-        idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
-      []
-    ) as { start: ICharts.ICoord; end: ICharts.ICoord }[]
-  }
-
-  // 在某个点开始的时候 先垂直 后拐弯
-  if (step === 'start') {
-    return pointData.reduce((acc, item, idx, originArr) => {
-      if (idx === originArr.length - 1) return acc
-
-      const addPoint = { x: item.x, y: originArr[idx + 1].y }
-
-      return acc.concat([
-        { start: item, end: addPoint },
-        { start: addPoint, end: originArr[idx + 1] }
-      ])
-    }, []) as { start: ICharts.ICoord; end: ICharts.ICoord }[]
-  }
-}
-
 // 计算 和 绘制贝塞尔曲线
 function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord[], distance: number) {
   const finalPoint = calcAllControlPoint(points, points)
@@ -302,4 +255,32 @@ function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord[], dis
     drawArc(ctx, cp1.x, cp1.y, 2, 'red')
     drawArc(ctx, cp2.x, cp2.y, 2, 'red')
   }
+}
+
+function calcPointsByUserPoints(pointData: ICharts.ICoord[], step: ICharts.series['step']): ICharts.ICoord[] {
+  if (!step) return pointData
+
+  const finalPointsCoord = pointData.reduce((acc, item, idx, originArr) => {
+    if (idx === originArr.length - 1) return acc.concat(item)
+
+    const addPoint = []
+
+    const nextPoint = originArr[idx + 1]
+
+    // 在某个点开始的时候拐弯
+    if (step === 'start') addPoint.push({ x: item.x, y: nextPoint.y })
+
+    // 结束的时候拐弯
+    if (step === 'end') addPoint.push({ x: nextPoint.x, y: item.y })
+
+    if (step === 'middle') {
+      const centerX = (item.x + nextPoint.x) / 2
+      addPoint.push({ x: centerX, y: item.y })
+      addPoint.push({ x: centerX, y: nextPoint.y })
+    }
+
+    return acc.concat(item, addPoint)
+  }, [])
+
+  return finalPointsCoord
 }

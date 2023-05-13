@@ -2,7 +2,7 @@
 import { Stage, Line, Text } from '../../rmst-render'
 import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from '../constant.js'
 import { measureText } from '../utils/canvasUtil.js'
-import { pointToArray } from '../utils/utils.js'
+import { pointToFlatArray } from '../utils/utils.js'
 
 function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
   const start_x = canvasPaddingLeft
@@ -53,7 +53,7 @@ export function createRenderElements(stage: Stage, innerOption) {
 
   const ticksLines = xAxisData.ticks.map(item => {
     return new Line({
-      points: pointToArray([item.start, item.end]),
+      points: pointToFlatArray([item.start, item.end]),
       strokeStyle: tickColor
     })
   })

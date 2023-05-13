@@ -8,8 +8,8 @@ const option = {
   },
   series: {
     type: 'line' as const,
-    data: [620, 932, 901, 934, 800, 800],
-    step: 'start'
+    data: [620, 932, 901, 934, 800, 900],
+    step: 'middle'
   }
 }
 

@@ -211,7 +211,7 @@ export class Path {
   // totalTime 毫秒
   animate(prop, totalTime = 500, type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left') {
     if (!this.findStage()) {
-      console.warn('还没有 append 到 stage 上')
+      console.warn('图形', this, '还没有 append 到 stage 上')
       return
     }
 

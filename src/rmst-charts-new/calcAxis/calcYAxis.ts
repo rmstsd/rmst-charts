@@ -10,7 +10,7 @@ import {
   yAxisPadding
 } from '../constant.js'
 import { measureText } from '../utils/canvasUtil.js'
-import { calcPerfect, pointToArray } from '../utils/utils.js'
+import { calcPerfect, pointToFlatArray } from '../utils/utils.js'
 
 function getYAxis(
   ctx: CanvasRenderingContext2D,
@@ -72,7 +72,7 @@ export function createRenderElements(stage: Stage, innerOption) {
   )
 
   const yAxisLine = new Line({
-    points: pointToArray([yAxisData.axis.start, yAxisData.axis.end]),
+    points: pointToFlatArray([yAxisData.axis.start, yAxisData.axis.end]),
     bgColor: splitLineColor
   })
 
