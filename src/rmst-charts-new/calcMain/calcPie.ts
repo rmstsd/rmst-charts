@@ -1,5 +1,5 @@
-import { measureText } from '@/rmst-charts-new/utils/canvasUtil'
 import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad, Stage } from '@/rmst-render'
+import { measureText } from '@/rmst-charts-new/utils/canvasUtil'
 
 import { pieColors } from '../constant'
 
@@ -86,7 +86,7 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     const extendLine_2_end = [extendLine_2_x_end, y_end]
     const extendLine_2 = new Line({
       onlyKey: 'extend-line_2',
-      points: [x_end, y_end, x_end, y_end],
+      points: [...extendLine_1_end, x_end, y_end],
       fillStyle: item.color,
       bgColor: item.color,
       extraData: extendLine_2_end,
@@ -94,11 +94,12 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     })
 
     const labelText = new Text({
-      x: isCenterRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - textWidth - 5,
+      x: isCenterRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - 5,
       y: y_end - textHeight / 2,
       content: item.label,
       color: '#333',
-      fontSize: 16
+      fontSize: 16,
+      textAlign: isCenterRight ? 'left' : 'right'
     })
 
     const arc = new Circle({

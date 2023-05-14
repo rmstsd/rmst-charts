@@ -13,6 +13,7 @@ export class Text extends Path {
     content: string
     color?: string
     fontSize?: number
+    textAlign?: CanvasTextAlign
     [key: string]: any
   }
 
@@ -29,12 +30,13 @@ export class Text extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, content, color, fontSize } = this.data
+    const { x, y, content, color, fontSize, textAlign = 'left' } = this.data
 
     this.setShadow(ctx, this.data)
 
     ctx.fillStyle = color
 
+    ctx.textAlign = textAlign
     ctx.fillText(content, x, y)
   }
 }
