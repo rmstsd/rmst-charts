@@ -113,11 +113,11 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     })
 
     function onPieActiveEnter() {
-      arc.animate({ radius: hoverRadius, shadowBlur: 20 }, 200)
+      arc.animateCartoon({ radius: hoverRadius, shadowBlur: 20 }, 200)
       stage.setCursor('pointer')
     }
     function onPieActiveLeave() {
-      arc.animate({ radius: outerRadius, shadowBlur: 0 }, 200)
+      arc.animateCartoon({ radius: outerRadius, shadowBlur: 0 }, 200)
       stage.setCursor('auto')
     }
 
@@ -148,10 +148,10 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
       .filter(o => o.data.onlyKey === 'extend-line_1')
       .forEach((item, index) => {
         item
-          .animate({ points: [item.data.points[0], item.data.points[1], ...item.data.extraData] }, 300)
+          .animateCartoon({ points: [item.data.points[0], item.data.points[1], ...item.data.extraData] }, 300)
           .then(() => {
             const extendLine_2sItem = extendLine_2s[index]
-            extendLine_2sItem.animate(
+            extendLine_2sItem.animateCartoon(
               {
                 points: [
                   extendLine_2sItem.data.points[0],
@@ -164,7 +164,7 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
           })
       })
 
-    fakeArc.animate({
+    fakeArc.animateCartoon({
       endAngle: 360,
       animateCallback(prop) {
         const data = calcMain(seriesItem.data, prop.endAngle)

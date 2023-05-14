@@ -54,12 +54,12 @@ const RmstLine = () => {
     })
 
     rect_2.onEnter = () => {
-      rect_2.animate({ width: 150 })
+      rect_2.animateCartoon({ width: 150 })
       stage.setCursor('pointer')
     }
 
     rect_2.onLeave = () => {
-      rect_2.animate({ width: 100 })
+      rect_2.animateCartoon({ width: 100 })
       stage.setCursor('auto')
     }
 

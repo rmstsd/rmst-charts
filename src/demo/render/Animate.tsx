@@ -43,9 +43,9 @@ const Animate = () => {
 
     stage.append([arc, rect, sector])
 
-    arc.animate({ radius: 100 }).then(() => arc.animate({ radius: 50 }))
-    rect.animate({ x: 200 + 100 }).then(() => rect.animate({ x: 200 }))
-    sector.animate({ endAngle: 100 })
+    arc.animateCartoon({ radius: 100 }).then(() => arc.animateCartoon({ radius: 50 }))
+    rect.animateCartoon({ x: 200 + 100 }).then(() => rect.animateCartoon({ x: 200 }))
+    sector.animateCartoon({ endAngle: 100 })
   }, [])
 
   return (

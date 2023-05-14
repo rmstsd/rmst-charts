@@ -76,7 +76,7 @@ export function createRenderElements(
 
       const dataItem = data[index]
 
-      rectItem.animate({ y: dataItem.y, height: dataItem.height })
+      rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height })
     }
   }
 

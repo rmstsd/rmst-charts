@@ -41,7 +41,7 @@ export class Path {
     return stage as unknown as Stage
   }
 
-  surroundBoxData = { x: 0, y: 0, width: 0, height: 0 } // 包围盒的信息 仅在设置 clip 属性后执行动画才有用
+  surroundBoxData = { x: 0, y: 0, width: 0, height: 0 } // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
   clipWidth = 0
   clipHeight = 0
 
@@ -72,9 +72,21 @@ export class Path {
     const isInStroke = () => {
       return stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
     }
+    const isInSurroundBox = () => {
+      return (
+        offsetX > this.surroundBoxData.x &&
+        offsetX < this.surroundBoxData.x + this.clipWidth &&
+        offsetY > this.surroundBoxData.y &&
+        offsetY < this.surroundBoxData.y + this.clipHeight
+      )
+    }
 
     if (this.isLine && !this.data.closed) {
       return isInStroke()
+    }
+
+    if (this.data.clip) {
+      return isInSurroundBox() && (isInPath() || isInStroke())
     }
 
     return isInPath() || isInStroke()
@@ -209,7 +221,14 @@ export class Path {
   }
 
   // totalTime 毫秒
-  animate(prop, totalTime = 500, type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left') {
+  animateCartoon(
+    prop: {
+      animateCallback?: (_prop: Record<string, any>) => void
+      [key: string]: any
+    },
+    totalTime = 500,
+    type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left'
+  ) {
     if (!this.findStage()) {
       console.warn('图形', this, '还没有 append 到 stage 上')
       return

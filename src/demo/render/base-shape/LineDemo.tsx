@@ -17,7 +17,7 @@ const LineDemo = () => {
 
     stage.append([line])
 
-    line.animate(undefined, 1000, 'left-right')
+    line.animateCartoon(undefined, 1000, 'left-right')
   }, [])
 
   return (
