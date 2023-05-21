@@ -6,8 +6,18 @@ export class Group extends Path {
 
     this.data = { ...data }
   }
+
   isGroup = true
-  elements = []
+  elements: Group[] = []
+
+  get surroundBoxCoordInGroup() {
+    const lt_x = Math.min(...this.elements.map(item => item.surroundBoxCoord.lt_x))
+    const lt_y = Math.min(...this.elements.map(item => item.surroundBoxCoord.lt_y))
+    const rb_x = Math.max(...this.elements.map(item => item.surroundBoxCoord.rb_x))
+    const rb_y = Math.max(...this.elements.map(item => item.surroundBoxCoord.rb_y))
+
+    return { lt_x, lt_y, rb_x, rb_y }
+  }
 
   isInner(offsetX: number, offsetY: number): boolean {
     if (!this.elements.length) return false
@@ -22,9 +32,13 @@ export class Group extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
+    this.beforeDrawClip(ctx)
+
     this.elements.forEach(item => {
       item.draw(ctx)
     })
+
+    ctx.restore() // 恢复clip
   }
 
   append(element) {

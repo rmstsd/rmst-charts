@@ -9,6 +9,7 @@ import GroupDraggable from '@/demo/render/GroupDraggable'
 import Animate from '@/demo/render/Animate'
 import Draggable from '@/demo/render/Draggable'
 import RmstLine from '@/demo/render/RmstLine'
+import GroupClipAnimate from '@/demo/render/GroupClipAnimate'
 
 export default {
   path: '/rmst-render',
@@ -40,6 +41,11 @@ export default {
       path: 'animate',
       element: <Animate />,
       uiConfig: { title: 'Animate' }
+    },
+    {
+      path: 'groupClipAnimate',
+      element: <GroupClipAnimate />,
+      uiConfig: { title: '组 clip 动画' }
     },
     {
       path: 'rmst-line',

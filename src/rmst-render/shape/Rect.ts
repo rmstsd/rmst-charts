@@ -1,3 +1,4 @@
+import Group from '../Group'
 import Path from './Path'
 
 const defaultData = {
@@ -8,7 +9,12 @@ export class Rect extends Path {
   constructor(data: Rect['data']) {
     super()
 
-    this.surroundBoxData = { x: data.x, y: data.y, width: data.width, height: data.height }
+    this.surroundBoxCoord = {
+      lt_x: data.x,
+      lt_y: data.y,
+      rb_x: data.x + data.width,
+      rb_y: data.y + data.height
+    }
 
     this.data = { ...defaultData, ...data }
   }
@@ -24,7 +30,7 @@ export class Rect extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    this.beforeDrawClip(ctx)
+    if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
 
     const { x, y, width, height, bgColor, cornerRadius } = this.data
 
@@ -44,32 +50,11 @@ export class Rect extends Path {
     path2D.lineTo(x, y + cornerRadius)
     path2D.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
 
-    // ctx.beginPath()
-    // ctx.moveTo(x + cornerRadius, y)
-    // ctx.lineTo(x + width - cornerRadius, y)
-    // ctx.arc(x + width - cornerRadius, y + cornerRadius, cornerRadius, (Math.PI / 2) * 3, 0)
-    // ctx.lineTo(x + width, y + height - cornerRadius)
-    // ctx.arc(x + width - cornerRadius, y + height - cornerRadius, cornerRadius, 0, Math.PI / 2)
-    // ctx.lineTo(x + cornerRadius, y + height)
-    // ctx.arc(x + cornerRadius, y + height - cornerRadius, cornerRadius, Math.PI / 2, Math.PI)
-    // ctx.lineTo(x, y + cornerRadius)
-    // ctx.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
-
     this.path2D = path2D
     ctx.fill(path2D)
 
-    ctx.restore() // 恢复clip
+    if (!(this.parent instanceof Group)) ctx.restore() // 恢复clip
   }
-
-  // isInner(offsetX: number, offsetY: number) {
-  //   const isInnerRect =
-  //     offsetX >= this.data.x &&
-  //     offsetX <= this.data.x + this.data.width &&
-  //     offsetY >= this.data.y &&
-  //     offsetY <= this.data.y + this.data.height
-
-  //   return isInnerRect
-  // }
 }
 
 export default Rect

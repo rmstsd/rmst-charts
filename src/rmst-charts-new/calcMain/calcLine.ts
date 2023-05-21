@@ -1,7 +1,7 @@
 // 折线图 计算 和 绘制
 
 import colorAlpha from 'color-alpha'
-import { Stage, Circle, Line } from '@/rmst-render'
+import { Stage, Circle, Line, Group } from '@/rmst-render'
 
 import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
 import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
@@ -41,6 +41,15 @@ export function createRenderElements(
 
   const mainLinePoints = pointToFlatArray(finalCoordPoints)
 
+  // 主折线
+  const mainLine = new Line({
+    points: mainLinePoints,
+    bgColor: primaryColor,
+    lineWidth: 2,
+    clip: true,
+    smooth: seriesItem.smooth
+  })
+
   let singleArea: Line
   if (areaStyle) singleArea = createArea()
   function createArea() {
@@ -72,14 +81,12 @@ export function createRenderElements(
     return singleArea
   }
 
-  // 主折线
-  const mainLine = new Line({
-    points: mainLinePoints,
-    bgColor: primaryColor,
-    lineWidth: 2,
-    clip: true,
-    smooth: seriesItem.smooth
+  const group = new Group({
+    clip: true
   })
+
+  if (areaStyle) group.append(singleArea)
+  group.append(mainLine)
 
   const initRadius = 0
   const normalRadius = 3
@@ -106,12 +113,10 @@ export function createRenderElements(
   })
 
   async function afterAppendStage() {
-    mainLine.animateCartoon(undefined, 1000, 'left-right')
-    if (areaStyle) singleArea.animateCartoon(undefined, 1000, 'left-right')
+    group.animateCartoon(undefined, 1000, 'left-right')
   }
 
-  const elements = [mainLine]
-  if (areaStyle) elements.unshift(singleArea)
+  const elements = [group]
 
   return { elements, afterAppendStage }
 }

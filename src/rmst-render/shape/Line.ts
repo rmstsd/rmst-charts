@@ -1,3 +1,4 @@
+import Group from '../Group'
 import Path from './Path'
 
 const defaultData = {
@@ -13,18 +14,11 @@ export class Line extends Path {
     if (data.clip) {
       const normalPoints = convertNormalPoints(data.points)
 
-      const rr = {
+      this.surroundBoxCoord = {
         lt_x: Math.min(...normalPoints.map(item => item.x)) - this.data.lineWidth / 2,
         lt_y: Math.min(...normalPoints.map(item => item.y)) - this.data.lineWidth / 2,
         rb_x: Math.max(...normalPoints.map(item => item.x)) + this.data.lineWidth,
         rb_y: Math.max(...normalPoints.map(item => item.y)) + this.data.lineWidth
-      }
-
-      this.surroundBoxData = {
-        x: rr.lt_x,
-        y: rr.lt_y,
-        width: rr.rb_x - rr.lt_x,
-        height: rr.rb_y - rr.lt_y
       }
     }
   }
@@ -43,7 +37,7 @@ export class Line extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    this.beforeDrawClip(ctx)
+    if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
 
     const { points, bgColor, fillStyle, strokeStyle, lineWidth, closed, smooth } = this.data
 
@@ -72,17 +66,8 @@ export class Line extends Path {
 
     if (closed) path2D.closePath()
 
-    // ctx.moveTo(start_x, start_y)
-    // restPointsMatrix.forEach(([x, y]) => {
-    //   ctx.lineTo(x, y)
-    // })
-    // if (closed) ctx.closePath()
-
-    // ctx.lineJoin = 'round'
-
     ctx.fillStyle = fillStyle || '#333'
     ctx.strokeStyle = bgColor || strokeStyle
-
     ctx.lineWidth = lineWidth
 
     this.path2D = path2D
@@ -90,23 +75,13 @@ export class Line extends Path {
 
     if (closed) ctx.fill(path2D)
 
-    // 绘制辅助的包围盒
-    // ctx.lineWidth = 1
-    // ctx.strokeStyle = 'rgba(0,0,0,0.5)'
-    // ctx.strokeRect(
-    //   this.surroundBoxData.x,
-    //   this.surroundBoxData.y,
-    //   this.surroundBoxData.width,
-    //   this.surroundBoxData.height
-    // )
-
-    ctx.restore() // 恢复clip
+    if (!(this.parent instanceof Group)) ctx.restore() // 恢复clip
   }
 }
 
 export default Line
 
-function convertNormalPoints(points: number[]) {
+function convertNormalPoints(points: number[]): ICharts.ICoord[] {
   return points
     .reduce((acc, item, index) => {
       const tarIndex = Math.floor(index / 2)
@@ -118,8 +93,10 @@ function convertNormalPoints(points: number[]) {
 }
 
 // 计算 两个控制点 和 两个端点
-function calcAllControlPoint(points) {
-  const ans: ICharts.ICoord[] = []
+function calcAllControlPoint(
+  points: ICharts.ICoord[]
+): { start: ICharts.ICoord; end: ICharts.ICoord; cp1: ICharts.ICoord; cp2: ICharts.ICoord }[] {
+  const ans = []
   for (let i = 1; i < points.length - 1; i++) {
     const prev = points[i - 1]
     const curr = points[i]

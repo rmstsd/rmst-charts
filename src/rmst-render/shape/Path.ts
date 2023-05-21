@@ -41,7 +41,8 @@ export class Path {
     return stage as unknown as Stage
   }
 
-  surroundBoxData = { x: 0, y: 0, width: 0, height: 0 } // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
+  surroundBoxCoord = { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 } // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
+
   clipWidth = 0
   clipHeight = 0
 
@@ -74,10 +75,10 @@ export class Path {
     }
     const isInSurroundBox = () => {
       return (
-        offsetX > this.surroundBoxData.x &&
-        offsetX < this.surroundBoxData.x + this.clipWidth &&
-        offsetY > this.surroundBoxData.y &&
-        offsetY < this.surroundBoxData.y + this.clipHeight
+        offsetX > this.surroundBoxCoord.lt_x &&
+        offsetX < this.surroundBoxCoord.lt_x + this.clipWidth &&
+        offsetY > this.surroundBoxCoord.lt_y &&
+        offsetY < this.surroundBoxCoord.lt_y + this.clipHeight
       )
     }
 
@@ -106,9 +107,11 @@ export class Path {
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
     if (!this.data.clip) return
 
+    const surroundBoxCoord = this.isGroup ? this.surroundBoxCoordInGroup : this.surroundBoxCoord
+
     ctx.save()
     ctx.beginPath()
-    ctx.rect(this.surroundBoxData.x, this.surroundBoxData.y, this.clipWidth, this.clipHeight)
+    ctx.rect(surroundBoxCoord.lt_x, surroundBoxCoord.lt_y, this.clipWidth, this.clipHeight)
     ctx.clip()
   }
   draw(ctx: CanvasRenderingContext2D) {}
@@ -236,18 +239,21 @@ export class Path {
 
     if (this.data.clip) {
       if (type === 'left-right') {
-        const per = calcPer(0, this.surroundBoxData.width, totalTime)
+        const surroundBoxCoord = this.isGroup ? this.surroundBoxCoordInGroup : this.surroundBoxCoord
+
+        const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
+        const per = calcPer(0, surroundBoxWidth, totalTime)
 
         const exec = () => {
-          const targetValue = calcTargetValue(this.clipWidth, this.surroundBoxData.width, per)
+          const targetValue = calcTargetValue(this.clipWidth, surroundBoxWidth, per)
 
-          if (targetValue === this.surroundBoxData.width) {
+          if (targetValue === surroundBoxWidth) {
             console.log('结束')
             return
           }
 
           this.clipWidth = targetValue as number
-          this.clipHeight = this.surroundBoxData.height
+          this.clipHeight = surroundBoxCoord.rb_y - surroundBoxCoord.lt_y
 
           this.parent.renderStage()
 
