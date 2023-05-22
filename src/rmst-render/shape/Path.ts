@@ -230,7 +230,8 @@ export class Path {
       [key: string]: any
     },
     totalTime = 500,
-    type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left'
+    type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left',
+    clipCallback?: (surroundBoxCoord: this['surroundBoxCoord'], clipWidth: number) => void
   ) {
     if (!this.findStage()) {
       console.warn('图形', this, '还没有 append 到 stage 上')
@@ -254,6 +255,8 @@ export class Path {
 
           this.clipWidth = targetValue as number
           this.clipHeight = surroundBoxCoord.rb_y - surroundBoxCoord.lt_y
+
+          clipCallback?.(surroundBoxCoord, this.clipWidth)
 
           this.parent.renderStage()
 

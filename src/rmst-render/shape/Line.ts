@@ -2,7 +2,9 @@ import Group from '../Group'
 import Path from './Path'
 
 const defaultData = {
-  lineWidth: 1
+  lineWidth: 1,
+  lineCap: 'butt' as CanvasLineCap,
+  lineJoin: 'miter' as CanvasLineJoin
 }
 
 export class Line extends Path {
@@ -31,6 +33,8 @@ export class Line extends Path {
     fillStyle?: string
     strokeStyle?: string
     lineWidth?: number
+    lineCap?: CanvasLineCap
+    lineJoin?: CanvasLineJoin
     closed?: boolean
     smooth?: boolean
     [key: string]: any
@@ -39,11 +43,14 @@ export class Line extends Path {
   draw(ctx: CanvasRenderingContext2D) {
     if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
 
-    const { points, bgColor, fillStyle, strokeStyle, lineWidth, closed, smooth } = this.data
+    const { points, bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } =
+      this.data
 
     this.setShadow(ctx, this.data)
 
     ctx.beginPath()
+    ctx.lineCap = lineCap
+    ctx.lineJoin = lineJoin
 
     const [start_x, start_y, ...restPoints] = points
 

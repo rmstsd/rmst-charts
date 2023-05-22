@@ -3,7 +3,8 @@ import Path from './Path'
 const defaultData = {
   startAngle: 0,
   endAngle: 360,
-  shadowColor: '#333'
+  shadowColor: '#333',
+  lineWidth: 1
 }
 
 export class Circle extends Path {
@@ -22,11 +23,12 @@ export class Circle extends Path {
     strokeStyle?: string
     startAngle?: number // 圆弧 饼图 角度 60 180 360
     endAngle?: number // 圆弧 饼图
+    lineWidth?: number
     [key: string]: any
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle } = this.data
+    const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle, lineWidth } = this.data
     const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
     this.setShadow(ctx, this.data)
@@ -38,28 +40,22 @@ export class Circle extends Path {
     const path = new Path2D(d)
 
     ctx.beginPath()
-    ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
+    // ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
+
+    // ctx.strokeStyle = strokeStyle
+    // ctx.fillStyle = bgColor
+
+    // ctx.fill()
+    // ctx.stroke()
 
     if (strokeStyle) {
+      ctx.lineWidth = lineWidth
       ctx.strokeStyle = strokeStyle
       ctx.stroke(path)
     }
 
     ctx.fillStyle = bgColor
     ctx.fill(path)
-
-    // if (!isWholeArc) {
-    //   ctx.lineTo(x, y)
-
-    //   // 获取圆弧的起始点
-    //   const { x: start_x, y: start_y } = getPointOnArc(x, y, radius, startAngle)
-    //   ctx.lineTo(start_x, start_y)
-    // }
-
-    // if (strokeStyle) {
-    //   ctx.strokeStyle = strokeStyle
-    //   ctx.stroke()
-    // }
   }
 
   isInner(offsetX: number, offsetY: number) {

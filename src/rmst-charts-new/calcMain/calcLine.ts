@@ -46,6 +46,8 @@ export function createRenderElements(
     points: mainLinePoints,
     bgColor: primaryColor,
     lineWidth: 2,
+    lineCap: 'round',
+    lineJoin: 'round',
     clip: true,
     smooth: seriesItem.smooth
   })
@@ -81,27 +83,27 @@ export function createRenderElements(
     return singleArea
   }
 
-  const group = new Group({
-    clip: true
-  })
+  const group = new Group({ clip: true })
 
   if (areaStyle) group.append(singleArea)
   group.append(mainLine)
 
   const initRadius = 0
-  const normalRadius = 3
+  const normalRadius = 2
+  const activeRadius = 4
   const arcs = pointData.map(item => {
     const arcItem = new Circle({
       x: item.x,
       y: item.y,
-      radius: smooth ? 5 : initRadius,
+      radius: initRadius,
       bgColor: 'white',
-      strokeStyle: primaryColor
+      strokeStyle: primaryColor,
+      lineWidth: 4
     })
 
     arcItem.onEnter = () => {
       stage.setCursor('pointer')
-      arcItem.animateCartoon({ radius: 4 }, 300)
+      arcItem.animateCartoon({ radius: activeRadius }, 300)
     }
 
     arcItem.onLeave = () => {
@@ -112,11 +114,22 @@ export function createRenderElements(
     return arcItem
   })
 
+  const ticksXs = xAxisData.ticks.map(item => item.start.x)
+
   async function afterAppendStage() {
-    group.animateCartoon(undefined, 1000, 'left-right')
+    let currentIndex = 0
+    group.animateCartoon(undefined, 10000, 'left-right', function clipCallback(surroundBoxCoord, clipWidth) {
+      const position = surroundBoxCoord.lt_x + clipWidth
+
+      if (position >= ticksXs[currentIndex]) {
+        arcs[currentIndex].animateCartoon({ radius: normalRadius }, 1000)
+
+        currentIndex++
+      }
+    })
   }
 
-  const elements = [group]
+  const elements = [group, ...arcs]
 
   return { elements, afterAppendStage }
 }

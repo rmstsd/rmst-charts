@@ -11,7 +11,7 @@ const CircleDemo = () => {
     })
 
     const arcs = [
-      new Circle({ x: 180, y: 70, radius: 60, bgColor: 'orange' }),
+      new Circle({ x: 180, y: 70, radius: 60, bgColor: 'orange', lineWidth: 2, strokeStyle: 'red' }),
       new Circle({ x: 50, y: 50, radius: 50, innerRadius: 20, bgColor: 'pink', strokeStyle: 'blue' }),
       new Circle({
         x: 400,
