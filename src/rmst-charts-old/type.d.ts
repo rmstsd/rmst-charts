@@ -23,6 +23,14 @@ namespace ICharts {
     step?: 'start' | 'middle' | 'end' // 折线图-阶梯折线图
     showBackground?: boolean // 柱状图-背景色
     radius?: string | string[] // 饼图-半径 百分比 (容器高宽中较小一项）的 20% 长度) '20%' | ['20%', '40%']
+    name?: string // 不参与 UI 渲染
+    animationDuration?: number // 毫秒 动画速度
+    lineStyle?: {
+      width?: number
+      join?: CanvasLineJoin
+      cap?: CanvasLineCap
+    }
+    symbol?: 'circle' | 'none'
   }
 
   type IOption = {

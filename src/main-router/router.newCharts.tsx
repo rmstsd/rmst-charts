@@ -5,6 +5,7 @@ import Area from '../demo/new-charts/line/Area'
 import Stack from '../demo/new-charts/line/Stack'
 import LineSmooth from '@/demo/new-charts/line/LineSmooth'
 import Step from '@/demo/new-charts/line/Step'
+import ZExtreme from '@/demo/new-charts/line/Zextreme'
 
 import BarBase from '../demo/new-charts/bar/Base'
 import Background from '../demo/new-charts/bar/Background'
@@ -26,7 +27,8 @@ export default {
         { path: 'line-smooth', element: <LineSmooth />, uiConfig: { title: '基础平滑折线图' } },
         { path: 'area', element: <Area />, uiConfig: { title: '基础面积图' } },
         { path: 'stack', element: <Stack />, uiConfig: { title: '折线图堆叠' } },
-        { path: 'step', element: <Step />, uiConfig: { title: '阶梯折线图' } }
+        { path: 'step', element: <Step />, uiConfig: { title: '阶梯折线图' } },
+        { path: 'extreme', element: <ZExtreme />, uiConfig: { title: '极端的例子' } }
       ]
     },
     {

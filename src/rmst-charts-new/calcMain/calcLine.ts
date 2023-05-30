@@ -34,7 +34,14 @@ export function createRenderElements(
 ) {
   const pointData = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 
-  const { areaStyle, smooth, step } = seriesItem
+  const {
+    areaStyle,
+    smooth,
+    step,
+    animationDuration = 1000,
+    lineStyle = { width: 2, cap: 'butt', join: 'bevel' },
+    symbol = 'circle'
+  } = seriesItem
 
   // 计算出 阶梯折线图 要绘制的额外的点
   const finalCoordPoints = smooth ? pointData : calcPointsByUserPoints(pointData, step)
@@ -45,9 +52,9 @@ export function createRenderElements(
   const mainLine = new Line({
     points: mainLinePoints,
     bgColor: primaryColor,
-    lineWidth: 2,
-    lineCap: 'round',
-    lineJoin: 'round',
+    lineWidth: lineStyle.width,
+    lineCap: lineStyle.cap,
+    lineJoin: lineStyle.join,
     clip: true,
     smooth: seriesItem.smooth
   })
@@ -88,45 +95,60 @@ export function createRenderElements(
   if (areaStyle) group.append(singleArea)
   group.append(mainLine)
 
-  const initRadius = 0
+  let arcs: Circle[] = []
+  if (symbol !== 'none') arcs = createSymbol()
+
+  // 圆点
   const normalRadius = 2
-  const activeRadius = 4
-  const arcs = pointData.map(item => {
-    const arcItem = new Circle({
-      x: item.x,
-      y: item.y,
-      radius: initRadius,
-      bgColor: 'white',
-      strokeStyle: primaryColor,
-      lineWidth: 4
+  function createSymbol() {
+    const initRadius = 0
+    const activeRadius = 4
+    const arcs = pointData.map(item => {
+      const arcItem = new Circle({
+        x: item.x,
+        y: item.y,
+        radius: initRadius,
+        bgColor: 'white',
+        strokeStyle: primaryColor,
+        lineWidth: 4
+      })
+
+      arcItem.onEnter = () => {
+        stage.setCursor('pointer')
+        arcItem.animateCartoon({ radius: activeRadius }, 300)
+      }
+
+      arcItem.onLeave = () => {
+        stage.setCursor('auto')
+        arcItem.animateCartoon({ radius: normalRadius }, 300)
+      }
+
+      return arcItem
     })
 
-    arcItem.onEnter = () => {
-      stage.setCursor('pointer')
-      arcItem.animateCartoon({ radius: activeRadius }, 300)
-    }
-
-    arcItem.onLeave = () => {
-      stage.setCursor('auto')
-      arcItem.animateCartoon({ radius: normalRadius }, 300)
-    }
-
-    return arcItem
-  })
+    return arcs
+  }
 
   const ticksXs = xAxisData.ticks.map(item => item.start.x)
 
   async function afterAppendStage() {
     let currentIndex = 0
-    group.animateCartoon(undefined, 10000, 'left-right', function clipCallback(surroundBoxCoord, clipWidth) {
-      const position = surroundBoxCoord.lt_x + clipWidth
+    group.animateCartoon(
+      undefined,
+      animationDuration,
+      'left-right',
+      function clipCallback(surroundBoxCoord, clipWidth) {
+        if (symbol === 'none') return
 
-      if (position >= ticksXs[currentIndex]) {
-        arcs[currentIndex].animateCartoon({ radius: normalRadius }, 1000)
+        const position = surroundBoxCoord.lt_x + clipWidth
 
-        currentIndex++
+        if (position >= ticksXs[currentIndex]) {
+          arcs[currentIndex].animateCartoon({ radius: normalRadius }, 300)
+
+          currentIndex++
+        }
       }
-    })
+    )
   }
 
   const elements = [group, ...arcs]
