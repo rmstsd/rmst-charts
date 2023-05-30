@@ -5,7 +5,7 @@ import Area from '../demo/new-charts/line/Area'
 import Stack from '../demo/new-charts/line/Stack'
 import LineSmooth from '@/demo/new-charts/line/LineSmooth'
 import Step from '@/demo/new-charts/line/Step'
-import ZExtreme from '@/demo/new-charts/line/Zextreme'
+import ZExtreme from '@/demo/new-charts/line/ZExtreme'
 
 import BarBase from '../demo/new-charts/bar/Base'
 import Background from '../demo/new-charts/bar/Background'
