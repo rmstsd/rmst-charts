@@ -35,6 +35,8 @@ namespace ICharts {
       cap?: CanvasLineCap
     }
     symbol?: 'circle' | 'none'
+
+    stack?: 'Total' // 折线图堆叠
   }
 
   type IOption = {

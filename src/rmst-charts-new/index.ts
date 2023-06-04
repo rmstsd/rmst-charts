@@ -20,9 +20,8 @@ const rmstCharts = {
       setOption: (innerOption: ICharts.IOption) => {
         stage.removeAllElements()
 
-        const series = [].concat(innerOption.series)
-
-        const chartTypes = series.map(item => item.type) // pie line bar
+        const finalSeries = calcSeries(innerOption.series)
+        const chartTypes = finalSeries.map(item => item.type) // pie line bar
 
         const finalElements = []
 
@@ -31,7 +30,7 @@ const rmstCharts = {
         // 绘制坐标轴
         if (!chartTypes.includes('pie')) {
           XAxisShape = createXAxisElements(stage, innerOption)
-          YAxisShape = createYAxisElements(stage, innerOption)
+          YAxisShape = createYAxisElements(stage, finalSeries)
 
           finalElements.push(
             XAxisShape.xAxisLine,
@@ -44,7 +43,7 @@ const rmstCharts = {
           )
         }
 
-        const renderElements = series.map(seriesItem => {
+        const renderElements = finalSeries.map(seriesItem => {
           const { createRenderElements } = map[seriesItem.type]
 
           return createRenderElements(stage, seriesItem, XAxisShape?.xAxisData, YAxisShape?.yAxisData)
@@ -70,3 +69,26 @@ export type IChartInstance = {
 }
 
 export default rmstCharts
+
+// 折线图堆叠 data求和计算
+function calcSeries(series: ICharts.series[]) {
+  return series.map((serItem, serIndex) => {
+    if (serItem.stack !== 'Total') {
+      return serItem
+    }
+
+    return {
+      ...serItem,
+      data: serItem.data.map((dataItem, dataIndex) => {
+        return (
+          dataItem +
+          series
+            .filter(item => item.stack === 'Total')
+            .slice(0, serIndex)
+            .map(item => item.data[dataIndex])
+            .reduce((prev, cur) => prev + cur, 0)
+        )
+      })
+    }
+  })
+}

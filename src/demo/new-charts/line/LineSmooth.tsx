@@ -5,11 +5,13 @@ const option: ICharts.IOption = {
   xAxis: {
     data: ['a', 'b', 'c', 'd', 'e', 'f']
   },
-  series: {
-    type: 'line' as const,
-    data: [620, 932, 901, 934, 800, 800],
-    smooth: true
-  }
+  series: [
+    {
+      type: 'line' as const,
+      data: [620, 932, 901, 934, 800, 800],
+      smooth: true
+    }
+  ]
 }
 
 const LineSmooth = () => {

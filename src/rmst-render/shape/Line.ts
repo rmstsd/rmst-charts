@@ -30,8 +30,8 @@ export class Line extends Path {
   declare data: {
     points: number[]
     bgColor?: string
-    fillStyle?: string
-    strokeStyle?: string
+    fillStyle?: CanvasFillStrokeStyles['fillStyle']
+    strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
     lineWidth?: number
     lineCap?: CanvasLineCap
     lineJoin?: CanvasLineJoin

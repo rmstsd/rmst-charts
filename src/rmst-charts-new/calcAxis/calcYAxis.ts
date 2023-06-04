@@ -59,9 +59,7 @@ function getYAxis(
 
 export type IYAxisElements = ReturnType<typeof createRenderElements>
 
-export function createRenderElements(stage: Stage, innerOption) {
-  const series = [].concat(innerOption.series)
-
+export function createRenderElements(stage: Stage, series: ICharts.series[]) {
   const seriesData = series.reduce((acc, item) => acc.concat(item.data), [])
 
   const yAxisData = getYAxis(

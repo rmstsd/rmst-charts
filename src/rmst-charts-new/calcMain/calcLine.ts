@@ -62,6 +62,16 @@ export function createRenderElements(
   let singleArea: Line
   if (areaStyle) singleArea = createArea()
   function createArea() {
+    const AreaFillStyle = Array.isArray(areaStyle.color)
+      ? (() => {
+          const gradient = stage.ctx.createLinearGradient(0, 0, 0, stage.canvasSize.height)
+          areaStyle.color.forEach(item => {
+            gradient.addColorStop(item.offset, item.color)
+          })
+          return gradient
+        })()
+      : areaStyle.color || primaryColorAlpha
+
     // 面积图区域
     const singleArea = new Line({
       points: [
@@ -73,7 +83,7 @@ export function createRenderElements(
         finalCoordPoints.at(-1).x,
         xAxisData.axis.end.y
       ],
-      fillStyle: areaStyle.color || primaryColorAlpha,
+      fillStyle: AreaFillStyle,
       strokeStyle: 'transparent',
       closed: true,
       clip: true

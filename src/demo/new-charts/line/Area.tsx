@@ -6,12 +6,14 @@ const option: ICharts.IOption = {
     data: ['a', 'b', 'c', 'd', 'e', 'f'],
     boundaryGap: false
   },
-  series: {
-    type: 'line' as const,
-    data: [620, 932, 901, 934, 800, 800],
-    areaStyle: {}
-    // smooth: true
-  }
+  series: [
+    {
+      type: 'line' as const,
+      data: [620, 932, 901, 934, 800, 800],
+      areaStyle: {}
+      // smooth: true
+    }
+  ]
 }
 
 const Area = () => {

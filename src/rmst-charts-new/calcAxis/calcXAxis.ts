@@ -36,9 +36,7 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
 }
 
 export type IXAxisElements = ReturnType<typeof createRenderElements>
-export function createRenderElements(stage: Stage, innerOption) {
-  const series = [].concat(innerOption.series)
-
+export function createRenderElements(stage: Stage, innerOption: ICharts.IOption) {
   const xAxisData = getXAxis(
     stage.ctx,
     innerOption.xAxis,
