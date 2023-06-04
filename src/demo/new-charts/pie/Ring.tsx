@@ -1,7 +1,6 @@
-// 饼图 - 环形图
-import { useEffect, useRef } from 'react'
-import rmstCharts, { IChartInstance } from '@/rmst-charts-new'
+import ChartsTemplate from '@/components/ChartsTemplate'
 
+// 环形饼图
 const option = {
   series: {
     type: 'pie' as const,
@@ -17,25 +16,7 @@ const option = {
 }
 
 const Ring = () => {
-  const insRef = useRef<IChartInstance>()
-  useEffect(() => {
-    const ins = rmstCharts.init(document.querySelector('.canvas-container'))
-    insRef.current = ins
-
-    ins.setOption(option)
-  }, [])
-
-  const setOption = () => {
-    insRef.current.setOption(option)
-  }
-
-  return (
-    <>
-      <button onClick={setOption}>setOption</button>
-      <hr />
-      <div className="canvas-container"></div>
-    </>
-  )
+  return <ChartsTemplate option={option} />
 }
 
 export default Ring

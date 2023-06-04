@@ -12,6 +12,7 @@ import Background from '../demo/new-charts/bar/Background'
 
 import PieBase from '../demo/new-charts/pie/Base'
 import Ring from '../demo/new-charts/pie/Ring'
+import AreaStackGradient from '@/demo/new-charts/line/AreaStackGradient'
 
 export default {
   path: '/new-charts',
@@ -26,6 +27,7 @@ export default {
         { path: 'base', element: <Line />, uiConfig: { title: '基础折线图' } },
         { path: 'line-smooth', element: <LineSmooth />, uiConfig: { title: '基础平滑折线图' } },
         { path: 'area', element: <Area />, uiConfig: { title: '基础面积图' } },
+        { path: 'areaStackGradient', element: <AreaStackGradient />, uiConfig: { title: '渐变堆叠面积图' } },
         { path: 'stack', element: <Stack />, uiConfig: { title: '折线图堆叠' } },
         { path: 'step', element: <Step />, uiConfig: { title: '阶梯折线图' } },
         { path: 'extreme', element: <ZExtreme />, uiConfig: { title: '极端的例子' } }

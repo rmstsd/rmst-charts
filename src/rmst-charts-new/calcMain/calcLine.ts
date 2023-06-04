@@ -73,7 +73,7 @@ export function createRenderElements(
         finalCoordPoints.at(-1).x,
         xAxisData.axis.end.y
       ],
-      fillStyle: primaryColorAlpha,
+      fillStyle: areaStyle.color || primaryColorAlpha,
       strokeStyle: 'transparent',
       closed: true,
       clip: true
