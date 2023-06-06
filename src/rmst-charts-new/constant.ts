@@ -24,3 +24,15 @@ export const pieColors = ['#EE6666', '#73C0DE', '#5470C6', '#91CC75', '#FAC858',
 
 export const tickColor = '#555' // 坐标轴颜色 和 刻度颜色
 export const splitLineColor = '#E0E6F1'
+
+export const colorPalette = [
+  '#5470c6',
+  '#91cc75',
+  '#fac858',
+  '#ee6666',
+  '#73c0de',
+  '#3ba272',
+  '#fc8452',
+  '#9a60b4',
+  '#ea7ccc'
+]

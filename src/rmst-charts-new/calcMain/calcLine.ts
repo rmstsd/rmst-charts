@@ -5,7 +5,7 @@ import { Stage, Circle, Line, Group } from '@/rmst-render'
 
 import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
 import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
-import { primaryColor, primaryColorAlpha } from '../constant.js'
+import { colorPalette, primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { pointToFlatArray } from '../utils/utils.js'
 
@@ -34,7 +34,6 @@ export function createRenderElements(
   series: ICharts.series[]
 ) {
   const serIndex = series.findIndex(item => item === seriesItem)
-  console.log(serIndex)
 
   const pointData = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 
@@ -55,7 +54,7 @@ export function createRenderElements(
   // 主折线
   const mainLine = new Line({
     points: mainLinePoints,
-    bgColor: primaryColor,
+    bgColor: colorPalette[serIndex],
     lineWidth: lineStyle.width,
     lineCap: lineStyle.cap,
     lineJoin: lineStyle.join,
@@ -74,11 +73,13 @@ export function createRenderElements(
           })
           return gradient
         })()
-      : areaStyle.color || primaryColorAlpha
+      : areaStyle.color || colorAlpha(colorPalette[serIndex], 0.6)
 
     // 面积图区域
-    const singleArea = new Line({
-      points: [
+
+    let areaPoints: number[] = []
+    if (serIndex === 0) {
+      areaPoints = [
         ...mainLinePoints,
 
         finalCoordPoints.at(-1).x,
@@ -86,7 +87,16 @@ export function createRenderElements(
 
         finalCoordPoints.at(0).x,
         xAxisData.axis.start.y
-      ],
+      ]
+    } else {
+      areaPoints = [
+        ...mainLinePoints,
+        ...pointToFlatArray(calcMain(series[serIndex - 1].data as number[], xAxisData, yAxisData).reverse())
+      ]
+    }
+
+    const singleArea = new Line({
+      points: areaPoints,
       fillStyle: AreaFillStyle as CanvasFillStrokeStyles['fillStyle'],
       strokeStyle: 'transparent',
       closed: true,
@@ -124,7 +134,7 @@ export function createRenderElements(
         y: item.y,
         radius: initRadius,
         bgColor: 'white',
-        strokeStyle: primaryColor,
+        strokeStyle: colorPalette[serIndex],
         lineWidth: 4
       })
 
