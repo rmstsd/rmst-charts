@@ -7,14 +7,37 @@ const defaultData = {
   lineJoin: 'miter' as CanvasLineJoin
 }
 
+function createPath2D(data: Line['data']) {
+  // 创建 Path2D
+  let path2D: Path2D
+  const { points, closed, smooth } = data
+  const [start_x, start_y, ...restPoints] = points
+  if (smooth) {
+    path2D = calcSmoothPath2D(points)
+  } else {
+    path2D = new Path2D()
+    const restNormalPoints = convertToNormalPoints(restPoints)
+    path2D.moveTo(start_x, start_y)
+    restNormalPoints.forEach(({ x, y }) => {
+      path2D.lineTo(x, y)
+    })
+  }
+  if (closed) {
+    path2D.closePath()
+  }
+
+  return path2D
+}
 export class Line extends Path {
   constructor(data: Line['data']) {
     super()
 
     this.data = { ...defaultData, ...data }
 
+    this.path2D = createPath2D(data)
+
     if (data.clip) {
-      const normalPoints = convertNormalPoints(data.points)
+      const normalPoints = convertToNormalPoints(data.points)
 
       this.surroundBoxCoord = {
         lt_x: Math.min(...normalPoints.map(item => item.x)) - this.data.lineWidth / 2,
@@ -43,8 +66,7 @@ export class Line extends Path {
   draw(ctx: CanvasRenderingContext2D) {
     if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
 
-    const { points, bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } =
-      this.data
+    const { bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
 
     this.setShadow(ctx, this.data)
 
@@ -52,35 +74,13 @@ export class Line extends Path {
     ctx.lineCap = lineCap
     ctx.lineJoin = lineJoin
 
-    const [start_x, start_y, ...restPoints] = points
-
-    const path2D = new Path2D()
-
-    if (smooth) {
-      const allControlPoint = calcAllControlPoint(convertNormalPoints(points))
-
-      path2D.moveTo(start_x, start_y)
-      allControlPoint.forEach(item => {
-        path2D.bezierCurveTo(item.cp1.x, item.cp1.y, item.cp2.x, item.cp2.y, item.end.x, item.end.y)
-      })
-    } else {
-      const restNormalPoints = convertNormalPoints(restPoints)
-      path2D.moveTo(start_x, start_y)
-      restNormalPoints.forEach(({ x, y }) => {
-        path2D.lineTo(x, y)
-      })
-    }
-
-    if (closed) path2D.closePath()
-
     ctx.fillStyle = fillStyle || '#333'
     ctx.strokeStyle = bgColor || strokeStyle
     ctx.lineWidth = lineWidth
 
-    this.path2D = path2D
-    ctx.stroke(path2D)
+    ctx.stroke(this.path2D)
 
-    if (closed) ctx.fill(path2D)
+    if (closed) ctx.fill(this.path2D)
 
     if (!(this.parent instanceof Group)) ctx.restore() // 恢复clip
   }
@@ -88,7 +88,20 @@ export class Line extends Path {
 
 export default Line
 
-function convertNormalPoints(points: number[]): ICharts.ICoord[] {
+export function calcSmoothPath2D(points: number[]) {
+  const [start_x, start_y, ...restPoints] = points
+  const allControlPoint = calcAllControlPoint(convertToNormalPoints(points))
+
+  const path2D = new Path2D()
+  path2D.moveTo(start_x, start_y)
+  allControlPoint.forEach(item => {
+    path2D.bezierCurveTo(item.cp1.x, item.cp1.y, item.cp2.x, item.cp2.y, item.end.x, item.end.y)
+  })
+
+  return path2D
+}
+
+function convertToNormalPoints(points: number[]): ICharts.ICoord[] {
   return points
     .reduce((acc, item, index) => {
       const tarIndex = Math.floor(index / 2)

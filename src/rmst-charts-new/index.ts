@@ -46,7 +46,13 @@ const rmstCharts = {
         const renderElements = finalSeries.map(seriesItem => {
           const { createRenderElements } = map[seriesItem.type]
 
-          return createRenderElements(stage, seriesItem, XAxisShape?.xAxisData, YAxisShape?.yAxisData)
+          return createRenderElements(
+            stage,
+            seriesItem,
+            XAxisShape?.xAxisData,
+            YAxisShape?.yAxisData,
+            finalSeries
+          )
         })
 
         const afterAppendStageTasks = []

@@ -30,8 +30,12 @@ export function createRenderElements(
   stage: Stage,
   seriesItem: ICharts.series,
   xAxisData: IXAxisElements['xAxisData'],
-  yAxisData: IYAxisElements['yAxisData']
+  yAxisData: IYAxisElements['yAxisData'],
+  series: ICharts.series[]
 ) {
+  const serIndex = series.findIndex(item => item === seriesItem)
+  console.log(serIndex)
+
   const pointData = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 
   const {
@@ -75,19 +79,20 @@ export function createRenderElements(
     // 面积图区域
     const singleArea = new Line({
       points: [
-        finalCoordPoints.at(0).x,
-        xAxisData.axis.start.y,
-
         ...mainLinePoints,
 
         finalCoordPoints.at(-1).x,
-        xAxisData.axis.end.y
+        xAxisData.axis.end.y,
+
+        finalCoordPoints.at(0).x,
+        xAxisData.axis.start.y
       ],
-      fillStyle: AreaFillStyle,
+      fillStyle: AreaFillStyle as CanvasFillStrokeStyles['fillStyle'],
       strokeStyle: 'transparent',
       closed: true,
       clip: true
     })
+
     singleArea.onEnter = () => {
       stage.setCursor('pointer')
       singleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
