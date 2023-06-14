@@ -1,8 +1,9 @@
-import LayoutView from '../LayoutView/LayoutView'
+import LayoutView from '@/LayoutView/LayoutView'
 
-import KonvaBase from '../demo/konva/KonvaBase'
-import KonvaLineAnimate from '../demo/konva/KonvaLineAnimate'
-import PolygonDe from '../demo/konva/PolygonDe'
+import KonvaBase from '@/demo/konva/KonvaBase'
+import KonvaLineAnimate from '@/demo/konva/KonvaLineAnimate'
+import PolygonDe from '@/demo/konva/PolygonDe'
+import ZIndex from '@/demo/konva/Zindex'
 
 export default {
   path: '/konva',
@@ -21,6 +22,10 @@ export default {
     {
       path: 'PolygonDe',
       element: <PolygonDe />
+    },
+    {
+      path: 'ZIndex',
+      element: <ZIndex />
     }
   ]
 }

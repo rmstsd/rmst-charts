@@ -43,17 +43,19 @@ const rmstCharts = {
           )
         }
 
-        const renderElements = finalSeries.map(seriesItem => {
-          const { createRenderElements } = map[seriesItem.type]
+        const renderElements = finalSeries
+          .map(seriesItem => {
+            const { createRenderElements } = map[seriesItem.type]
 
-          return createRenderElements(
-            stage,
-            seriesItem,
-            XAxisShape?.xAxisData,
-            YAxisShape?.yAxisData,
-            finalSeries
-          )
-        })
+            return createRenderElements(
+              stage,
+              seriesItem,
+              XAxisShape?.xAxisData,
+              YAxisShape?.yAxisData,
+              finalSeries
+            )
+          })
+          .reverse() // 堆叠面积图需要倒序绘制
 
         const afterAppendStageTasks = []
 

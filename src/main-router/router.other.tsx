@@ -1,4 +1,4 @@
-import LayoutView from '../LayoutView/LayoutView'
+import LayoutView from '@/LayoutView/LayoutView'
 
 import Plum from '@/demo/other/Plum'
 import AniCurve from '@/demo/other/AniCurve'

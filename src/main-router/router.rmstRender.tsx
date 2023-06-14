@@ -1,4 +1,4 @@
-import LayoutView, { LayoutOutlet } from '../LayoutView/LayoutView'
+import LayoutView, { LayoutOutlet } from '@/LayoutView/LayoutView'
 
 import RectDemo from '@/demo/render/base-shape/RectDemo'
 import Circle from '@/demo/render/base-shape/CircleDemo'

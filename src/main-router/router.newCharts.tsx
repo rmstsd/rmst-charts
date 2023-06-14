@@ -1,17 +1,17 @@
-import LayoutView, { LayoutOutlet } from '../LayoutView/LayoutView'
+import LayoutView, { LayoutOutlet } from '@/LayoutView/LayoutView'
 
-import Line from '../demo/new-charts/line/Line'
-import Area from '../demo/new-charts/line/Area'
-import Stack from '../demo/new-charts/line/Stack'
+import Line from '@/demo/new-charts/line/Line'
+import Area from '@/demo/new-charts/line/Area'
+import Stack from '@/demo/new-charts/line/Stack'
 import LineSmooth from '@/demo/new-charts/line/LineSmooth'
 import Step from '@/demo/new-charts/line/Step'
 import ZExtreme from '@/demo/new-charts/line/ZExtreme'
 
-import BarBase from '../demo/new-charts/bar/Base'
-import Background from '../demo/new-charts/bar/Background'
+import BarBase from '@/demo/new-charts/bar/Base'
+import Background from '@/demo/new-charts/bar/Background'
 
-import PieBase from '../demo/new-charts/pie/Base'
-import Ring from '../demo/new-charts/pie/Ring'
+import PieBase from '@/demo/new-charts/pie/Base'
+import Ring from '@/demo/new-charts/pie/Ring'
 import AreaStackGradient from '@/demo/new-charts/line/AreaStackGradient'
 import AreaStack from '@/demo/new-charts/line/AreaStack'
 
