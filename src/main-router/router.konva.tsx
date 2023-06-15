@@ -3,7 +3,7 @@ import LayoutView from '@/LayoutView/LayoutView'
 import KonvaBase from '@/demo/konva/KonvaBase'
 import KonvaLineAnimate from '@/demo/konva/KonvaLineAnimate'
 import PolygonDe from '@/demo/konva/PolygonDe'
-import ZIndex from '@/demo/konva/Zindex'
+import ZIndex from '@/demo/konva/ZIndex'
 
 export default {
   path: '/konva',
