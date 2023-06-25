@@ -65,54 +65,59 @@ export function createRenderElements(
   let singleArea: Line
   if (areaStyle) singleArea = createArea()
   function createArea() {
-    const AreaFillStyle = Array.isArray(areaStyle.color)
-      ? (() => {
-          const gradient = stage.ctx.createLinearGradient(0, 0, 0, stage.canvasSize.height)
-          areaStyle.color.forEach(item => {
-            gradient.addColorStop(item.offset, item.color)
-          })
-          return gradient
-        })()
-      : areaStyle.color || colorAlpha(colorPalette[serIndex], 0.6)
+    function calcAreaFillStyle() {
+      // 是数组则认为是渐变
+      if (Array.isArray(areaStyle.color)) {
+        const gradient = stage.ctx.createLinearGradient(0, 0, 0, stage.canvasSize.height)
+        areaStyle.color.forEach(item => {
+          gradient.addColorStop(item.offset, item.color)
+        })
+        return gradient
+      }
 
-    // 面积图区域
-
-    let areaPoints: number[] = []
-    if (serIndex === 0) {
-      areaPoints = [
-        ...mainLinePoints,
-
-        finalCoordPoints.at(-1).x,
-        xAxisData.axis.end.y,
-
-        finalCoordPoints.at(0).x,
-        xAxisData.axis.start.y
-      ]
-    } else {
-      areaPoints = [
-        ...mainLinePoints,
-        ...pointToFlatArray(calcMain(series[serIndex - 1].data as number[], xAxisData, yAxisData).reverse())
-      ]
+      return areaStyle.color || colorAlpha(colorPalette[serIndex], 0.6)
     }
 
-    const singleArea = new Line({
-      points: areaPoints,
-      fillStyle: AreaFillStyle as CanvasFillStrokeStyles['fillStyle'],
+    const areaFillStyle = calcAreaFillStyle()
+
+    const prevSeries = series[serIndex - 1]
+
+    // 注意点的顺序是 从右向左的
+    const prevLinePoints =
+      serIndex === 0
+        ? [finalCoordPoints.at(-1).x, xAxisData.axis.end.y, finalCoordPoints.at(0).x, xAxisData.axis.start.y]
+        : pointToFlatArray(calcMain(prevSeries.data as number[], xAxisData, yAxisData).reverse())
+
+    const mainLinePath2DCopy = new Path2D(mainLine.path2D)
+
+    mainLinePath2DCopy.lineTo(prevLinePoints[0], prevLinePoints[1])
+
+    const prevLinePath2D = new Line({
+      points: prevLinePoints,
+      smooth: serIndex === 0 ? false : prevSeries.smooth
+    }).path2D
+
+    prevLinePath2D.lineTo(mainLinePoints[0], mainLinePoints[1])
+    prevLinePath2D.addPath(mainLinePath2DCopy)
+
+    const innerSingleArea = new Line({
+      path2D: prevLinePath2D,
+      fillStyle: areaFillStyle as CanvasFillStrokeStyles['fillStyle'],
       strokeStyle: 'transparent',
       closed: true,
       clip: true
     })
 
-    singleArea.onEnter = () => {
+    innerSingleArea.onEnter = () => {
       stage.setCursor('pointer')
-      singleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
+      innerSingleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
     }
-    singleArea.onLeave = () => {
+    innerSingleArea.onLeave = () => {
       stage.setCursor('auto')
-      singleArea.attr({ fillStyle: primaryColorAlpha })
+      innerSingleArea.attr({ fillStyle: primaryColorAlpha })
     }
 
-    return singleArea
+    return innerSingleArea
   }
 
   const group = new Group({ clip: true })

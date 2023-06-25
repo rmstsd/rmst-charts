@@ -34,9 +34,20 @@ export class Line extends Path {
 
     this.data = { ...defaultData, ...data }
 
-    this.path2D = createPath2D(data)
+    console.log('this.data', this.data)
+    this.path2D = data.path2D ? data.path2D : createPath2D(data)
 
     if (data.clip) {
+      if (data.path2D) {
+        this.surroundBoxCoord = {
+          lt_x: 1000,
+          lt_y: 1000,
+          rb_x: 1000,
+          rb_y: 1000
+        }
+
+        return
+      }
       const normalPoints = convertToNormalPoints(data.points)
 
       this.surroundBoxCoord = {
@@ -51,7 +62,8 @@ export class Line extends Path {
   isLine = true
 
   declare data: {
-    points: number[]
+    path2D?: Path2D
+    points?: number[]
     bgColor?: string
     fillStyle?: CanvasFillStrokeStyles['fillStyle']
     strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
@@ -113,7 +125,7 @@ function convertToNormalPoints(points: number[]): ICharts.ICoord[] {
 }
 
 // 计算 两个控制点 和 两个端点
-function calcAllControlPoint(
+export function calcAllControlPoint(
   points: ICharts.ICoord[]
 ): { start: ICharts.ICoord; end: ICharts.ICoord; cp1: ICharts.ICoord; cp2: ICharts.ICoord }[] {
   const ans = []

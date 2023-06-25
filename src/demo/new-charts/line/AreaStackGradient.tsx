@@ -23,7 +23,7 @@ const option: ICharts.IOption = {
     {
       type: 'line',
       stack: 'Total',
-      smooth: true,
+      // smooth: true,
       lineStyle: { width: 0 },
       areaStyle: {
         // color: [
