@@ -1,8 +1,9 @@
-import LayoutView from '@/LayoutView/LayoutView'
+import LayoutView from '@/components/LayoutView/LayoutView'
 
 import Plum from '@/demo/other/Plum'
 import AniCurve from '@/demo/other/AniCurve'
 import LinePath from '@/demo/other/LinePath'
+import CurveRect from '@/demo/other/CurveRect'
 
 export default {
   path: '/other',
@@ -11,6 +12,7 @@ export default {
   children: [
     { path: 'plum', element: <Plum /> },
     { path: 'aniCurve', element: <AniCurve /> },
-    { path: 'linePath', element: <LinePath /> }
+    { path: 'linePath', element: <LinePath /> },
+    { path: 'curveRect', element: <CurveRect /> }
   ]
 }

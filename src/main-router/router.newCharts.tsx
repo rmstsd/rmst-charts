@@ -1,4 +1,4 @@
-import LayoutView, { LayoutOutlet } from '@/LayoutView/LayoutView'
+import LayoutView, { LayoutOutlet } from '@/components/LayoutView/LayoutView'
 
 import Line from '@/demo/new-charts/line/Line'
 import Area from '@/demo/new-charts/line/Area'
@@ -30,7 +30,7 @@ export default {
         { path: 'area', element: <Area />, uiConfig: { title: '基础面积图' } },
         { path: 'stack', element: <Stack />, uiConfig: { title: '折线图堆叠' } },
         { path: 'areaStack', element: <AreaStack />, uiConfig: { title: '堆叠面积图' } },
-        // { path: 'areaStackGradient', element: <AreaStackGradient />, uiConfig: { title: '渐变堆叠面积图' } },
+        { path: 'areaStackGradient', element: <AreaStackGradient />, uiConfig: { title: '渐变堆叠面积图' } },
         { path: 'step', element: <Step />, uiConfig: { title: '阶梯折线图' } },
         { path: 'extreme', element: <ZExtreme />, uiConfig: { title: '极端的例子' } }
       ]

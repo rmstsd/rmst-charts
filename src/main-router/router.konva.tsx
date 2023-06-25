@@ -1,4 +1,4 @@
-import LayoutView from '@/LayoutView/LayoutView'
+import LayoutView from '@/components/LayoutView/LayoutView'
 
 import KonvaBase from '@/demo/konva/KonvaBase'
 import KonvaLineAnimate from '@/demo/konva/KonvaLineAnimate'

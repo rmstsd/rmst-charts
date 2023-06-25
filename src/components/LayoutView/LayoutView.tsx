@@ -1,6 +1,6 @@
 import { Divider, Layout, Menu, MenuProps } from 'antd'
 import { Outlet, useLocation, useNavigate, matchRoutes } from 'react-router-dom'
-import { convertToAntdData, findPath, routes } from '../main-router/router'
+import { convertToAntdData, findPath, routes } from '@/main-router/router'
 
 const LayoutView = () => {
   const headerItems: MenuProps['items'] = convertToAntdData(routes, false)

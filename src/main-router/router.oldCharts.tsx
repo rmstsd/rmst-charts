@@ -1,4 +1,4 @@
-import LayoutView from '@/LayoutView/LayoutView'
+import LayoutView from '@/components/LayoutView/LayoutView'
 
 import LineDemo from '@/demo/old-charts/LineDemo'
 import BarDemo from '@/demo/old-charts/BarDemo'
