@@ -65,12 +65,27 @@ export function createRenderElements(
   let singleArea: Line
   if (areaStyle) singleArea = createArea()
   function createArea() {
+    const prevSeries = series[serIndex - 1]
+
+    const xAxisPointData = [
+      { x: finalCoordPoints.at(0).x, y: xAxisData.axis.start.y },
+      { x: finalCoordPoints.at(-1).x, y: xAxisData.axis.end.y }
+    ]
+    const prevPointData =
+      serIndex === 0 ? xAxisPointData : calcMain(prevSeries.data as number[], xAxisData, yAxisData)
+
     function calcAreaFillStyle() {
       // 是数组则认为是渐变
       if (Array.isArray(areaStyle.color)) {
-        const gradient = stage.ctx.createLinearGradient(0, 0, 0, stage.canvasSize.height)
+        const max_y = Math.max(...pointData.map(item => item.y))
+        const min_y = Math.min(...prevPointData.map(item => item.y))
+
+        const gradient = stage.ctx.createLinearGradient(0, 0, max_y, min_y)
         areaStyle.color.forEach(item => {
-          gradient.addColorStop(item.offset, item.color)
+          gradient.addColorStop(
+            item.offset,
+            areaStyle.opacity ? colorAlpha(item.color, areaStyle.opacity) : item.color
+          )
         })
         return gradient
       }
@@ -78,23 +93,16 @@ export function createRenderElements(
       return areaStyle.color || colorAlpha(colorPalette[serIndex], 0.6)
     }
 
-    const areaFillStyle = calcAreaFillStyle()
-
-    const prevSeries = series[serIndex - 1]
-
     // 注意点的顺序是 从右向左的
-    const prevLinePoints =
-      serIndex === 0
-        ? [finalCoordPoints.at(-1).x, xAxisData.axis.end.y, finalCoordPoints.at(0).x, xAxisData.axis.start.y]
-        : pointToFlatArray(calcMain(prevSeries.data as number[], xAxisData, yAxisData).reverse())
+    const prevLinePoints = pointToFlatArray(prevPointData.reverse())
 
     const mainLinePath2DCopy = new Path2D(mainLine.path2D)
-
     mainLinePath2DCopy.lineTo(prevLinePoints[0], prevLinePoints[1])
 
     const prevLinePath2D = new Line({
       points: prevLinePoints,
-      smooth: serIndex === 0 ? false : prevSeries.smooth
+      smooth: serIndex === 0 ? false : prevSeries.smooth,
+      lineWidth: 0
     }).path2D
 
     prevLinePath2D.lineTo(mainLinePoints[0], mainLinePoints[1])
@@ -102,10 +110,11 @@ export function createRenderElements(
 
     const innerSingleArea = new Line({
       path2D: prevLinePath2D,
-      fillStyle: areaFillStyle as CanvasFillStrokeStyles['fillStyle'],
+      fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
       strokeStyle: 'transparent',
       closed: true,
-      clip: true
+      clip: true,
+      lineWidth: 0
     })
 
     innerSingleArea.onEnter = () => {
@@ -123,6 +132,7 @@ export function createRenderElements(
   const group = new Group({ clip: true })
 
   if (areaStyle) group.append(singleArea)
+
   group.append(mainLine)
 
   let arcs: Circle[] = []

@@ -44,7 +44,18 @@ const CurveRect = () => {
 
     path2D_2.addPath(path2D)
 
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400)
+    gradient.addColorStop(0, 'red')
+    gradient.addColorStop(1, 'blue')
+
+    ctx.fillStyle = gradient
     ctx.stroke(path2D_2)
+    ctx.fill(path2D_2)
+
+    ctx.beginPath()
+
+    ctx.lineWidth = 0
+    ctx.strokeRect(0, 0, 100, 100)
   }, [])
 
   return (

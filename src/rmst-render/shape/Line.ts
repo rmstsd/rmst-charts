@@ -34,11 +34,11 @@ export class Line extends Path {
 
     this.data = { ...defaultData, ...data }
 
-    console.log('this.data', this.data)
     this.path2D = data.path2D ? data.path2D : createPath2D(data)
 
     if (data.clip) {
       if (data.path2D) {
+        // 如何根据 path2D 计算包围盒?
         this.surroundBoxCoord = {
           lt_x: 1000,
           lt_y: 1000,
@@ -88,11 +88,15 @@ export class Line extends Path {
 
     ctx.fillStyle = fillStyle || '#333'
     ctx.strokeStyle = bgColor || strokeStyle
-    ctx.lineWidth = lineWidth
 
-    ctx.stroke(this.path2D)
+    if (lineWidth !== 0) {
+      ctx.lineWidth = lineWidth
+      ctx.stroke(this.path2D)
+    }
 
-    if (closed) ctx.fill(this.path2D)
+    if (closed) {
+      ctx.fill(this.path2D)
+    }
 
     if (!(this.parent instanceof Group)) ctx.restore() // 恢复clip
   }

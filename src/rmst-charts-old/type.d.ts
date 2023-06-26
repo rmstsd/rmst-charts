@@ -22,6 +22,7 @@ namespace ICharts {
 
     // 折线图-面积图
     areaStyle?: {
+      opacity?: number
       color?: string | object // 对象为渐变色
     }
     step?: 'start' | 'middle' | 'end' // 折线图-阶梯折线图
