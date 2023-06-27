@@ -41,6 +41,7 @@ export class Path {
     return stage as unknown as Stage
   }
 
+  // 若为 undefined 则在绘制的时候暂时取 canvas 的狂高
   surroundBoxCoord = { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 } // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
 
   clipWidth = 0
@@ -107,7 +108,7 @@ export class Path {
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
     if (!this.data.clip) return
 
-    const surroundBoxCoord = this.isGroup ? this.surroundBoxCoordInGroup : this.surroundBoxCoord
+    const surroundBoxCoord = this.isGroup ? this.getGroupSurroundBoxCoord() : this.surroundBoxCoord
 
     ctx.save()
     ctx.beginPath()
@@ -240,7 +241,15 @@ export class Path {
 
     if (this.data.clip) {
       if (type === 'left-right') {
-        const surroundBoxCoord = this.isGroup ? this.surroundBoxCoordInGroup : this.surroundBoxCoord
+        // 临时解决方案
+        const _surroundBoxCoord = this.surroundBoxCoord || {
+          lt_x: 0,
+          lt_y: 0,
+          rb_x: this.stage.canvasSize.width,
+          rb_y: this.stage.canvasSize.height
+        }
+
+        const surroundBoxCoord = this.isGroup ? this.getGroupSurroundBoxCoord() : _surroundBoxCoord
 
         const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
         const per = calcPer(0, surroundBoxWidth, totalTime)
