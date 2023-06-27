@@ -10,7 +10,11 @@ export class Group extends Path {
   isGroup = true
   elements: Group[] = []
 
-  get surroundBoxCoordInGroup() {
+  getGroupSurroundBoxCoord() {
+    // 只是个临时解决方案
+    const stage = this.findStage()
+    return { lt_x: 0, lt_y: 0, rb_x: stage.canvasSize.width, rb_y: stage.canvasSize.height }
+
     const lt_x = Math.min(...this.elements.map(item => item.surroundBoxCoord.lt_x))
     const lt_y = Math.min(...this.elements.map(item => item.surroundBoxCoord.lt_y))
     const rb_x = Math.max(...this.elements.map(item => item.surroundBoxCoord.rb_x))

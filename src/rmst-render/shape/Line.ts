@@ -39,12 +39,7 @@ export class Line extends Path {
     if (data.clip) {
       if (data.path2D) {
         // 如何根据 path2D 计算包围盒?
-        this.surroundBoxCoord = {
-          lt_x: 1000,
-          lt_y: 1000,
-          rb_x: 1000,
-          rb_y: 1000
-        }
+        this.surroundBoxCoord = undefined
 
         return
       }
