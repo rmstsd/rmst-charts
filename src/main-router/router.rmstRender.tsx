@@ -14,7 +14,7 @@ import GroupClipAnimate from '@/demo/render/GroupClipAnimate'
 export default {
   path: '/rmst-render',
   element: <LayoutView />,
-  uiConfig: { title: 'render(primary)' },
+  uiConfig: { title: 'render (core)' },
   children: [
     {
       path: 'base',
