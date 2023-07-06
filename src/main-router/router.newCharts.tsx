@@ -18,7 +18,7 @@ import AreaStack from '@/demo/new-charts/line/AreaStack'
 export default {
   path: '/new-charts',
   element: <LayoutView />,
-  uiConfig: { title: 'charts(primary)' },
+  uiConfig: { title: 'charts (core), 基于render' },
   children: [
     {
       path: 'line',
