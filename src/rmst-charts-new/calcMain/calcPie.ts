@@ -3,7 +3,8 @@ import { measureText } from '@/rmst-charts-new/utils/canvasUtil'
 
 import { pieColors } from '../constant'
 
-function calcMain(dataSource: { value: number; name: string }[], end_angle = 360) {
+type PieDataSourceItem = { value: number; name: string }
+function calcMain(dataSource: PieDataSourceItem[], end_angle = 360) {
   const sum = dataSource.reduce((acc, item) => acc + item.value, 0)
   const radianArray = dataSource.map(item => (item.value / sum) * end_angle)
 
@@ -22,7 +23,7 @@ function calcMain(dataSource: { value: number; name: string }[], end_angle = 360
 }
 
 export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
-  const data = calcMain(seriesItem.data)
+  const data = calcMain(seriesItem.data as PieDataSourceItem[])
 
   const smallerContainerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)
   const defaultPercent = '70%'
@@ -168,7 +169,7 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     fakeArc.animateCartoon({
       endAngle: 360,
       animateCallback(prop) {
-        const data = calcMain(seriesItem.data, prop.endAngle)
+        const data = calcMain(seriesItem.data as PieDataSourceItem[], prop.endAngle)
 
         elements
           .filter(o => o.data.onlyKey === 'main-pie')

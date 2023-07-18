@@ -17,6 +17,7 @@ namespace ICharts {
   type series = {
     type: 'line' | 'bar' | 'pie'
     data: ({ value: number; name: string } | number)[]
+    coordinateSystem?: 'cartesian2d' | 'polar'
 
     smooth?: boolean // 折线图-平滑曲线
 
@@ -46,5 +47,11 @@ namespace ICharts {
       boundaryGap?: boolean
     }
     series: series[]
+
+    // 极坐标系相关
+    polar?: any
+    radiusAxis?: any
+    angleAxis?: any
+    // 极坐标系相关
   }
 }

@@ -14,6 +14,8 @@ import PieBase from '@/demo/new-charts/pie/Base'
 import Ring from '@/demo/new-charts/pie/Ring'
 import AreaStackGradient from '@/demo/new-charts/line/AreaStackGradient'
 import AreaStack from '@/demo/new-charts/line/AreaStack'
+import PolarLabelRadial from '@/demo/new-charts/bar/PolarLabelRadial'
+import PolarLabelTangential from '@/demo/new-charts/bar/PolarLabelTangential'
 
 export default {
   path: '/new-charts',
@@ -41,7 +43,9 @@ export default {
       uiConfig: { title: '柱状图' },
       children: [
         { path: 'base', element: <BarBase />, uiConfig: { title: '基础柱状图' } },
-        { path: 'background', element: <Background />, uiConfig: { title: '带背景色的柱状图' } }
+        { path: 'background', element: <Background />, uiConfig: { title: '带背景色的柱状图' } },
+        { path: 'polarRadial', element: <PolarLabelRadial />, uiConfig: { title: '极坐标-角度轴' } },
+        { path: 'polarTangential', element: <PolarLabelTangential />, uiConfig: { title: '极坐标-径向轴' } }
       ]
     },
 

@@ -3,11 +3,13 @@
 import colorAlpha from 'color-alpha'
 import { Stage, Circle, Line, Group } from '@/rmst-render'
 
-import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
-import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
+import type { IXAxisElements } from '../coordinateSystem/cartesian2d/calcXAxis.js'
+import type { IYAxisElements } from '../coordinateSystem/cartesian2d/calcYAxis.js'
+
 import { colorPalette, primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { pointToFlatArray } from '../utils/utils.js'
+import { ICoordinateSystemElements } from '../coordinateSystem/index.js'
 
 export function calcMain(
   dataSource: number[],
@@ -29,10 +31,12 @@ export function calcMain(
 export function createRenderElements(
   stage: Stage,
   seriesItem: ICharts.series,
-  xAxisData: IXAxisElements['xAxisData'],
-  yAxisData: IYAxisElements['yAxisData'],
+  coordinateSystem: ICoordinateSystemElements,
   series: ICharts.series[]
 ) {
+  const xAxisData = coordinateSystem.cartesian2d.XAxisShape.xAxisData
+  const yAxisData = coordinateSystem.cartesian2d.YAxisShape.yAxisData
+
   const serIndex = series.findIndex(item => item === seriesItem)
 
   const pointData = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
