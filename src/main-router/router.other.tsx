@@ -5,6 +5,7 @@ import AniCurve from '@/demo/other/AniCurve'
 import LinePath from '@/demo/other/LinePath'
 import CurveRect from '@/demo/other/CurveRect'
 import Translation from '@/demo/other/Translation'
+import WaterDrop from '@/demo/other/WaterDrop'
 
 export default {
   path: '/other',
@@ -15,6 +16,7 @@ export default {
     { path: 'aniCurve', element: <AniCurve /> },
     { path: 'linePath', element: <LinePath /> },
     { path: 'curveRect', element: <CurveRect /> },
-    { path: 'translation', element: <Translation /> }
+    { path: 'translation', element: <Translation /> },
+    { path: 'waterDrop', element: <WaterDrop /> }
   ]
 }
