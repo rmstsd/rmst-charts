@@ -1,10 +1,9 @@
 // 柱状图 计算 和 绘制
 import { Stage, Rect, Text } from '@/rmst-render'
 
-import type { IXAxisElements } from '../calcAxis/calcXAxis.js'
-import type { IYAxisElements } from '../calcAxis/calcYAxis.js'
 import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
+import { ICoordinateSystemElements } from '../coordinateSystem/index.js'
 
 export function calcMain(dataSource: number[], xAxisData, yAxis) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
@@ -29,10 +28,16 @@ export function calcMain(dataSource: number[], xAxisData, yAxis) {
 export function createRenderElements(
   stage: Stage,
   seriesItem: ICharts.series,
-  xAxisData: IXAxisElements['xAxisData'],
-  yAxisData: IYAxisElements['yAxisData']
+  coordinateSystem: ICoordinateSystemElements
 ) {
-  const data = calcMain(seriesItem.data, xAxisData, yAxisData)
+  if (!coordinateSystem.hasCartesian2d) {
+    return {}
+  }
+
+  const xAxisData = coordinateSystem.cartesian2d.XAxisShape.xAxisData
+  const yAxisData = coordinateSystem.cartesian2d.YAxisShape.yAxisData
+
+  const data = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 
   const x_axis_start_y = xAxisData.axis.start.y
 

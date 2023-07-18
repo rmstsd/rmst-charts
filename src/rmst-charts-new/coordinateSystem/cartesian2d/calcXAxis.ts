@@ -1,8 +1,8 @@
 // @ts-check
-import { Stage, Line, Text } from '../../rmst-render'
-import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from '../constant.js'
-import { measureText } from '../utils/canvasUtil.js'
-import { pointToFlatArray } from '../utils/utils.js'
+import { Stage, Line, Text } from '../../../rmst-render'
+import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from '../../constant.js'
+import { measureText } from '../../utils/canvasUtil.js'
+import { pointToFlatArray } from '../../utils/utils.js'
 
 function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
   const start_x = canvasPaddingLeft
@@ -35,8 +35,8 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
   return { axis, ticks }
 }
 
-export type IXAxisElements = ReturnType<typeof createRenderElements>
-export function createRenderElements(stage: Stage, innerOption: ICharts.IOption) {
+export type IXAxisElements = ReturnType<typeof createXAxisElements>
+export function createXAxisElements(stage: Stage, innerOption: ICharts.IOption) {
   const xAxisData = getXAxis(
     stage.ctx,
     innerOption.xAxis,

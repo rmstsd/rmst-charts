@@ -1,4 +1,4 @@
-import { Stage, Line, Text } from '../../rmst-render'
+import { Stage, Line, Text } from '@/rmst-render'
 
 import {
   canvasPaddingBottom,
@@ -8,9 +8,9 @@ import {
   splitLineColor,
   tickColor,
   yAxisPadding
-} from '../constant.js'
-import { measureText } from '../utils/canvasUtil.js'
-import { calcPerfect, pointToFlatArray } from '../utils/utils.js'
+} from '@/rmst-charts-new/constant.js'
+import { measureText } from '@/rmst-charts-new/utils/canvasUtil.js'
+import { calcPerfect, pointToFlatArray } from '@/rmst-charts-new/utils/utils.js'
 
 function getYAxis(
   ctx: CanvasRenderingContext2D,
@@ -57,9 +57,8 @@ function getYAxis(
   return { axis, ticks, tickConstant: { min, realInterval, tickInterval } }
 }
 
-export type IYAxisElements = ReturnType<typeof createRenderElements>
-
-export function createRenderElements(stage: Stage, series: ICharts.series[]) {
+export type IYAxisElements = ReturnType<typeof createYAxisElements>
+export function createYAxisElements(stage: Stage, series: ICharts.series[]) {
   const seriesData = series.reduce((acc, item) => acc.concat(item.data), [])
 
   const yAxisData = getYAxis(

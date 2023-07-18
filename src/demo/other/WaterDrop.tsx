@@ -10,9 +10,12 @@ const WaterDrop = () => {
     const { ctx } = stage
 
     const path = new Path2D(
-      'M-0.5421 -0.8857A0.6 0.6 0 1 1 0.5421 -0.8857C0.3878 -0.5605 0 -0.42 0 0C0 -0.42 -0.3878 -0.5605 -0.5421 -0.8857Z'
+      'M-0.5421 -0.8857 A0.6 0.6 0 1 1 0.5421 -0.8857 C0.3878 -0.5605 0 -0.42 0 0 C0 -0.42 -0.3878 -0.5605 -0.5421 -0.8857Z'
     )
-    ctx.stroke(path)
+
+    ctx.transform(25, 0, 0, 25, 100, 100)
+    ctx.fillStyle = 'pink'
+    ctx.fill(path)
 
     return
 
