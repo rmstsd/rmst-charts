@@ -126,6 +126,19 @@ export function rad2deg(radian) {
   return degrees
 }
 
+// 画一个点 测试使用
+export function drawArcPoint(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  fillStyle: string = 'pink'
+) {
+  ctx.beginPath()
+  ctx.arc(x, y, 2, 0, Math.PI * 2)
+  ctx.fillStyle = fillStyle
+  ctx.fill()
+}
+
 // 圆形/扇形 返回 path 的 d属性 返回的是 圆弧  -起始角度遵循数学上的平面直角坐标系
 const calcD = (
   radius: number,
