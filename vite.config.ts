@@ -8,7 +8,9 @@ export default defineConfig({
   base: './',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      'rmst-charts': path.resolve(__dirname, './packages/rmst-charts'),
+      'rmst-render': path.resolve(__dirname, './packages/rmst-render')
     }
   },
   plugins: [

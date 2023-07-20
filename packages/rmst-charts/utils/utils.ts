@@ -1,7 +1,6 @@
 import { primaryColor, tickColor } from '../constant.js'
 import { drawArc } from './drawHelpers.js'
 
-
 // 计算 和 绘制贝塞尔曲线
 export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord[], distance: number) {
   const allControlPoint = calcAllControlPoint()

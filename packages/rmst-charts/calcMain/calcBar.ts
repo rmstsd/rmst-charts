@@ -1,5 +1,5 @@
 // 柱状图 计算 和 绘制
-import { Stage, Rect, Text } from '@/rmst-render'
+import { Stage, Rect, Text } from 'rmst-render'
 
 import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'

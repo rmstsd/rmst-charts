@@ -1,4 +1,4 @@
-import { Stage } from '../rmst-render'
+import { Stage } from 'rmst-render'
 
 import * as line from './calcMain/calcLine'
 import * as bar from './calcMain/calcBar'

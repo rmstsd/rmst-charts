@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import rmstCharts, { IChartInstance } from '@/rmst-charts-new'
+import rmstCharts, { IChartInstance } from 'rmst-charts'
 
 const ChartsTemplate: React.FC<{ option: ICharts.IOption }> = ({ option }) => {
   const insRef = useRef<IChartInstance>()

@@ -1,4 +1,4 @@
-import { Stage, Line, Text } from '@/rmst-render'
+import { Stage, Line, Text } from 'rmst-render'
 
 import {
   canvasPaddingBottom,
@@ -8,9 +8,9 @@ import {
   splitLineColor,
   tickColor,
   yAxisPadding
-} from '@/rmst-charts-new/constant.js'
-import { measureText } from '@/rmst-charts-new/utils/canvasUtil.js'
-import { pointToFlatArray } from '@/rmst-charts-new/utils/utils.js'
+} from '../../constant.js'
+import { measureText } from '../../utils/canvasUtil.js'
+import { pointToFlatArray } from '../../utils/utils.js'
 import { calcPerfectTick } from '../utils'
 
 function getYAxis(

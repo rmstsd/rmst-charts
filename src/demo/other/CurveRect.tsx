@@ -1,8 +1,8 @@
 // 曲线矩形
 import { useEffect } from 'react'
 
-import srcCharts from '@/rmst-charts-new'
-import { calcAllControlPoint, calcSmoothPath2D } from '@/rmst-render'
+import srcCharts from 'rmst-charts'
+import { calcAllControlPoint, calcSmoothPath2D } from 'rmst-render'
 
 const CurveRect = () => {
   useEffect(() => {

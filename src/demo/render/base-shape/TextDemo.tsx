@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text } from '@/rmst-render'
+import { Stage, Rect, Circle, Text } from 'rmst-render'
 
 const TextDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)

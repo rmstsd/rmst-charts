@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
-import srcCharts from '@/rmst-charts-new'
-import { Rect, deg2rad, drawArcPoint, getPointOnArc } from '@/rmst-render'
+import srcCharts from 'rmst-charts'
+import { Rect, deg2rad, drawArcPoint, getPointOnArc } from 'rmst-render'
 
 const WaterDrop = () => {
   useEffect(() => {

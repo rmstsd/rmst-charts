@@ -1,5 +1,6 @@
 // @ts-check
-import { Stage, Line, Text } from '../../../rmst-render'
+import { Stage, Line, Text } from 'rmst-render'
+
 import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from '../../constant.js'
 import { measureText } from '../../utils/canvasUtil.js'
 import { pointToFlatArray } from '../../utils/utils.js'

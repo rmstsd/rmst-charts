@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Stage, Rect, Line } from '@/rmst-render'
+import { Stage, Rect, Line } from 'rmst-render'
 
 const RmstLine = () => {
   const canvasRef = useRef<HTMLDivElement>(null)

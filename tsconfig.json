@@ -15,11 +15,13 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "rmst-charts": ["packages/rmst-charts"],
+      "rmst-render": ["packages/rmst-render"]
     }
   },
-  "include": ["src", "old-charts"],
+  "include": ["src", "old-charts", "packages"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
