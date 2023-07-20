@@ -35,7 +35,7 @@ const rmstCharts = {
         }
 
         if (coordinateSystem.hasPolar) {
-          finalElements.push(...coordinateSystem.polar.circleShapes)
+          finalElements.push(...coordinateSystem.polar.polarAllShapes)
         }
 
         const renderElements = finalSeries
