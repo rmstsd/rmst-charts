@@ -34,6 +34,10 @@ const rmstCharts = {
           )
         }
 
+        if (coordinateSystem.hasPolar) {
+          finalElements.push(...coordinateSystem.polar.circleShapes)
+        }
+
         const renderElements = finalSeries
           .map(seriesItem => {
             switch (seriesItem.type) {
