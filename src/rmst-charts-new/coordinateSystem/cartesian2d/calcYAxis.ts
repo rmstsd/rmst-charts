@@ -10,7 +10,8 @@ import {
   yAxisPadding
 } from '@/rmst-charts-new/constant.js'
 import { measureText } from '@/rmst-charts-new/utils/canvasUtil.js'
-import { calcPerfect, pointToFlatArray } from '@/rmst-charts-new/utils/utils.js'
+import { pointToFlatArray } from '@/rmst-charts-new/utils/utils.js'
+import { calcPerfectTick } from '../utils'
 
 function getYAxis(
   ctx: CanvasRenderingContext2D,
@@ -24,23 +25,9 @@ function getYAxis(
   const yAxisLength = start_y - end_y
   const axis = { start: { x: axis_x, y: start_y }, end: { x: axis_x, y: end_y } }
 
-  const maxRealValue = Math.max(...dataSource)
-  const minRealValue = Math.min(...dataSource)
-
-  const {
-    perfectInterval: realInterval,
-    perfectMax: max,
-    perfectMin: min
-  } = calcPerfect(maxRealValue, minRealValue)
-
-  const intervalCount = (max - min) / realInterval // 间隔数量
-  const tickValues: number[] = Array.from(
-    { length: intervalCount + 1 },
-    (_, index) => min + index * realInterval
-  )
+  const { perfectInterval, perfectMin, intervalCount, tickValues } = calcPerfectTick(dataSource)
 
   const tickInterval = (yAxisLength - yAxisPadding) / intervalCount
-
   const ticks = tickValues.map((tickValue, index) => {
     const start_x = axis_x
     const end_x = xAxisEndX // axis_x + 100
@@ -54,12 +41,12 @@ function getYAxis(
       text: { x: start_x - textWidth - 5, y: tick_y - textHeight / 2, value: tickValue }
     }
   })
-  return { axis, ticks, tickConstant: { min, realInterval, tickInterval } }
+  return { axis, ticks, tickConstant: { min: perfectMin, realInterval: perfectInterval, tickInterval } }
 }
 
 export type IYAxisElements = ReturnType<typeof createYAxisElements>
 export function createYAxisElements(stage: Stage, series: ICharts.series[]) {
-  const seriesData = series.reduce((acc, item) => acc.concat(item.data), [])
+  const seriesData = series.reduce((acc, item) => acc.concat(item.data), []) as number[]
 
   const yAxisData = getYAxis(
     stage.ctx,
