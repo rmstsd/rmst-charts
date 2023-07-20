@@ -1,8 +1,9 @@
-import { Circle, Line, Stage, Text } from '@/rmst-render'
+import { Circle, Line, Stage, Text } from 'rmst-render'
+
 import { calcPerfectTick } from '../utils'
-import { splitLineColor, tickColor } from '@/rmst-charts-new/constant'
-import { measureText } from '@/rmst-charts-new/utils/canvasUtil'
-import { pointToFlatArray } from '@/rmst-charts-new/utils/utils'
+import { splitLineColor, tickColor } from '../../constant'
+import { measureText } from '../../utils/canvasUtil'
+import { pointToFlatArray } from '../../utils/utils'
 
 const getDataForDraw = (stage: Stage, dataSource: number[]) => {
   const { perfectInterval, perfectMin, intervalCount, tickValues } = calcPerfectTick(dataSource)

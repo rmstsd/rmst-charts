@@ -1,7 +1,7 @@
 // 折线图 计算 和 绘制
 
 import colorAlpha from 'color-alpha'
-import { Stage, Circle, Line, Group } from '@/rmst-render'
+import { Stage, Circle, Line, Group } from 'rmst-render'
 
 import type { IXAxisElements } from '../coordinateSystem/cartesian2d/calcXAxis.js'
 import type { IYAxisElements } from '../coordinateSystem/cartesian2d/calcYAxis.js'

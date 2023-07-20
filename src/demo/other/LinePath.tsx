@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import srcCharts from '@/rmst-charts-new'
+import srcCharts from 'rmst-charts'
 
 const LinePath = () => {
   useEffect(() => {

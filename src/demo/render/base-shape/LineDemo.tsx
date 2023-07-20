@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text, Line, calcSmoothPath2D, Path } from '@/rmst-render'
+import { Stage, Rect, Circle, Text, Line, calcSmoothPath2D, Path } from 'rmst-render'
 
 const LineDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)

@@ -1,5 +1,5 @@
-import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad, Stage } from '@/rmst-render'
-import { measureText } from '@/rmst-charts-new/utils/canvasUtil'
+import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad, Stage } from 'rmst-render'
+import { measureText } from '../utils/canvasUtil'
 
 import { pieColors } from '../constant'
 

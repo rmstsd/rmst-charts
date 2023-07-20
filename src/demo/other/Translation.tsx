@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Rect, Stage } from '@/rmst-render'
+import { Rect, Stage } from 'rmst-render'
 
 const Translation = () => {
   const stageRef = useRef<Stage>(null)

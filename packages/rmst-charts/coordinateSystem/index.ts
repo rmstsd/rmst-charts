@@ -4,7 +4,8 @@
   'polar' 使用极坐标系，通过 polarIndex 指定相应的极坐标组件
 */
 
-import { Stage } from '@/rmst-render'
+import { Stage } from 'rmst-render'
+
 import { createXAxisElements, IXAxisElements } from './cartesian2d/calcXAxis'
 import { createYAxisElements, IYAxisElements } from './cartesian2d/calcYAxis'
 import { createPolarElements, IPolarElements } from './polar'
