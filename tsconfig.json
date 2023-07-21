@@ -18,8 +18,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+
       "rmst-charts": ["packages/rmst-charts"],
-      "rmst-render": ["packages/rmst-render"]
+      "rmst-render": ["packages/rmst-render"],
+
+      "rmst-charts/*": ["packages/rmst-charts/*"],
+      "rmst-render/*": ["packages/rmst-render/*"]
     }
   },
   "include": ["src", "old-charts", "packages"],
