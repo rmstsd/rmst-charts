@@ -39,7 +39,7 @@ const LayoutView = () => {
   return (
     <Layout style={{ height: '100%', backgroundColor: 'white' }}>
       <Layout.Header style={{ backgroundColor: 'transparent', display: 'flex', padding: 0 }}>
-        <div style={{ width: 200 }}></div>
+        <div style={{ width: 200, textAlign: 'center', fontSize: 24, flexShrink: 0 }}>rmst</div>
         <Menu
           mode="horizontal"
           selectedKeys={routePathArray}
@@ -50,21 +50,25 @@ const LayoutView = () => {
       </Layout.Header>
 
       <Divider style={{ margin: 0 }} />
-      <section style={{ flexGrow: 1, display: 'flex', backgroundColor: '#f9f9f9' }}>
-        <aside
-          style={{ flexShrink: 0, overflow: 'auto', width: 200, height: '100%', backgroundColor: '#fff' }}
-        >
-          <Menu
-            mode="inline"
-            defaultOpenKeys={defaultOpenKeys}
-            selectedKeys={sideMenuKeys}
-            items={siderItems}
-            onClick={onErMenuClick}
-            style={{ height: '100%' }}
-          />
-        </aside>
+      <section style={{ flexGrow: 1, height: 0, display: 'flex', backgroundColor: '#f9f9f9' }}>
+        <Menu
+          mode="inline"
+          defaultOpenKeys={defaultOpenKeys}
+          selectedKeys={sideMenuKeys}
+          items={siderItems}
+          onClick={onErMenuClick}
+          style={{ flexShrink: 0, overflow: 'auto', width: 220, height: '100%', backgroundColor: '#fff' }}
+        />
 
-        <Layout.Content style={{ margin: 10, padding: 10, borderRadius: 5, backgroundColor: '#fff' }}>
+        <Layout.Content
+          style={{
+            padding: 10,
+            borderRadius: 5,
+            height: '100%',
+            overflow: 'auto',
+            backgroundColor: '#fff'
+          }}
+        >
           <Outlet />
         </Layout.Content>
       </section>

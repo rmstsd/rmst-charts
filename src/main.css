@@ -1,3 +1,7 @@
+:root {
+  --scrollbar-width: 6px;
+}
+
 html,
 body,
 #root {
@@ -25,4 +29,26 @@ hr {
 
 .border {
   border: 1px solid #333;
+}
+
+.ant-menu::-webkit-scrollbar {
+  display: none;
+  width: var(--scrollbar-width);
+  background-color: #e1e1e1;
+}
+
+.ant-menu::-webkit-scrollbar-thumb {
+  background-color: #cecece;
+}
+
+.ant-menu:hover::-webkit-scrollbar {
+  display: initial;
+}
+
+.ant-menu {
+  padding-right: var(--scrollbar-width);
+}
+
+.ant-menu:hover {
+  padding-right: 0;
 }
