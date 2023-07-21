@@ -55,6 +55,9 @@ export class Line extends Path {
 
     const { bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
 
+    // 调用 this.attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
+    this.path2D = this.data.path2D ? this.data.path2D : createPath2D(this.data)
+
     this.setShadow(ctx, this.data)
 
     ctx.beginPath()
