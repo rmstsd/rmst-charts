@@ -106,7 +106,7 @@ export class Circle extends Path {
 export default Circle
 
 // 获取圆弧上的点 圆心 半径 角度: 60°
-export function getPointOnArc(x0, y0, r, deg) {
+export function getPointOnArc(x0: number, y0: number, r: number, deg: number) {
   const alpha = deg2rad(deg)
 
   const x = x0 + r * Math.cos(alpha) // Math.cos 传入弧度
@@ -116,12 +116,12 @@ export function getPointOnArc(x0, y0, r, deg) {
 }
 
 // 角度转弧度
-export function deg2rad(deg) {
+export function deg2rad(deg: number) {
   return (deg * Math.PI) / 180
 }
 
 // 弧度转角度
-export function rad2deg(radian) {
+export function rad2deg(radian: number) {
   var degrees = (radian * 180) / Math.PI
   return degrees
 }

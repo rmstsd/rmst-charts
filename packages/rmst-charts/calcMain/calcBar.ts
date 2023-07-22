@@ -1,11 +1,11 @@
 // 柱状图 计算 和 绘制
-import { Stage, Rect, Text } from 'rmst-render'
+import { Stage, Rect, Text, Circle } from 'rmst-render'
 
 import { primaryColor } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { ICoordinateSystemElements } from '../coordinateSystem/index.js'
 
-export function calcMain(dataSource: number[], xAxisData, yAxis) {
+function calcMain(dataSource: number[], xAxisData, yAxis) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
   const { axis, ticks } = xAxisData
@@ -25,13 +25,43 @@ export function calcMain(dataSource: number[], xAxisData, yAxis) {
   return res
 }
 
+function calcPolarMain(
+  stage: Stage,
+  seriesItem: ICharts.series,
+  coordinateSystem: ICoordinateSystemElements
+) {
+  const { polarAxisData } = coordinateSystem.polar
+  const arcs = polarAxisData.radianAngles.map((item, index) => {
+    const radius = getCanvasPxFromRealNumber(
+      seriesItem.data[index] as number,
+      polarAxisData.lineAxis.start.y,
+      polarAxisData.tickConstant.min,
+      polarAxisData.tickConstant.realInterval,
+      polarAxisData.tickConstant.tickInterval
+    )
+
+    return new Circle({
+      x: stage.center.x,
+      y: stage.center.y,
+      radius: radius,
+      startAngle: item.startAngle + 20,
+      endAngle: item.endAngle - 20,
+      bgColor: primaryColor
+    })
+  })
+
+  return arcs
+}
+
 export function createRenderElements(
   stage: Stage,
   seriesItem: ICharts.series,
   coordinateSystem: ICoordinateSystemElements
 ) {
-  if (!coordinateSystem.hasCartesian2d) {
-    return {}
+  if (seriesItem.coordinateSystem === 'polar') {
+    const arcs = calcPolarMain(stage, seriesItem, coordinateSystem)
+
+    return { elements: [...arcs] }
   }
 
   const xAxisData = coordinateSystem.cartesian2d.XAxisShape.xAxisData
