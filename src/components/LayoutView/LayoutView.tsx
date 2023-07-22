@@ -66,6 +66,7 @@ const LayoutView = () => {
             borderRadius: 5,
             height: '100%',
             overflow: 'auto',
+            flexShrink: 0,
             backgroundColor: '#fff'
           }}
         >

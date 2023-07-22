@@ -11,7 +11,7 @@ import { getCanvasPxFromRealNumber } from '../convert.js'
 import { pointToFlatArray } from '../utils/utils.js'
 import { ICoordinateSystemElements } from '../coordinateSystem/index.js'
 
-export function calcMain(
+function calcMain(
   dataSource: number[],
   xAxisData: IXAxisElements['xAxisData'],
   yAxisData: IYAxisElements['yAxisData']
