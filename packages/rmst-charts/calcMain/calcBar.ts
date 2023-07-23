@@ -1,8 +1,8 @@
 // 柱状图 计算 和 绘制
 import { Stage, Rect, Text, Circle } from 'rmst-render'
 
-import { primaryColor } from '../constant.js'
-import { getCanvasPxFromRealNumber } from '../convert.js'
+import { primaryColor, primaryColorAlpha } from '../constant.js'
+import { getCanvasDistanceFromRealNumber, getCanvasPxFromRealNumber } from '../convert.js'
 import { ICoordinateSystemElements } from '../coordinateSystem/index.js'
 
 function calcMain(dataSource: number[], xAxisData, yAxis) {
@@ -32,25 +32,46 @@ function calcPolarMain(
 ) {
   const { polarAxisData } = coordinateSystem.polar
   const arcs = polarAxisData.radianAngles.map((item, index) => {
-    const radius = getCanvasPxFromRealNumber(
+    const { min, realInterval, tickInterval } = polarAxisData.tickConstant
+
+    const radius = getCanvasDistanceFromRealNumber(
       seriesItem.data[index] as number,
-      polarAxisData.lineAxis.start.y,
-      polarAxisData.tickConstant.min,
-      polarAxisData.tickConstant.realInterval,
-      polarAxisData.tickConstant.tickInterval
+      min,
+      realInterval,
+      tickInterval
     )
 
-    return new Circle({
+    const gapAngle = (item.endAngle - item.startAngle) * 0.2
+
+    const arc = new Circle({
       x: stage.center.x,
       y: stage.center.y,
-      radius: radius,
-      startAngle: item.startAngle + 20,
-      endAngle: item.endAngle - 20,
-      bgColor: primaryColor
+      radius: 0,
+      startAngle: item.startAngle + gapAngle,
+      endAngle: item.endAngle - gapAngle,
+      bgColor: primaryColor,
+      extraData: { radius }
     })
+
+    arc.onEnter = () => {
+      stage.setCursor('pointer')
+      arc.attr({ bgColor: primaryColorAlpha })
+    }
+
+    arc.onLeave = () => {
+      stage.setCursor('auto')
+      arc.attr({ bgColor: primaryColor })
+    }
+    return arc
   })
 
-  return arcs
+  const afterAppendStage = () => {
+    arcs.forEach(item => {
+      item.animateCartoon({ radius: item.data.extraData.radius })
+    })
+  }
+
+  return { elements: arcs, afterAppendStage }
 }
 
 export function createRenderElements(
@@ -59,9 +80,9 @@ export function createRenderElements(
   coordinateSystem: ICoordinateSystemElements
 ) {
   if (seriesItem.coordinateSystem === 'polar') {
-    const arcs = calcPolarMain(stage, seriesItem, coordinateSystem)
+    const polarMain = calcPolarMain(stage, seriesItem, coordinateSystem)
 
-    return { elements: [...arcs] }
+    return polarMain
   }
 
   const xAxisData = coordinateSystem.cartesian2d.XAxisShape.xAxisData
