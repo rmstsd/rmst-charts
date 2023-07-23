@@ -57,7 +57,14 @@ const LayoutView = () => {
           selectedKeys={sideMenuKeys}
           items={siderItems}
           onClick={onErMenuClick}
-          style={{ flexShrink: 0, overflow: 'auto', width: 220, height: '100%', backgroundColor: '#fff' }}
+          style={{
+            flexShrink: 0,
+            overflowY: 'scroll',
+            paddingBottom: 20,
+            width: 220,
+            height: '100%',
+            backgroundColor: '#fff'
+          }}
         />
 
         <Layout.Content
