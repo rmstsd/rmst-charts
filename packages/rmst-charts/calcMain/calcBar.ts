@@ -55,12 +55,10 @@ function calcPolarMain(
 
     arc.onEnter = () => {
       stage.setCursor('pointer')
-      arc.attr({ bgColor: primaryColorAlpha })
     }
 
     arc.onLeave = () => {
       stage.setCursor('auto')
-      arc.attr({ bgColor: primaryColor })
     }
     return arc
   })

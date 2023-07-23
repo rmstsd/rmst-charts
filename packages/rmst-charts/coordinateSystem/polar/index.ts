@@ -27,9 +27,8 @@ const getDataForDraw = (stage: Stage, innerOption: ICharts.IOption, dataSource: 
     start: { x: center_x, y: center_y },
     end: { x: center_x, y: center_y - outerCircle.radius }
   }
-
   const tickInterval = (lineAxis.start.y - lineAxis.end.y) / intervalCount
-  const ticks = tickValues.map((tickValue, index) => {
+  const lineAxisTicks = tickValues.map((tickValue, index) => {
     const y = center_y - index * tickInterval
     const end_x = center_x - 6
     const { textWidth, textHeight } = measureText(stage.ctx, String(tickValue))
@@ -44,50 +43,35 @@ const getDataForDraw = (stage: Stage, innerOption: ICharts.IOption, dataSource: 
   const { angleAxis } = innerOption
   const anglePer = 360 / angleAxis.data.length
 
+  const offsetAngle = -90
+
   // 外圈刻度
   const outerTicks = angleAxis.data.map((item, index) => {
-    const radianCenterPoint = getPointOnArc(
-      stage.center.x,
-      stage.center.y,
-      outerCircle.radius,
-      0 + index * anglePer
-    )
+    const tickAngle = offsetAngle + index * anglePer
+    const nextTickAngle = (index === angleAxis.data.length - 1 ? 360 : (index + 1) * anglePer) + offsetAngle
 
-    const tickAngle = index * anglePer
-    const nextTickAngle = index === angleAxis.data.length - 1 ? 360 : (index + 1) * anglePer
-
-    const radianExtendPoint = getPointOnArc(
-      stage.center.x,
-      stage.center.y,
-      outerCircle.radius + 10,
-      tickAngle
-    )
-
+    const radianTickStart = getPointOnArc(center_x, center_y, outerCircle.radius, tickAngle)
+    const radianTickEnd = getPointOnArc(center_x, center_y, outerCircle.radius + 10, tickAngle)
     const radianTextPoint = getPointOnArc(
-      stage.center.x,
-      stage.center.y,
+      center_x,
+      center_y,
       outerCircle.radius + 15,
       (tickAngle + nextTickAngle) / 2
     )
 
-    return {
-      start: { x: radianCenterPoint.x, y: radianCenterPoint.y },
-      end: { x: radianExtendPoint.x, y: radianExtendPoint.y },
-      text: { x: radianTextPoint.x, y: radianTextPoint.y, value: String(item) }
-    }
+    return { start: radianTickStart, end: radianTickEnd, text: { ...radianTextPoint, value: String(item) } }
   })
 
-  const radianAngles = angleAxis.data.map((item, index) => {
-    return {
-      startAngle: index * anglePer,
-      endAngle: index === angleAxis.data.length - 1 ? 360 : (index + 1) * anglePer
-    }
-  })
+  // 协助绘制扇形
+  const radianAngles = angleAxis.data.map((_, index) => ({
+    startAngle: index * anglePer + offsetAngle,
+    endAngle: (index === angleAxis.data.length - 1 ? 360 : (index + 1) * anglePer) + offsetAngle
+  }))
 
   return {
     circlesData,
     lineAxis,
-    ticks,
+    lineAxisTicks,
     outerTicks,
     radianAngles,
     tickConstant: { min: perfectMin, realInterval: perfectInterval, tickInterval }
@@ -120,14 +104,14 @@ export const createPolarElements = (
     bgColor: tickColor
   })
 
-  const tickShapes = polarAxisData.ticks.map(item => {
+  const tickShapes = polarAxisData.lineAxisTicks.map(item => {
     return new Line({
       points: [item.start.x, item.start.y, item.end.x, item.end.y],
       bgColor: tickColor
     })
   })
 
-  const textShapes = polarAxisData.ticks.map(item => {
+  const textShapes = polarAxisData.lineAxisTicks.map(item => {
     return new Text({ x: item.text.x, y: item.text.y, content: String(item.text.value), color: tickColor })
   })
 

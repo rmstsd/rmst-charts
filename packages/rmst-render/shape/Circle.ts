@@ -4,7 +4,8 @@ const defaultData = {
   startAngle: 0,
   endAngle: 360,
   shadowColor: '#333',
-  lineWidth: 1
+  lineWidth: 1,
+  offsetAngle: 0
 }
 
 export class Circle extends Path {
@@ -37,7 +38,7 @@ export class Circle extends Path {
 
     const d = innerRadius
       ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
-      : calcD(radius, startAngle, endAngle, x, y, isWholeArc)
+      : calcD(radius, startAngle, endAngle, x, y, isWholeArc, offsetAngle)
 
     const path = new Path2D(d)
 
@@ -141,8 +142,12 @@ const calcD = (
   endAngle: number,
   centerX: number,
   centerY: number,
-  isWholeArc: boolean
+  isWholeArc: boolean,
+  offsetAngle: number
 ) => {
+  startAngle = startAngle + offsetAngle
+  endAngle = endAngle + offsetAngle
+
   // 将角度转换为弧度
   const startAngleRad = (startAngle * Math.PI) / 180
   const endAngleRad = (endAngle * Math.PI) / 180
