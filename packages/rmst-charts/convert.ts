@@ -35,7 +35,7 @@ export function getYTickFromOffsetY(
   return { assistY: offsetY, realTickValue }
 }
 
-// 初始化的时候 把真实数据(价格)转换成canvas中的像素位置
+// 初始化的时候 把真实数据(价格)转换成canvas中的像素位置 (2d坐标系, 转换出的是 canvas 坐标)
 export function getCanvasPxFromRealNumber(
   realNumber: number,
   yAxis_start_y: number,
@@ -43,7 +43,18 @@ export function getCanvasPxFromRealNumber(
   realInterval: number,
   tickInterval: number
 ) {
+  const tickDistance = getCanvasDistanceFromRealNumber(realNumber, min, realInterval, tickInterval)
+  return yAxis_start_y - tickDistance
+}
+
+// 将真实数据转换成 canvas 的绘图数据, 转换出的是距离, 而不是坐标
+export function getCanvasDistanceFromRealNumber(
+  realNumber: number,
+  min: number,
+  realInterval: number,
+  tickInterval: number
+) {
   const tickCount = (realNumber - min) / realInterval
   const tickDistance = tickCount * tickInterval
-  return yAxis_start_y - tickDistance
+  return tickDistance
 }

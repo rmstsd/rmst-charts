@@ -8,12 +8,12 @@ const option: ICharts.IOption = {
   radiusAxis: {},
   angleAxis: {
     type: 'category',
-    data: ['a', 'b', 'c', 'd']
+    data: ['a', 'b', 'c', 'd', 'e']
   },
   series: [
     {
       type: 'bar' as const,
-      data: [20, 12.2, 24.4, 33.6],
+      data: [18, 26, 24.4, 33.6, 55],
       coordinateSystem: 'polar'
     }
   ]

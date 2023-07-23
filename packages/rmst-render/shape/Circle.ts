@@ -23,12 +23,14 @@ export class Circle extends Path {
     strokeStyle?: string
     startAngle?: number // 圆弧 饼图 角度 60 180 360
     endAngle?: number // 圆弧 饼图
+    offsetAngle?: number // 默认情况下, 圆弧的起始角度是 0, 但是如果需要从其他角度开始, 可以设置 offsetAngle
     lineWidth?: number
     [key: string]: any
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle, lineWidth } = this.data
+    const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle, offsetAngle, lineWidth } =
+      this.data
     const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
     this.setShadow(ctx, this.data)
@@ -40,13 +42,6 @@ export class Circle extends Path {
     const path = new Path2D(d)
 
     ctx.beginPath()
-    // ctx.arc(x, y, radius, deg2rad(startAngle), deg2rad(endAngle))
-
-    // ctx.strokeStyle = strokeStyle
-    // ctx.fillStyle = bgColor
-
-    // ctx.fill()
-    // ctx.stroke()
 
     if (strokeStyle) {
       ctx.lineWidth = lineWidth

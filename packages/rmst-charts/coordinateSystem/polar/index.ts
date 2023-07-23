@@ -6,12 +6,13 @@ import { measureText } from '../../utils/canvasUtil'
 import { pointToFlatArray } from '../../utils/utils'
 
 const getDataForDraw = (stage: Stage, innerOption: ICharts.IOption, dataSource: number[]) => {
-  const { perfectInterval, perfectMin, intervalCount, tickValues } = calcPerfectTick(dataSource)
+  const { perfectInterval, perfectMin, intervalCount, tickValues } = calcPerfectTick(dataSource, true)
 
   const center_x = stage.center.x
   const center_y = stage.center.y
 
-  const radiusPer = 30
+  const maxRadius = stage.canvasSize.height / 2
+  const radiusPer = maxRadius / tickValues.length
 
   const circlesData = tickValues.map((item, index) => ({
     x: center_x,
