@@ -5,7 +5,9 @@ import KonvaLineAnimate from '@/demo/konva/KonvaLineAnimate'
 import PolygonDe from '@/demo/konva/PolygonDe'
 import ZIndex from '@/demo/konva/ZIndex'
 
-export default {
+import { IRouteObject } from './router'
+
+const konvaRouteConfig: IRouteObject = {
   path: '/konva',
   element: <LayoutView />,
   uiConfig: { title: 'konva' },
@@ -29,3 +31,5 @@ export default {
     }
   ]
 }
+
+export default konvaRouteConfig

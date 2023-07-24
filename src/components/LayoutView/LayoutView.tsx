@@ -15,6 +15,7 @@ const LayoutView = () => {
 
   const headerItems: MenuProps['items'] = convertToAntdData(routes, false)
   const mRoutes = matchRoutes(routes, location.pathname)
+  const currentRouteConfig = mRoutes.at(-1)
   const routePathArray = mRoutes.map(item => item.route.path)
   const [mainPath] = routePathArray
 
@@ -81,7 +82,11 @@ const LayoutView = () => {
             backgroundColor: '#fff'
           }}
         >
-          <Outlet />
+          {currentRouteConfig.route.uiConfig.isDeveloping ? (
+            <div style={{ textAlign: 'center', lineHeight: 20, fontSize: 30 }}>开发中</div>
+          ) : (
+            <Outlet />
+          )}
         </Layout.Content>
       </section>
     </Layout>

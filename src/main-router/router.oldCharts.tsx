@@ -6,7 +6,9 @@ import PieDemo from '@/demo/old-charts/PieDemo'
 import ArcAnimate from '@/demo/old-charts/ArcAnimate'
 import CandleTask from '@/demo/old-charts/CandleTask'
 
-export default {
+import { IRouteObject } from './router'
+
+const oldChartsRouteConfig: IRouteObject = {
   path: '/old-charts',
   element: <LayoutView />,
   uiConfig: { title: 'old-charts' },
@@ -18,3 +20,5 @@ export default {
     { path: 'K线图', element: <CandleTask /> }
   ]
 }
+
+export default oldChartsRouteConfig

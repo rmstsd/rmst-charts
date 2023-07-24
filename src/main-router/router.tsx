@@ -2,14 +2,14 @@ import type { MenuProps } from 'antd'
 
 import { RouteObject, Navigate } from 'react-router-dom'
 
-import newCharts from './router.newCharts'
+import newChartsRouteConfig from './router.newCharts'
 import rmstRender from './router.rmstRender'
-import konva from './router.konva'
+import konvaRouteConfig from './router.konva'
 import oldCharts from './router.oldCharts'
 import other from './router.other'
 
 export type IRouteObject = RouteObject & {
-  uiConfig?: { hidden?: boolean; title?: string; icon?: any }
+  uiConfig?: { hidden?: boolean; title?: string; icon?: any; isDeveloping?: boolean }
   children?: IRouteObject[]
 }
 
@@ -19,9 +19,9 @@ export const routes: IRouteObject[] = [
     element: <Navigate to="/new-charts/line/base" replace={true} />,
     uiConfig: { hidden: true }
   },
-  newCharts,
+  newChartsRouteConfig,
   rmstRender,
-  konva,
+  konvaRouteConfig,
   oldCharts,
   other
 ]

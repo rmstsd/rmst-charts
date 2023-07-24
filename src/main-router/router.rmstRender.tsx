@@ -12,7 +12,9 @@ import RmstLine from '@/demo/render/RmstLine'
 import GroupClipAnimate from '@/demo/render/GroupClipAnimate'
 import CustomShape from '@/demo/render/CustomShape'
 
-export default {
+import { IRouteObject } from './router'
+
+const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
   element: <LayoutView />,
   uiConfig: { title: 'render (core)' },
@@ -60,3 +62,5 @@ export default {
     }
   ]
 }
+
+export default rmstRenderRouteConfig
