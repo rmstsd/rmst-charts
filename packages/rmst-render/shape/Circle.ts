@@ -41,6 +41,7 @@ export class Circle extends Path {
       : calcD(radius, startAngle, endAngle, x, y, isWholeArc, offsetAngle)
 
     const path = new Path2D(d)
+    this.path2D = path
 
     ctx.beginPath()
 
@@ -54,7 +55,8 @@ export class Circle extends Path {
     ctx.fill(path)
   }
 
-  isInner(offsetX: number, offsetY: number) {
+  // 废弃
+  isInnerOld(offsetX: number, offsetY: number) {
     const { x, y, radius, innerRadius, startAngle, endAngle } = this.data
 
     const distance = Math.sqrt((offsetX - x) ** 2 + (offsetY - y) ** 2)
