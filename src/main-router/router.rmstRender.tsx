@@ -5,11 +5,13 @@ import Circle from '@/demo/render/base-shape/CircleDemo'
 import LineDemo from '@/demo/render/base-shape/LineDemo'
 import TextDemo from '@/demo/render/base-shape/TextDemo'
 
-import GroupDraggable from '@/demo/render/GroupDraggable'
-import Animate from '@/demo/render/Animate'
-import Draggable from '@/demo/render/Draggable'
-import RmstLine from '@/demo/render/RmstLine'
-import GroupClipAnimate from '@/demo/render/GroupClipAnimate'
+import Draggable from '@/demo/render/drag/Draggable'
+import GroupDraggable from '@/demo/render/drag/GroupDraggable'
+
+import Animate from '@/demo/render/animate/Animate'
+import GroupClipAnimate from '@/demo/render/animate/GroupClipAnimate'
+
+import WatermarkClip from '@/demo/render/real-case/WatermarkClip'
 
 import { IRouteObject } from './router'
 
@@ -30,29 +32,30 @@ const rmstRenderRouteConfig: IRouteObject = {
       ]
     },
     {
-      path: 'draggable',
-      element: <Draggable />,
-      uiConfig: { title: 'draggable' }
-    },
-    {
-      path: 'group',
-      element: <GroupDraggable />,
-      uiConfig: { title: '成组 draggable' }
+      path: 'drag',
+      element: <LayoutOutlet />,
+      uiConfig: { title: '拖拽' },
+      children: [
+        { path: 'draggable', element: <Draggable />, uiConfig: { title: 'draggable' } },
+        { path: 'group', element: <GroupDraggable />, uiConfig: { title: '成组 draggable' } }
+      ]
     },
     {
       path: 'animate',
-      element: <Animate />,
-      uiConfig: { title: 'Animate' }
+      element: <LayoutOutlet />,
+      uiConfig: { title: '动画' },
+      children: [
+        { path: 'base', element: <Animate />, uiConfig: { title: 'Animate' } },
+        { path: 'groupClipAnimate', element: <GroupClipAnimate />, uiConfig: { title: '组 clip 动画' } }
+      ]
     },
     {
-      path: 'groupClipAnimate',
-      element: <GroupClipAnimate />,
-      uiConfig: { title: '组 clip 动画' }
-    },
-    {
-      path: 'rmst-line',
-      element: <RmstLine />,
-      uiConfig: { title: 'RmstLine' }
+      path: 'real-case',
+      element: <LayoutOutlet />,
+      uiConfig: { title: '真实场景' },
+      children: [
+        { path: 'watermarkClip', element: <WatermarkClip />, uiConfig: { title: '水印', isDeveloping: true } }
+      ]
     }
   ]
 }
