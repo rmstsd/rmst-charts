@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text, Line, calcSmoothPath2D, Path } from 'rmst-render'
+import { Stage, Rect, Circle, Text, Line, Path } from 'rmst-render'
 
 const LineDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -16,7 +16,24 @@ const LineDemo = () => {
       smooth: true
     })
 
-    stage.append([line])
+    const line2 = new Line({
+      points: [0, 0, 100, 100, 200, 100, 300, 300],
+      lineWidth: 5,
+      strokeStyle: '#45eeb8'
+      // closed: true
+    })
+
+    line2.onEnter = () => {
+      line2.attr({ lineWidth: 10 })
+      stage.setCursor('pointer')
+    }
+
+    line2.onLeave = () => {
+      line2.attr({ lineWidth: 5 })
+      stage.setCursor('auto')
+    }
+
+    stage.append([line2])
 
     // line.animateCartoon(undefined, 1000, 'left-right')
 

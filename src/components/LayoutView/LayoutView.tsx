@@ -3,6 +3,8 @@ import { Outlet, useLocation, useNavigate, matchRoutes } from 'react-router-dom'
 import { convertToAntdData, findPath, routes } from '@/main-router/router'
 import { useState } from 'react'
 
+import './LayoutView.css'
+
 const LayoutView = () => {
   const location = useLocation()
   const navigate = useNavigate()
@@ -55,37 +57,23 @@ const LayoutView = () => {
 
       <Divider style={{ margin: 0 }} />
       <section style={{ flexGrow: 1, height: 0, display: 'flex', backgroundColor: '#f9f9f9' }}>
-        <Menu
-          mode="inline"
-          openKeys={openKeys}
-          onOpenChange={setOpenKeys}
-          selectedKeys={sideMenuKeys}
-          items={siderItems}
-          onClick={onSideMenuClick}
-          style={{
-            flexShrink: 0,
-            overflowY: 'scroll',
-            paddingBottom: 20,
-            width: 220,
-            height: '100%',
-            backgroundColor: '#fff'
-          }}
-        />
+        <aside>
+          <Menu
+            mode="inline"
+            openKeys={openKeys}
+            onOpenChange={setOpenKeys}
+            selectedKeys={sideMenuKeys}
+            items={siderItems}
+            onClick={onSideMenuClick}
+            style={{ width: 220, borderRight: 'none' }}
+          />
+        </aside>
 
-        <Layout.Content
-          style={{
-            padding: 10,
-            borderRadius: 5,
-            height: '100%',
-            overflow: 'auto',
-            flexShrink: 0,
-            backgroundColor: '#fff'
-          }}
-        >
-          {currentRouteConfig.route.uiConfig.isDeveloping ? (
+        <Layout.Content className="main-content">
+          {currentRouteConfig.route.uiConfig?.isDeveloping && process.env.NODE_ENV === 'production' ? (
             <div style={{ textAlign: 'center', lineHeight: 20, fontSize: 30 }}>开发中</div>
           ) : (
-            <Outlet />
+            <LayoutOutlet />
           )}
         </Layout.Content>
       </section>
