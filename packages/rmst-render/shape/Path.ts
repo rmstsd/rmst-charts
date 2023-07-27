@@ -230,7 +230,7 @@ export class Path {
       animateCallback?: (_prop: Record<string, any>) => void
       [key: string]: any
     },
-    totalTime = 1000,
+    totalTime = 500,
     type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left',
     clipCallback?: (surroundBoxCoord: this['surroundBoxCoord'], clipWidth: number) => void
   ) {
