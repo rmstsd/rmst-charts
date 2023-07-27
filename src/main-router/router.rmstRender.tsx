@@ -10,6 +10,7 @@ import Animate from '@/demo/render/Animate'
 import Draggable from '@/demo/render/Draggable'
 import RmstLine from '@/demo/render/RmstLine'
 import GroupClipAnimate from '@/demo/render/GroupClipAnimate'
+import CustomShape from '@/demo/render/CustomShape'
 
 import { IRouteObject } from './router'
 
@@ -53,6 +54,11 @@ const rmstRenderRouteConfig: IRouteObject = {
       path: 'rmst-line',
       element: <RmstLine />,
       uiConfig: { title: 'RmstLine' }
+    },
+    {
+      path: 'custom-shape',
+      element: <CustomShape />,
+      uiConfig: { title: 'CustomShape' }
     }
   ]
 }
