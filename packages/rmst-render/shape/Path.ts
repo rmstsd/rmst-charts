@@ -274,11 +274,23 @@ export class Path {
 
         const surroundBoxCoord = this.isGroup ? this.getGroupSurroundBoxCoord() : _surroundBoxCoord
 
+        this.animateState.startValue = this.clipWidth
         const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
         const per = calcPer(0, surroundBoxWidth, totalTime)
 
-        const exec = () => {
-          const targetValue = calcTargetValue(this.clipWidth, surroundBoxWidth, per)
+        const exec = (timestamp: number) => {
+          if (!this.animateState.startTime) {
+            this.animateState.startTime = timestamp
+          }
+
+          const elapsedTime = timestamp - this.animateState.startTime
+          const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+
+          const targetValue = calcTargetValue_2(
+            this.animateState.startValue,
+            surroundBoxWidth,
+            elapsedTimeRatio
+          )
 
           if (targetValue === surroundBoxWidth) {
             console.log('结束')
@@ -339,6 +351,8 @@ export class Path {
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {
             // console.log(`${propKey} 的动画结束`)
+
+            this.animateState.startTime = null
 
             resolve(true)
             return
