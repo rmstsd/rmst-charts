@@ -1,7 +1,17 @@
-import { Circle, Group, Rect, Line, Text, Path, getPointOnArc, deg2rad, Stage } from 'rmst-render'
-import { measureText } from '../utils/canvasUtil'
+import {
+  Circle,
+  Group,
+  Rect,
+  Line,
+  Text,
+  Path,
+  getPointOnArc,
+  deg2rad,
+  Stage,
+  measureText
+} from 'rmst-render'
 
-import { pieColors } from '../constant'
+import { pieColors, tickColor } from '../constant'
 
 type PieDataSourceItem = { value: number; name: string }
 function calcMain(dataSource: PieDataSourceItem[], end_angle = 360) {
@@ -51,10 +61,10 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     const x = 10
     const y = 10 + (height + gap) * index
 
-    const { textWidth, textHeight } = measureText(stage.ctx, item.label)
+    const { textWidth, textHeight } = measureText(stage.ctx, item.label, 14)
 
     const legendRect = new Rect({ x, y, width, height, bgColor: item.color })
-    const legendText = new Text({ x: x + width + 5, y, content: item.label, color: item.color, fontSize: 16 })
+    const legendText = new Text({ x: x + width + 5, y, content: item.label, color: item.color, fontSize: 14 })
     const legendGroup = new Group({ onlyKey: 'legend' })
     legendGroup.append([legendRect, legendText])
 
@@ -98,8 +108,7 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
       x: isCenterRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - 5,
       y: y_end - textHeight / 2,
       content: item.label,
-      color: '#333',
-      fontSize: 16,
+      color: tickColor,
       textAlign: isCenterRight ? 'left' : 'right'
     })
 

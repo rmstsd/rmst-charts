@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { setCtxFontSize } from 'rmst-charts/utils/canvasUtil'
 import { Circle, Group, Rect, Stage, Text, measureText } from 'rmst-render'
 
 const width = 700
@@ -33,8 +32,7 @@ const WatermarkClip = () => {
       }
     }
 
-    setCtxFontSize(ctx, textOption.fontSize)
-    const { textWidth, textHeight } = measureText(ctx, textOption.content)
+    const { textWidth, textHeight } = measureText(ctx, textOption.content, textOption.fontSize)
     const controlRect = new Rect({
       x: textOption.x,
       y: textOption.y,

@@ -1,8 +1,7 @@
 // @ts-check
-import { Stage, Line, Text } from 'rmst-render'
+import { Stage, Line, Text, measureText } from 'rmst-render'
 
 import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from '../../constant.js'
-import { measureText } from '../../utils/canvasUtil.js'
 import { pointToFlatArray } from '../../utils/utils.js'
 
 function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
@@ -19,7 +18,7 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
   const axis = { start: { x: start_x, y: axis_y }, end: { x: end_x, y: axis_y }, xAxisInterval }
 
   const ticks = data.map((valueString, index) => {
-    const { textWidth, textHeight } = measureText(ctx, valueString)
+    const { textWidth, textHeight } = measureText(ctx, valueString, 14)
     const tickLength = 10
 
     const x = start_x + firstPaddingLeft + index * xAxisInterval

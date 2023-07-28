@@ -1,10 +1,10 @@
 import Group from 'rmst-render/Group'
 import Path from './Path'
-import { setCtxFontSize } from 'rmst-charts/utils/canvasUtil'
 
 const defaultData = {
   color: '#333',
-  fontSize: 16
+  fontSize: 14,
+  textAlign: 'left' as const
 }
 
 export class Text extends Path {
@@ -38,7 +38,7 @@ export class Text extends Path {
 
   isInner(offsetX: any, offsetY: any): boolean {
     const stage = this.findStage()
-    const { textWidth, textHeight } = measureText(stage.ctx, this.data.content)
+    const { textWidth, textHeight } = measureText(stage.ctx, this.data.content, this.data.fontSize)
 
     return (
       offsetX >= this.data.x &&
@@ -73,11 +73,16 @@ export class Text extends Path {
 export default Text
 
 // 测量文本宽高
-export function measureText(ctx: CanvasRenderingContext2D, text: string) {
+export function measureText(ctx: CanvasRenderingContext2D, text: string, fontSize: number) {
+  setCtxFontSize(ctx, fontSize)
   const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)
 
   // qq 浏览器只返回了 `width`
   const textHeight = actualBoundingBoxAscent + actualBoundingBoxDescent || parseInt(ctx.font)
 
   return { textWidth, textHeight }
+}
+
+function setCtxFontSize(ctx: CanvasRenderingContext2D, fontSize: number = 14) {
+  ctx.font = `${fontSize}px 微软雅黑`
 }

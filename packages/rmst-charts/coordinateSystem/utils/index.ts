@@ -1,5 +1,5 @@
 // 返回刻度轴的 业务数据的完美数据
-export const calcPerfectTick = (data: number[], isPolar: boolean) => {
+export const calcPerfectTick = (data: number[], isPolar?: boolean) => {
   const maxRealValue = Math.max(...data)
   const minRealValue = isPolar ? 0 : Math.min(...data) // 如果是极坐标系, 则最小值为0 (临时方案, 与 echarts 效果不一致)
 

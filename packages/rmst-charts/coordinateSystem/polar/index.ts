@@ -1,8 +1,7 @@
-import { Circle, Line, Stage, Text, getPointOnArc } from 'rmst-render'
+import { Circle, Line, Stage, Text, getPointOnArc, measureText } from 'rmst-render'
 
 import { calcPerfectTick } from '../utils'
 import { splitLineColor, tickColor } from '../../constant'
-import { measureText } from '../../utils/canvasUtil'
 import { pointToFlatArray } from '../../utils/utils'
 
 const getDataForDraw = (stage: Stage, innerOption: ICharts.IOption, dataSource: number[]) => {
@@ -31,7 +30,7 @@ const getDataForDraw = (stage: Stage, innerOption: ICharts.IOption, dataSource: 
   const lineAxisTicks = tickValues.map((tickValue, index) => {
     const y = center_y - index * tickInterval
     const end_x = center_x - 6
-    const { textWidth, textHeight } = measureText(stage.ctx, String(tickValue))
+    const { textWidth, textHeight } = measureText(stage.ctx, String(tickValue), 14)
 
     return {
       start: { x: center_x, y },
