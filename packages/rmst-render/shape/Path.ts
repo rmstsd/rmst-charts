@@ -63,6 +63,8 @@ export class Path {
   }
 
   animateState = {
+    startValue: {},
+    startTime: null,
     rafTimer: null,
     curr: 0
   }
@@ -293,7 +295,7 @@ export class Path {
           this.animateState.rafTimer = requestAnimationFrame(exec)
         }
 
-        exec()
+        requestAnimationFrame(exec)
       }
 
       return
@@ -307,18 +309,32 @@ export class Path {
 
     const keys = Object.keys(prop).filter(item => item !== 'animateCallback')
 
+    keys.forEach(key => {
+      this.animateState.startValue[key] = this.data[key]
+    })
+
     return new Promise(resolve => {
       keys.forEach(propKey => {
         // per 的计算要在递归外
-        const per = calcPer(this.data[propKey], prop[propKey], totalTime)
+        // const per = calcPer(this.data[propKey], prop[propKey], totalTime)
 
-        const exec = () => {
-          // console.log('exec')
+        const exec = (timestamp: number) => {
+          if (!this.animateState.startTime) {
+            this.animateState.startTime = timestamp
+          }
+
+          const elapsedTime = timestamp - this.animateState.startTime
+
           const currDataValue = this.data[propKey]
-
           if (currDataValue === undefined) return
 
-          const targetValue = calcTargetValue(currDataValue, prop[propKey], per)
+          const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+
+          const targetValue = calcTargetValue_2(
+            this.animateState.startValue[propKey],
+            prop[propKey],
+            elapsedTimeRatio
+          )
 
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {
@@ -337,7 +353,7 @@ export class Path {
           this.animateState.rafTimer = requestAnimationFrame(exec)
         }
 
-        exec()
+        requestAnimationFrame(exec)
       })
     })
   }
@@ -358,6 +374,36 @@ const calcTargetValue = (
   }
 
   function calcValue(initVal: number, targetVal: number, per: number) {
+    if (initVal < targetVal) {
+      const currCount = initVal + per
+      return currCount > targetVal ? targetVal : currCount
+    }
+
+    if (initVal > targetVal) {
+      const currCount = initVal - per
+
+      return currCount < targetVal ? targetVal : currCount
+    }
+
+    return targetVal
+  }
+}
+
+const calcTargetValue_2 = (
+  initCount: number | number[],
+  targetCount: number | number[],
+  elapsedTimeRatio
+) => {
+  if (typeof initCount === 'number' && typeof targetCount === 'number') {
+    return calcValue(initCount, targetCount)
+  } else if (Array.isArray(initCount) && Array.isArray(targetCount)) {
+    return initCount.map((item, index) => calcValue(item, targetCount[index]))
+  }
+
+  function calcValue(initVal: number, targetVal: number) {
+    const totalChangedVal = Math.abs(initVal - targetVal)
+    const per = elapsedTimeRatio * totalChangedVal
+
     if (initVal < targetVal) {
       const currCount = initVal + per
       return currCount > targetVal ? targetVal : currCount
