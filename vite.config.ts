@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import legacy from '@vitejs/plugin-legacy'
 import path from 'path'
 
+import buildTime from './vite-plugins/vite-plugin-build-time'
+
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
@@ -20,6 +22,7 @@ export default defineConfig({
     }),
     legacy({
       targets: ['defaults', 'not IE 11']
-    })
+    }),
+    buildTime()
   ]
 })

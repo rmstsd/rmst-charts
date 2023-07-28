@@ -53,6 +53,7 @@ const LayoutView = () => {
           onClick={onHeaderMenuClick}
           style={{ border: 'none', flexGrow: 1 }}
         />
+        <span style={{ paddingRight: 20 }}>最新 build 时间: {__Build_Time__}</span>
       </Layout.Header>
 
       <Divider style={{ margin: 0 }} />
