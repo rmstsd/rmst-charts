@@ -44,7 +44,9 @@ const LayoutView = () => {
 
   return (
     <Layout style={{ height: '100%', backgroundColor: 'white' }}>
-      <Layout.Header style={{ backgroundColor: 'transparent', display: 'flex', padding: 0 }}>
+      <Layout.Header
+        style={{ backgroundColor: 'transparent', display: 'flex', padding: 0, paddingRight: 20 }}
+      >
         <div style={{ width: 200, textAlign: 'center', fontSize: 24, flexShrink: 0 }}>rmst</div>
         <Menu
           mode="horizontal"
@@ -53,7 +55,12 @@ const LayoutView = () => {
           onClick={onHeaderMenuClick}
           style={{ border: 'none', flexGrow: 1 }}
         />
-        <span style={{ paddingRight: 20 }}>最新 build 时间: {__Build_Time__}</span>
+
+        <span style={{ paddingRight: 10 }}>最新 build: {__Build_Time__}</span>
+
+        <a href="https://github.com/rmstsd/rmst-charts" target="_blank">
+          github
+        </a>
       </Layout.Header>
 
       <Divider style={{ margin: 0 }} />

@@ -1,4 +1,4 @@
-import { Stage, Line, Text } from 'rmst-render'
+import { Stage, Line, Text, measureText } from 'rmst-render'
 
 import {
   canvasPaddingBottom,
@@ -9,7 +9,6 @@ import {
   tickColor,
   yAxisPadding
 } from '../../constant.js'
-import { measureText } from '../../utils/canvasUtil.js'
 import { pointToFlatArray } from '../../utils/utils.js'
 import { calcPerfectTick } from '../utils'
 
@@ -33,7 +32,7 @@ function getYAxis(
     const end_x = xAxisEndX // axis_x + 100
     const tick_y = start_y - tickInterval * index
 
-    const { textWidth, textHeight } = measureText(ctx, String(tickValue))
+    const { textWidth, textHeight } = measureText(ctx, String(tickValue), 14)
 
     return {
       start: { x: start_x, y: tick_y },
