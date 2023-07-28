@@ -63,6 +63,8 @@ export class Path {
   }
 
   animateState = {
+    startValue: {},
+    startTime: null,
     rafTimer: null,
     curr: 0
   }
@@ -272,11 +274,23 @@ export class Path {
 
         const surroundBoxCoord = this.isGroup ? this.getGroupSurroundBoxCoord() : _surroundBoxCoord
 
+        this.animateState.startValue = this.clipWidth
         const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
         const per = calcPer(0, surroundBoxWidth, totalTime)
 
-        const exec = () => {
-          const targetValue = calcTargetValue(this.clipWidth, surroundBoxWidth, per)
+        const exec = (timestamp: number) => {
+          if (!this.animateState.startTime) {
+            this.animateState.startTime = timestamp
+          }
+
+          const elapsedTime = timestamp - this.animateState.startTime
+          const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+
+          const targetValue = calcTargetValue_2(
+            this.animateState.startValue,
+            surroundBoxWidth,
+            elapsedTimeRatio
+          )
 
           if (targetValue === surroundBoxWidth) {
             console.log('结束')
@@ -293,7 +307,7 @@ export class Path {
           this.animateState.rafTimer = requestAnimationFrame(exec)
         }
 
-        exec()
+        requestAnimationFrame(exec)
       }
 
       return
@@ -307,22 +321,38 @@ export class Path {
 
     const keys = Object.keys(prop).filter(item => item !== 'animateCallback')
 
+    keys.forEach(key => {
+      this.animateState.startValue[key] = this.data[key]
+    })
+
     return new Promise(resolve => {
       keys.forEach(propKey => {
         // per 的计算要在递归外
-        const per = calcPer(this.data[propKey], prop[propKey], totalTime)
+        // const per = calcPer(this.data[propKey], prop[propKey], totalTime)
 
-        const exec = () => {
-          // console.log('exec')
+        const exec = (timestamp: number) => {
+          if (!this.animateState.startTime) {
+            this.animateState.startTime = timestamp
+          }
+
+          const elapsedTime = timestamp - this.animateState.startTime
+
           const currDataValue = this.data[propKey]
-
           if (currDataValue === undefined) return
 
-          const targetValue = calcTargetValue(currDataValue, prop[propKey], per)
+          const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+
+          const targetValue = calcTargetValue_2(
+            this.animateState.startValue[propKey],
+            prop[propKey],
+            elapsedTimeRatio
+          )
 
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {
             // console.log(`${propKey} 的动画结束`)
+
+            this.animateState.startTime = null
 
             resolve(true)
             return
@@ -337,7 +367,7 @@ export class Path {
           this.animateState.rafTimer = requestAnimationFrame(exec)
         }
 
-        exec()
+        requestAnimationFrame(exec)
       })
     })
   }
@@ -365,6 +395,36 @@ const calcTargetValue = (
 
     if (initVal > targetVal) {
       const currCount = initVal - per
+
+      return currCount < targetVal ? targetVal : currCount
+    }
+
+    return targetVal
+  }
+}
+
+const calcTargetValue_2 = (
+  startCount: number | number[],
+  targetCount: number | number[],
+  elapsedTimeRatio: number
+) => {
+  if (typeof startCount === 'number' && typeof targetCount === 'number') {
+    return calcValue(startCount, targetCount)
+  } else if (Array.isArray(startCount) && Array.isArray(targetCount)) {
+    return startCount.map((item, index) => calcValue(item, targetCount[index]))
+  }
+
+  function calcValue(startVal: number, targetVal: number) {
+    const totalChangedVal = Math.abs(startVal - targetVal)
+    const per = elapsedTimeRatio * totalChangedVal
+
+    if (startVal < targetVal) {
+      const currCount = startVal + per
+      return currCount > targetVal ? targetVal : currCount
+    }
+
+    if (startVal > targetVal) {
+      const currCount = startVal - per
 
       return currCount < targetVal ? targetVal : currCount
     }
