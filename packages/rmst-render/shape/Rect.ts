@@ -25,6 +25,7 @@ export class Rect extends Path {
     width: number
     height: number
     bgColor: string
+    strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
     cornerRadius?: number
     [key: string]: any
   }
@@ -32,11 +33,12 @@ export class Rect extends Path {
   draw(ctx: CanvasRenderingContext2D) {
     if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
 
-    const { x, y, width, height, bgColor, cornerRadius } = this.data
+    const { x, y, width, height, bgColor, cornerRadius, strokeStyle } = this.data
 
     this.setShadow(ctx, this.data)
 
     ctx.fillStyle = bgColor
+    ctx.strokeStyle = strokeStyle
 
     ctx.beginPath()
     const path2D = new Path2D()
@@ -52,6 +54,9 @@ export class Rect extends Path {
 
     this.path2D = path2D
     ctx.fill(path2D)
+    if (strokeStyle) {
+      ctx.stroke(path2D)
+    }
 
     if (!(this.parent instanceof Group)) ctx.restore() // 恢复clip
   }

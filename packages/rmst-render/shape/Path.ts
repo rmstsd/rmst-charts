@@ -3,6 +3,8 @@ import Group from '../Group'
 
 import Stage, { dpr, IExtraData } from '../Stage'
 
+type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
+
 export class Path {
   constructor() {
     this.extraData = Stage.createExtraData()
@@ -14,6 +16,7 @@ export class Path {
   onLeave = () => {}
   onDown = () => {}
   onUp = () => {}
+  onDragMove = () => {}
 
   isGroup = false
 
@@ -41,8 +44,9 @@ export class Path {
     return stage as unknown as Stage
   }
 
-  // 若为 undefined 则在绘制的时候暂时取 canvas 的狂高
-  surroundBoxCoord = { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 } // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
+  // 若为 undefined 则在绘制的时候暂时取 canvas 的宽高
+  // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
+  surroundBoxCoord: SurroundBoxCoord = { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 }
 
   clipWidth = 0
   clipHeight = 0
@@ -108,11 +112,26 @@ export class Path {
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
     if (!this.data.clip) return
 
-    const surroundBoxCoord = this.isGroup ? this.getGroupSurroundBoxCoord() : this.surroundBoxCoord
+    const surroundBoxCoord: SurroundBoxCoord = this.isGroup
+      ? this.getGroupSurroundBoxCoord()
+      : this.surroundBoxCoord
 
     ctx.save()
     ctx.beginPath()
-    ctx.rect(surroundBoxCoord.lt_x, surroundBoxCoord.lt_y, this.clipWidth, this.clipHeight)
+
+    if (this.isText) {
+      // 水印临时解决方案
+      ctx.rect(
+        surroundBoxCoord.lt_x,
+        surroundBoxCoord.lt_y,
+        surroundBoxCoord.rb_x - surroundBoxCoord.lt_x,
+        surroundBoxCoord.rb_y - surroundBoxCoord.lt_y
+      )
+    } else {
+      // charts 的图标动画 // 由于当初急于实现组的动画效果, 此处是不合理的代码
+      ctx.rect(surroundBoxCoord.lt_x, surroundBoxCoord.lt_y, this.clipWidth, this.clipHeight)
+    }
+
     ctx.clip()
   }
   draw(ctx: CanvasRenderingContext2D) {}
@@ -154,10 +173,12 @@ export class Path {
           const y = offsetY - item.mouseDownOffset.y
           item.attr({ x, y })
         })
+        this.onDragMove()
       } else {
         const x = offsetX - this.mouseDownOffset.x
         const y = offsetY - this.mouseDownOffset.y
         this.attr({ x, y })
+        this.onDragMove()
       }
     }
   }

@@ -53,9 +53,7 @@ const rmstRenderRouteConfig: IRouteObject = {
       path: 'real-case',
       element: <LayoutOutlet />,
       uiConfig: { title: '真实场景' },
-      children: [
-        { path: 'watermarkClip', element: <WatermarkClip />, uiConfig: { title: '水印', isDeveloping: true } }
-      ]
+      children: [{ path: 'watermarkClip', element: <WatermarkClip />, uiConfig: { title: '水印' } }]
     }
   ]
 }
