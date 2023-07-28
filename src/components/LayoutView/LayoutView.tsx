@@ -70,7 +70,7 @@ const LayoutView = () => {
         </aside>
 
         <Layout.Content className="main-content">
-          {currentRouteConfig.route.uiConfig?.isDeveloping && process.env.NODE_ENV === 'production' ? (
+          {currentRouteConfig.route.uiConfig?.isDeveloping ? (
             <div style={{ textAlign: 'center', lineHeight: 20, fontSize: 30 }}>开发中</div>
           ) : (
             <LayoutOutlet />

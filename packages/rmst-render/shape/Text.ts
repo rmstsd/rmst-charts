@@ -1,10 +1,25 @@
+import Group from 'rmst-render/Group'
 import Path from './Path'
+import { setCtxFontSize } from 'rmst-charts/utils/canvasUtil'
+
+const defaultData = {
+  color: '#333',
+  fontSize: 16
+}
 
 export class Text extends Path {
   constructor(data: Text['data']) {
     super()
 
-    this.data = { ...data }
+    if (data.clip) {
+      this.surroundBoxCoord = {
+        lt_x: data.surroundBoxCoord.x,
+        lt_y: data.surroundBoxCoord.y,
+        rb_x: data.surroundBoxCoord.x + data.surroundBoxCoord.width,
+        rb_y: data.surroundBoxCoord.y + data.surroundBoxCoord.height
+      }
+    }
+    this.data = { ...defaultData, ...data }
   }
 
   declare data: {
@@ -14,8 +29,12 @@ export class Text extends Path {
     color?: string
     fontSize?: number
     textAlign?: CanvasTextAlign
+    clip?: boolean
+    surroundBoxCoord?: { x: number; y: number; width: number; height: number }
     [key: string]: any
   }
+
+  isText = true
 
   isInner(offsetX: any, offsetY: any): boolean {
     const stage = this.findStage()
@@ -30,7 +49,13 @@ export class Text extends Path {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    if (!(this.parent instanceof Group)) {
+      this.beforeDrawClip(ctx)
+    }
+
     const { x, y, content, color, fontSize, textAlign = 'left' } = this.data
+
+    setCtxFontSize(ctx, fontSize)
 
     this.setShadow(ctx, this.data)
 
@@ -38,13 +63,17 @@ export class Text extends Path {
 
     ctx.textAlign = textAlign
     ctx.fillText(content, x, y)
+
+    if (!(this.parent instanceof Group)) {
+      ctx.restore()
+    }
   }
 }
 
 export default Text
 
 // 测量文本宽高
-function measureText(ctx: CanvasRenderingContext2D, text: string) {
+export function measureText(ctx: CanvasRenderingContext2D, text: string) {
   const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)
 
   // qq 浏览器只返回了 `width`
