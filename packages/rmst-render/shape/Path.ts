@@ -390,27 +390,27 @@ const calcTargetValue = (
 }
 
 const calcTargetValue_2 = (
-  initCount: number | number[],
+  startCount: number | number[],
   targetCount: number | number[],
-  elapsedTimeRatio
+  elapsedTimeRatio: number
 ) => {
-  if (typeof initCount === 'number' && typeof targetCount === 'number') {
-    return calcValue(initCount, targetCount)
-  } else if (Array.isArray(initCount) && Array.isArray(targetCount)) {
-    return initCount.map((item, index) => calcValue(item, targetCount[index]))
+  if (typeof startCount === 'number' && typeof targetCount === 'number') {
+    return calcValue(startCount, targetCount)
+  } else if (Array.isArray(startCount) && Array.isArray(targetCount)) {
+    return startCount.map((item, index) => calcValue(item, targetCount[index]))
   }
 
-  function calcValue(initVal: number, targetVal: number) {
-    const totalChangedVal = Math.abs(initVal - targetVal)
+  function calcValue(startVal: number, targetVal: number) {
+    const totalChangedVal = Math.abs(startVal - targetVal)
     const per = elapsedTimeRatio * totalChangedVal
 
-    if (initVal < targetVal) {
-      const currCount = initVal + per
+    if (startVal < targetVal) {
+      const currCount = startVal + per
       return currCount > targetVal ? targetVal : currCount
     }
 
-    if (initVal > targetVal) {
-      const currCount = initVal - per
+    if (startVal > targetVal) {
+      const currCount = startVal - per
 
       return currCount < targetVal ? targetVal : currCount
     }
