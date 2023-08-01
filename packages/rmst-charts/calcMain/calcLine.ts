@@ -67,7 +67,9 @@ export function createRenderElements(
   })
 
   let singleArea: Line
-  if (areaStyle) singleArea = createArea()
+  if (areaStyle) {
+    singleArea = createArea()
+  }
   function createArea() {
     const prevSeries = series[serIndex - 1]
 
@@ -159,12 +161,12 @@ export function createRenderElements(
 
       arcItem.onEnter = () => {
         stage.setCursor('pointer')
-        arcItem.animateCartoon({ radius: activeRadius }, 300)
+        arcItem.animateCartoon({ radius: activeRadius }, 200)
       }
 
       arcItem.onLeave = () => {
         stage.setCursor('auto')
-        arcItem.animateCartoon({ radius: normalRadius }, 300)
+        arcItem.animateCartoon({ radius: normalRadius }, 200)
       }
 
       return arcItem

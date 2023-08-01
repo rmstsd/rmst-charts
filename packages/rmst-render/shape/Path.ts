@@ -81,11 +81,15 @@ export class Path {
       return stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
     }
     const isInSurroundBox = () => {
+      const surroundBoxCoord = this.surroundBoxCoord
+        ? this.surroundBoxCoord
+        : { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 }
+
       return (
-        offsetX > this.surroundBoxCoord.lt_x &&
-        offsetX < this.surroundBoxCoord.lt_x + this.clipWidth &&
-        offsetY > this.surroundBoxCoord.lt_y &&
-        offsetY < this.surroundBoxCoord.lt_y + this.clipHeight
+        offsetX > surroundBoxCoord.lt_x &&
+        offsetX < surroundBoxCoord.lt_x + this.clipWidth &&
+        offsetY > surroundBoxCoord.lt_y &&
+        offsetY < surroundBoxCoord.lt_y + this.clipHeight
       )
     }
 
