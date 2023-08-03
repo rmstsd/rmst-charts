@@ -189,7 +189,8 @@ export function createRenderElements(
         const position = surroundBoxCoord.lt_x + clipWidth
 
         if (position >= ticksXs[currentIndex]) {
-          arcs[currentIndex].animateCartoon({ radius: normalRadius }, 300)
+          // 数据点的数量可能会比刻度的数量少
+          arcs[currentIndex]?.animateCartoon({ radius: normalRadius }, 300)
 
           currentIndex++
         }

@@ -1,5 +1,21 @@
-// 返回刻度轴的 业务数据的完美数据
-export const calcPerfectTick = (data: number[], isPolar?: boolean) => {
+interface PerfectTick {
+  perfectMax: number
+  perfectMin: number
+  perfectInterval: number
+  intervalCount: number
+  tickValues: number[]
+}
+
+// 返回刻度轴的 业务数据的完美数据 暂时不考虑负数
+export const calcPerfectTick = (data: number[], isPolar?: boolean): PerfectTick => {
+  if (data.length === 0) {
+    return { perfectMax: 0, perfectMin: 0, perfectInterval: 0, intervalCount: 0, tickValues: [] }
+  }
+
+  if (data.length === 1) {
+    data = data.concat(0)
+  }
+
   const maxRealValue = Math.max(...data)
   const minRealValue = isPolar ? 0 : Math.min(...data) // 如果是极坐标系, 则最小值为0 (临时方案, 与 echarts 效果不一致)
 
