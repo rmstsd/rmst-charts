@@ -70,7 +70,6 @@ export function calcAllControlPoint(
     let cp2_y = k * cp2_x + b
 
     function newVersion() {
-      console.log('newVersion')
       const distance = (next.x - curr.x) / 3
       const cp1_x = curr.x - distance
       const cp2_x = curr.x + distance

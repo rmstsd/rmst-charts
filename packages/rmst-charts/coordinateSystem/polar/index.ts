@@ -1,10 +1,14 @@
-import { Circle, Line, Stage, Text, getPointOnArc, measureText } from 'rmst-render'
+import { Circle, Line, Path, Stage, Text, getPointOnArc, measureText } from 'rmst-render'
 
 import { calcPerfectTick } from '../utils'
 import { splitLineColor, tickColor } from '../../constant'
 import { pointToFlatArray } from '../../utils/utils'
 
-const getDataForDraw = (stage: Stage, innerOption: ICharts.IOption, dataSource: number[]) => {
+const getDataForDraw = (
+  stage: Stage,
+  innerOption: ICharts.IOption,
+  dataSource: number[]
+): { radianAngles: any[]; [key: string]: any } => {
   const { perfectInterval, perfectMin, intervalCount, tickValues } = calcPerfectTick(dataSource, true)
 
   const center_x = stage.center.x
@@ -12,6 +16,47 @@ const getDataForDraw = (stage: Stage, innerOption: ICharts.IOption, dataSource: 
 
   const maxRadius = stage.canvasSize.height / 2
   const radiusPer = maxRadius / tickValues.length
+
+  // 极坐标系的径向轴
+  if (innerOption.radiusAxis.type) {
+    const outerCircle = {
+      x: center_x,
+      y: center_y,
+      radius: maxRadius - radiusPer,
+      strokeStyle: tickColor
+    }
+    const circlesData = [outerCircle]
+
+    const lineAxis = {
+      start: { x: center_x, y: center_y },
+      end: { x: center_x, y: center_y - outerCircle.radius }
+    }
+
+    const tickInterval = (lineAxis.start.y - lineAxis.end.y) / innerOption.radiusAxis.data.length
+
+    const lineAxisTicks = innerOption.radiusAxis.data.map((item, index) => {
+      const y = center_y - index * tickInterval
+      const end_x = center_x - 6
+      const { textWidth, textHeight } = measureText(stage.ctx, String(item), 14)
+
+      return {
+        start: { x: center_x, y },
+        end: { x: end_x, y },
+        text: { x: end_x - textWidth - 2, y: y - textHeight / 2 - tickInterval / 2, value: item }
+      }
+    })
+
+    return {
+      circlesData,
+      lineAxis,
+      lineAxisTicks,
+      radianAngles: [],
+      outerTicks: []
+      // tickConstant: { min: perfectMin, realInterval: perfectInterval, tickInterval }
+    }
+  }
+
+  //极坐标系的角度轴
 
   const circlesData = tickValues.map((item, index) => ({
     x: center_x,
@@ -82,7 +127,7 @@ export const createPolarElements = (
   stage: Stage,
   innerOption: ICharts.IOption,
   finalSeries: ICharts.series[]
-) => {
+): { polarAllShapes: Path[]; polarAxisData } => {
   const seriesData = finalSeries.reduce((acc, item) => acc.concat(item.data), []) as number[]
 
   const polarAxisData = getDataForDraw(stage, innerOption, seriesData)
@@ -127,10 +172,6 @@ export const createPolarElements = (
   )
 
   return {
-    circleShapes,
-    lineAxisShape,
-    tickShapes,
-    textShapes,
     polarAllShapes: [
       ...circleShapes,
       lineAxisShape,

@@ -50,7 +50,7 @@ const newChartsRouteConfig: IRouteObject = {
         {
           path: 'polarTangential',
           element: <PolarLabelTangential />,
-          uiConfig: { title: '极坐标-径向轴', isDeveloping: true }
+          uiConfig: { title: '极坐标-径向轴' }
         }
       ]
     },
