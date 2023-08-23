@@ -34,8 +34,8 @@ export function createRenderElements(
   coordinateSystem: ICoordinateSystemElements,
   series: ICharts.series[]
 ) {
-  const xAxisData = coordinateSystem.cartesian2d.XAxisShape.xAxisData
-  const yAxisData = coordinateSystem.cartesian2d.YAxisShape.yAxisData
+  const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
+  const yAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
 
   const serIndex = series.findIndex(item => item === seriesItem)
 

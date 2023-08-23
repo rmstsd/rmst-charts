@@ -111,8 +111,8 @@ export function createRenderElements(
     return polarMain
   }
 
-  const xAxisData = coordinateSystem.cartesian2d.XAxisShape.xAxisData
-  const yAxisData = coordinateSystem.cartesian2d.YAxisShape.yAxisData
+  const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
+  const yAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
 
   const data = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 

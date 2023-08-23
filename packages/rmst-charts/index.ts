@@ -22,23 +22,14 @@ const rmstCharts = {
         const finalElements = []
 
         const coordinateSystem = createCoordinateSystemElements(stage, innerOption, finalSeries)
-        const XAxisShape = coordinateSystem.cartesian2d.XAxisShape
-        const YAxisShape = coordinateSystem.cartesian2d.YAxisShape
-
         if (coordinateSystem.hasCartesian2d) {
-          finalElements.push(XAxisShape.xAxisLine, ...XAxisShape.ticksLines, ...XAxisShape.tickTexts)
-          finalElements.push(
-            // YAxisShape.yAxisLine,
-            ...YAxisShape.ticksLines,
-            ...YAxisShape.tickTexts
-          )
+          finalElements.push(...coordinateSystem.cartesian2d.cartesian2dAllShapes)
         }
-
         if (coordinateSystem.hasPolar) {
           finalElements.push(...coordinateSystem.polar.polarAllShapes)
         }
 
-        const renderElements = finalSeries
+        const mainChartsElements = finalSeries
           .map(seriesItem => {
             switch (seriesItem.type) {
               case 'line': {
@@ -51,17 +42,22 @@ const rmstCharts = {
                 return pie.createRenderElements(stage, seriesItem)
               }
               default: {
-                console.log('新图')
+                console.log('新图待实现')
               }
             }
           })
-          .reverse() // 堆叠面积图需要倒序绘制
+          .reverse() // 堆叠面积图需要倒序绘制 -错误的做法, 需要优化代码
 
         const afterAppendStageTasks = []
 
-        renderElements.forEach(item => {
-          if (item.elements) finalElements.push(...item.elements)
-          if (item.afterAppendStage) afterAppendStageTasks.push(item.afterAppendStage)
+        mainChartsElements.forEach(item => {
+          if (item.elements) {
+            finalElements.push(...item.elements)
+          }
+
+          if (item.afterAppendStage) {
+            afterAppendStageTasks.push(item.afterAppendStage)
+          }
         })
 
         stage.append(finalElements)
