@@ -5,7 +5,7 @@ import Stage, { dpr, IExtraData } from '../Stage'
 
 type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
 
-export class Path {
+export abstract class Path {
   constructor() {
     this.extraData = Stage.createExtraData()
   }

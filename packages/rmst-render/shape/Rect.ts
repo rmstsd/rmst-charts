@@ -24,7 +24,7 @@ export class Rect extends Path {
     y: number
     width: number
     height: number
-    bgColor: string
+    bgColor?: string
     strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
     cornerRadius?: number
     [key: string]: any
@@ -53,7 +53,9 @@ export class Rect extends Path {
     path2D.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
 
     this.path2D = path2D
-    ctx.fill(path2D)
+    if (bgColor) {
+      ctx.fill(path2D)
+    }
     if (strokeStyle) {
       ctx.stroke(path2D)
     }
@@ -63,3 +65,17 @@ export class Rect extends Path {
 }
 
 export default Rect
+
+// 使用 二次贝塞尔曲线绘制圆角矩形
+// ctx.beginPath()
+// ctx.strokeStyle = 'blue'
+// ctx.moveTo(x + radius, y)
+// ctx.lineTo(x + width - radius, y)
+// ctx.quadraticCurveTo(x + width, y, x + width, y + radius)
+// ctx.lineTo(x + width, y + height - radius)
+// ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height)
+// ctx.lineTo(x + radius, y + height)
+// ctx.quadraticCurveTo(x, y + height, x, y + height - radius)
+// ctx.lineTo(x, y + radius)
+// ctx.quadraticCurveTo(x, y, x + radius, y)
+// ctx.stroke()

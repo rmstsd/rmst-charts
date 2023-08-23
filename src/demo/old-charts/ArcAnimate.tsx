@@ -79,6 +79,7 @@ const arcAnimate = () => {
   return (
     <div style={{ position: 'relative', display: 'flex' }}>
       <canvas className="canvas_1" width={wh} height={wh} style={{ border: '1px solid #333' }}></canvas>
+
       <canvas className="canvas_2" width={wh} height={wh} style={{ border: '1px solid #333' }}></canvas>
     </div>
   )

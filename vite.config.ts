@@ -15,6 +15,7 @@ export default defineConfig({
       'rmst-render': path.resolve(__dirname, './packages/rmst-render')
     }
   },
+  server: { port: 5800 },
   plugins: [
     react({
       // 取消HMR

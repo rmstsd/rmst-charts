@@ -50,7 +50,7 @@ namespace ICharts {
 
     // 极坐标系相关
     polar?: any
-    radiusAxis?: any
+    radiusAxis?: { type?: 'category'; data?: any[] }
     angleAxis?: {
       type?: 'category'
       data?: any[]

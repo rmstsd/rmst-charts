@@ -6,6 +6,7 @@ import LinePath from '@/demo/other/LinePath'
 import CurveRect from '@/demo/other/CurveRect'
 import Translation from '@/demo/other/Translation'
 import WaterDrop from '@/demo/other/WaterDrop'
+import Brush from '@/demo/other/Brush'
 
 import { IRouteObject } from './router'
 
@@ -19,7 +20,8 @@ const otherRouteConfig: IRouteObject = {
     { path: 'linePath', element: <LinePath /> },
     { path: 'curveRect', element: <CurveRect /> },
     { path: 'translation', element: <Translation /> },
-    { path: 'waterDrop', element: <WaterDrop /> }
+    { path: 'waterDrop', element: <WaterDrop /> },
+    { path: 'brush', element: <Brush /> }
   ]
 }
 

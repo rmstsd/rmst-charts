@@ -2,10 +2,11 @@ import ChartsTemplate from '@/components/ChartsTemplate'
 
 // 极坐标柱状图标签  https://echarts.apache.org/examples/zh/editor.html?c=bar-polar-label-tangential
 // radiusAxis 极坐标系的径向轴
+// 实现时间: 后实现的
 
 const option: ICharts.IOption = {
   polar: {},
-  angleAxis: { max: 4 },
+  angleAxis: {},
   radiusAxis: {
     type: 'category',
     data: ['a', 'b', 'c', 'd']
@@ -13,7 +14,7 @@ const option: ICharts.IOption = {
   series: [
     {
       type: 'bar' as const,
-      data: [2, 1.2, 2.4, 3.8],
+      data: [1, 2, 3, 4],
       coordinateSystem: 'polar'
     }
   ]

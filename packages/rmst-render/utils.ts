@@ -48,34 +48,55 @@ export function convertToNormalPoints(points: number[]): ICharts.ICoord[] {
 
 // 计算 两个控制点 和 两个端点
 export function calcAllControlPoint(
-  points: ICharts.ICoord[]
+  points: ICharts.ICoord[],
+  ver?: 'new' | 'old'
 ): { start: ICharts.ICoord; end: ICharts.ICoord; cp1: ICharts.ICoord; cp2: ICharts.ICoord }[] {
-  const ans = []
+  const cpArray = [] // 所有的控制点
+
   for (let i = 1; i < points.length - 1; i++) {
+    // 以三个点为基准
     const prev = points[i - 1]
     const curr = points[i]
     const next = points[i + 1]
 
-    const distance = (next.x - curr.x) / 2
+    // 与第一个点和第三个点的连线平行的线, 且与第二个点相交
+    const k = (next.y - prev.y) / (next.x - prev.x) // 直线的斜率
+    const b = curr.y - k * curr.x // 经过中间点的 y = kx + b
 
-    const slope = (next.y - prev.y) / (next.x - prev.x) // 直线的斜率
-    const b = curr.y - slope * curr.x // 经过做标点的 y = kx + b
+    let { cp1_x, cp2_x, distance } = ver === 'old' ? oldVersion() : newVersion()
+    // let { cp1_x, cp2_x, distance } = newVersion()
 
-    const pow2 = (num: number) => Math.pow(num, 2)
+    let cp1_y = k * cp1_x + b
+    let cp2_y = k * cp2_x + b
 
-    const four_ac =
-      4 * (pow2(slope) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
-    const det = Math.sqrt(pow2(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) - four_ac) // 根号下(b方 - 4ac)
-    const fb = -(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) // -b
-    const two_a = 2 * (pow2(slope) + 1) // 2a
+    function newVersion() {
+      const distance = (next.x - curr.x) / 3
+      const cp1_x = curr.x - distance
+      const cp2_x = curr.x + distance
 
-    let cp1_x = (fb - det) / two_a
-    let cp1_y = slope * cp1_x + b
+      const distance_2half = (next.x - curr.x) / 2
 
-    let cp2_x = (fb + det) / two_a
-    let cp2_y = slope * cp2_x + b
+      return { cp1_x, cp2_x, distance: distance_2half }
+    }
 
-    // 如果是峰值 直接拉平
+    // 旧版本 实在想不起来当初是怎么整出来 一元二次方程式的
+    function oldVersion() {
+      const distance = (next.x - curr.x) / 2
+      const pow2 = (num: number) => Math.pow(num, 2) // 平方: Math.pow(3, 2) = 3 * 3 = 9
+
+      const four_ac =
+        4 * (pow2(k) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
+      const det = Math.sqrt(pow2(2 * k * b - 2 * curr.x - 2 * curr.y * k) - four_ac) // 根号下(b方 - 4ac)
+      const fb = -(2 * k * b - 2 * curr.x - 2 * curr.y * k) // -b
+      const two_a = 2 * (pow2(k) + 1) // 2a
+
+      let cp1_x = (fb - det) / two_a
+      let cp2_x = (fb + det) / two_a
+
+      return { cp1_x, cp2_x, distance }
+    }
+
+    // 如果是峰值 直接拉平, 控制点的 x坐标取两个点的中间值
     if ((curr.y >= prev.y && curr.y >= next.y) || (curr.y <= prev.y && curr.y <= next.y)) {
       cp1_x = curr.x - distance
       cp1_y = curr.y
@@ -84,13 +105,13 @@ export function calcAllControlPoint(
       cp2_y = curr.y
     }
 
-    ans.push({ x: cp1_x, y: cp1_y }, { x: cp2_x, y: cp2_y })
+    cpArray.push({ x: cp1_x, y: cp1_y }, { x: cp2_x, y: cp2_y })
   }
 
-  ans.unshift(points[0])
-  ans.push(points[points.length - 1])
+  cpArray.unshift(points[0])
+  cpArray.push(points.at(-1))
 
-  return calcFinalPoint(ans, points)
+  return calcFinalPoint(cpArray, points)
 
   function calcFinalPoint(allControlPoint, points) {
     const ans = []
