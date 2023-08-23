@@ -3,6 +3,7 @@ import { Circle, Line, Path, Stage, Text, getPointOnArc, measureText } from 'rms
 import { calcPerfectTick } from '../utils'
 import { splitLineColor, tickColor } from '../../constant'
 import { pointToFlatArray } from '../../utils/utils'
+import { getCanvasDistanceFromRealNumber } from 'rmst-charts/convert'
 
 const getDataForDraw = (
   stage: Stage,
@@ -16,6 +17,8 @@ const getDataForDraw = (
 
   const maxRadius = stage.canvasSize.height / 2
   const radiusPer = maxRadius / tickValues.length
+
+  const offsetAngle = -90
 
   // 极坐标系的径向轴
   if (innerOption.radiusAxis.type) {
@@ -46,12 +49,48 @@ const getDataForDraw = (
       }
     })
 
+    // 外圈刻度
+    const anglePer = 360 / (tickValues.length - 1)
+
+    // 圆上的最后一个刻度 和 0重合
+    const outerTicks = tickValues.slice(0, -1).map((item, index) => {
+      const tickAngle = offsetAngle + index * anglePer
+
+      const radianTickStart = getPointOnArc(center_x, center_y, outerCircle.radius, tickAngle)
+      const radianTickEnd = getPointOnArc(center_x, center_y, outerCircle.radius + 10, tickAngle)
+      const radianTextPoint = getPointOnArc(center_x, center_y, outerCircle.radius + 15, tickAngle)
+
+      return { start: radianTickStart, end: radianTickEnd, text: { ...radianTextPoint, value: String(item) } }
+    })
+
+    // 圆心到外圆刻度的线段, 与 category 轴重叠的线不用画
+    const ccToTickLines = outerTicks
+      .slice(1)
+      .map(item => ({ start: { x: center_x, y: center_y }, end: item.start }))
+
+    const radianPadding = tickInterval / 5
+    // 扇环内外半径的差
+    const ranLength = tickInterval - 2 * radianPadding
+
+    const mainChartsData = dataSource.map((item, index) => {
+      return {
+        startAngle: offsetAngle,
+        endAngle:
+          offsetAngle +
+          getCanvasDistanceFromRealNumber(item as number, perfectMin, perfectInterval, anglePer),
+        innerRadius: index === 0 ? radianPadding : index * tickInterval + radianPadding,
+        radius: index === 0 ? radianPadding + ranLength : index * tickInterval + tickInterval - radianPadding
+      }
+    })
+
     return {
       circlesData,
       lineAxis,
       lineAxisTicks,
       radianAngles: [],
-      outerTicks: []
+      outerTicks,
+      ccToTickLines,
+      mainChartsData
       // tickConstant: { min: perfectMin, realInterval: perfectInterval, tickInterval }
     }
   }
@@ -87,8 +126,6 @@ const getDataForDraw = (
   const { angleAxis } = innerOption
   const anglePer = 360 / angleAxis.data.length
 
-  const offsetAngle = -90
-
   // 外圈刻度
   const outerTicks = angleAxis.data.map((item, index) => {
     const tickAngle = offsetAngle + index * anglePer
@@ -106,7 +143,7 @@ const getDataForDraw = (
     return { start: radianTickStart, end: radianTickEnd, text: { ...radianTextPoint, value: String(item) } }
   })
 
-  // 协助绘制扇形
+  // 协助绘制图表主体扇形
   const radianAngles = angleAxis.data.map((_, index) => ({
     startAngle: index * anglePer + offsetAngle,
     endAngle: (index === angleAxis.data.length - 1 ? 360 : (index + 1) * anglePer) + offsetAngle
@@ -171,8 +208,13 @@ export const createPolarElements = (
     item => new Text({ x: item.text.x, y: item.text.y, content: item.text.value, color: tickColor })
   )
 
+  const ccToTickLineShapes = (polarAxisData.ccToTickLines || []).map(
+    item => new Line({ points: pointToFlatArray([item.start, item.end]), bgColor: splitLineColor })
+  )
+
   return {
     polarAllShapes: [
+      ...ccToTickLineShapes,
       ...circleShapes,
       lineAxisShape,
       ...tickShapes,

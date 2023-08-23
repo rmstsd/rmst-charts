@@ -31,6 +31,34 @@ function calcPolarMain(
   coordinateSystem: ICoordinateSystemElements
 ) {
   const { polarAxisData } = coordinateSystem.polar
+
+  // 极坐标系的径向轴 临时方案, 错误的方案
+  if (polarAxisData.mainChartsData) {
+    const arcs = polarAxisData.mainChartsData.map(item => {
+      const arc = new Circle({
+        x: stage.center.x,
+        y: stage.center.y,
+        startAngle: item.startAngle,
+        endAngle: item.startAngle,
+        innerRadius: item.innerRadius,
+        radius: item.radius,
+        bgColor: primaryColor,
+        extraData: { endAngle: item.endAngle }
+      })
+
+      return arc
+    })
+
+    const afterAppendStage = () => {
+      arcs.forEach(item => {
+        item.animateCartoon({ endAngle: item.data.extraData.endAngle })
+      })
+    }
+
+    return { elements: arcs, afterAppendStage }
+  }
+
+  console.log(polarAxisData)
   const arcs = polarAxisData.radianAngles.map((item, index) => {
     const { min, realInterval, tickInterval } = polarAxisData.tickConstant
 
