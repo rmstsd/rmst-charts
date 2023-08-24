@@ -28,6 +28,12 @@ function calcMain(
   })
 }
 
+const defaultSeriesItem = {
+  animationDuration: 1000,
+  lineStyle: { width: 2, cap: 'butt', join: 'bevel' },
+  symbol: 'circle'
+} as const
+
 export function createRenderElements(
   stage: Stage,
   seriesItem: ICharts.series,
@@ -41,14 +47,10 @@ export function createRenderElements(
 
   const pointData = calcMain(seriesItem.data as number[], xAxisData, yAxisData)
 
-  const {
-    areaStyle,
-    smooth,
-    step,
-    animationDuration = 1000,
-    lineStyle = { width: 2, cap: 'butt', join: 'bevel' },
-    symbol = 'circle'
-  } = seriesItem
+  const { areaStyle, smooth, step, animationDuration, lineStyle, symbol } = {
+    ...defaultSeriesItem,
+    ...seriesItem
+  }
 
   // 计算出 阶梯折线图 要绘制的额外的点
   const finalCoordPoints = smooth ? pointData : calcPointsByUserPoints(pointData, step)
@@ -66,113 +68,110 @@ export function createRenderElements(
     smooth: seriesItem.smooth
   })
 
-  let singleArea: Line
+  const group = new Group({ clip: true })
   if (areaStyle) {
-    singleArea = createArea()
-  }
-  function createArea() {
-    const prevSeries = series[serIndex - 1]
+    group.append(createArea())
 
-    const xAxisPointData = [
-      { x: finalCoordPoints.at(0).x, y: xAxisData.axis.start.y },
-      { x: finalCoordPoints.at(-1).x, y: xAxisData.axis.end.y }
-    ]
-    const prevPointData =
-      serIndex === 0 ? xAxisPointData : calcMain(prevSeries.data as number[], xAxisData, yAxisData)
+    function createArea() {
+      const prevSeries = series[serIndex - 1]
 
-    function calcAreaFillStyle() {
-      // 是数组则认为是渐变
-      if (Array.isArray(areaStyle.color)) {
-        const max_y = Math.max(...pointData.map(item => item.y))
-        const min_y = Math.min(...prevPointData.map(item => item.y))
+      const xAxisPointData = [
+        { x: finalCoordPoints.at(0).x, y: xAxisData.axis.start.y },
+        { x: finalCoordPoints.at(-1).x, y: xAxisData.axis.end.y }
+      ]
+      const prevPointData =
+        serIndex === 0 ? xAxisPointData : calcMain(prevSeries.data as number[], xAxisData, yAxisData)
 
-        const gradient = stage.ctx.createLinearGradient(0, 0, max_y, min_y)
-        areaStyle.color.forEach(item => {
-          gradient.addColorStop(
-            item.offset,
-            areaStyle.opacity ? colorAlpha(item.color, areaStyle.opacity) : item.color
-          )
-        })
-        return gradient
+      function calcAreaFillStyle() {
+        // 是数组则认为是渐变
+        if (Array.isArray(areaStyle.color)) {
+          const max_y = Math.max(...pointData.map(item => item.y))
+          const min_y = Math.min(...prevPointData.map(item => item.y))
+
+          const gradient = stage.ctx.createLinearGradient(0, 0, max_y, min_y)
+          areaStyle.color.forEach(item => {
+            gradient.addColorStop(
+              item.offset,
+              areaStyle.opacity ? colorAlpha(item.color, areaStyle.opacity) : item.color
+            )
+          })
+          return gradient
+        }
+
+        return areaStyle.color || colorAlpha(colorPalette[serIndex], 0.6)
       }
 
-      return areaStyle.color || colorAlpha(colorPalette[serIndex], 0.6)
+      // 注意点的顺序是 从右向左的
+      const prevLinePoints = pointToFlatArray(prevPointData.reverse())
+
+      const mainLinePath2DCopy = new Path2D(mainLine.path2D)
+      mainLinePath2DCopy.lineTo(prevLinePoints[0], prevLinePoints[1])
+
+      const prevLinePath2D = new Line({
+        points: prevLinePoints,
+        smooth: serIndex === 0 ? false : prevSeries.smooth,
+        lineWidth: 0
+      }).path2D
+
+      prevLinePath2D.lineTo(mainLinePoints[0], mainLinePoints[1])
+      prevLinePath2D.addPath(mainLinePath2DCopy)
+
+      const innerSingleArea = new Line({
+        path2D: prevLinePath2D,
+        fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
+        strokeStyle: 'transparent',
+        closed: true,
+        clip: true,
+        lineWidth: 0
+      })
+
+      innerSingleArea.onEnter = () => {
+        stage.setCursor('pointer')
+        innerSingleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
+      }
+      innerSingleArea.onLeave = () => {
+        stage.setCursor('auto')
+        innerSingleArea.attr({ fillStyle: primaryColorAlpha })
+      }
+
+      return innerSingleArea
     }
-
-    // 注意点的顺序是 从右向左的
-    const prevLinePoints = pointToFlatArray(prevPointData.reverse())
-
-    const mainLinePath2DCopy = new Path2D(mainLine.path2D)
-    mainLinePath2DCopy.lineTo(prevLinePoints[0], prevLinePoints[1])
-
-    const prevLinePath2D = new Line({
-      points: prevLinePoints,
-      smooth: serIndex === 0 ? false : prevSeries.smooth,
-      lineWidth: 0
-    }).path2D
-
-    prevLinePath2D.lineTo(mainLinePoints[0], mainLinePoints[1])
-    prevLinePath2D.addPath(mainLinePath2DCopy)
-
-    const innerSingleArea = new Line({
-      path2D: prevLinePath2D,
-      fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
-      strokeStyle: 'transparent',
-      closed: true,
-      clip: true,
-      lineWidth: 0
-    })
-
-    innerSingleArea.onEnter = () => {
-      stage.setCursor('pointer')
-      innerSingleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
-    }
-    innerSingleArea.onLeave = () => {
-      stage.setCursor('auto')
-      innerSingleArea.attr({ fillStyle: primaryColorAlpha })
-    }
-
-    return innerSingleArea
   }
-
-  const group = new Group({ clip: true })
-
-  if (areaStyle) group.append(singleArea)
-
   group.append(mainLine)
 
   let arcs: Circle[] = []
-  if (symbol !== 'none') arcs = createSymbol()
-
-  // 圆点
   const normalRadius = 2
-  function createSymbol() {
-    const initRadius = 0
-    const activeRadius = 4
-    const arcs = pointData.map(item => {
-      const arcItem = new Circle({
-        x: item.x,
-        y: item.y,
-        radius: initRadius,
-        bgColor: 'white',
-        strokeStyle: colorPalette[serIndex],
-        lineWidth: 4
+  if (symbol !== 'none') {
+    arcs = createSymbol()
+
+    function createSymbol() {
+      const initRadius = 0
+      const activeRadius = 4
+      const arcs = pointData.map(item => {
+        const arcItem = new Circle({
+          x: item.x,
+          y: item.y,
+          radius: initRadius,
+          bgColor: 'white',
+          strokeStyle: colorPalette[serIndex],
+          lineWidth: 4
+        })
+
+        arcItem.onEnter = () => {
+          stage.setCursor('pointer')
+          arcItem.animateCartoon({ radius: activeRadius }, 200)
+        }
+
+        arcItem.onLeave = () => {
+          stage.setCursor('auto')
+          arcItem.animateCartoon({ radius: normalRadius }, 200)
+        }
+
+        return arcItem
       })
 
-      arcItem.onEnter = () => {
-        stage.setCursor('pointer')
-        arcItem.animateCartoon({ radius: activeRadius }, 200)
-      }
-
-      arcItem.onLeave = () => {
-        stage.setCursor('auto')
-        arcItem.animateCartoon({ radius: normalRadius }, 200)
-      }
-
-      return arcItem
-    })
-
-    return arcs
+      return arcs
+    }
   }
 
   const ticksXs = xAxisData.ticks.map(item => item.start.x)

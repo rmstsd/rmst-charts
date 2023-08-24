@@ -17,7 +17,7 @@ export const createCartesian2dElements = (
       ...xAxisShape.ticksLines,
       ...xAxisShape.tickTexts,
 
-      yAxisShape.yAxisLine,
+      // yAxisShape.yAxisLine,
       ...yAxisShape.ticksLines,
       ...yAxisShape.tickTexts
     ],

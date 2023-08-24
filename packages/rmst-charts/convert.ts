@@ -12,7 +12,7 @@ export function getYTickFromOffsetY(
   yAxis_start_y: number,
   tickInterval: number,
   realInterval: number,
-  min: number,
+  realMin: number,
   yTicks: number
 ) {
   const tickCount = (yAxis_start_y - offsetY) / tickInterval
@@ -31,7 +31,7 @@ export function getYTickFromOffsetY(
     }
   }
 
-  const realTickValue = (tickCount * realInterval + min).toFixed(2)
+  const realTickValue = (tickCount * realInterval + realMin).toFixed(2)
   return { assistY: offsetY, realTickValue }
 }
 
@@ -39,22 +39,22 @@ export function getYTickFromOffsetY(
 export function getCanvasPxFromRealNumber(
   realNumber: number,
   yAxis_start_y: number,
-  min: number,
+  realMin: number,
   realInterval: number,
   tickInterval: number
 ) {
-  const tickDistance = getCanvasDistanceFromRealNumber(realNumber, min, realInterval, tickInterval)
+  const tickDistance = getCanvasDistanceFromRealNumber(realNumber, realMin, realInterval, tickInterval)
   return yAxis_start_y - tickDistance
 }
 
 // 将真实数据转换成 canvas 的绘图数据, 转换出的是距离, 而不是坐标
 export function getCanvasDistanceFromRealNumber(
   realNumber: number,
-  min: number,
+  realMin: number,
   realInterval: number,
   tickInterval: number
 ) {
-  const tickCount = (realNumber - min) / realInterval
+  const tickCount = (realNumber - realMin) / realInterval
   const tickDistance = tickCount * tickInterval
   return tickDistance
 }
