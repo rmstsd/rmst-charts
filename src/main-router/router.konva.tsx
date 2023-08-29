@@ -10,7 +10,7 @@ import { IRouteObject } from './router'
 const konvaRouteConfig: IRouteObject = {
   path: '/konva',
   element: <LayoutView />,
-  uiConfig: { title: 'konva' },
+  uiConfig: { title: 'konva', hidden: import.meta.env.PROD },
   children: [
     {
       path: 'base',

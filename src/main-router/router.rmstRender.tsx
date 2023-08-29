@@ -18,7 +18,7 @@ import { IRouteObject } from './router'
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
   element: <LayoutView />,
-  uiConfig: { title: 'render (core)' },
+  uiConfig: { title: 'rmst-render' },
   children: [
     {
       path: 'base',

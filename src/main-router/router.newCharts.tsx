@@ -22,7 +22,7 @@ import { IRouteObject } from './router'
 const newChartsRouteConfig: IRouteObject = {
   path: '/new-charts',
   element: <LayoutView />,
-  uiConfig: { title: 'charts (core), 基于render' },
+  uiConfig: { title: 'rmst-charts (基于 rmst-render)' },
   children: [
     {
       path: 'line',
