@@ -9,11 +9,11 @@ import WaterDrop from '@/demo/other/WaterDrop'
 import Brush from '@/demo/other/Brush'
 
 import { IRouteObject } from './router'
-
+console.log(import.meta.env)
 const otherRouteConfig: IRouteObject = {
   path: '/other',
   element: <LayoutView />,
-  uiConfig: { title: '杂项' },
+  uiConfig: { title: '杂项', hidden: import.meta.env.PROD },
   children: [
     { path: 'plum', element: <Plum /> },
     { path: 'aniCurve', element: <AniCurve /> },

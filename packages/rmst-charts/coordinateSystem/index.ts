@@ -6,11 +6,8 @@
 
 import { Stage } from 'rmst-render'
 
-import { createXAxisElements, IXAxisElements } from './cartesian2d/calcXAxis'
-import { createYAxisElements, IYAxisElements } from './cartesian2d/calcYAxis'
 import { createPolarElements, IPolarElements } from './polar'
-
-const createCartesian2dElements = () => {}
+import { createCartesian2dElements, ICartesian2dElements } from './cartesian2d'
 
 export type ICoordinateSystemElements = ReturnType<typeof createCoordinateSystemElements>
 export const createCoordinateSystemElements = (
@@ -19,14 +16,15 @@ export const createCoordinateSystemElements = (
   finalSeries: ICharts.series[]
 ) => {
   const hasCartesian2d = finalSeries.some(item => item.coordinateSystem === 'cartesian2d')
-  const cartesian2d = {} as { XAxisShape: IXAxisElements; YAxisShape: IYAxisElements }
+  let cartesian2d = {} as ICartesian2dElements
+
   if (hasCartesian2d) {
-    cartesian2d.XAxisShape = createXAxisElements(stage, innerOption)
-    cartesian2d.YAxisShape = createYAxisElements(stage, finalSeries)
+    cartesian2d = createCartesian2dElements(stage, innerOption, finalSeries)
   }
 
   const hasPolar = finalSeries.some(item => item.coordinateSystem === 'polar')
   let polar = {} as IPolarElements
+
   if (hasPolar) {
     polar = createPolarElements(stage, innerOption, finalSeries)
   }

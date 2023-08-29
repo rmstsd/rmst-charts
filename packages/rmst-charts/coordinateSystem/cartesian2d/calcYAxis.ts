@@ -8,9 +8,11 @@ import {
   splitLineColor,
   tickColor,
   yAxisPadding
-} from '../../constant.js'
-import { pointToFlatArray } from '../../utils/utils.js'
+} from 'rmst-charts/constant.js'
+
 import { calcPerfectTick } from '../utils'
+import { getCanvasDistanceFromRealNumber } from 'rmst-charts/convert.js'
+import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
 
 function getYAxis(
   ctx: CanvasRenderingContext2D,
@@ -30,7 +32,9 @@ function getYAxis(
   const ticks = tickValues.map((tickValue, index) => {
     const start_x = axis_x
     const end_x = xAxisEndX // axis_x + 100
-    const tick_y = start_y - tickInterval * index
+    const tick_y =
+      // 新的计算方式能够更好的自定义增加刻度
+      start_y - getCanvasDistanceFromRealNumber(tickValue, perfectMin, perfectInterval, tickInterval) // start_y - tickInterval * index
 
     const { textWidth, textHeight } = measureText(ctx, String(tickValue), 14)
 

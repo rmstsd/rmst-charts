@@ -1,8 +1,13 @@
 // @ts-check
 import { Stage, Line, Text, measureText } from 'rmst-render'
 
-import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from '../../constant.js'
-import { pointToFlatArray } from '../../utils/utils.js'
+import {
+  canvasPaddingBottom,
+  canvasPaddingLeft,
+  canvasPaddingRight,
+  tickColor
+} from 'rmst-charts/constant.js'
+import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
 
 function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
   const start_x = canvasPaddingLeft
@@ -21,7 +26,7 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
     const { textWidth, textHeight } = measureText(ctx, valueString, 14)
     const tickLength = 10
 
-    const x = start_x + firstPaddingLeft + index * xAxisInterval
+    const x = firstPaddingLeft + start_x + index * xAxisInterval
     const y_start = axis_y
     const y_end = axis_y + tickLength
 

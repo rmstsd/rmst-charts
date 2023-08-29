@@ -11,7 +11,7 @@ import { IRouteObject } from './router'
 const oldChartsRouteConfig: IRouteObject = {
   path: '/old-charts',
   element: <LayoutView />,
-  uiConfig: { title: 'old-charts' },
+  uiConfig: { title: 'old-charts', hidden: import.meta.env.PROD },
   children: [
     { path: 'line', element: <LineDemo /> },
     { path: 'bar', element: <BarDemo /> },
