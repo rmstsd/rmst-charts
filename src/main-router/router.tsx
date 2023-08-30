@@ -8,7 +8,9 @@ import konvaRouteConfig from './router.konva'
 import oldCharts from './router.oldCharts'
 import other from './router.other'
 
-export type IRouteObject = RouteObject & {
+export type IRouteObject = {
+  path: RouteObject['path']
+  element: RouteObject['element']
   uiConfig?: { hidden?: boolean; title?: string; icon?: any; isDeveloping?: boolean }
   children?: IRouteObject[]
 }
