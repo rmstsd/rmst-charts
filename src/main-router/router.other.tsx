@@ -7,9 +7,10 @@ import CurveRect from '@/demo/other/CurveRect'
 import Translation from '@/demo/other/Translation'
 import WaterDrop from '@/demo/other/WaterDrop'
 import Brush from '@/demo/other/Brush'
+import LineAnimate from '@/demo/other/Line动画硬画'
 
 import { IRouteObject } from './router'
-console.log(import.meta.env)
+
 const otherRouteConfig: IRouteObject = {
   path: '/other',
   element: <LayoutView />,
@@ -21,7 +22,8 @@ const otherRouteConfig: IRouteObject = {
     { path: 'curveRect', element: <CurveRect /> },
     { path: 'translation', element: <Translation /> },
     { path: 'waterDrop', element: <WaterDrop /> },
-    { path: 'brush', element: <Brush /> }
+    { path: 'brush', element: <Brush /> },
+    { path: 'lineAnimate硬', element: <LineAnimate /> }
   ]
 }
 
