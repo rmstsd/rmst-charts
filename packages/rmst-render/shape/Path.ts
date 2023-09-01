@@ -254,7 +254,7 @@ export abstract class Path {
   // totalTime 毫秒
   animateCartoon(
     prop: {
-      animateCallback?: (_prop: Record<string, any>) => void
+      animateCallback?: (_prop: Record<string, any>, elapsedTimeRatio: number) => void
       [key: string]: any
     },
     totalTime = 500,
@@ -280,7 +280,6 @@ export abstract class Path {
 
         this.animateState.startValue = this.clipWidth
         const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
-        const per = calcPer(0, surroundBoxWidth, totalTime)
 
         const exec = (timestamp: number) => {
           if (!this.animateState.startTime) {
@@ -363,7 +362,7 @@ export abstract class Path {
           }
 
           if (typeof animateCallback === 'function') {
-            animateCallback({ [propKey]: targetValue })
+            animateCallback({ [propKey]: targetValue }, elapsedTimeRatio)
           }
 
           this.attr({ ...this.data, [propKey]: targetValue })

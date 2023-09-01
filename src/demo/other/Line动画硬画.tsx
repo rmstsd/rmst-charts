@@ -10,10 +10,10 @@ const LineAnimate = () => {
     const { ctx } = stage
 
     const points = [
-      { x: 100, y: 100 },
+      { x: 200, y: 100 },
       { x: 200, y: 200 },
       { x: 300, y: 100 },
-      { x: 400, y: 100 }
+      { x: 250, y: 100 }
     ]
 
     drawLine(points)
