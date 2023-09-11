@@ -1,9 +1,9 @@
 import LayoutView from '@/components/LayoutView/LayoutView'
 
-import KonvaBase from '@/demo/konva/KonvaBase'
-import KonvaLineAnimate from '@/demo/konva/KonvaLineAnimate'
-import PolygonDe from '@/demo/konva/PolygonDe'
-import ZIndex from '@/demo/konva/ZIndex'
+import KonvaBase from '@/demo/3-konva/KonvaBase'
+import KonvaLineAnimate from '@/demo/3-konva/KonvaLineAnimate'
+import PolygonDe from '@/demo/3-konva/PolygonDe'
+import ZIndex from '@/demo/3-konva/ZIndex'
 
 import { IRouteObject } from './router'
 

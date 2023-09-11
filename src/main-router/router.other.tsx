@@ -1,14 +1,14 @@
 import LayoutView from '@/components/LayoutView/LayoutView'
 
-import Plum from '@/demo/other/Plum'
-import AniCurve from '@/demo/other/贝塞尔曲线计算动画'
-import LinePath from '@/demo/other/过点曲线'
-import CurveRect from '@/demo/other/渐变'
-import Translation from '@/demo/other/Translation'
-import WaterDrop from '@/demo/other/WaterDrop'
-import Brush from '@/demo/other/Brush'
-import LineAnimate from '@/demo/other/折线计算动画'
-import 贝塞尔曲线峰值吸附 from '@/demo/other/贝塞尔曲线峰值吸附'
+import Plum from '@/demo/5-other/Plum'
+import AniCurve from '@/demo/5-other/贝塞尔曲线计算动画'
+import LinePath from '@/demo/5-other/过点曲线'
+import CurveRect from '@/demo/5-other/渐变'
+import Translation from '@/demo/5-other/Translation'
+import WaterDrop from '@/demo/5-other/WaterDrop'
+import Brush from '@/demo/5-other/Brush'
+import LineAnimate from '@/demo/5-other/折线计算动画'
+import 贝塞尔曲线峰值吸附 from '@/demo/5-other/贝塞尔曲线峰值吸附'
 
 import { IRouteObject } from './router'
 
