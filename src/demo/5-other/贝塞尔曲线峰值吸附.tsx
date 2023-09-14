@@ -6,8 +6,8 @@ const 贝塞尔曲线峰值吸附 = () => {
   const ctxRef = useRef<CanvasRenderingContext2D>()
 
   const p0 = { x: 100, y: 100 }
-  const p1 = { x: 100, y: 50 } // 控制点 1
-  const p2 = { x: 300, y: 50 } // 控制点 2
+  const p1 = { x: 100, y: 40 } // 控制点 1
+  const p2 = { x: 300, y: 240 } // 控制点 2
   const p3 = { x: 300, y: 100 }
 
   useEffect(() => {
@@ -21,6 +21,31 @@ const 贝塞尔曲线峰值吸附 = () => {
     let t = 0
 
     const pointsAtCurve = calcPointAtCurve()
+
+    const boundingRect = findBounding(pointsAtCurve)
+    ctx.strokeStyle = 'pink'
+    ctx.strokeRect(
+      boundingRect.left_top.x,
+      boundingRect.left_top.y,
+      boundingRect.right_bottom.x - boundingRect.left_top.x,
+      boundingRect.right_bottom.y - boundingRect.left_top.y
+    )
+
+    function findBounding(points) {
+      const left_top = {
+        x: Math.min(...points.map(item => item.x)),
+        y: Math.min(...points.map(item => item.y))
+      }
+      const right_bottom = {
+        x: Math.max(...points.map(item => item.x)),
+        y: Math.max(...points.map(item => item.y))
+      }
+
+      return {
+        left_top,
+        right_bottom
+      }
+    }
 
     pointsAtCurve.forEach((item, index) => {
       if (index === 0 || index === pointsAtCurve.length - 1) {
@@ -44,6 +69,10 @@ const 贝塞尔曲线峰值吸附 = () => {
 
     function calcPointAtCurve() {
       const ans = []
+
+      const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
+      ans.push(tempEnd)
+
       dg()
 
       console.log(ans)
@@ -54,11 +83,12 @@ const 贝塞尔曲线峰值吸附 = () => {
         if (t === 1) {
           return
         }
-        t += 0.01
 
+        t += 0.1
         if (t > 1) {
           t = 1
         }
+
         const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
 
         ans.push(tempEnd)
