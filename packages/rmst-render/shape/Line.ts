@@ -1,6 +1,6 @@
 import Group from '../Group'
 import { convertToNormalPoints, createPath2D } from '../utils'
-import Path from './Path'
+import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
   lineWidth: 1,
@@ -8,8 +8,22 @@ const defaultData = {
   lineJoin: 'miter' as CanvasLineJoin
 }
 
-export class Line extends Path {
-  constructor(data: Line['data']) {
+interface LineData extends AbstractUiData {
+  path2D?: Path2D
+  points?: number[]
+  bgColor?: string
+  fillStyle?: CanvasFillStrokeStyles['fillStyle']
+  strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
+  lineWidth?: number
+  lineCap?: CanvasLineCap
+  lineJoin?: CanvasLineJoin
+  closed?: boolean
+  smooth?: boolean
+  [key: string]: any
+}
+
+export class Line extends AbstractUi {
+  constructor(data: LineData) {
     super()
 
     this.data = { ...defaultData, ...data }
@@ -34,21 +48,9 @@ export class Line extends Path {
     }
   }
 
-  isLine = true
+  declare data: LineData
 
-  declare data: {
-    path2D?: Path2D
-    points?: number[]
-    bgColor?: string
-    fillStyle?: CanvasFillStrokeStyles['fillStyle']
-    strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
-    lineWidth?: number
-    lineCap?: CanvasLineCap
-    lineJoin?: CanvasLineJoin
-    closed?: boolean
-    smooth?: boolean
-    [key: string]: any
-  }
+  isLine = true
 
   draw(ctx: CanvasRenderingContext2D) {
     if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)

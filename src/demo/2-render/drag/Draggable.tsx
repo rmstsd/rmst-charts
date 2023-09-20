@@ -25,7 +25,14 @@ const Draggable = () => {
       y: 100,
       radius: 50,
       bgColor: 'pink',
-      draggable: true
+      draggable: true,
+      draggableControl: ({ mouseCoord, shapeCoord }) => {
+        if (shapeCoord.x > 400) {
+          shapeCoord.x = 400
+        }
+
+        return shapeCoord
+      }
     })
 
     rect.onClick = () => {

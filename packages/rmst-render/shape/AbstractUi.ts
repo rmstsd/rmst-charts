@@ -5,7 +5,29 @@ import Stage, { dpr, IExtraData } from '../Stage'
 
 type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
 
-export abstract class Path {
+type DraggableControlCoord = {
+  mouseCoord: { offsetX: number; offsetY: number }
+  shapeCoord: { x: number; y: number }
+}
+
+type DraggableControl = (coord: DraggableControlCoord) => {
+  x: number
+  y: number
+}
+
+export interface AbstractUiData {
+  x?: number
+  y?: number
+  shadowColor?: string
+  shadowBlur?: number
+  shadowOffsetX?: number
+  shadowOffsetY?: number
+  clip?: boolean
+  draggableControl?: DraggableControl
+  [key: string]: any
+}
+
+export abstract class AbstractUi {
   constructor() {
     this.extraData = Stage.createExtraData()
   }
@@ -51,16 +73,7 @@ export abstract class Path {
   clipWidth = 0
   clipHeight = 0
 
-  data: {
-    x?: number
-    y?: number
-    shadowColor?: string
-    shadowBlur?: number
-    shadowOffsetX?: number
-    shadowOffsetY?: number
-    clip?: boolean
-    [key: string]: any
-  }
+  data: AbstractUiData
 
   animateState = {
     startValue: {},
@@ -183,7 +196,12 @@ export abstract class Path {
       } else {
         const x = offsetX - this.mouseDownOffset.x
         const y = offsetY - this.mouseDownOffset.y
-        this.attr({ x, y })
+
+        const pos = this.data.draggableControl
+          ? this.data.draggableControl({ mouseCoord: { offsetX, offsetY }, shapeCoord: { x, y } })
+          : { x, y }
+
+        this.attr({ x: pos.x, y: pos.y })
         this.onDragMove()
       }
     }
@@ -254,7 +272,7 @@ export abstract class Path {
   // totalTime 毫秒
   animateCartoon(
     prop: {
-      animateCallback?: (_prop: Record<string, any>) => void
+      animateCallback?: (_prop: Record<string, any>, elapsedTimeRatio: number) => void
       [key: string]: any
     },
     totalTime = 500,
@@ -280,7 +298,6 @@ export abstract class Path {
 
         this.animateState.startValue = this.clipWidth
         const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
-        const per = calcPer(0, surroundBoxWidth, totalTime)
 
         const exec = (timestamp: number) => {
           if (!this.animateState.startTime) {
@@ -363,7 +380,7 @@ export abstract class Path {
           }
 
           if (typeof animateCallback === 'function') {
-            animateCallback({ [propKey]: targetValue })
+            animateCallback({ [propKey]: targetValue }, elapsedTimeRatio)
           }
 
           this.attr({ ...this.data, [propKey]: targetValue })
@@ -377,7 +394,7 @@ export abstract class Path {
   }
 }
 
-export default Path
+export default AbstractUi
 
 // initCount 和 targetCount 目前只存在都为 number 或者 都为 number[] 的情况; 暂时不考虑字符串的情况(颜色)
 const calcTargetValue = (

@@ -1,4 +1,4 @@
-import Path from './Path'
+import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
   startAngle: 0,
@@ -8,26 +8,28 @@ const defaultData = {
   offsetAngle: 0
 }
 
-export class Circle extends Path {
-  constructor(data: Circle['data']) {
+interface CircleData extends AbstractUiData {
+  x: number
+  y: number
+  radius: number
+  innerRadius?: number
+  bgColor: string
+  strokeStyle?: string
+  startAngle?: number // 圆弧 饼图 角度 60 180 360
+  endAngle?: number // 圆弧 饼图
+  offsetAngle?: number // 默认情况下, 圆弧的起始角度是 0, 但是如果需要从其他角度开始, 可以设置 offsetAngle
+  lineWidth?: number
+  [key: string]: any
+}
+
+export class Circle extends AbstractUi {
+  constructor(data: CircleData) {
     super()
 
     this.data = { ...defaultData, ...data }
   }
 
-  declare data: {
-    x: number
-    y: number
-    radius: number
-    innerRadius?: number
-    bgColor: string
-    strokeStyle?: string
-    startAngle?: number // 圆弧 饼图 角度 60 180 360
-    endAngle?: number // 圆弧 饼图
-    offsetAngle?: number // 默认情况下, 圆弧的起始角度是 0, 但是如果需要从其他角度开始, 可以设置 offsetAngle
-    lineWidth?: number
-    [key: string]: any
-  }
+  declare data: CircleData
 
   draw(ctx: CanvasRenderingContext2D) {
     const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle, offsetAngle, lineWidth } =

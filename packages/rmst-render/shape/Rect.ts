@@ -1,12 +1,24 @@
 import Group from '../Group'
-import Path from './Path'
+import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
   cornerRadius: 0
 }
 
-export class Rect extends Path {
-  constructor(data: Rect['data']) {
+interface RectData extends AbstractUiData {
+  x: number
+  y: number
+  width: number
+  height: number
+  bgColor?: string
+  fillStyle?: string
+  strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
+  cornerRadius?: number
+  [key: string]: any
+}
+
+export class Rect extends AbstractUi {
+  constructor(data: RectData) {
     super()
 
     this.surroundBoxCoord = {
@@ -19,25 +31,21 @@ export class Rect extends Path {
     this.data = { ...defaultData, ...data }
   }
 
-  declare data: {
-    x: number
-    y: number
-    width: number
-    height: number
-    bgColor?: string
-    strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
-    cornerRadius?: number
-    [key: string]: any
-  }
+  declare data: RectData
 
   draw(ctx: CanvasRenderingContext2D) {
     if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
 
     const { x, y, width, height, bgColor, cornerRadius, strokeStyle } = this.data
 
+    let { fillStyle } = this.data
+    if (!fillStyle) {
+      fillStyle = bgColor
+    }
+
     this.setShadow(ctx, this.data)
 
-    ctx.fillStyle = bgColor
+    ctx.fillStyle = fillStyle
     ctx.strokeStyle = strokeStyle
 
     ctx.beginPath()
@@ -53,7 +61,7 @@ export class Rect extends Path {
     path2D.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
 
     this.path2D = path2D
-    if (bgColor) {
+    if (fillStyle) {
       ctx.fill(path2D)
     }
     if (strokeStyle) {
