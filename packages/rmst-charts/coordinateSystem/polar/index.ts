@@ -1,4 +1,4 @@
-import { Circle, Line, Path, Stage, Text, getPointOnArc, measureText } from 'rmst-render'
+import { Circle, Line, AbstractUi, Stage, Text, getPointOnArc, measureText } from 'rmst-render'
 
 import { calcPerfectTick } from '../utils'
 import { splitLineColor, tickColor } from '../../constant'
@@ -164,7 +164,7 @@ export const createPolarElements = (
   stage: Stage,
   innerOption: ICharts.IOption,
   finalSeries: ICharts.series[]
-): { polarAllShapes: Path[]; polarAxisData } => {
+): { polarAllShapes: AbstractUi[]; polarAxisData } => {
   const seriesData = finalSeries.reduce((acc, item) => acc.concat(item.data), []) as number[]
 
   const polarAxisData = getDataForDraw(stage, innerOption, seriesData)

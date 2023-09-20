@@ -5,7 +5,29 @@ import Stage, { dpr, IExtraData } from '../Stage'
 
 type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
 
-export abstract class Path {
+type DraggableControlCoord = {
+  mouseCoord: { offsetX: number; offsetY: number }
+  shapeCoord: { x: number; y: number }
+}
+
+type DraggableControl = (coord: DraggableControlCoord) => {
+  x: number
+  y: number
+}
+
+export interface AbstractUiData {
+  x?: number
+  y?: number
+  shadowColor?: string
+  shadowBlur?: number
+  shadowOffsetX?: number
+  shadowOffsetY?: number
+  clip?: boolean
+  draggableControl?: DraggableControl
+  [key: string]: any
+}
+
+export abstract class AbstractUi {
   constructor() {
     this.extraData = Stage.createExtraData()
   }
@@ -51,16 +73,7 @@ export abstract class Path {
   clipWidth = 0
   clipHeight = 0
 
-  data: {
-    x?: number
-    y?: number
-    shadowColor?: string
-    shadowBlur?: number
-    shadowOffsetX?: number
-    shadowOffsetY?: number
-    clip?: boolean
-    [key: string]: any
-  }
+  data: AbstractUiData
 
   animateState = {
     startValue: {},
@@ -183,7 +196,12 @@ export abstract class Path {
       } else {
         const x = offsetX - this.mouseDownOffset.x
         const y = offsetY - this.mouseDownOffset.y
-        this.attr({ x, y })
+
+        const pos = this.data.draggableControl
+          ? this.data.draggableControl({ mouseCoord: { offsetX, offsetY }, shapeCoord: { x, y } })
+          : { x, y }
+
+        this.attr({ x: pos.x, y: pos.y })
         this.onDragMove()
       }
     }
@@ -376,7 +394,7 @@ export abstract class Path {
   }
 }
 
-export default Path
+export default AbstractUi
 
 // initCount 和 targetCount 目前只存在都为 number 或者 都为 number[] 的情况; 暂时不考虑字符串的情况(颜色)
 const calcTargetValue = (

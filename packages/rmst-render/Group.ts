@@ -1,6 +1,6 @@
-import Path from './shape/Path'
+import AbstractUi from './shape/AbstractUi'
 
-export class Group extends Path {
+export class Group extends AbstractUi {
   constructor(data: any = {}) {
     super()
 

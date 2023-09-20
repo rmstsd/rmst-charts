@@ -4,7 +4,7 @@ import {
   Rect,
   Line,
   Text,
-  Path,
+  AbstractUi,
   getPointOnArc,
   deg2rad,
   Stage,
@@ -54,7 +54,7 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     bgColor: 'transparent'
   })
 
-  const elements = data.reduce<Path[]>((acc, item, index) => {
+  const elements = data.reduce<AbstractUi[]>((acc, item, index) => {
     const width = 40
     const height = 20
 

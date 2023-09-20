@@ -1,5 +1,5 @@
 import Group from 'rmst-render/Group'
-import Path from './Path'
+import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
   color: '#333',
@@ -7,8 +7,20 @@ const defaultData = {
   textAlign: 'left' as const
 }
 
-export class Text extends Path {
-  constructor(data: Text['data']) {
+interface TextData extends AbstractUiData {
+  x: number
+  y: number
+  content: string
+  color?: string
+  fontSize?: number
+  textAlign?: CanvasTextAlign
+  clip?: boolean
+  surroundBoxCoord?: { x: number; y: number; width: number; height: number }
+  [key: string]: any
+}
+
+export class Text extends AbstractUi {
+  constructor(data: TextData) {
     super()
 
     if (data.clip) {
@@ -22,17 +34,7 @@ export class Text extends Path {
     this.data = { ...defaultData, ...data }
   }
 
-  declare data: {
-    x: number
-    y: number
-    content: string
-    color?: string
-    fontSize?: number
-    textAlign?: CanvasTextAlign
-    clip?: boolean
-    surroundBoxCoord?: { x: number; y: number; width: number; height: number }
-    [key: string]: any
-  }
+  declare data: TextData
 
   isText = true
 

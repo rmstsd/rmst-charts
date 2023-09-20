@@ -1,9 +1,9 @@
 import Circle from './shape/Circle'
 import Line from './shape/Line'
-import Path from './shape/Path'
+import AbstractUi from './shape/AbstractUi'
 import Rect from './shape/Rect'
 
-type IGraph = Circle | Rect | Path | Line
+type IGraph = Circle | Rect | AbstractUi | Line
 
 type IOption = {
   container: HTMLElement

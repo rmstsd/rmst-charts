@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 
 import { Stage, Rect, Circle, Text } from 'rmst-render'
 
-const Draggable = () => {
+const DraggableRange = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Stage>()
 
@@ -13,12 +13,11 @@ const Draggable = () => {
     stageRef.current = stage
 
     const rect = new Rect({
-      x: 10,
-      y: 10,
-      width: 100,
-      height: 100,
-      bgColor: 'blueviolet',
-      draggable: true
+      x: 50,
+      y: 50,
+      width: 300,
+      height: 300,
+      strokeStyle: 'purple'
     })
     const arc = new Circle({
       x: 100,
@@ -27,8 +26,25 @@ const Draggable = () => {
       bgColor: 'pink',
       draggable: true,
       draggableControl: ({ mouseCoord, shapeCoord }) => {
-        if (shapeCoord.x > 400) {
-          shapeCoord.x = 400
+        const _radius = arc.data.radius
+        const left = rect.data.x + _radius
+        if (shapeCoord.x < left) {
+          shapeCoord.x = left
+        }
+
+        const right = rect.data.x + rect.data.width - _radius
+        if (shapeCoord.x > right) {
+          shapeCoord.x = right
+        }
+
+        const top = rect.data.y + _radius
+        if (shapeCoord.y < top) {
+          shapeCoord.y = top
+        }
+
+        const bottom = rect.data.y + rect.data.height - _radius
+        if (shapeCoord.y > bottom) {
+          shapeCoord.y = bottom
         }
 
         return shapeCoord
@@ -45,24 +61,12 @@ const Draggable = () => {
     stage.append([rect, arc])
   }, [])
 
-  const addToStage = () => {
-    stageRef.current.append(
-      new Circle({
-        x: 200,
-        y: 200,
-        radius: 50,
-        bgColor: 'cornflowerblue',
-        draggable: true
-      })
-    )
-  }
-
   return (
     <>
-      <button onClick={addToStage}>向舞台添加元素</button>
+      <h2>只能在紫色矩形内拖拽</h2>
       <div className="canvas-container" ref={canvasRef}></div>
     </>
   )
 }
 
-export default Draggable
+export default DraggableRange

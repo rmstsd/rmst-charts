@@ -14,6 +14,7 @@ import GroupClipAnimate from '@/demo/2-render/animate/GroupClipAnimate'
 import WatermarkClip from '@/demo/2-render/real-case/WatermarkClip'
 
 import { IRouteObject } from './router'
+import DraggableRange from '@/demo/2-render/drag/DraggableRange'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -37,7 +38,8 @@ const rmstRenderRouteConfig: IRouteObject = {
       uiConfig: { title: '拖拽' },
       children: [
         { path: 'draggable', element: <Draggable />, uiConfig: { title: 'draggable' } },
-        { path: 'group', element: <GroupDraggable />, uiConfig: { title: '成组 draggable' } }
+        { path: 'group', element: <GroupDraggable />, uiConfig: { title: '成组 draggable' } },
+        { path: 'draggableRange', element: <DraggableRange />, uiConfig: { title: '在指定区域拖拽' } }
       ]
     },
     {

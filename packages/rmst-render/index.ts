@@ -1,4 +1,4 @@
-export * from './shape/Path'
+export * from './shape/AbstractUi'
 export * from './shape/Text'
 export * from './shape/Circle'
 export * from './shape/Rect'
