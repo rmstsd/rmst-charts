@@ -45,7 +45,17 @@ const LayoutView = () => {
   return (
     <Layout style={{ height: '100%', backgroundColor: 'white' }}>
       <Layout.Header
-        style={{ backgroundColor: 'transparent', display: 'flex', padding: 0, paddingRight: 20 }}
+        style={{
+          backgroundColor: 'transparent',
+          display: 'flex',
+          padding: 0,
+          paddingRight: 20,
+          height: 50,
+          lineHeight: '50px',
+          boxShadow: '0 0 20px rgba(0, 0, 0, 0.05)',
+          position: 'relative',
+          zIndex: 5
+        }}
       >
         <div style={{ width: 200, textAlign: 'center', fontSize: 24, flexShrink: 0 }}>rmst</div>
         <Menu
