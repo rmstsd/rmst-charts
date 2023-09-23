@@ -25,14 +25,7 @@ const Draggable = () => {
       y: 100,
       radius: 50,
       bgColor: 'pink',
-      draggable: true,
-      draggableControl: ({ mouseCoord, shapeCoord }) => {
-        if (shapeCoord.x > 400) {
-          shapeCoord.x = 400
-        }
-
-        return shapeCoord
-      }
+      draggable: true
     })
 
     const line = new Line({
@@ -47,6 +40,10 @@ const Draggable = () => {
     }
     arc.onClick = () => {
       console.log('arc')
+    }
+
+    line.onClick = () => {
+      console.log('line')
     }
 
     stage.append([rect, arc, line])

@@ -5,16 +5,10 @@ import Stage, { dpr, IExtraData } from '../Stage'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from 'rmst-render/utils'
 
-type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
-
-type DraggableControlCoord = {
-  mouseCoord: { offsetX: number; offsetY: number }
-  shapeCoord: { x: number; y: number }
-}
-
-type DraggableControl = (coord: DraggableControlCoord) => {
-  x: number
-  y: number
+const debugOption: DebugOption = {
+  // disabledCanvasHandleMouseMove: true,
+  // disabledCanvasHandleMouseDown: true,
+  // disabledCanvasHandleMouseUp: true
 }
 
 export interface AbstractUiData {
@@ -46,6 +40,10 @@ export abstract class AbstractUi {
   isGroup = false
 
   isLine = false
+
+  isText = false
+
+  elements = []
 
   isMouseInner = false // 鼠标是否已经移入某个元素
 
@@ -92,6 +90,7 @@ export abstract class AbstractUi {
 
     if (!stage) return
 
+    stage.ctx.lineWidth = this.data.lineWidth + 5
     const isInPath = () => {
       return stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr)
     }
@@ -226,6 +225,9 @@ export abstract class AbstractUi {
   }
 
   handleMouseDown(offsetX: number, offsetY: number) {
+    if (debugOption.disabledCanvasHandleMouseDown) {
+      return
+    }
     const isInner = this.isInner(offsetX, offsetY)
     if (isInner) {
       this.onDown()
@@ -260,6 +262,9 @@ export abstract class AbstractUi {
   }
 
   handleMouseUp(offsetX: number, offsetY: number) {
+    if (debugOption.disabledCanvasHandleMouseUp) {
+      return
+    }
     const isInner = this.isInner(offsetX, offsetY)
 
     if (isInner) {
@@ -269,7 +274,11 @@ export abstract class AbstractUi {
     return isInner
   }
 
-  handleMove(offsetX: number, offsetY: number) {
+  handleMouseMove(offsetX: number, offsetY: number) {
+    if (debugOption.disabledCanvasHandleMouseMove) {
+      return
+    }
+
     const isInner = this.isInner(offsetX, offsetY)
 
     if (isInner) {
