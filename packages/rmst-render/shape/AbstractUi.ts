@@ -303,6 +303,36 @@ export abstract class AbstractUi {
     this.stage.renderStage()
   }
 
+  animateCustomCartoon({ startValue, endValue, totalTime = 500, frameCallback }) {
+    let currentValue = startValue
+
+    const exec = (timestamp: number) => {
+      if (!this.animateState.startTime) {
+        this.animateState.startTime = timestamp
+      }
+
+      const elapsedTime = timestamp - this.animateState.startTime
+      const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio)
+
+      if (currentValue === endValue) {
+        // console.log(`动画结束`)
+
+        this.animateState.startTime = null
+
+        return
+      }
+
+      if (typeof frameCallback === 'function') {
+        frameCallback(currentValue)
+      }
+
+      this.animateState.rafTimer = requestAnimationFrame(exec)
+    }
+
+    requestAnimationFrame(exec)
+  }
+
   // totalTime 毫秒
   animateCartoon(
     prop: {

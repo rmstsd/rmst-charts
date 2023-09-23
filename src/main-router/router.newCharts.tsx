@@ -12,6 +12,8 @@ import Background from '@/demo/1-new-charts/bar/Background'
 
 import PieBase from '@/demo/1-new-charts/pie/Base'
 import Ring from '@/demo/1-new-charts/pie/Ring'
+import ZExtremePie from '@/demo/1-new-charts/pie/ZExtreme'
+
 import AreaStackGradient from '@/demo/1-new-charts/line/AreaStackGradient'
 import AreaStack from '@/demo/1-new-charts/line/AreaStack'
 import PolarLabelRadial from '@/demo/1-new-charts/bar/PolarLabelRadial'
@@ -61,7 +63,8 @@ const newChartsRouteConfig: IRouteObject = {
       uiConfig: { title: '饼图' },
       children: [
         { path: 'base', element: <PieBase />, uiConfig: { title: '基础饼图' } },
-        { path: 'doughnut', element: <Ring />, uiConfig: { title: '环形饼图' } }
+        { path: 'doughnut', element: <Ring />, uiConfig: { title: '环形饼图' } },
+        { path: 'extremePie', element: <ZExtremePie />, uiConfig: { title: '极端的例子' } }
       ]
     }
   ]

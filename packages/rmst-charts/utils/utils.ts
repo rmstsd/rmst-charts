@@ -96,3 +96,31 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
 export function pointToFlatArray(list: { x: number; y: number }[]) {
   return list.reduce((acc, item) => acc.concat(item.x, item.y), [])
 }
+
+export function calcTotalLineLength(points: { x: number; y: number }[]) {
+  const lines = points.reduce((acc, item, index) => {
+    if (index === 0) {
+      return acc
+    }
+
+    const lineItem = { start: points[index - 1], end: item }
+
+    return acc.concat(lineItem)
+  }, [])
+
+  const lineLengths = []
+
+  const totalLineLength = lines.reduce((acc, item) => {
+    const lengthItem = calcLength(item.start, item.end)
+
+    lineLengths.push(lengthItem)
+
+    return acc + lengthItem
+  }, 0)
+
+  return { totalLineLength, lines, lineLengths }
+
+  function calcLength(p1, p2) {
+    return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+  }
+}

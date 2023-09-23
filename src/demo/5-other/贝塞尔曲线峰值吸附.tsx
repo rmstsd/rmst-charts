@@ -19,7 +19,8 @@ const 贝塞尔曲线峰值吸附 = () => {
     const line = new Line({
       points: [100, 100, 200, 100],
       draggable: true,
-      lineWidth: 2
+      lineWidth: 2,
+      strokeStyle: '#333'
     })
 
     const curve = new Line({

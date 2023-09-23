@@ -12,7 +12,8 @@ import {
 } from 'rmst-render'
 
 import { pieColors, tickColor } from '../constant'
-import { pointToFlatArray } from 'rmst-charts/utils/utils'
+import { calcTotalLineLength, pointToFlatArray } from 'rmst-charts/utils/utils'
+import { convertToNormalPoints } from 'rmst-render/utils'
 
 type PieDataSourceItem = { value: number; name: string }
 function calcMain(dataSource: PieDataSourceItem[], end_angle = 360) {
@@ -106,10 +107,11 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
       points: pointToFlatArray(extendLinePoints),
       fillStyle: item.color,
       bgColor: item.color,
-      lineWidth: 2
+      lineWidth: seriesItem.labelLine?.lineStyle?.width || 2
     })
 
     const labelText = new Text({
+      onlyKey: 'label-text',
       x: isInRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - 5,
       y: extendLineSecondPoint_y - textHeight / 2,
       content: item.label,
@@ -159,25 +161,71 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
     elements
       .filter(o => o.data.onlyKey === 'extend-line')
       .forEach((item, index) => {
-        // item.animateCartoon(
-        //   { points: [item.data.points[0], item.data.points[1], ...item.data.extraData] },
-        //   300
-        // )
+        const points = convertToNormalPoints(item.data.points)
+        const { totalLineLength, lines, lineLengths } = calcTotalLineLength(points)
+
+        let currIndex = 0
+        item.animateCustomCartoon({
+          startValue: 0,
+          endValue: totalLineLength,
+          totalTime: seriesItem.animationDuration,
+          frameCallback: elapsedLength => {
+            let tempL = 0
+
+            for (let i = 0; i < lineLengths.length; i++) {
+              tempL += lineLengths[i]
+              if (tempL >= elapsedLength) {
+                currIndex = i
+                break
+              }
+            }
+
+            const lastOnePoint = (() => {
+              const currLine = lines[currIndex]
+
+              const currLineElapsedLength =
+                elapsedLength - lineLengths.slice(0, currIndex).reduce((acc, item) => acc + item, 0)
+
+              const ratio = currLineElapsedLength / lineLengths[currIndex]
+
+              // currLineElapsedLength / lineLengths[currIndex] = x - x1 /  x2 - x1
+
+              const x = ratio * (currLine.end.x - currLine.start.x) + currLine.start.x
+              const y = ratio * (currLine.end.y - currLine.start.y) + currLine.start.y
+
+              return { x, y }
+            })()
+
+            const _points = points.slice(0, currIndex + 1).concat(lastOnePoint)
+
+            item.attr({ points: pointToFlatArray(_points) })
+          }
+        })
       })
 
-    fakeArc.animateCartoon({
-      endAngle: 360,
-      animateCallback(prop, elapsedTimeRatio) {
-        elements
-          .filter(o => o.data.onlyKey === 'main-pie')
-          .forEach(element => {
-            element.attr({
-              startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
-              endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
+    elements
+      .filter(o => o.data.onlyKey === 'label-text')
+      .forEach((item, index) => {
+        // 待实现颜色过渡
+        // item.animateCartoon({ color: 'red' })
+      })
+
+    fakeArc.animateCartoon(
+      {
+        endAngle: 360,
+        animateCallback(prop, elapsedTimeRatio) {
+          elements
+            .filter(o => o.data.onlyKey === 'main-pie')
+            .forEach(element => {
+              element.attr({
+                startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
+                endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
+              })
             })
-          })
-      }
-    })
+        }
+      },
+      seriesItem.animationDuration
+    )
   }
 
   return { elements, afterAppendStage }
