@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { calculateControlPoint } from './贝塞尔曲线计算动画'
+import { Line, Stage } from 'rmst-render'
 
 const 贝塞尔曲线峰值吸附 = () => {
   const ref = useRef<HTMLCanvasElement>()
@@ -9,6 +10,24 @@ const 贝塞尔曲线峰值吸附 = () => {
   const p1 = { x: 100, y: 40 } // 控制点 1
   const p2 = { x: 300, y: 240 } // 控制点 2
   const p3 = { x: 300, y: 100 }
+
+  useEffect(() => {
+    const stage = new Stage({
+      container: document.querySelector('.canvas-container')
+    })
+
+    const line = new Line({
+      points: [100, 100, 200, 100],
+      draggable: true,
+      lineWidth: 2
+    })
+
+    line.onClick = () => {
+      console.log(122)
+    }
+
+    stage.append(line)
+  }, [])
 
   useEffect(() => {
     const ctx = ctxRef.current
@@ -99,10 +118,12 @@ const 贝塞尔曲线峰值吸附 = () => {
 
   return (
     <div>
+      <div className="canvas-container"></div>
+
       <canvas
         ref={el => {
           ref.current = el
-          ctxRef.current = el.getContext('2d')
+          ctxRef.current = el?.getContext('2d')
         }}
         width={500}
         height={500}

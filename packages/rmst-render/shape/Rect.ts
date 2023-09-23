@@ -2,7 +2,8 @@ import Group from '../Group'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
-  cornerRadius: 0
+  cornerRadius: 0,
+  lineWidth: 1
 }
 
 interface RectData extends AbstractUiData {
@@ -36,7 +37,7 @@ export class Rect extends AbstractUi {
   draw(ctx: CanvasRenderingContext2D) {
     if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
 
-    const { x, y, width, height, bgColor, cornerRadius, strokeStyle } = this.data
+    const { x, y, width, height, bgColor, cornerRadius, strokeStyle, lineWidth } = this.data
 
     let { fillStyle } = this.data
     if (!fillStyle) {
@@ -47,6 +48,7 @@ export class Rect extends AbstractUi {
 
     ctx.fillStyle = fillStyle
     ctx.strokeStyle = strokeStyle
+    ctx.lineWidth = lineWidth
 
     ctx.beginPath()
     const path2D = new Path2D()

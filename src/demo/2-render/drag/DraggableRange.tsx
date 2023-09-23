@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text } from 'rmst-render'
+import { Stage, Rect, Circle, Text, Line } from 'rmst-render'
 
 const DraggableRange = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -51,14 +51,39 @@ const DraggableRange = () => {
       }
     })
 
-    rect.onClick = () => {
-      console.log('rect')
-    }
-    arc.onClick = () => {
-      console.log('arc')
-    }
+    const dRect = new Rect({
+      x: 100,
+      y: 110,
+      width: 100,
+      height: 60,
+      fillStyle: 'orange',
+      draggable: true,
+      draggableControl: ({ mouseCoord, shapeCoord }) => {
+        const left = rect.data.x
+        if (shapeCoord.x < left) {
+          shapeCoord.x = left
+        }
 
-    stage.append([rect, arc])
+        const top = rect.data.x
+        if (shapeCoord.y < top) {
+          shapeCoord.y = top
+        }
+
+        const right = rect.data.x + rect.data.width - dRect.data.width
+        if (shapeCoord.x > right) {
+          shapeCoord.x = right
+        }
+
+        const bottom = rect.data.y + rect.data.height - dRect.data.height
+        if (shapeCoord.y > bottom) {
+          shapeCoord.y = bottom
+        }
+
+        return shapeCoord
+      }
+    })
+
+    stage.append([rect, arc, dRect])
   }, [])
 
   return (
