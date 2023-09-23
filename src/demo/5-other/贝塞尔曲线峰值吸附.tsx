@@ -22,11 +22,15 @@ const 贝塞尔曲线峰值吸附 = () => {
       lineWidth: 2
     })
 
-    line.onClick = () => {
-      console.log(122)
-    }
+    const curve = new Line({
+      points: [100, 300, 150, 200, 200, 300],
+      draggable: true,
+      lineWidth: 2,
+      smooth: true,
+      strokeStyle: 'purple'
+    })
 
-    stage.append(line)
+    stage.append([line, curve])
   }, [])
 
   useEffect(() => {
@@ -37,9 +41,7 @@ const 贝塞尔曲线峰值吸附 = () => {
     // ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)
     // ctx.stroke()
 
-    let t = 0
-
-    const pointsAtCurve = calcPointAtCurve()
+    const pointsAtCurve = calcPointAtCurve(p0, p1, p2, p3)
 
     const boundingRect = findBounding(pointsAtCurve)
     ctx.strokeStyle = 'pink'
@@ -50,31 +52,7 @@ const 贝塞尔曲线峰值吸附 = () => {
       boundingRect.right_bottom.y - boundingRect.left_top.y
     )
 
-    function findBounding(points) {
-      const left_top = {
-        x: Math.min(...points.map(item => item.x)),
-        y: Math.min(...points.map(item => item.y))
-      }
-      const right_bottom = {
-        x: Math.max(...points.map(item => item.x)),
-        y: Math.max(...points.map(item => item.y))
-      }
-
-      return {
-        left_top,
-        right_bottom
-      }
-    }
-
-    pointsAtCurve.forEach((item, index) => {
-      if (index === 0 || index === pointsAtCurve.length - 1) {
-        return
-      }
-      if (item.y < pointsAtCurve[index - 1].y && item.y < pointsAtCurve[index + 1].y) {
-        console.log(1111)
-        item.peak = true
-      }
-    })
+    markPeakValue(pointsAtCurve)
 
     pointsAtCurve.forEach(item => {
       if (item.peak) {
@@ -85,35 +63,6 @@ const 贝塞尔曲线峰值吸附 = () => {
       ctx.fillStyle = '#333'
       ctx.fillRect(item.x, item.y, 1, 1)
     })
-
-    function calcPointAtCurve() {
-      const ans = []
-
-      const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
-      ans.push(tempEnd)
-
-      dg()
-
-      console.log(ans)
-
-      return ans
-
-      function dg() {
-        if (t === 1) {
-          return
-        }
-
-        t += 0.1
-        if (t > 1) {
-          t = 1
-        }
-
-        const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
-
-        ans.push(tempEnd)
-        dg()
-      }
-    }
   }, [])
 
   return (
@@ -134,3 +83,59 @@ const 贝塞尔曲线峰值吸附 = () => {
 }
 
 export default 贝塞尔曲线峰值吸附
+
+function findBounding(points) {
+  const left_top = {
+    x: Math.min(...points.map(item => item.x)),
+    y: Math.min(...points.map(item => item.y))
+  }
+  const right_bottom = {
+    x: Math.max(...points.map(item => item.x)),
+    y: Math.max(...points.map(item => item.y))
+  }
+
+  return {
+    left_top,
+    right_bottom
+  }
+}
+
+// 计算贝塞尔曲线上的一些点
+function calcPointAtCurve(p0, p1, p2, p3) {
+  let t = 0
+
+  const ans = []
+  const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
+  ans.push(tempEnd)
+
+  dg()
+  return ans
+
+  function dg() {
+    if (t === 1) {
+      return
+    }
+
+    t += 0.05
+    if (t > 1) {
+      t = 1
+    }
+
+    const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
+
+    ans.push(tempEnd)
+    dg()
+  }
+}
+
+// 标记峰值
+function markPeakValue(pointsAtCurve) {
+  pointsAtCurve.forEach((item, index) => {
+    if (index === 0 || index === pointsAtCurve.length - 1) {
+      return
+    }
+    if (item.y < pointsAtCurve[index - 1].y && item.y < pointsAtCurve[index + 1].y) {
+      item.peak = true
+    }
+  })
+}
