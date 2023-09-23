@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text } from 'rmst-render'
+import { Stage, Rect, Circle, Text, Line } from 'rmst-render'
 
 const Draggable = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -25,14 +25,14 @@ const Draggable = () => {
       y: 100,
       radius: 50,
       bgColor: 'pink',
-      draggable: true,
-      draggableControl: ({ mouseCoord, shapeCoord }) => {
-        if (shapeCoord.x > 400) {
-          shapeCoord.x = 400
-        }
+      draggable: true
+    })
 
-        return shapeCoord
-      }
+    const line = new Line({
+      points: [100, 200, 200, 200, 200, 300],
+      lineWidth: 3,
+      strokeStyle: 'goldenrod',
+      draggable: true
     })
 
     rect.onClick = () => {
@@ -42,7 +42,11 @@ const Draggable = () => {
       console.log('arc')
     }
 
-    stage.append([rect, arc])
+    line.onClick = () => {
+      console.log('line')
+    }
+
+    stage.append([rect, arc, line])
   }, [])
 
   const addToStage = () => {

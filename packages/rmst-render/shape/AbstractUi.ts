@@ -2,17 +2,13 @@ import colorRgba from 'color-rgba'
 import Group from '../Group'
 
 import Stage, { dpr, IExtraData } from '../Stage'
+import { pointToFlatArray } from 'rmst-charts/utils/utils'
+import { convertToNormalPoints } from 'rmst-render/utils'
 
-type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
-
-type DraggableControlCoord = {
-  mouseCoord: { offsetX: number; offsetY: number }
-  shapeCoord: { x: number; y: number }
-}
-
-type DraggableControl = (coord: DraggableControlCoord) => {
-  x: number
-  y: number
+const debugOption: DebugOption = {
+  // disabledCanvasHandleMouseMove: true,
+  // disabledCanvasHandleMouseDown: true,
+  // disabledCanvasHandleMouseUp: true
 }
 
 export interface AbstractUiData {
@@ -23,6 +19,7 @@ export interface AbstractUiData {
   shadowOffsetX?: number
   shadowOffsetY?: number
   clip?: boolean
+  draggable?: boolean
   draggableControl?: DraggableControl
   [key: string]: any
 }
@@ -44,9 +41,15 @@ export abstract class AbstractUi {
 
   isLine = false
 
+  isText = false
+
+  elements = []
+
   isMouseInner = false // 鼠标是否已经移入某个元素
 
   mouseDownOffset = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
+
+  mouseDownOffsetPoints: { x: number; y: number }[] = []
 
   extraData: IExtraData
 
@@ -87,6 +90,7 @@ export abstract class AbstractUi {
 
     if (!stage) return
 
+    stage.ctx.lineWidth = this.data.lineWidth + 5
     const isInPath = () => {
       return stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr)
     }
@@ -182,8 +186,10 @@ export abstract class AbstractUi {
 
     const stage = this.findStage()
 
-    const offsetX = pageX - stage.canvasElement.getBoundingClientRect().left
-    const offsetY = pageY - stage.canvasElement.getBoundingClientRect().top
+    const canvasRect = stage.canvasElement.getBoundingClientRect()
+
+    const offsetX = pageX - canvasRect.left
+    const offsetY = pageY - canvasRect.top
 
     if (this.data.draggable) {
       if (this.isGroup) {
@@ -201,13 +207,27 @@ export abstract class AbstractUi {
           ? this.data.draggableControl({ mouseCoord: { offsetX, offsetY }, shapeCoord: { x, y } })
           : { x, y }
 
-        this.attr({ x: pos.x, y: pos.y })
+        if (this.isLine) {
+          const c = convertToNormalPoints(this.data.points)
+          c.forEach((item, index) => {
+            const o = this.mouseDownOffsetPoints[index]
+            item.x = offsetX - o.x
+            item.y = offsetY - o.y
+          })
+          this.attr({ points: pointToFlatArray(c) })
+        } else {
+          this.attr({ x: pos.x, y: pos.y })
+        }
+
         this.onDragMove()
       }
     }
   }
 
   handleMouseDown(offsetX: number, offsetY: number) {
+    if (debugOption.disabledCanvasHandleMouseDown) {
+      return
+    }
     const isInner = this.isInner(offsetX, offsetY)
     if (isInner) {
       this.onDown()
@@ -225,8 +245,15 @@ export abstract class AbstractUi {
             item.mouseDownOffset.y = offsetY - item.data.y
           })
         } else {
-          this.mouseDownOffset.x = offsetX - this.data.x
-          this.mouseDownOffset.y = offsetY - this.data.y
+          if (this.isLine) {
+            this.mouseDownOffsetPoints = convertToNormalPoints(this.data.points).map(item => ({
+              x: offsetX - item.x,
+              y: offsetY - item.y
+            }))
+          } else {
+            this.mouseDownOffset.x = offsetX - this.data.x
+            this.mouseDownOffset.y = offsetY - this.data.y
+          }
         }
       }
     }
@@ -235,6 +262,9 @@ export abstract class AbstractUi {
   }
 
   handleMouseUp(offsetX: number, offsetY: number) {
+    if (debugOption.disabledCanvasHandleMouseUp) {
+      return
+    }
     const isInner = this.isInner(offsetX, offsetY)
 
     if (isInner) {
@@ -244,7 +274,11 @@ export abstract class AbstractUi {
     return isInner
   }
 
-  handleMove(offsetX: number, offsetY: number) {
+  handleMouseMove(offsetX: number, offsetY: number) {
+    if (debugOption.disabledCanvasHandleMouseMove) {
+      return
+    }
+
     const isInner = this.isInner(offsetX, offsetY)
 
     if (isInner) {
@@ -267,6 +301,36 @@ export abstract class AbstractUi {
   remove() {
     this.stage.elements = this.stage.elements.filter(item => item !== this)
     this.stage.renderStage()
+  }
+
+  animateCustomCartoon({ startValue, endValue, totalTime = 500, frameCallback }) {
+    let currentValue = startValue
+
+    const exec = (timestamp: number) => {
+      if (!this.animateState.startTime) {
+        this.animateState.startTime = timestamp
+      }
+
+      const elapsedTime = timestamp - this.animateState.startTime
+      const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio)
+
+      if (currentValue === endValue) {
+        // console.log(`动画结束`)
+
+        this.animateState.startTime = null
+
+        return
+      }
+
+      if (typeof frameCallback === 'function') {
+        frameCallback(currentValue)
+      }
+
+      this.animateState.rafTimer = requestAnimationFrame(exec)
+    }
+
+    requestAnimationFrame(exec)
   }
 
   // totalTime 毫秒

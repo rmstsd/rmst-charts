@@ -1,7 +1,7 @@
 import ChartsTemplate from '@/components/ChartsTemplate'
 
 // 环形饼图
-const option = {
+const option: ICharts.IOption = {
   series: [
     {
       type: 'pie' as const,

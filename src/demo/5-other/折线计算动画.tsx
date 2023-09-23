@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { calcTotalLineLength } from 'rmst-charts/utils/utils'
 import { Stage } from 'rmst-render'
 
 const LineAnimate = () => {
@@ -20,34 +21,6 @@ const LineAnimate = () => {
 
     let startTimestamp = undefined
 
-    function calcTotalLineLength() {
-      const lines = points.reduce((acc, item, index) => {
-        if (index === 0) {
-          return acc
-        }
-
-        const lineItem = { start: points[index - 1], end: item }
-
-        return acc.concat(lineItem)
-      }, [])
-
-      const lineLengths = []
-
-      const totalLineLength = lines.reduce((acc, item) => {
-        const lengthItem = calcLength(item.start, item.end)
-
-        lineLengths.push(lengthItem)
-
-        return acc + lengthItem
-      }, 0)
-
-      return { totalLineLength, lines, lineLengths }
-
-      function calcLength(p1, p2) {
-        return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
-      }
-    }
-
     const totalTime = 3000
 
     function drawLine(points) {
@@ -68,7 +41,7 @@ const LineAnimate = () => {
     drawAnimateLine()
 
     function drawAnimateLine() {
-      const { totalLineLength, lines, lineLengths } = calcTotalLineLength()
+      const { totalLineLength, lines, lineLengths } = calcTotalLineLength(points)
 
       let currIndex = 0
 

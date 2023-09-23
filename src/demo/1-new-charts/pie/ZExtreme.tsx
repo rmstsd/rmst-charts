@@ -1,6 +1,6 @@
 import ChartsTemplate from '@/components/ChartsTemplate'
 
-// 基础饼图
+// 极端例子
 const option: ICharts.IOption = {
   series: [
     {
@@ -11,13 +11,19 @@ const option: ICharts.IOption = {
         { value: 3, name: 'pie-3' },
         { value: 4, name: 'pie-4' },
         { value: 5, name: 'pie-5' }
-      ]
+      ],
+      animationDuration: 3000,
+      labelLine: {
+        lineStyle: {
+          width: 10
+        }
+      }
     }
   ]
 }
 
-const Base = () => {
+const ZExtreme = () => {
   return <ChartsTemplate option={option} />
 }
 
-export default Base
+export default ZExtreme

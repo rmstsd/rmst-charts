@@ -1,14 +1,3 @@
-import Circle from './shape/Circle'
-import Line from './shape/Line'
-import AbstractUi from './shape/AbstractUi'
-import Rect from './shape/Rect'
-
-type IGraph = Circle | Rect | AbstractUi | Line
-
-type IOption = {
-  container: HTMLElement
-}
-
 export type IExtraData = ReturnType<typeof Stage.createExtraData>
 
 export class Stage {
@@ -72,7 +61,7 @@ export class Stage {
   addStageEventListener() {
     this.canvasElement.onmousemove = evt => {
       this.elements.forEach(elementItem => {
-        elementItem.handleMove(evt.offsetX, evt.offsetY)
+        elementItem.handleMouseMove(evt.offsetX, evt.offsetY)
       })
     }
 
