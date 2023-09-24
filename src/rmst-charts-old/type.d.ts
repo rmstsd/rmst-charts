@@ -1,6 +1,5 @@
+type ICoord = { x: number; y: number } // 坐标
 namespace ICharts {
-  type ICoord = { x: number; y: number } // 坐标
-
   type IRenderTree = {
     xAxis: {
       axis: { start: ICoord; end: ICoord; xAxisInterval: number }
@@ -14,37 +13,50 @@ namespace ICharts {
     chartArray: ICoord[]
   }
 
-  type series = {
-    type: 'line' | 'bar' | 'pie'
-    data: ({ value: number; name: string } | number)[]
-    coordinateSystem?: 'cartesian2d' | 'polar'
+  interface BaseSeries {
+    name?: string
+    animationDuration?: number
+    coordinateSystem?: 'polar' | 'cartesian2d'
+  }
 
-    smooth?: boolean // 折线图-平滑曲线
-
+  interface LineSeries extends BaseSeries {
+    type: 'line'
+    data: number[]
+    smooth?: boolean
+    step?: 'start' | 'middle' | 'end' // 折线图-阶梯折线图
+    showBackground?: boolean // 柱状图-背景色
+    symbol?: 'circle' | 'none'
+    stack?: 'Total' // 折线图堆叠
     // 折线图-面积图
     areaStyle?: {
       opacity?: number
       color?: string | object // 对象为渐变色
-    }
-    step?: 'start' | 'middle' | 'end' // 折线图-阶梯折线图
-    showBackground?: boolean // 柱状图-背景色
-    radius?: string | string[] // 饼图-半径 百分比 (容器高宽中较小一项）的 20% 长度) '20%' | ['20%', '40%']
-    name?: string // 不参与 UI 渲染
-    animationDuration?: number // 毫秒 动画速度
-    labelLine?: {
-      lineStyle?: {
-        width?: number
-      }
     }
     lineStyle?: {
       width?: number
       join?: CanvasLineJoin
       cap?: CanvasLineCap
     }
-    symbol?: 'circle' | 'none'
-
-    stack?: 'Total' // 折线图堆叠
   }
+
+  interface BarSeries extends BaseSeries {
+    type: 'bar'
+    data: Number[]
+    showBackground?: boolean
+  }
+
+  interface PieSeries extends BaseSeries {
+    type: 'pie'
+    data: { value: number; name: string }[]
+    radius?: string | string[] // 饼图-半径 百分比 (容器高宽中较小一项）的 20% 长度) '20%' | ['20%', '40%']
+    labelLine?: {
+      lineStyle?: {
+        width?: number
+      }
+    }
+  }
+
+  type series = PieSeries | BarSeries | LineSeries
 
   type IOption = {
     xAxis?: {
@@ -54,13 +66,13 @@ namespace ICharts {
     series: series[]
     animationDuration?: number // ms
 
-    // 极坐标系相关
+    // 极坐标系相关 ↓
     polar?: any
     radiusAxis?: { type?: 'category'; data?: any[] }
     angleAxis?: {
       type?: 'category'
       data?: any[]
     }
-    // 极坐标系相关
+    // 极坐标系相关 ↑
   }
 }

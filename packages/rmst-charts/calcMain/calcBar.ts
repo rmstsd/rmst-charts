@@ -58,7 +58,6 @@ function calcPolarMain(
     return { elements: arcs, afterAppendStage }
   }
 
-  console.log(polarAxisData)
   const arcs = polarAxisData.radianAngles.map((item, index) => {
     const { min, realInterval, tickInterval } = polarAxisData.tickConstant
 
@@ -102,7 +101,7 @@ function calcPolarMain(
 
 export function createRenderElements(
   stage: Stage,
-  seriesItem: ICharts.series,
+  seriesItem: ICharts.BarSeries,
   coordinateSystem: ICoordinateSystemElements
 ) {
   if (seriesItem.coordinateSystem === 'polar') {

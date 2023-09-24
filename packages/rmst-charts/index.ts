@@ -33,7 +33,12 @@ const rmstCharts = {
           .map(seriesItem => {
             switch (seriesItem.type) {
               case 'line': {
-                return line.createRenderElements(stage, seriesItem, coordinateSystem, finalSeries)
+                return line.createRenderElements(
+                  stage,
+                  seriesItem,
+                  coordinateSystem,
+                  finalSeries as ICharts.LineSeries[]
+                )
               }
               case 'bar': {
                 return bar.createRenderElements(stage, seriesItem, coordinateSystem)
@@ -97,23 +102,31 @@ function handleSeries(series: ICharts.series[]): ICharts.series[] {
       })
       // 折线图堆叠 data求和计算
       .map((serItem, serIndex) => {
-        if (serItem.stack !== 'Total') {
-          return serItem
-        }
+        switch (serItem.type) {
+          case 'line':
+            if (serItem.stack !== 'Total') {
+              return serItem
+            }
 
-        return {
-          ...serItem,
-          data: (serItem.data as number[]).map((dataItem, dataIndex) => {
-            return (
-              dataItem +
-              series
-                .filter(item => item.stack === 'Total')
-                .slice(0, serIndex)
-                .map(item => item.data[dataIndex] as number)
-                .reduce((prev, cur) => prev + cur, 0)
-            )
-          })
-        } as ICharts.series
+            const lineSeries = series.filter(item => item.type === 'line') as ICharts.LineSeries[]
+
+            return {
+              ...serItem,
+              data: serItem.data.map((dataItem, dataIndex) => {
+                return (
+                  dataItem +
+                  lineSeries
+                    .filter(item => item.stack === 'Total')
+                    .slice(0, serIndex)
+                    .map(item => item.data[dataIndex])
+                    .reduce((prev, cur) => prev + cur, 0)
+                )
+              })
+            }
+
+          default:
+            return serItem
+        }
       })
   )
 }

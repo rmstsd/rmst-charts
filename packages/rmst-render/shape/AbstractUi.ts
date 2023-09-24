@@ -1,4 +1,3 @@
-import colorRgba from 'color-rgba'
 import Group from '../Group'
 
 import Stage, { dpr, IExtraData } from '../Stage'
@@ -22,6 +21,13 @@ export interface AbstractUiData {
   draggable?: boolean
   draggableControl?: DraggableControl
   [key: string]: any
+}
+
+type AnimateCustomCartoonParameter = {
+  startValue: number
+  endValue: number
+  totalTime?: number
+  frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
 }
 
 export abstract class AbstractUi {
@@ -79,13 +85,16 @@ export abstract class AbstractUi {
   data: AbstractUiData
 
   animateState = {
-    startValue: {},
     startTime: null,
     rafTimer: null,
     curr: 0
   }
 
-  isInner(offsetX, offsetY) {
+  getGroupSurroundBoxCoord(): SurroundBoxCoord {
+    return
+  }
+
+  isInner(offsetX: number, offsetY: number) {
     const stage = this.findStage()
 
     if (!stage) return
@@ -128,9 +137,9 @@ export abstract class AbstractUi {
   }
 
   // 获取组内的具体的某个图形 查看Group类
-  findActualShape(offsetX: number, offsetY: number) {
-    return this
-  }
+  // findActualShape(offsetX: number, offsetY: number) {
+  //   return this
+  // }
 
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
     if (!this.data.clip) return
@@ -303,7 +312,12 @@ export abstract class AbstractUi {
     this.stage.renderStage()
   }
 
-  animateCustomCartoon({ startValue, endValue, totalTime = 500, frameCallback }) {
+  animateCustomCartoon({
+    startValue,
+    endValue,
+    totalTime = 500,
+    frameCallback
+  }: AnimateCustomCartoonParameter) {
     let currentValue = startValue
 
     const exec = (timestamp: number) => {
@@ -313,7 +327,7 @@ export abstract class AbstractUi {
 
       const elapsedTime = timestamp - this.animateState.startTime
       const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
-      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio)
+      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio) as number
 
       if (currentValue === endValue) {
         // console.log(`动画结束`)
@@ -324,7 +338,7 @@ export abstract class AbstractUi {
       }
 
       if (typeof frameCallback === 'function') {
-        frameCallback(currentValue)
+        frameCallback(currentValue, elapsedTimeRatio)
       }
 
       this.animateState.rafTimer = requestAnimationFrame(exec)
@@ -359,9 +373,9 @@ export abstract class AbstractUi {
         }
 
         const surroundBoxCoord = this.isGroup ? this.getGroupSurroundBoxCoord() : _surroundBoxCoord
-
-        this.animateState.startValue = this.clipWidth
         const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
+
+        const startValue = this.clipWidth
 
         const exec = (timestamp: number) => {
           if (!this.animateState.startTime) {
@@ -371,11 +385,7 @@ export abstract class AbstractUi {
           const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(
-            this.animateState.startValue,
-            surroundBoxWidth,
-            elapsedTimeRatio
-          )
+          const targetValue = calcTargetValue_2(startValue, surroundBoxWidth, elapsedTimeRatio)
 
           if (targetValue === surroundBoxWidth) {
             console.log('结束')
@@ -387,7 +397,7 @@ export abstract class AbstractUi {
 
           clipCallback?.(surroundBoxCoord, this.clipWidth)
 
-          this.parent.renderStage()
+          this.findStage().renderStage()
 
           this.animateState.rafTimer = requestAnimationFrame(exec)
         }
@@ -404,34 +414,28 @@ export abstract class AbstractUi {
 
     const { animateCallback } = prop
 
+    const startValue = {}
     const keys = Object.keys(prop).filter(item => item !== 'animateCallback')
-
     keys.forEach(key => {
-      this.animateState.startValue[key] = this.data[key]
+      startValue[key] = this.data[key]
     })
 
     return new Promise(resolve => {
       keys.forEach(propKey => {
-        // per 的计算要在递归外
-        // const per = calcPer(this.data[propKey], prop[propKey], totalTime)
-
         const exec = (timestamp: number) => {
           if (!this.animateState.startTime) {
             this.animateState.startTime = timestamp
           }
 
-          const elapsedTime = timestamp - this.animateState.startTime
-
           const currDataValue = this.data[propKey]
-          if (currDataValue === undefined) return
+          if (currDataValue === undefined) {
+            return
+          }
 
+          const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(
-            this.animateState.startValue[propKey],
-            prop[propKey],
-            elapsedTimeRatio
-          )
+          const targetValue = calcTargetValue_2(startValue[propKey], prop[propKey], elapsedTimeRatio)
 
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {

@@ -21,7 +21,7 @@ export function calcMain(dataSource: number[], renderTree: ICharts.IRenderTree) 
 
 export function drawMain(
   ctx: CanvasRenderingContext2D,
-  chartArray: ICharts.ICoord[],
+  chartArray: ICoord[],
   { renderTree, option }: { renderTree: ICharts.IRenderTree; option: ICharts.IOption }
 ) {
   const { xAxisInterval } = renderTree.xAxis.axis
@@ -30,7 +30,7 @@ export function drawMain(
 
   if (smooth) drawBezier(ctx, chartArray, xAxisInterval)
   else {
-    const lineArr: { start: ICharts.ICoord; end: ICharts.ICoord }[] = chartArray.reduce(
+    const lineArr: { start: ICoord; end: ICoord }[] = chartArray.reduce(
       (acc, item, idx, originArr) =>
         idx === originArr.length - 1 ? acc : acc.concat({ start: item, end: originArr[idx + 1] }),
       []
@@ -45,7 +45,7 @@ export function drawMain(
       const first_x = lineArr[0].start.x
       const last_x = lineArr.at(-1).end.x
 
-      let bitStart: ICharts.ICoord = { x: lineArr[0].start.x, y: lineArr[0].start.y }
+      let bitStart: ICoord = { x: lineArr[0].start.x, y: lineArr[0].start.y }
 
       incrementExec()
       drawArcRafTask(0)
@@ -67,7 +67,7 @@ export function drawMain(
           const bit_end_x = bitStart.x + per
           const idx2 = Math.floor((bit_end_x - first_x) / xAxisInterval)
 
-          let bitEnd: ICharts.ICoord = {} as ICharts.ICoord
+          let bitEnd: ICoord = {} as ICoord
 
           // 如果没有跨过某个点
           if (idx1 === idx2) {

@@ -85,6 +85,6 @@ export function measureText(ctx: CanvasRenderingContext2D, text: string, fontSiz
   return { textWidth, textHeight }
 }
 
-function setCtxFontSize(ctx: CanvasRenderingContext2D, fontSize: number = 14) {
+export function setCtxFontSize(ctx: CanvasRenderingContext2D, fontSize: number = 14) {
   ctx.font = `${fontSize}px 微软雅黑`
 }

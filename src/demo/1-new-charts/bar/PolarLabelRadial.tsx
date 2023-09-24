@@ -13,7 +13,7 @@ const option: ICharts.IOption = {
   },
   series: [
     {
-      type: 'bar' as const,
+      type: 'bar',
       data: [18, 26, 24.4, 33.6, 55],
       coordinateSystem: 'polar'
     }
