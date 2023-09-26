@@ -33,7 +33,7 @@ function calcPolarMain(
   const { polarAxisData } = coordinateSystem.polar
 
   // 极坐标系的径向轴 临时方案, 错误的方案
-  if (polarAxisData.mainChartsData) {
+  if (polarAxisData.mainChartsData && 0) {
     const arcs = polarAxisData.mainChartsData.map(item => {
       const arc = new Circle({
         x: stage.center.x,

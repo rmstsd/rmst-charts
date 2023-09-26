@@ -72,6 +72,7 @@ namespace ICharts {
     angleAxis?: {
       type?: 'category'
       data?: any[]
+      startAngle?: number
     }
     // 极坐标系相关 ↑
   }

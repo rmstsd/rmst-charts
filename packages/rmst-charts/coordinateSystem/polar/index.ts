@@ -18,7 +18,7 @@ const getDataForDraw = (
   const maxRadius = stage.canvasSize.height / 2
   const radiusPer = maxRadius / tickValues.length
 
-  const offsetAngle = -90
+  const offsetAngle = -90 + innerOption.angleAxis.startAngle
 
   // 极坐标系的径向轴
   if (innerOption.radiusAxis.type) {
@@ -30,13 +30,21 @@ const getDataForDraw = (
     }
     const circlesData = [outerCircle]
 
+    const lineAxisEnd = getPointOnArc(center_x, center_y, outerCircle.radius, offsetAngle)
+
+    console.log(lineAxisEnd)
+
+    const lineAxis2 = {
+      start: { x: center_x, y: center_y },
+      end: { x: lineAxisEnd.x, y: lineAxisEnd.y }
+    }
+
     const lineAxis = {
       start: { x: center_x, y: center_y },
       end: { x: center_x, y: center_y - outerCircle.radius }
     }
 
     const tickInterval = (lineAxis.start.y - lineAxis.end.y) / innerOption.radiusAxis.data.length
-
     const lineAxisTicks = innerOption.radiusAxis.data.map((item, index) => {
       const y = center_y - index * tickInterval
       const end_x = center_x - 6
@@ -86,6 +94,7 @@ const getDataForDraw = (
     return {
       circlesData,
       lineAxis,
+      lineAxis2,
       lineAxisTicks,
       radianAngles: [],
       outerTicks,
@@ -96,7 +105,6 @@ const getDataForDraw = (
   }
 
   //极坐标系的角度轴
-
   const circlesData = tickValues.map((item, index) => ({
     x: center_x,
     y: center_y,
@@ -212,11 +220,17 @@ export const createPolarElements = (
     item => new Line({ points: pointToFlatArray([item.start, item.end]), bgColor: splitLineColor })
   )
 
+  const lineAxisShape2 = new Line({
+    points: pointToFlatArray([polarAxisData.lineAxis2.start, polarAxisData.lineAxis2.end]),
+    bgColor: tickColor
+  })
+
   return {
     polarAllShapes: [
       ...ccToTickLineShapes,
       ...circleShapes,
       lineAxisShape,
+      lineAxisShape2,
       ...tickShapes,
       ...textShapes,
       ...outerTickShapes,
