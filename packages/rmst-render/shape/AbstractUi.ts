@@ -320,7 +320,7 @@ export abstract class AbstractUi {
   }: AnimateCustomCartoonParameter) {
     let currentValue = startValue
 
-    const exec = (timestamp: number) => {
+    const rafCallback: FrameRequestCallback = timestamp => {
       if (!this.animateState.startTime) {
         this.animateState.startTime = timestamp
       }
@@ -329,22 +329,20 @@ export abstract class AbstractUi {
       const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
       currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio) as number
 
-      if (currentValue === endValue) {
-        // console.log(`动画结束`)
-
-        this.animateState.startTime = null
-
-        return
-      }
-
       if (typeof frameCallback === 'function') {
         frameCallback(currentValue, elapsedTimeRatio)
       }
 
-      this.animateState.rafTimer = requestAnimationFrame(exec)
+      if (elapsedTimeRatio === 1) {
+        console.log(`动画结束`)
+
+        this.animateState.startTime = null
+        return
+      }
+      this.animateState.rafTimer = requestAnimationFrame(rafCallback)
     }
 
-    requestAnimationFrame(exec)
+    requestAnimationFrame(rafCallback)
   }
 
   // totalTime 毫秒
