@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Group, Rect, Circle, Text } from 'rmst-render'
+import { Stage, Group, Rect, Circle, Text, Line } from 'rmst-render'
 
 const GroupDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -14,12 +14,23 @@ const GroupDemo = () => {
     const rect = new Rect({ x: 10, y: 10, width: 100, height: 100, bgColor: 'pink' })
     const arc = new Circle({ x: 200, y: 100, radius: 50, bgColor: 'purple' })
 
-    const group = new Group({
+    const g2 = new Group({ draggable: true })
+    const rect2 = new Rect({ x: 220, y: 200, width: 100, height: 100, bgColor: 'orange' })
+    const line = new Line({
+      points: [100, 200, 200, 200, 200, 300],
+      lineWidth: 3,
+      strokeStyle: 'goldenrod',
       draggable: true
     })
+
+    g2.append([rect2, line])
+
+    const group = new Group({ draggable: true })
+
     groupRef.current = group
     group.append(rect)
     group.append(arc)
+    group.append(g2)
 
     group.onDown = () => {
       console.log('group down')
@@ -37,7 +48,7 @@ const GroupDemo = () => {
       console.log('group.onClick')
     }
 
-    stage.append(group)
+    stage.append([group])
   }, [])
 
   const addToGroup = () => {
