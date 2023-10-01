@@ -9,7 +9,8 @@ const option: ICharts.IOption = {
   radiusAxis: {},
   angleAxis: {
     type: 'category',
-    data: ['a', 'b', 'c', 'd', 'e']
+    data: ['a', 'b', 'c', 'd', 'e'],
+    startAngle: 0
   },
   series: [
     {

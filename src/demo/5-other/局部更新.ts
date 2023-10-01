@@ -35,3 +35,5 @@ ctx.beginPath()
 ctx.fillStyle = color2
 ctx.arc(350, 150, 50, 0, Math.PI * 2, false)
 ctx.fill()
+
+export default []

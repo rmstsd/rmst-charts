@@ -111,7 +111,7 @@ export function calcTotalLineLength(points: { x: number; y: number }[]) {
   const lineLengths = []
 
   const totalLineLength = lines.reduce((acc, item) => {
-    const lengthItem = calcLength(item.start, item.end)
+    const lengthItem = calcLineLength(item.start, item.end)
 
     lineLengths.push(lengthItem)
 
@@ -119,8 +119,18 @@ export function calcTotalLineLength(points: { x: number; y: number }[]) {
   }, 0)
 
   return { totalLineLength, lines, lineLengths }
+}
 
-  function calcLength(p1, p2) {
-    return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
-  }
+export function calcLineLength(p1: ICoord, p2: ICoord) {
+  return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+}
+
+// 计算斜率
+export function calcK(p1: ICoord, p2: ICoord) {
+  return (p1.y - p2.y) / (p1.x - p2.x)
+}
+
+// 计算 y = kx + b 中的 b
+export function calcB(k: number, p: ICoord) {
+  return p.y - k * p.x
 }

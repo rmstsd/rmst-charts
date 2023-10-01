@@ -7,7 +7,7 @@ import ChartsTemplate from '@/components/ChartsTemplate'
 const option: ICharts.IOption = {
   polar: {},
   angleAxis: {
-    startAngle: 75
+    startAngle: 45
   },
   radiusAxis: {
     type: 'category',
