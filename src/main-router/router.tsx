@@ -3,9 +3,10 @@ import type { MenuProps } from 'antd'
 import { RouteObject, Navigate } from 'react-router-dom'
 
 import newChartsRouteConfig from './router.newCharts'
-import rmstRender from './router.rmstRender'
-import oldCharts from './router.oldCharts'
-import other from './router.other'
+import rmstRenderRouteConfig from './router.rmstRender'
+import zrenderRouteConfig from './router.zrender'
+import oldChartsRouteConfig from './router.oldCharts'
+import otherRouteConfig from './router.other'
 
 export type IRouteObject = {
   path: RouteObject['path']
@@ -21,9 +22,10 @@ export const routes: IRouteObject[] = [
     uiConfig: { hidden: true }
   },
   newChartsRouteConfig,
-  rmstRender,
-  oldCharts,
-  other
+  rmstRenderRouteConfig,
+  zrenderRouteConfig,
+  oldChartsRouteConfig,
+  otherRouteConfig
 ]
 
 export const convertToAntdData = (
