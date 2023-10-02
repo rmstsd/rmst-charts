@@ -4,7 +4,6 @@ import { RouteObject, Navigate } from 'react-router-dom'
 
 import newChartsRouteConfig from './router.newCharts'
 import rmstRender from './router.rmstRender'
-import konvaRouteConfig from './router.konva'
 import oldCharts from './router.oldCharts'
 import other from './router.other'
 
@@ -23,7 +22,6 @@ export const routes: IRouteObject[] = [
   },
   newChartsRouteConfig,
   rmstRender,
-  konvaRouteConfig,
   oldCharts,
   other
 ]
@@ -48,7 +46,7 @@ export const convertToAntdData = (
 export function findPath(routeObject: IRouteObject) {
   let path = ''
 
-  const dfs = routeObject => {
+  const dfs = (routeObject: RouteObject) => {
     if (routeObject.path.startsWith('/')) {
       path += routeObject.path
     } else {
