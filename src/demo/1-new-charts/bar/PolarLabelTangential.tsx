@@ -6,14 +6,16 @@ import ChartsTemplate from '@/components/ChartsTemplate'
 
 const option: ICharts.IOption = {
   polar: {},
-  angleAxis: {},
+  angleAxis: {
+    startAngle: 45
+  },
   radiusAxis: {
     type: 'category',
     data: ['a', 'b', 'c', 'd']
   },
   series: [
     {
-      type: 'bar' as const,
+      type: 'bar',
       data: [1, 2, 3, 4],
       coordinateSystem: 'polar'
     }

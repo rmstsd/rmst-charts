@@ -36,9 +36,9 @@ const defaultSeriesItem = {
 
 export function createRenderElements(
   stage: Stage,
-  seriesItem: ICharts.series,
+  seriesItem: ICharts.LineSeries,
   coordinateSystem: ICoordinateSystemElements,
-  series: ICharts.series[]
+  series: ICharts.LineSeries[]
 ) {
   const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
   const yAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
@@ -203,7 +203,7 @@ export function createRenderElements(
 }
 
 // 阶梯折线图 - smooth 应该失效
-function calcPointsByUserPoints(pointData: ICharts.ICoord[], step: ICharts.series['step']): ICharts.ICoord[] {
+function calcPointsByUserPoints(pointData: ICoord[], step: ICharts.LineSeries['step']): ICoord[] {
   if (!step) return pointData
 
   const finalPointsCoord = pointData.reduce((acc, item, idx, originArr) => {

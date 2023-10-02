@@ -7,7 +7,7 @@ const option: ICharts.IOption = {
   },
   series: [
     {
-      type: 'bar' as const,
+      type: 'bar',
       data: [190, 210, 300, 450]
     }
   ]

@@ -26,7 +26,7 @@ export function calcMain(dataSource: number[], renderTree: ICharts.IRenderTree) 
   return res
 }
 
-type IChartBar = ICharts.ICoord & { width: number; height: number }
+type IChartBar = ICoord & { width: number; height: number }
 export function drawMain(
   ctx: CanvasRenderingContext2D,
   chartArray: IChartBar[],

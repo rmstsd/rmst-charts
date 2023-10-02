@@ -4,10 +4,10 @@ import { useEffect } from 'react'
 // 某一帧的时候 终点是p, a b 是控制点
 
 type FinalPoint = {
-  start: ICharts.ICoord // 起点
-  p1: ICharts.ICoord // 控制点1 控制起点
-  p2: ICharts.ICoord // 控制点2 控制终点
-  end: ICharts.ICoord // 终点
+  start: ICoord // 起点
+  p1: ICoord // 控制点1 控制起点
+  p2: ICoord // 控制点2 控制终点
+  end: ICoord // 终点
 }
 export function calculateControlPoint(t: number, finalPoint: FinalPoint) {
   const { start, p1, p2, end } = finalPoint

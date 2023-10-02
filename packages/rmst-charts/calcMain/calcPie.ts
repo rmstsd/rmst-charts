@@ -34,7 +34,7 @@ function calcMain(dataSource: PieDataSourceItem[], end_angle = 360) {
   return finalRadianArray
 }
 
-export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
+export function createRenderElements(stage: Stage, seriesItem: ICharts.PieSeries) {
   const data = calcMain(seriesItem.data as PieDataSourceItem[])
 
   const smallerContainerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)
@@ -210,22 +210,20 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.series) {
         // item.animateCartoon({ color: 'red' })
       })
 
-    fakeArc.animateCartoon(
-      {
-        endAngle: 360,
-        animateCallback(prop, elapsedTimeRatio) {
-          elements
-            .filter(o => o.data.onlyKey === 'main-pie')
-            .forEach(element => {
-              element.attr({
-                startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
-                endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
-              })
+    fakeArc.animateCustomCartoon({
+      startValue: 0,
+      endValue: 360,
+      frameCallback: (currentValue, elapsedTimeRatio) => {
+        elements
+          .filter(o => o.data.onlyKey === 'main-pie')
+          .forEach(element => {
+            element.attr({
+              startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
+              endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
             })
-        }
-      },
-      seriesItem.animationDuration
-    )
+          })
+      }
+    })
   }
 
   return { elements, afterAppendStage }

@@ -51,7 +51,7 @@ export function calcPerfect(max: number, min: number) {
 }
 
 // 计算 和 绘制贝塞尔曲线
-export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord[], distance: number) {
+export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], distance: number) {
   const allControlPoint = calcAllControlPoint()
   const finalPoint = calcFinalPoint()
 
@@ -65,7 +65,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
     drawArc(ctx, item.x, item.y, 2, primaryColor, 2)
   })
 
-  function drawBezier(start: ICharts.ICoord, end: ICharts.ICoord, cp1: ICharts.ICoord, cp2: ICharts.ICoord) {
+  function drawBezier(start: ICoord, end: ICoord, cp1: ICoord, cp2: ICoord) {
     ctx.strokeStyle = primaryColor
     ctx.lineWidth = 2
     ctx.beginPath()
@@ -81,7 +81,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
   function calcAllControlPoint() {
     distance = distance / 2
 
-    const ans: ICharts.ICoord[] = []
+    const ans: ICoord[] = []
     for (let i = 1; i < points.length - 1; i++) {
       const prev = points[i - 1]
       const curr = points[i]

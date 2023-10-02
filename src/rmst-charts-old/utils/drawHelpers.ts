@@ -3,8 +3,8 @@ import { tickColor } from '../constant.js'
 // 绘制线段
 export function drawSegmentLine(
   ctx: CanvasRenderingContext2D,
-  start: ICharts.ICoord,
-  end: ICharts.ICoord,
+  start: ICoord,
+  end: ICoord,
   strokeStyle = tickColor,
   lineWidth = 1
 ) {
@@ -59,8 +59,8 @@ export function fillRoundRect(
 // 绘制虚线
 export default function drawDashLine(
   ctx: CanvasRenderingContext2D,
-  start: ICharts.ICoord,
-  end: ICharts.ICoord,
+  start: ICoord,
+  end: ICoord,
   strokeStyle = '#aaa'
 ) {
   ctx.setLineDash([4])

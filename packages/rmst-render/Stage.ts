@@ -1,18 +1,4 @@
-export type IExtraData = ReturnType<typeof Stage.createExtraData>
-
 export class Stage {
-  static stageConstant = { _id: 0, r: 0, g: 0, b: 0 }
-
-  // TODO: rbg不能大于255
-  static createExtraData() {
-    this.stageConstant.r += 1
-
-    return {
-      _id: ++this.stageConstant._id,
-      rgb: `rgb(${[this.stageConstant.r, this.stageConstant.g, this.stageConstant.b].toString()})`
-    }
-  }
-
   constructor(option: IOption) {
     const { container } = option
     const stage = initStage(container)
@@ -66,7 +52,7 @@ export class Stage {
     }
 
     this.canvasElement.onmousedown = evt => {
-      for (const elementItem of this.elements.slice(0).reverse()) {
+      for (const elementItem of this.elements.slice().reverse()) {
         const isInner = elementItem.handleMouseDown(evt.offsetX, evt.offsetY)
 
         if (isInner) {
@@ -76,7 +62,7 @@ export class Stage {
     }
 
     this.canvasElement.onmouseup = evt => {
-      for (const elementItem of this.elements.slice(0).reverse()) {
+      for (const elementItem of this.elements.slice().reverse()) {
         const isInner = elementItem.handleMouseUp(evt.offsetX, evt.offsetY)
 
         if (isInner) {
@@ -86,7 +72,7 @@ export class Stage {
     }
 
     this.canvasElement.onclick = evt => {
-      for (const elementItem of this.elements.slice(0).reverse()) {
+      for (const elementItem of this.elements.slice().reverse()) {
         const isInner = elementItem.handleClick(evt.offsetX, evt.offsetY)
 
         if (isInner) {

@@ -4,7 +4,7 @@ import ChartsTemplate from '@/components/ChartsTemplate'
 const option: ICharts.IOption = {
   series: [
     {
-      type: 'pie' as const,
+      type: 'pie',
       data: [
         { value: 1, name: 'pie-1' },
         { value: 2, name: 'pie-2' },

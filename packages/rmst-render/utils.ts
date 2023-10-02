@@ -35,7 +35,7 @@ export function calcSmoothPath2D(points: number[]) {
   return path2D
 }
 
-export function convertToNormalPoints(points: number[]): ICharts.ICoord[] {
+export function convertToNormalPoints(points: number[]): ICoord[] {
   return points
     .reduce((acc, item, index) => {
       const tarIndex = Math.floor(index / 2)
@@ -48,9 +48,9 @@ export function convertToNormalPoints(points: number[]): ICharts.ICoord[] {
 
 // 计算 两个控制点 和 两个端点
 export function calcAllControlPoint(
-  points: ICharts.ICoord[],
+  points: ICoord[],
   ver?: 'new' | 'old'
-): { start: ICharts.ICoord; end: ICharts.ICoord; cp1: ICharts.ICoord; cp2: ICharts.ICoord }[] {
+): { start: ICoord; end: ICoord; cp1: ICoord; cp2: ICoord }[] {
   const cpArray = [] // 所有的控制点
 
   for (let i = 1; i < points.length - 1; i++) {

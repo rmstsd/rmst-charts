@@ -1,7 +1,6 @@
-import colorRgba from 'color-rgba'
 import Group from '../Group'
 
-import Stage, { dpr, IExtraData } from '../Stage'
+import Stage, { dpr } from '../Stage'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from 'rmst-render/utils'
 
@@ -24,11 +23,14 @@ export interface AbstractUiData {
   [key: string]: any
 }
 
-export abstract class AbstractUi {
-  constructor() {
-    this.extraData = Stage.createExtraData()
-  }
+type AnimateCustomCartoonParameter = {
+  startValue: number
+  endValue: number
+  totalTime?: number
+  frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
+}
 
+export abstract class AbstractUi {
   onClick = () => {}
   onMove = () => {}
   onEnter = () => {}
@@ -51,7 +53,7 @@ export abstract class AbstractUi {
 
   mouseDownOffsetPoints: { x: number; y: number }[] = []
 
-  extraData: IExtraData
+  extraData
 
   path2D: Path2D
 
@@ -79,13 +81,16 @@ export abstract class AbstractUi {
   data: AbstractUiData
 
   animateState = {
-    startValue: {},
     startTime: null,
     rafTimer: null,
     curr: 0
   }
 
-  isInner(offsetX, offsetY) {
+  getGroupSurroundBoxCoord(): SurroundBoxCoord {
+    return
+  }
+
+  isInner(offsetX: number, offsetY: number) {
     const stage = this.findStage()
 
     if (!stage) return
@@ -119,17 +124,6 @@ export abstract class AbstractUi {
     }
 
     return isInPath() || isInStroke()
-  }
-
-  // 通过唯一颜色值拾取图形
-  setFillStyle(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = this.extraData.rgb
-    ctx.strokeStyle = this.extraData.rgb
-  }
-
-  // 获取组内的具体的某个图形 查看Group类
-  findActualShape(offsetX: number, offsetY: number) {
-    return this
   }
 
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
@@ -174,7 +168,9 @@ export abstract class AbstractUi {
 
   handleClick(offsetX: number, offsetY: number) {
     const isInner = this.isInner(offsetX, offsetY)
-    if (isInner) this.onClick()
+    if (isInner) {
+      this.onClick()
+    }
 
     return isInner
   }
@@ -182,45 +178,18 @@ export abstract class AbstractUi {
   documentMousemove(evt: MouseEvent) {
     evt.preventDefault() // 防止选中文本
 
-    const { pageX, pageY } = evt
-
-    const stage = this.findStage()
-
-    const canvasRect = stage.canvasElement.getBoundingClientRect()
-
-    const offsetX = pageX - canvasRect.left
-    const offsetY = pageY - canvasRect.top
-
     if (this.data.draggable) {
-      if (this.isGroup) {
-        ;(this as unknown as Group).elements.forEach(item => {
-          const x = offsetX - item.mouseDownOffset.x
-          const y = offsetY - item.mouseDownOffset.y
-          item.attr({ x, y })
-        })
-        this.onDragMove()
-      } else {
-        const x = offsetX - this.mouseDownOffset.x
-        const y = offsetY - this.mouseDownOffset.y
+      const { pageX, pageY } = evt
 
-        const pos = this.data.draggableControl
-          ? this.data.draggableControl({ mouseCoord: { offsetX, offsetY }, shapeCoord: { x, y } })
-          : { x, y }
+      const stage = this.findStage()
+      const canvasRect = stage.canvasElement.getBoundingClientRect()
 
-        if (this.isLine) {
-          const c = convertToNormalPoints(this.data.points)
-          c.forEach((item, index) => {
-            const o = this.mouseDownOffsetPoints[index]
-            item.x = offsetX - o.x
-            item.y = offsetY - o.y
-          })
-          this.attr({ points: pointToFlatArray(c) })
-        } else {
-          this.attr({ x: pos.x, y: pos.y })
-        }
+      const offsetX = pageX - canvasRect.left
+      const offsetY = pageY - canvasRect.top
 
-        this.onDragMove()
-      }
+      this.dndAttr(offsetX, offsetY)
+
+      this.onDragMove()
     }
   }
 
@@ -233,27 +202,11 @@ export abstract class AbstractUi {
       this.onDown()
 
       if (this.data.draggable) {
+        this.dndRecordMouseDownOffset(offsetX, offsetY)
+
         document.onmousemove = this.documentMousemove.bind(this)
         document.onmouseup = () => {
-          // 拖拽结束
           document.onmousemove = null
-        }
-
-        if (this.isGroup) {
-          this.elements.forEach(item => {
-            item.mouseDownOffset.x = offsetX - item.data.x
-            item.mouseDownOffset.y = offsetY - item.data.y
-          })
-        } else {
-          if (this.isLine) {
-            this.mouseDownOffsetPoints = convertToNormalPoints(this.data.points).map(item => ({
-              x: offsetX - item.x,
-              y: offsetY - item.y
-            }))
-          } else {
-            this.mouseDownOffset.x = offsetX - this.data.x
-            this.mouseDownOffset.y = offsetY - this.data.y
-          }
         }
       }
     }
@@ -298,39 +251,87 @@ export abstract class AbstractUi {
     }
   }
 
+  dndAttr(offsetX: number, offsetY: number) {
+    if (this.isGroup) {
+      this.elements.forEach(item => {
+        item.dndAttr(offsetX, offsetY)
+      })
+    } else {
+      const x = offsetX - this.mouseDownOffset.x
+      const y = offsetY - this.mouseDownOffset.y
+
+      const pos = this.data.draggableControl
+        ? this.data.draggableControl({ mouseCoord: { offsetX, offsetY }, shapeCoord: { x, y } })
+        : { x, y }
+
+      if (this.isLine) {
+        const c = convertToNormalPoints(this.data.points)
+        c.forEach((item, index) => {
+          const o = this.mouseDownOffsetPoints[index]
+          item.x = offsetX - o.x
+          item.y = offsetY - o.y
+        })
+        this.attr({ points: pointToFlatArray(c) })
+      } else {
+        this.attr({ x: pos.x, y: pos.y })
+      }
+    }
+  }
+
+  dndRecordMouseDownOffset(offsetX: number, offsetY: number) {
+    if (this.isGroup) {
+      this.elements.forEach(item => {
+        item.dndRecordMouseDownOffset(offsetX, offsetY)
+      })
+    } else {
+      if (this.isLine) {
+        this.mouseDownOffsetPoints = convertToNormalPoints(this.data.points).map(item => ({
+          x: offsetX - item.x,
+          y: offsetY - item.y
+        }))
+      } else {
+        this.mouseDownOffset.x = offsetX - this.data.x
+        this.mouseDownOffset.y = offsetY - this.data.y
+      }
+    }
+  }
+
   remove() {
     this.stage.elements = this.stage.elements.filter(item => item !== this)
     this.stage.renderStage()
   }
 
-  animateCustomCartoon({ startValue, endValue, totalTime = 500, frameCallback }) {
+  animateCustomCartoon({
+    startValue,
+    endValue,
+    totalTime = 500,
+    frameCallback
+  }: AnimateCustomCartoonParameter) {
     let currentValue = startValue
 
-    const exec = (timestamp: number) => {
+    const rafCallback: FrameRequestCallback = timestamp => {
       if (!this.animateState.startTime) {
         this.animateState.startTime = timestamp
       }
 
       const elapsedTime = timestamp - this.animateState.startTime
       const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
-      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio)
-
-      if (currentValue === endValue) {
-        // console.log(`动画结束`)
-
-        this.animateState.startTime = null
-
-        return
-      }
+      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio) as number
 
       if (typeof frameCallback === 'function') {
-        frameCallback(currentValue)
+        frameCallback(currentValue, elapsedTimeRatio)
       }
 
-      this.animateState.rafTimer = requestAnimationFrame(exec)
+      if (elapsedTimeRatio === 1) {
+        console.log(`动画结束`)
+
+        this.animateState.startTime = null
+        return
+      }
+      this.animateState.rafTimer = requestAnimationFrame(rafCallback)
     }
 
-    requestAnimationFrame(exec)
+    requestAnimationFrame(rafCallback)
   }
 
   // totalTime 毫秒
@@ -359,9 +360,9 @@ export abstract class AbstractUi {
         }
 
         const surroundBoxCoord = this.isGroup ? this.getGroupSurroundBoxCoord() : _surroundBoxCoord
-
-        this.animateState.startValue = this.clipWidth
         const surroundBoxWidth = surroundBoxCoord.rb_x - surroundBoxCoord.lt_x
+
+        const startValue = this.clipWidth
 
         const exec = (timestamp: number) => {
           if (!this.animateState.startTime) {
@@ -371,11 +372,7 @@ export abstract class AbstractUi {
           const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(
-            this.animateState.startValue,
-            surroundBoxWidth,
-            elapsedTimeRatio
-          )
+          const targetValue = calcTargetValue_2(startValue, surroundBoxWidth, elapsedTimeRatio)
 
           if (targetValue === surroundBoxWidth) {
             console.log('结束')
@@ -387,7 +384,7 @@ export abstract class AbstractUi {
 
           clipCallback?.(surroundBoxCoord, this.clipWidth)
 
-          this.parent.renderStage()
+          this.findStage().renderStage()
 
           this.animateState.rafTimer = requestAnimationFrame(exec)
         }
@@ -404,34 +401,28 @@ export abstract class AbstractUi {
 
     const { animateCallback } = prop
 
+    const startValue = {}
     const keys = Object.keys(prop).filter(item => item !== 'animateCallback')
-
     keys.forEach(key => {
-      this.animateState.startValue[key] = this.data[key]
+      startValue[key] = this.data[key]
     })
 
     return new Promise(resolve => {
       keys.forEach(propKey => {
-        // per 的计算要在递归外
-        // const per = calcPer(this.data[propKey], prop[propKey], totalTime)
-
         const exec = (timestamp: number) => {
           if (!this.animateState.startTime) {
             this.animateState.startTime = timestamp
           }
 
-          const elapsedTime = timestamp - this.animateState.startTime
-
           const currDataValue = this.data[propKey]
-          if (currDataValue === undefined) return
+          if (currDataValue === undefined) {
+            return
+          }
 
+          const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(
-            this.animateState.startValue[propKey],
-            prop[propKey],
-            elapsedTimeRatio
-          )
+          const targetValue = calcTargetValue_2(startValue[propKey], prop[propKey], elapsedTimeRatio)
 
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {

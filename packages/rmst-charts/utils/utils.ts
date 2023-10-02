@@ -2,7 +2,7 @@ import { primaryColor, tickColor } from '../constant.js'
 import { drawArc } from './drawHelpers.js'
 
 // 计算 和 绘制贝塞尔曲线
-export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord[], distance: number) {
+export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], distance: number) {
   const allControlPoint = calcAllControlPoint()
   const finalPoint = calcFinalPoint()
 
@@ -16,7 +16,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
     drawArc(ctx, item.x, item.y, 2, primaryColor, 2)
   })
 
-  function drawBezier(start: ICharts.ICoord, end: ICharts.ICoord, cp1: ICharts.ICoord, cp2: ICharts.ICoord) {
+  function drawBezier(start: ICoord, end: ICoord, cp1: ICoord, cp2: ICoord) {
     ctx.strokeStyle = primaryColor
     ctx.lineWidth = 2
     ctx.beginPath()
@@ -32,7 +32,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICharts.ICoord
   function calcAllControlPoint() {
     distance = distance / 2
 
-    const ans: ICharts.ICoord[] = []
+    const ans: ICoord[] = []
     for (let i = 1; i < points.length - 1; i++) {
       const prev = points[i - 1]
       const curr = points[i]
@@ -111,7 +111,7 @@ export function calcTotalLineLength(points: { x: number; y: number }[]) {
   const lineLengths = []
 
   const totalLineLength = lines.reduce((acc, item) => {
-    const lengthItem = calcLength(item.start, item.end)
+    const lengthItem = calcLineLength(item.start, item.end)
 
     lineLengths.push(lengthItem)
 
@@ -119,8 +119,18 @@ export function calcTotalLineLength(points: { x: number; y: number }[]) {
   }, 0)
 
   return { totalLineLength, lines, lineLengths }
+}
 
-  function calcLength(p1, p2) {
-    return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
-  }
+export function calcLineLength(p1: ICoord, p2: ICoord) {
+  return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+}
+
+// 计算斜率
+export function calcK(p1: ICoord, p2: ICoord) {
+  return (p1.y - p2.y) / (p1.x - p2.x)
+}
+
+// 计算 y = kx + b 中的 b
+export function calcB(k: number, p: ICoord) {
+  return p.y - k * p.x
 }

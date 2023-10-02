@@ -9,6 +9,7 @@ import WaterDrop from '@/demo/5-other/WaterDrop'
 import Brush from '@/demo/5-other/Brush'
 import LineAnimate from '@/demo/5-other/折线计算动画'
 import 贝塞尔曲线峰值吸附 from '@/demo/5-other/贝塞尔曲线峰值吸附'
+import Rotate from '@/demo/5-other/rotate'
 
 import { IRouteObject } from './router'
 
@@ -24,6 +25,7 @@ const otherRouteConfig: IRouteObject = {
     { path: 'curveRect', element: <CurveRect />, uiConfig: { title: '渐变' } },
     { path: '折线计算动画', element: <LineAnimate /> },
     { path: 'translation', element: <Translation /> },
+    { path: 'rotate', element: <Rotate /> },
     { path: 'waterDrop', element: <WaterDrop /> },
     { path: 'brush', element: <Brush /> }
   ]
