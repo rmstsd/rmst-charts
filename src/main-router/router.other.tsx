@@ -9,7 +9,7 @@ import WaterDrop from '@/demo/5-other/WaterDrop'
 import Brush from '@/demo/5-other/Brush'
 import LineAnimate from '@/demo/5-other/折线计算动画'
 import 贝塞尔曲线峰值吸附 from '@/demo/5-other/贝塞尔曲线峰值吸附'
-import Rotate from '@/demo/5-other/rotate'
+import Rotate from '@/demo/5-other/Rotate'
 
 import { IRouteObject } from './router'
 
