@@ -7,6 +7,7 @@ import rmstRenderRouteConfig from './router.rmstRender'
 import zrenderRouteConfig from './router.zrender'
 import oldChartsRouteConfig from './router.oldCharts'
 import otherRouteConfig from './router.other'
+import leaferRouteConfig from './router.leafer'
 
 export type IRouteObject = {
   path: RouteObject['path']
@@ -25,7 +26,8 @@ export const routes: IRouteObject[] = [
   rmstRenderRouteConfig,
   zrenderRouteConfig,
   oldChartsRouteConfig,
-  otherRouteConfig
+  otherRouteConfig,
+  leaferRouteConfig
 ]
 
 export const convertToAntdData = (

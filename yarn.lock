@@ -472,6 +472,412 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@leafer-in/editor@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-in/editor/-/editor-1.0.0-rc.5.tgz#4b10ca3e90c0607d70328964323a37be484ce1b8"
+  integrity sha512-FB5i6Ew9rGrb3IjjuN4IdXSHqVbOmJHbA0Ht6C6DcQUK9PWuwNVAzcs5c3ENTBNWU45D2Mv9dAT8RMJXLlHWGw==
+  dependencies:
+    "@leafer-ui/core" "1.0.0-rc.5"
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-in/interface@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-in/interface/-/interface-1.0.0-rc.5.tgz#57c9cda7b43d0c4451261cb2cbbfe0429919b617"
+  integrity sha512-kTt6II5PUxRKYH/rI1GJAaIgfOfUF+MIsBWxg6e6O8Cz+GQYhfY87to2v1RYlo/3pv2/cOxN1dtQYXU1qp7L8Q==
+  dependencies:
+    "@leafer-ui/interface" "1.0.0-rc.5"
+    "@leafer/interface" "1.0.0-rc.5"
+
+"@leafer-ui/app@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/app/-/app-1.0.0-rc.5.tgz#c66f14ff0132bacecf791dd6ef1363a3985eb8a3"
+  integrity sha512-UWag7oDdHxrfGlg2csH1XV6C8OQYT9woCqQ3cQ/Tcw/y0sqBPjjwmwyobs2vQYTxyNQcngEBBk32z0ibRV/Kpg==
+  dependencies:
+    "@leafer-ui/data" "1.0.0-rc.5"
+    "@leafer-ui/display" "1.0.0-rc.5"
+    "@leafer-ui/type" "1.0.0-rc.5"
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/bounds@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/bounds/-/bounds-1.0.0-rc.5.tgz#f403da0d0c7cc40da70412988b53989e13175443"
+  integrity sha512-KwSTcrwMiJVT2/X9MNF1Nw4AkHdUcmCWBqqsEpH1NN7kRjQkkjuJfPvBwJ3RLBFzdm4cLHqoDh8MCK5+Cq4zHw==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/core@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/core/-/core-1.0.0-rc.5.tgz#6fb209c0daf8b6eeb3feca1b76aa1f177b7a18b8"
+  integrity sha512-FQoR/lOo9/jJcc+rrfJEDrP2XWjoxCS+OV9geWidvlY7oi9v3NZGIQANt0uwwLonP6K4auaJjKx9yUMAKYdbuQ==
+  dependencies:
+    "@leafer-ui/app" "1.0.0-rc.5"
+    "@leafer-ui/decorator" "1.0.0-rc.5"
+    "@leafer-ui/display" "1.0.0-rc.5"
+    "@leafer-ui/display-module" "1.0.0-rc.5"
+    "@leafer-ui/external" "1.0.0-rc.5"
+    "@leafer-ui/type" "1.0.0-rc.5"
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/data@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/data/-/data-1.0.0-rc.5.tgz#c08ce84c436c10ff7aee71487cb60323c9516c61"
+  integrity sha512-+W+SDFealJGahIPRey3o+sw8CTQrYU82f6VJv/AQAJLjpNgA1KKrxEjor+UJpSDucCu8pfylRIuuML643zYTjw==
+  dependencies:
+    "@leafer-ui/external" "1.0.0-rc.5"
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/decorator@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/decorator/-/decorator-1.0.0-rc.5.tgz#06e99a0bd50004c9b8af8f6fbe19b8999da7df8f"
+  integrity sha512-q4GRYLm7rRFCWPZxfcDi7gxNOu7Wx5aIQN1pX/T2CUF/vCtJ3aINaASnwS2KTBnpjuRX3BRxQQHOLUqiA2f59A==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/display-module@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/display-module/-/display-module-1.0.0-rc.5.tgz#356a8a144594fb2b455bce7823f107579a418eef"
+  integrity sha512-eF1K1fGh+9XciIKBxmLpzlQV5pZlqmZUU0N+lAOYblPEISVJJbrHG6R9HzV3fkQQDY8c+Jyr2trtR48obqqJ2g==
+  dependencies:
+    "@leafer-ui/bounds" "1.0.0-rc.5"
+    "@leafer-ui/hit" "1.0.0-rc.5"
+    "@leafer-ui/render" "1.0.0-rc.5"
+
+"@leafer-ui/display@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/display/-/display-1.0.0-rc.5.tgz#b7ed48c1005f96dec07f015ab74523a6668c49d0"
+  integrity sha512-RoVLkSaC1OytKO9oFneFfso1aTELtpvPFFN+Rx3c22QvxI+JzIOzKB4KZr4XXfvx4Vb3f9lJ1DfwqdoWrdOtpA==
+  dependencies:
+    "@leafer-ui/data" "1.0.0-rc.5"
+    "@leafer-ui/decorator" "1.0.0-rc.5"
+    "@leafer-ui/display-module" "1.0.0-rc.5"
+    "@leafer-ui/external" "1.0.0-rc.5"
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/effect@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/effect/-/effect-1.0.0-rc.5.tgz#ccaa1e051e75f3830884dd4e41eefbcc83e4883f"
+  integrity sha512-nfXcHW5V/GCTiOpt6ugNPkVKxWyU3mUT7aRrGQn9t1bHV+GIH8lYfmXsQNwu3aCTcWJ9t+0b9f+huEG2BbKalQ==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/external@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/external/-/external-1.0.0-rc.5.tgz#86c899014a2bce869e6825b86a238fa7c19f0121"
+  integrity sha512-urzjDRlQ7763+kWm9JEGL76a3LZXZ63YqgScfinWm0dfZ3GiJwT9PdfIlEMsRoT0UMFZlsuaXaOoM9f2W3lRqw==
+
+"@leafer-ui/hit@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/hit/-/hit-1.0.0-rc.5.tgz#bf39bca2eabc4f0072f76f5568f3269e5fb5e4ac"
+  integrity sha512-DxR4tCcuMryYhDcr4iMIShYIsR3ux2RiwpP7XGX6dWnjskTFmOw30EGfn/5JwlltUWwyphGN4grTUWxv3BQuwA==
+
+"@leafer-ui/interface@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/interface/-/interface-1.0.0-rc.5.tgz#5f5b7f16c4b8a15c7d2eb5ba4798814058970c1f"
+  integrity sha512-i6O4ZB9AZS8VXb9pI9SS1W4QiTvIXvCF5neR7DIqAM0oA222Ab0kDLHBISFZLvq2AegwVLa8E4ZLiG1ctezTew==
+  dependencies:
+    "@leafer/interface" "1.0.0-rc.5"
+
+"@leafer-ui/paint@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/paint/-/paint-1.0.0-rc.5.tgz#c7daab26e5aca5c6eb7de1727a35868d17d28816"
+  integrity sha512-S/LcoDMwJpI9W9IGrqWal4a2oPftHhFkP63/bfwH1VxhHDq6GGHhmlR7VEhjpDFSqdigJI8EU5gb+Z1H9fH6eg==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer-ui/partner@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/partner/-/partner-1.0.0-rc.5.tgz#e4e841b924411036e766955ec37077659075d979"
+  integrity sha512-ZMskuVgqWtLpMZEfCL7HzjIGkX3B5+AaAzBJK4TfzGy2Zd8Wm80qkSnlk+pfHm4UeVJ/UR0ghEkdsTUdKrHdlg==
+  dependencies:
+    "@leafer-ui/effect" "1.0.0-rc.5"
+    "@leafer-ui/paint" "1.0.0-rc.5"
+
+"@leafer-ui/render@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/render/-/render-1.0.0-rc.5.tgz#63a550137f46a931e964c4089ae8a3d0473ea9de"
+  integrity sha512-2Ysy98aw4GatKHmrGVbC6Ge4eQyDjCG1NDJe5WE+jX5h5ZGDrq8txyBghfpypZB9VdQKJ8xQ8wLFcMT1D/XJPQ==
+  dependencies:
+    "@leafer-ui/external" "1.0.0-rc.5"
+
+"@leafer-ui/type@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/type/-/type-1.0.0-rc.5.tgz#2e2a910ce2161cefc424f7d4bc16be48ba9527d5"
+  integrity sha512-NmCSsO+ljt6koYsK/2CBFoThj85CI1fXXOpvwUFaZ0ugWPWtqsJYue08ggxCAxC8p7GM49OMNvQYq8b77bEmbA==
+  dependencies:
+    "@leafer-ui/core" "1.0.0-rc.5"
+
+"@leafer-ui/web@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer-ui/web/-/web-1.0.0-rc.5.tgz#ba0e24d745bc10775b8e114531c5d3864da7dd7a"
+  integrity sha512-0TyW6988HxXpC/QBdq/HVDnI13dYipsdt/sDhwWPWH23URquQv0dgNpP+/2UEWuDfHQ09frMjH5u4YjjB6Qhpg==
+  dependencies:
+    "@leafer-ui/core" "1.0.0-rc.5"
+    "@leafer-ui/interface" "1.0.0-rc.5"
+    "@leafer-ui/partner" "1.0.0-rc.5"
+    "@leafer/core" "1.0.0-rc.5"
+    "@leafer/web" "1.0.0-rc.5"
+
+"@leafer/canvas-web@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/canvas-web/-/canvas-web-1.0.0-rc.5.tgz#ce31c5a411f3b0b66523a23ab95f5e0477a81508"
+  integrity sha512-2CbSB1iDsuS+mCkEQo9Ch3i8E0CUPvV6vd9DGT3tkNDK4nh655OscF2aQbZg4D2d4ajkqkk7eEWcLnO8yPlLgg==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer/canvas@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/canvas/-/canvas-1.0.0-rc.5.tgz#cb7ead62f4adcc59b40359d36ecf78475992ddae"
+  integrity sha512-5uVDIcJ4ROCAGm4hWVKefONOyQe5CPDzIXWPJ+ZmEmWTeM9JEehIi6uCI0QCFf1PEtEbMMKRFFDYkCX+QVUvKA==
+  dependencies:
+    "@leafer/data" "1.0.0-rc.5"
+    "@leafer/debug" "1.0.0-rc.5"
+    "@leafer/file" "1.0.0-rc.5"
+    "@leafer/list" "1.0.0-rc.5"
+    "@leafer/math" "1.0.0-rc.5"
+    "@leafer/path" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+
+"@leafer/core@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/core/-/core-1.0.0-rc.5.tgz#573f680d4e75985675f8b8900b0c58002eb3d35e"
+  integrity sha512-Oexm5sF7qNSayPIYN8LWX8P4qK6rmplh/CQUBzsQl4Iowgkw4HRVceb/2ulVqdbZylkP2OBH1jxp4A6uEXMbKA==
+  dependencies:
+    "@leafer/canvas" "1.0.0-rc.5"
+    "@leafer/data" "1.0.0-rc.5"
+    "@leafer/debug" "1.0.0-rc.5"
+    "@leafer/decorator" "1.0.0-rc.5"
+    "@leafer/display" "1.0.0-rc.5"
+    "@leafer/display-module" "1.0.0-rc.5"
+    "@leafer/event" "1.0.0-rc.5"
+    "@leafer/event-ui" "1.0.0-rc.5"
+    "@leafer/file" "1.0.0-rc.5"
+    "@leafer/helper" "1.0.0-rc.5"
+    "@leafer/image" "1.0.0-rc.5"
+    "@leafer/interaction" "1.0.0-rc.5"
+    "@leafer/interface" "1.0.0-rc.5"
+    "@leafer/layout" "1.0.0-rc.5"
+    "@leafer/list" "1.0.0-rc.5"
+    "@leafer/math" "1.0.0-rc.5"
+    "@leafer/path" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+    "@leafer/plugin" "1.0.0-rc.5"
+    "@leafer/task" "1.0.0-rc.5"
+
+"@leafer/data@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/data/-/data-1.0.0-rc.5.tgz#b8f6199b548e8147524ae8c97ac89e8735e6e693"
+  integrity sha512-ag6KurFzCfjBMKK2gtynxpc0jfJF7U7GG3Tx5zdpa5I3G/hONpFatoynxAA7NzqsJXez8upAfE16cYAkhif7wA==
+
+"@leafer/debug@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/debug/-/debug-1.0.0-rc.5.tgz#55caf311a7e89e2fdca86b1a657ce78c2f516169"
+  integrity sha512-Yh+6N5iLCKEQrBk/ha4yttAZBE6yXf+bXb8cG/udWvOJMgm9l23jIvnk/eFbu5efVdp78+dpqsPCOV9ZG4tGzQ==
+  dependencies:
+    "@leafer/math" "1.0.0-rc.5"
+
+"@leafer/decorator@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/decorator/-/decorator-1.0.0-rc.5.tgz#f828161838e9cfcbb525efc599a937db547a37ba"
+  integrity sha512-5lPidFN8NT/lnufov3SQ22WmciNvEBGmBlKRQiNSKKq9PFUgSrw3l+i0sZp55RobCX4KjqDp6WGBno0fvYLoxw==
+  dependencies:
+    "@leafer/debug" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+
+"@leafer/display-module@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/display-module/-/display-module-1.0.0-rc.5.tgz#062d4b832312a794be0a24c44d658bcb1fa7c185"
+  integrity sha512-RUrM1h8ZmlNoD7sBzXb8CSRMYHBFi/8zC25Z5h/A2nZxAwUfwgqKogxdGse3gfrvrnQ1ugKXyOHKcbrIYdsjqA==
+  dependencies:
+    "@leafer/event" "1.0.0-rc.5"
+    "@leafer/math" "1.0.0-rc.5"
+
+"@leafer/display@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/display/-/display-1.0.0-rc.5.tgz#42cf1ba74a024f5f318237f2ab8dc8008129f4ee"
+  integrity sha512-IDUqXZihvocwGxclp76dJGZ2U4WCzkPLa78ww0Sbe+GaH9sgB9SkMRknUJjXG6NBOSt0hJzWu6/tdj1pVYwq5g==
+  dependencies:
+    "@leafer/data" "1.0.0-rc.5"
+    "@leafer/decorator" "1.0.0-rc.5"
+    "@leafer/display-module" "1.0.0-rc.5"
+    "@leafer/event" "1.0.0-rc.5"
+    "@leafer/helper" "1.0.0-rc.5"
+    "@leafer/layout" "1.0.0-rc.5"
+    "@leafer/math" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+
+"@leafer/event-ui@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/event-ui/-/event-ui-1.0.0-rc.5.tgz#9eec34b272f818345f82ba0a80349843e335eb17"
+  integrity sha512-EKwV4t6LaKRpqpCjHorg/u+JxuNgqHQP2Z0iyfFVTu4yWjEV9z4yoFRtt6v5CUV+y+5t965JVC9iTYLrEOLASA==
+  dependencies:
+    "@leafer/decorator" "1.0.0-rc.5"
+    "@leafer/event" "1.0.0-rc.5"
+    "@leafer/list" "1.0.0-rc.5"
+
+"@leafer/event@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/event/-/event-1.0.0-rc.5.tgz#e8bade677818867cd66d863225a324bb98cef6bb"
+  integrity sha512-2I3YQg810gxr1RkY7N+LzHU2q0+vnVwor4ALc6V5T31r7ivBipzujMds7jebEImBO3RVgA5qJAw5mL+9lRQOcw==
+  dependencies:
+    "@leafer/decorator" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+
+"@leafer/file@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/file/-/file-1.0.0-rc.5.tgz#527296ead77831c147f8601d34dec614c1302e56"
+  integrity sha512-3ZH+owb2C5VKs/Rd6SkFUHjf99jHUv6Ze/xph1kN4ucYQndFAgGqXB1agDBMrRETan+VZ2N5PEsEe2hnCP0Mow==
+  dependencies:
+    "@leafer/debug" "1.0.0-rc.5"
+
+"@leafer/helper@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/helper/-/helper-1.0.0-rc.5.tgz#8cd6e06d6da3aae1946a5634c2311475b41a18f7"
+  integrity sha512-w3T0vY1xRpPUG3aED18v1l+Ag6iydZVNQtW5nHO6Mm/vlAJoZxO8kQJ/IBL9e/G7On1VULfubCsEPhZ4pNxuWg==
+  dependencies:
+    "@leafer/math" "1.0.0-rc.5"
+
+"@leafer/image-web@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/image-web/-/image-web-1.0.0-rc.5.tgz#5acbb86067e81b19588b6955c7c6ae2634536ba9"
+  integrity sha512-AxA7wmujo9cHR9EUOYnNnQznUvb47RJjF9jxJYM3qD1ZNI+Dw8Z5MlDVIqu3LxEvGNt5y9/tHWkDFxoU/PcgNQ==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer/image@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/image/-/image-1.0.0-rc.5.tgz#069d9b635a5ebe4f9a71654dff0a7f99c80c2999"
+  integrity sha512-Y2C/PD+3+8F7T8J25D+HgubJk6Q7JfUdcMeyvR7thqbKK5rmXjK3LkafB8pm1mylqMskUWply1MaMvilVSGofA==
+  dependencies:
+    "@leafer/file" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+    "@leafer/task" "1.0.0-rc.5"
+
+"@leafer/interaction-web@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/interaction-web/-/interaction-web-1.0.0-rc.5.tgz#67ec3862d2a2326cfccff89f4596329e3e48af84"
+  integrity sha512-AC1O7GWLj7YqH/yg+cn7gIPSgi0xvNWfN4JCejTYDnXWvv2bakff/X/SPqj7zxqKnODTcYJWhQjMfi5cwRMYdQ==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer/interaction@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/interaction/-/interaction-1.0.0-rc.5.tgz#2dd501d10f042a36ea07ea0bde42d431947d996f"
+  integrity sha512-JcoWk7rZ8SeaBkGPeRqCvR5P15p5M8/+nrAqZ1fIMYYIVPN9yyXKGDkVFl/Kxu1sewZCLzAMZntrZWB/Rs9Z2A==
+  dependencies:
+    "@leafer/data" "1.0.0-rc.5"
+    "@leafer/event" "1.0.0-rc.5"
+    "@leafer/event-ui" "1.0.0-rc.5"
+    "@leafer/helper" "1.0.0-rc.5"
+    "@leafer/list" "1.0.0-rc.5"
+    "@leafer/math" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+
+"@leafer/interface@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/interface/-/interface-1.0.0-rc.5.tgz#3c70f2371cf10fea7f0940f6739d5b18c3e6da14"
+  integrity sha512-sXpVeTD1OqSJyQecuxXKFpgIvypGMrUvPLDG2dG6T69vMUonFR54cJpP5+3S/QMFI4okFxn9Ox1s3IFFvG4T4g==
+
+"@leafer/layout@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/layout/-/layout-1.0.0-rc.5.tgz#2b0d1b24e542a66a1a43552ae3908f5e8dce70be"
+  integrity sha512-PNOgLzqdvJvGJ9eJC/N2ctvfVMbEeg/Ck9+6aeqy9094GAskCjX60x0rTF7GAffIgrjzbcMLqxRI049R9uo7Mg==
+  dependencies:
+    "@leafer/math" "1.0.0-rc.5"
+    "@leafer/platform" "1.0.0-rc.5"
+
+"@leafer/layouter@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/layouter/-/layouter-1.0.0-rc.5.tgz#f5857310402ba6a29727bd4fd965dd26ea381037"
+  integrity sha512-8Hmxw1183k7K8TLmK1RKIbr5UxNLQXTBAYKlPDtJTayA5oOn6DSzzK22RfFelVCW/E52R6TiBUOVq7vT4tNR3g==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer/list@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/list/-/list-1.0.0-rc.5.tgz#f0b7476e5af3e5e8c7aac2887ac935483fc12aaf"
+  integrity sha512-wHzxxN35PZh9PE0XCJPLhWJU1lP1HWipeVywidx8ZxgeIg9DcmxGzUpIAJiHqCwEHu2Is1gaQ/tcfvDYxhkhEQ==
+
+"@leafer/math@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/math/-/math-1.0.0-rc.5.tgz#36c252373f487f43c9fb671fdd96613b3f4f4c2b"
+  integrity sha512-yjf+sPNnGX7qFkCzetkt4oL1vsycRR92e2AvC7NqKnqDWZYSKlWLjrgR56bfiUKFWDEWa1TuqlDtqKC0DRcPqg==
+
+"@leafer/partner@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/partner/-/partner-1.0.0-rc.5.tgz#77b38fa40a40ab35d04363374b6675b4f720a3d9"
+  integrity sha512-o7QfbbQQUXaR3+ull1jXt8/aaJL3sgV5zJR5Rpt5yx9e0JLHUcFJMEVgoG7iQoXua/O5q886swBfUlpvRgmyDg==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+    "@leafer/layouter" "1.0.0-rc.5"
+    "@leafer/renderer" "1.0.0-rc.5"
+    "@leafer/selector" "1.0.0-rc.5"
+    "@leafer/watcher" "1.0.0-rc.5"
+
+"@leafer/path@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/path/-/path-1.0.0-rc.5.tgz#321935e13fd6a7c95285f4397a873f4c4bcfcc81"
+  integrity sha512-XlCkp9w1QSn0Qor+HRmH3OSrm4WGkwX+zASTaIUw643ntt4Bq/U+8INkZaJi9n7X4edGGilkZBLZUBNbz91o8A==
+  dependencies:
+    "@leafer/debug" "1.0.0-rc.5"
+    "@leafer/math" "1.0.0-rc.5"
+
+"@leafer/platform@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/platform/-/platform-1.0.0-rc.5.tgz#1e061e1c717888acdaf5897dec2ecde00518b2d5"
+  integrity sha512-M0pywH3xkXmONofAtKIcjggfAX8TB5mC7w5O3t5eFswwa3Yjp/ch39wFCF9IywbCgDvdS0YPqVZX0cUeiYeE8A==
+  dependencies:
+    "@leafer/debug" "1.0.0-rc.5"
+    "@leafer/layouter" "1.0.0-rc.5"
+
+"@leafer/plugin@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/plugin/-/plugin-1.0.0-rc.5.tgz#7012ed6413c0211725e506f5c80772be4ec6e85e"
+  integrity sha512-zdE5HjFOp2seiJcdoeDEqPayhxcAwsngx7v2DrkqMUFsIJ3XGCNXcua3LvTu6soHwgAAcHN/LYnhSA5R4wnROg==
+  dependencies:
+    "@leafer/debug" "1.0.0-rc.5"
+
+"@leafer/renderer@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/renderer/-/renderer-1.0.0-rc.5.tgz#0d0cb9d846e87ad7cfaf0372e3ddd8f23299f8da"
+  integrity sha512-2seA9sG+2Vrem4/qThScbDq7Xci+fCLOBB7DtftJfIX4leQWNscl2ujQUMYXk7pKqtryiTmULKr2mmJ1M/lx8g==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer/selector@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/selector/-/selector-1.0.0-rc.5.tgz#2171137bee37be53d04ac686494ca966e88f7fb3"
+  integrity sha512-YZ31XDGz7FEv1KKWoH/rb2+VYoIJdqUpsVR4IRypFJvWYULICYyY8bPIrZJprfQMeTWBFCq0NLTqmXxRPXXtAQ==
+  dependencies:
+    "@leafer/core" "1.0.0-rc.5"
+
+"@leafer/task@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/task/-/task-1.0.0-rc.5.tgz#8e7beb1c165f06885b3a75093793e0c28c30bff6"
+  integrity sha512-1amIX+e9nn1BnNG4jd78v3RCsq8lHUbhJHDMrSE15xOIuMmZxU4pw1VkTiB2A+T/tt3X4wju5xdBwy7K+pS8tQ==
+  dependencies:
+    "@leafer/debug" "1.0.0-rc.5"
+    "@leafer/math" "1.0.0-rc.5"
+
+"@leafer/watcher@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/watcher/-/watcher-1.0.0-rc.5.tgz#25beef8436ee6f8d72f4b46c3ded787d90d82c64"
+  integrity sha512-tyShw/TCcFJobkVcDMdaX68qoH0yyBuuTiMuhO6lE+3iIBLSA7uIWiSM1K+RY/QWjt9Vi1NFAKfLGa085v+9sA==
+  dependencies:
+    "@leafer/data" "1.0.0-rc.5"
+    "@leafer/event" "1.0.0-rc.5"
+    "@leafer/list" "1.0.0-rc.5"
+
+"@leafer/web@1.0.0-rc.5":
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/@leafer/web/-/web-1.0.0-rc.5.tgz#56c62074ed9ffc3dcc09a92662bb8533584701b3"
+  integrity sha512-1TUSITJIJt44yCJU5lqM31XDkiwTyCilIxgw96B4ubk/52zcdXw4Gn51M9G28RiRboVYaEn2Su2pNJzVOa7mWg==
+  dependencies:
+    "@leafer/canvas-web" "1.0.0-rc.5"
+    "@leafer/core" "1.0.0-rc.5"
+    "@leafer/image-web" "1.0.0-rc.5"
+    "@leafer/interaction-web" "1.0.0-rc.5"
+    "@leafer/partner" "1.0.0-rc.5"
+
 "@rc-component/context@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@rc-component/context/-/context-1.3.0.tgz#608ccf0abcbec9406751b17a4b35db08e481c110"
@@ -879,6 +1285,23 @@ json5@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npmmirror.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
   integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
+
+leafer-in@1.0.0-rc.5:
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/leafer-in/-/leafer-in-1.0.0-rc.5.tgz#f8ed85c7714023e098d8e448d22eff56075925e5"
+  integrity sha512-ED0EUV/znFoe82JlrMwohUpVqmuKDzHSmhscyysgBEariNyPGSj+SPJAdeT2LxFus3SOnwXMyix3EsLNiwJbHQ==
+  dependencies:
+    "@leafer-in/editor" "1.0.0-rc.5"
+    "@leafer-in/interface" "1.0.0-rc.5"
+
+leafer-ui@^1.0.0-rc.5:
+  version "1.0.0-rc.5"
+  resolved "https://registry.yarnpkg.com/leafer-ui/-/leafer-ui-1.0.0-rc.5.tgz#1e43d3909378f2ccf86c993b7491b13265ba9538"
+  integrity sha512-Q5F2Ih3Y5So7p29I58IH6nRGlxBUlXetK/xKVARwz8lYnAtxKORSikmVVXkZswWpKNXkiQItsU8DkcBgpxd5Vw==
+  dependencies:
+    "@leafer-ui/interface" "1.0.0-rc.5"
+    "@leafer-ui/web" "1.0.0-rc.5"
+    leafer-in "1.0.0-rc.5"
 
 loose-envify@^1.1.0:
   version "1.4.0"
