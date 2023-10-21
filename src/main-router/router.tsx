@@ -2,7 +2,7 @@ import type { MenuProps } from 'antd'
 
 import { RouteObject, Navigate } from 'react-router-dom'
 
-import newChartsRouteConfig from './router.newCharts'
+import rmstChartsRouteConfig from './router.rmstCharts'
 import rmstRenderRouteConfig from './router.rmstRender'
 import zrenderRouteConfig from './router.zrender'
 import oldChartsRouteConfig from './router.oldCharts'
@@ -22,7 +22,7 @@ export const routes: IRouteObject[] = [
     element: <Navigate to="/new-charts/line/base" replace={true} />,
     uiConfig: { hidden: true }
   },
-  newChartsRouteConfig,
+  rmstChartsRouteConfig,
   rmstRenderRouteConfig,
   zrenderRouteConfig,
   oldChartsRouteConfig,

@@ -1,20 +1,20 @@
 import LayoutView, { LayoutOutlet } from '@/components/LayoutView/LayoutView'
 
-import RectDemo from '@/demo/2-render/base-shape/RectDemo'
-import Circle from '@/demo/2-render/base-shape/CircleDemo'
-import LineDemo from '@/demo/2-render/base-shape/LineDemo'
-import TextDemo from '@/demo/2-render/base-shape/TextDemo'
+import RectDemo from '@/demo/2-rmst-render/base-shape/RectDemo'
+import Circle from '@/demo/2-rmst-render/base-shape/CircleDemo'
+import LineDemo from '@/demo/2-rmst-render/base-shape/LineDemo'
+import TextDemo from '@/demo/2-rmst-render/base-shape/TextDemo'
 
-import Draggable from '@/demo/2-render/drag/Draggable'
-import GroupDraggable from '@/demo/2-render/drag/GroupDraggable'
+import Draggable from '@/demo/2-rmst-render/drag/Draggable'
+import GroupDraggable from '@/demo/2-rmst-render/drag/GroupDraggable'
 
-import Animate from '@/demo/2-render/animate/Animate'
-import GroupClipAnimate from '@/demo/2-render/animate/GroupClipAnimate'
+import Animate from '@/demo/2-rmst-render/animate/Animate'
+import GroupClipAnimate from '@/demo/2-rmst-render/animate/GroupClipAnimate'
 
-import WatermarkClip from '@/demo/2-render/real-case/WatermarkClip'
+import WatermarkClip from '@/demo/2-rmst-render/real-case/WatermarkClip'
 
 import { IRouteObject } from './router'
-import DraggableRange from '@/demo/2-render/drag/DraggableRange'
+import DraggableRange from '@/demo/2-rmst-render/drag/DraggableRange'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',

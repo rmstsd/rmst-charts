@@ -21,7 +21,7 @@ const GroupClipAnimate = () => {
 
     stage.append(group)
 
-    group.animateCartoon(undefined, 1000, 'left-right')
+    group.animateCartoon(undefined, 3000, 'left-right')
   }, [])
 
   return (
