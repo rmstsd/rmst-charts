@@ -127,7 +127,9 @@ export abstract class AbstractUi {
   }
 
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
-    if (!this.data.clip) return
+    if (!this.data.clip) {
+      return
+    }
 
     const surroundBoxCoord: SurroundBoxCoord = this.isGroup
       ? this.getGroupSurroundBoxCoord()
@@ -145,7 +147,7 @@ export abstract class AbstractUi {
         surroundBoxCoord.rb_y - surroundBoxCoord.lt_y
       )
     } else {
-      // charts 的图标动画 // 由于当初急于实现组的动画效果, 此处是不合理的代码
+      // charts 的图表动画 // 由于当初急于实现 组的动画效果, 此处是不合理的代码
       ctx.rect(surroundBoxCoord.lt_x, surroundBoxCoord.lt_y, this.clipWidth, this.clipHeight)
     }
 
@@ -316,7 +318,7 @@ export abstract class AbstractUi {
 
       const elapsedTime = timestamp - this.animateState.startTime
       const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
-      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio) as number
+      currentValue = calcTargetValue(startValue, endValue, elapsedTimeRatio) as number
 
       if (typeof frameCallback === 'function') {
         frameCallback(currentValue, elapsedTimeRatio)
@@ -372,7 +374,7 @@ export abstract class AbstractUi {
           const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(startValue, surroundBoxWidth, elapsedTimeRatio)
+          const targetValue = calcTargetValue(startValue, surroundBoxWidth, elapsedTimeRatio)
 
           if (targetValue === surroundBoxWidth) {
             console.log('结束')
@@ -422,7 +424,7 @@ export abstract class AbstractUi {
           const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(startValue[propKey], prop[propKey], elapsedTimeRatio)
+          const targetValue = calcTargetValue(startValue[propKey], prop[propKey], elapsedTimeRatio)
 
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {
@@ -451,35 +453,7 @@ export abstract class AbstractUi {
 
 export default AbstractUi
 
-// initCount 和 targetCount 目前只存在都为 number 或者 都为 number[] 的情况; 暂时不考虑字符串的情况(颜色)
 const calcTargetValue = (
-  initCount: number | number[],
-  targetCount: number | number[],
-  per: number | number[]
-) => {
-  if (typeof initCount === 'number' && typeof targetCount === 'number' && typeof per === 'number') {
-    return calcValue(initCount, targetCount, per)
-  } else if (Array.isArray(initCount) && Array.isArray(targetCount)) {
-    return initCount.map((item, index) => calcValue(item, targetCount[index], per[index]))
-  }
-
-  function calcValue(initVal: number, targetVal: number, per: number) {
-    if (initVal < targetVal) {
-      const currCount = initVal + per
-      return currCount > targetVal ? targetVal : currCount
-    }
-
-    if (initVal > targetVal) {
-      const currCount = initVal - per
-
-      return currCount < targetVal ? targetVal : currCount
-    }
-
-    return targetVal
-  }
-}
-
-const calcTargetValue_2 = (
   startCount: number | number[],
   targetCount: number | number[],
   elapsedTimeRatio: number
@@ -507,13 +481,4 @@ const calcTargetValue_2 = (
 
     return targetVal
   }
-}
-
-//
-function calcPer(initVal, targetVal, totalTime) {
-  if (Array.isArray(initVal)) {
-    return initVal.map((item, index) => Math.abs(item - targetVal[index]) / (totalTime / (1000 / 60)))
-  }
-
-  return Math.abs(initVal - targetVal) / (totalTime / (1000 / 60))
 }
