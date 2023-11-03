@@ -8,7 +8,7 @@ import { IRouteObject } from './router'
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/zrender',
   element: <LayoutView />,
-  uiConfig: { title: 'zrender' },
+  uiConfig: { title: 'zrender', hidden: import.meta.env.PROD },
   children: [
     { path: 'qs', element: <QuickStart /> },
     { path: 'ro', element: <RectOver /> }

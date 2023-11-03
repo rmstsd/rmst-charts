@@ -31,7 +31,7 @@ type AnimateCustomCartoonParameter = {
   frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
 }
 
-let isEnter = false
+let enterShape
 
 export abstract class AbstractUi {
   onClick = () => {}
@@ -240,17 +240,24 @@ export abstract class AbstractUi {
     const isInner = this.isInner(offsetX, offsetY)
 
     if (isInner) {
-      if (!this.isMouseInner) {
-        this.isMouseInner = true
+      // 同级元素 位置重叠时 enter 和 leave 事件的触发时机与dom一致
+      if (enterShape && enterShape !== this) {
+        return
+      }
 
+      if (!this.isMouseInner) {
+        enterShape = this
+
+        this.isMouseInner = true
         this.onEnter()
       }
 
       this.onMove()
     } else {
       if (this.isMouseInner) {
-        this.isMouseInner = false
+        enterShape = undefined
 
+        this.isMouseInner = false
         this.onLeave()
       }
     }

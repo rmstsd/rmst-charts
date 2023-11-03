@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Stage, Rect, Circle, Text, Line } from 'rmst-render'
+import { Stage, Rect } from 'rmst-render'
 
 const Over = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -33,9 +33,11 @@ const Over = () => {
       console.log('rect_1')
     }
     rect_1.onEnter = () => {
+      setCursor('move')
       console.log('rect_1 enter')
     }
     rect_1.onLeave = () => {
+      setCursor('auto')
       console.log('rect_1 leave')
     }
 
@@ -43,10 +45,16 @@ const Over = () => {
       console.log('rect_2')
     }
     rect_2.onEnter = () => {
+      setCursor('move')
       console.log('rect_2 enter')
     }
     rect_2.onLeave = () => {
+      setCursor('auto')
       console.log('rect_2 leave')
+    }
+
+    function setCursor(cu) {
+      document.querySelector('.cursor').innerHTML = cu
     }
 
     stage.append([rect_1, rect_2])
@@ -54,6 +62,9 @@ const Over = () => {
 
   return (
     <>
+      <h3>
+        测试 同级的图形重叠时 onEnter onLeave 的触发 <span className="cursor"></span>
+      </h3>
       <div className="canvas-container" ref={canvasRef}></div>
     </>
   )

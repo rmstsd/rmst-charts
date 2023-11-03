@@ -7,7 +7,7 @@ import type { IRouteObject } from './router'
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/leafer',
   element: <LayoutView />,
-  uiConfig: { title: 'leafer' },
+  uiConfig: { title: 'leafer', hidden: import.meta.env.PROD },
   children: [{ path: 'qs', element: <QuickStart /> }]
 }
 
