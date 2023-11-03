@@ -1,5 +1,7 @@
 import LayoutView, { LayoutOutlet } from '@/components/LayoutView/LayoutView'
 
+import { IRouteObject } from './router'
+
 import RectDemo from '@/demo/2-rmst-render/base-shape/RectDemo'
 import Circle from '@/demo/2-rmst-render/base-shape/CircleDemo'
 import LineDemo from '@/demo/2-rmst-render/base-shape/LineDemo'
@@ -13,8 +15,8 @@ import GroupClipAnimate from '@/demo/2-rmst-render/animate/GroupClipAnimate'
 
 import WatermarkClip from '@/demo/2-rmst-render/real-case/WatermarkClip'
 
-import { IRouteObject } from './router'
 import DraggableRange from '@/demo/2-rmst-render/drag/DraggableRange'
+import Over from '@/demo/2-rmst-render/event/Over'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -31,6 +33,12 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'line', element: <LineDemo />, uiConfig: { title: '线' } },
         { path: 'text', element: <TextDemo />, uiConfig: { title: '文本' } }
       ]
+    },
+    {
+      path: 'event',
+      element: <LayoutOutlet />,
+      uiConfig: { title: '事件' },
+      children: [{ path: 'over', element: <Over />, uiConfig: { title: 'over' } }]
     },
     {
       path: 'drag',

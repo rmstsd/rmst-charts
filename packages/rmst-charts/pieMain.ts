@@ -1,7 +1,15 @@
 import { Circle, Stage } from 'rmst-render'
 
 class PieMain {
+  hoverIndex: number
+
+  hoverRadius: number
+  outerRadius: number
+
   constructor(stage: Stage, data, innerRadius, outerRadius, hoverRadius, seriesItem) {
+    this.outerRadius = outerRadius
+    this.hoverRadius = hoverRadius
+
     this.fakeArc = new Circle({
       x: stage.center.x,
       y: stage.center.y,
@@ -24,20 +32,16 @@ class PieMain {
         animatedProps: { startAngle: item.startAngle, endAngle: item.endAngle }
       })
 
-      function onPieActiveEnter() {
-        arc.animateCartoon({ radius: hoverRadius, shadowBlur: 20 }, 200)
-        stage.setCursor('pointer')
-      }
-      function onPieActiveLeave() {
-        arc.animateCartoon({ radius: outerRadius, shadowBlur: 0 }, 200)
-        stage.setCursor('auto')
-      }
-
       arc.onEnter = () => {
-        onPieActiveEnter()
+        this.select(index)
+        stage.setCursor('pointer')
+
         this.onSelected(index)
       }
-      arc.onLeave = onPieActiveLeave
+      arc.onLeave = () => {
+        this.cancelSelect(index)
+        stage.setCursor('auto')
+      }
 
       return arc
     })
@@ -48,6 +52,16 @@ class PieMain {
   fakeArc: Circle
 
   onSelected = (index: number) => {}
+
+  select(index: number) {
+    this.pieElements[index].animateCartoon({ radius: this.hoverRadius, shadowBlur: 20 }, 200)
+    // stage.setCursor('pointer')
+  }
+
+  cancelSelect(index: number) {
+    this.pieElements[index].animateCartoon({ radius: this.outerRadius, shadowBlur: 20 }, 200)
+    // stage.setCursor('pointer')
+  }
 }
 
 export default PieMain

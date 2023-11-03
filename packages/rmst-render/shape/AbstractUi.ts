@@ -3,6 +3,7 @@ import Group from '../Group'
 import Stage, { dpr } from '../Stage'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from 'rmst-render/utils'
+import { calcTargetValue } from 'rmst-render/animate'
 
 const debugOption: DebugOption = {
   // disabledCanvasHandleMouseMove: true,
@@ -29,6 +30,8 @@ type AnimateCustomCartoonParameter = {
   totalTime?: number
   frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
 }
+
+let isEnter = false
 
 export abstract class AbstractUi {
   onClick = () => {}
@@ -452,33 +455,3 @@ export abstract class AbstractUi {
 }
 
 export default AbstractUi
-
-const calcTargetValue = (
-  startCount: number | number[],
-  targetCount: number | number[],
-  elapsedTimeRatio: number
-) => {
-  if (typeof startCount === 'number' && typeof targetCount === 'number') {
-    return calcValue(startCount, targetCount)
-  } else if (Array.isArray(startCount) && Array.isArray(targetCount)) {
-    return startCount.map((item, index) => calcValue(item, targetCount[index]))
-  }
-
-  function calcValue(startVal: number, targetVal: number) {
-    const totalChangedVal = Math.abs(startVal - targetVal)
-    const per = elapsedTimeRatio * totalChangedVal
-
-    if (startVal < targetVal) {
-      const currCount = startVal + per
-      return currCount > targetVal ? targetVal : currCount
-    }
-
-    if (startVal > targetVal) {
-      const currCount = startVal - per
-
-      return currCount < targetVal ? targetVal : currCount
-    }
-
-    return targetVal
-  }
-}

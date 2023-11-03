@@ -51,6 +51,14 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.PieSeries
   const legendInstance = new Legend(data)
   const pieMainInstance = new PieMain(stage, data, innerRadius, outerRadius, hoverRadius, seriesItem)
 
+  legendInstance.onSelect = index => {
+    pieMainInstance.select(index)
+  }
+
+  legendInstance.onCancelSelect = index => {
+    pieMainInstance.cancelSelect(index)
+  }
+
   pieMainInstance.onSelected = index => {
     legendInstance.select(index)
   }

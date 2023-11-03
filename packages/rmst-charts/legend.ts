@@ -26,7 +26,7 @@ class Legend {
       }
 
       legendGroup.onLeave = () => {
-        // this.onSelect(index)
+        this.onCancelSelect(index)
       }
 
       return legendGroup
@@ -40,6 +40,7 @@ class Legend {
   }
 
   onSelect(index: number) {}
+  onCancelSelect(index: number) {}
 }
 
 export default Legend
