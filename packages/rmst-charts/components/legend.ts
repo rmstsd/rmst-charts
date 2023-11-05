@@ -1,7 +1,7 @@
 import { Group, Rect, Text } from 'rmst-render'
 
 class Legend {
-  constructor(data) {
+  constructor(data: ICharts.series['data']) {
     this.elements = data.map((item, index) => {
       const width = 40
       const height = 20
@@ -18,7 +18,7 @@ class Legend {
         color: item.color,
         fontSize: 14
       })
-      const legendGroup = new Group({ onlyKey: 'legend' })
+      const legendGroup = new Group({ cursor: 'pointer' })
       legendGroup.append([legendRect, legendText])
 
       legendGroup.onEnter = () => {
@@ -34,10 +34,6 @@ class Legend {
   }
 
   elements: Group[]
-
-  select(index: number) {
-    this.elements[index].elements[0].attr({ bgColor: 'red' })
-  }
 
   onSelect(index: number) {}
   onCancelSelect(index: number) {}

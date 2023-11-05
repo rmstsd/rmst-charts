@@ -1,5 +1,3 @@
-import Group from '../Group'
-
 import Stage from '../Stage'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from 'rmst-render/utils'
@@ -16,6 +14,7 @@ export interface AbstractUiData {
   clip?: boolean
   draggable?: boolean
   draggableControl?: DraggableControl
+  cursor?: 'pointer'
   [key: string]: any
 }
 

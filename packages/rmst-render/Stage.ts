@@ -15,7 +15,7 @@ export class Stage {
   ctx: CanvasRenderingContext2D
 
   parent: null
-  elements: IGraph[] = []
+  elements: IShape[] = []
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -31,7 +31,7 @@ export class Stage {
     this.renderStage()
   }
 
-  append(element: IGraph | IGraph[]) {
+  append(element: IShape | IShape[]) {
     this.elements = this.elements.concat(element)
     this.elements = this.elements.map(item => Object.assign(item, { parent: this }))
 
@@ -68,9 +68,13 @@ export class Stage {
                 if (this.curShape) {
                   this.curShape.isMouseInner = false
                   this.curShape.onLeave()
+
+                  this.setCursor('auto')
                 }
                 this.curShape = elementItem
                 this.curShape.onEnter()
+
+                elementItem.data.cursor && this.setCursor(elementItem.data.cursor)
               }
 
               break
@@ -80,6 +84,7 @@ export class Stage {
 
                 if (this.curShape) {
                   this.curShape.onLeave()
+                  this.setCursor('auto')
                 }
                 this.curShape = undefined
               }

@@ -4,7 +4,7 @@ import AbstractUi from './shape/AbstractUi'
 import Rect from './shape/Rect'
 
 declare global {
-  type IGraph = Circle | Rect | AbstractUi | Line
+  type IShape = Circle | Rect | AbstractUi | Line
 
   type IOption = {
     container: HTMLElement
