@@ -7,7 +7,7 @@ const RectOver = () => {
 
     const rect_1 = new zrender.Rect({
       cursor: 'auto',
-      shape: { x: 10, y: 10, width: 100, height: 100 },
+      shape: { x: 50, y: 50, width: 100, height: 100 },
       style: { fill: 'pink' }
     })
 
@@ -22,7 +22,7 @@ const RectOver = () => {
 
     const rect_2 = new zrender.Rect({
       cursor: 'auto',
-      shape: { x: 50, y: 50, width: 100, height: 100 },
+      shape: { x: 50, y: 150, width: 100, height: 100 },
       style: { fill: '#ddd', opacity: 0.8 }
     })
 
@@ -35,8 +35,40 @@ const RectOver = () => {
       console.log('rect_2 out')
     }
 
+    const rect_3 = new zrender.Rect({
+      cursor: 'auto',
+      shape: { x: 200, y: 50, width: 100, height: 100 },
+      style: { fill: 'pink' }
+    })
+
+    rect_3.onmouseover = () => {
+      serCursor('move')
+      console.log('rect_3 over')
+    }
+    rect_3.onmouseout = () => {
+      serCursor('auto')
+      console.log('rect_3 out')
+    }
+
+    const rect_4 = new zrender.Rect({
+      cursor: 'auto',
+      shape: { x: 200, y: 120, width: 100, height: 100 },
+      style: { fill: '#ddd', opacity: 0.8 }
+    })
+
+    rect_4.onmouseover = () => {
+      serCursor('move')
+      console.log('rect_4 over')
+    }
+    rect_4.onmouseout = () => {
+      serCursor('auto')
+      console.log('rect_4 out')
+    }
+
     zr.add(rect_1)
     zr.add(rect_2)
+    zr.add(rect_3)
+    zr.add(rect_4)
 
     function serCursor(c) {
       document.querySelector('.cursor').innerHTML = c
@@ -45,7 +77,7 @@ const RectOver = () => {
 
   return (
     <>
-      <div className="cursor"></div>
+      <div className="cursor">1</div>
       <div className="canvas-container"></div>
     </>
   )

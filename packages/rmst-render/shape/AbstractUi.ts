@@ -1,15 +1,10 @@
 import Group from '../Group'
 
-import Stage, { dpr } from '../Stage'
+import Stage from '../Stage'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from 'rmst-render/utils'
 import { calcTargetValue } from 'rmst-render/animate'
-
-const debugOption: DebugOption = {
-  // disabledCanvasHandleMouseMove: true,
-  // disabledCanvasHandleMouseDown: true,
-  // disabledCanvasHandleMouseUp: true
-}
+import AbsEvent from 'rmst-render/AbsEvent'
 
 export interface AbstractUiData {
   x?: number
@@ -31,17 +26,7 @@ type AnimateCustomCartoonParameter = {
   frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
 }
 
-let enterShape
-
-export abstract class AbstractUi {
-  onClick = () => {}
-  onMove = () => {}
-  onEnter = () => {}
-  onLeave = () => {}
-  onDown = () => {}
-  onUp = () => {}
-  onDragMove = () => {}
-
+export abstract class AbstractUi extends AbsEvent {
   isGroup = false
 
   isLine = false
@@ -50,29 +35,11 @@ export abstract class AbstractUi {
 
   elements = []
 
-  isMouseInner = false // 鼠标是否已经移入某个元素
-
-  mouseDownOffset = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
-
-  mouseDownOffsetPoints: { x: number; y: number }[] = []
-
   extraData
 
   path2D: Path2D
 
   stage: Stage
-
-  parent: Stage | Group = null
-
-  findStage() {
-    let stage = this.parent
-
-    while (stage && stage.parent) {
-      stage = stage.parent
-    }
-
-    return stage as unknown as Stage
-  }
 
   // 若为 undefined 则在绘制的时候暂时取 canvas 的宽高
   // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
@@ -91,42 +58,6 @@ export abstract class AbstractUi {
 
   getGroupSurroundBoxCoord(): SurroundBoxCoord {
     return
-  }
-
-  isInner(offsetX: number, offsetY: number) {
-    const stage = this.findStage()
-
-    if (!stage) return
-
-    stage.ctx.lineWidth = this.data.lineWidth + 5
-    const isInPath = () => {
-      return stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr)
-    }
-    const isInStroke = () => {
-      return stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
-    }
-    const isInSurroundBox = () => {
-      const surroundBoxCoord = this.surroundBoxCoord
-        ? this.surroundBoxCoord
-        : { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 }
-
-      return (
-        offsetX > surroundBoxCoord.lt_x &&
-        offsetX < surroundBoxCoord.lt_x + this.clipWidth &&
-        offsetY > surroundBoxCoord.lt_y &&
-        offsetY < surroundBoxCoord.lt_y + this.clipHeight
-      )
-    }
-
-    if (this.isLine && !this.data.closed) {
-      return isInStroke()
-    }
-
-    if (this.data.clip) {
-      return isInSurroundBox() && (isInPath() || isInStroke())
-    }
-
-    return isInPath() || isInStroke()
   }
 
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
@@ -169,98 +100,6 @@ export abstract class AbstractUi {
     this.data = { ...this.data, ...data }
 
     this.findStage()?.renderStage()
-  }
-
-  handleClick(offsetX: number, offsetY: number) {
-    const isInner = this.isInner(offsetX, offsetY)
-    if (isInner) {
-      this.onClick()
-    }
-
-    return isInner
-  }
-
-  documentMousemove(evt: MouseEvent) {
-    evt.preventDefault() // 防止选中文本
-
-    if (this.data.draggable) {
-      const { pageX, pageY } = evt
-
-      const stage = this.findStage()
-      const canvasRect = stage.canvasElement.getBoundingClientRect()
-
-      const offsetX = pageX - canvasRect.left
-      const offsetY = pageY - canvasRect.top
-
-      this.dndAttr(offsetX, offsetY)
-
-      this.onDragMove()
-    }
-  }
-
-  handleMouseDown(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseDown) {
-      return
-    }
-    const isInner = this.isInner(offsetX, offsetY)
-    if (isInner) {
-      this.onDown()
-
-      if (this.data.draggable) {
-        this.dndRecordMouseDownOffset(offsetX, offsetY)
-
-        document.onmousemove = this.documentMousemove.bind(this)
-        document.onmouseup = () => {
-          document.onmousemove = null
-        }
-      }
-    }
-
-    return isInner
-  }
-
-  handleMouseUp(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseUp) {
-      return
-    }
-    const isInner = this.isInner(offsetX, offsetY)
-
-    if (isInner) {
-      this.onUp()
-    }
-
-    return isInner
-  }
-
-  handleMouseMove(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseMove) {
-      return
-    }
-
-    const isInner = this.isInner(offsetX, offsetY)
-
-    if (isInner) {
-      // 同级元素 位置重叠时 enter 和 leave 事件的触发时机与dom一致
-      if (enterShape && enterShape !== this) {
-        return
-      }
-
-      if (!this.isMouseInner) {
-        enterShape = this
-
-        this.isMouseInner = true
-        this.onEnter()
-      }
-
-      this.onMove()
-    } else {
-      if (this.isMouseInner) {
-        enterShape = undefined
-
-        this.isMouseInner = false
-        this.onLeave()
-      }
-    }
   }
 
   dndAttr(offsetX: number, offsetY: number) {

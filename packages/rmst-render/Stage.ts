@@ -1,3 +1,5 @@
+import { absMap, eventList } from './constant'
+
 export class Stage {
   constructor(option: IOption) {
     const { container } = option
@@ -44,42 +46,48 @@ export class Stage {
     })
   }
 
+  curShape
+
   addStageEventListener() {
-    this.canvasElement.onmousemove = evt => {
-      this.elements.forEach(elementItem => {
-        elementItem.handleMouseMove(evt.offsetX, evt.offsetY)
-      })
-    }
+    eventList.forEach(eventName => {
+      this.canvasElement[eventName] = evt => {
+        const elements = this.elements.toReversed()
 
-    this.canvasElement.onmousedown = evt => {
-      for (const elementItem of this.elements.slice().reverse()) {
-        const isInner = elementItem.handleMouseDown(evt.offsetX, evt.offsetY)
+        for (const elementItem of elements) {
+          const isInner = elementItem[absMap[eventName]](evt.offsetX, evt.offsetY)
 
-        if (isInner) {
-          break
+          if (eventName !== 'onmousemove') {
+            if (isInner) {
+              break
+            }
+          } else {
+            if (isInner) {
+              if (!elementItem.isMouseInner) {
+                elementItem.isMouseInner = true
+
+                if (this.curShape) {
+                  this.curShape.isMouseInner = false
+                  this.curShape.onLeave()
+                }
+                this.curShape = elementItem
+                this.curShape.onEnter()
+              }
+
+              break
+            } else {
+              if (elementItem.isMouseInner) {
+                elementItem.isMouseInner = false
+
+                if (this.curShape) {
+                  this.curShape.onLeave()
+                }
+                this.curShape = undefined
+              }
+            }
+          }
         }
       }
-    }
-
-    this.canvasElement.onmouseup = evt => {
-      for (const elementItem of this.elements.slice().reverse()) {
-        const isInner = elementItem.handleMouseUp(evt.offsetX, evt.offsetY)
-
-        if (isInner) {
-          break
-        }
-      }
-    }
-
-    this.canvasElement.onclick = evt => {
-      for (const elementItem of this.elements.slice().reverse()) {
-        const isInner = elementItem.handleClick(evt.offsetX, evt.offsetY)
-
-        if (isInner) {
-          break
-        }
-      }
-    }
+    })
   }
 
   setCursor(cursor: ICursor) {
