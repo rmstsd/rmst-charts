@@ -30,8 +30,9 @@ abstract class AbsEvent {
   clipWidth
   clipHeight
   isLine
-  dndAttr
-  dndRecordMouseDownOffset
+
+  dndAttr() {}
+  dndRecordMouseDownOffset() {}
 
   findStage() {
     let stage = this.parent
