@@ -1,4 +1,4 @@
-import Group from '../Group'
+import Group from './Group'
 import { convertToNormalPoints, createPath2D } from '../utils'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 

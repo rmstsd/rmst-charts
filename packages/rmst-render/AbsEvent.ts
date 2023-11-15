@@ -1,5 +1,6 @@
 import { Group } from 'zrender'
-import Stage, { dpr } from './Stage'
+import Stage from './Stage'
+import { dpr } from './constant'
 
 const debugOption: DebugOption = {
   // disabledCanvasHandleMouseMove: true,
@@ -31,8 +32,8 @@ abstract class AbsEvent {
   clipHeight
   isLine
 
-  dndAttr() {}
-  dndRecordMouseDownOffset() {}
+  dndAttr(offsetX: number, offsetY: number) {}
+  dndRecordMouseDownOffset(offsetX: number, offsetY: number) {}
 
   findStage() {
     let stage = this.parent
@@ -89,24 +90,6 @@ abstract class AbsEvent {
     return isInner
   }
 
-  documentMousemove(evt: MouseEvent) {
-    evt.preventDefault() // 防止选中文本
-
-    if (this.data.draggable) {
-      const { pageX, pageY } = evt
-
-      const stage = this.findStage()
-      const canvasRect = stage.canvasElement.getBoundingClientRect()
-
-      const offsetX = pageX - canvasRect.left
-      const offsetY = pageY - canvasRect.top
-
-      this.dndAttr(offsetX, offsetY)
-
-      this.onDragMove()
-    }
-  }
-
   handleMouseDown(offsetX: number, offsetY: number) {
     if (debugOption.disabledCanvasHandleMouseDown) {
       return
@@ -119,10 +102,30 @@ abstract class AbsEvent {
       if (this.data.draggable) {
         this.dndRecordMouseDownOffset(offsetX, offsetY)
 
-        document.onmousemove = this.documentMousemove.bind(this)
-        document.onmouseup = () => {
-          document.onmousemove = null
+        const onDocumentMousemove = (evt: MouseEvent) => {
+          evt.preventDefault()
+
+          if (this.data.draggable) {
+            const { pageX, pageY } = evt
+
+            const stage = this.findStage()
+            const canvasRect = stage.canvasElement.getBoundingClientRect()
+
+            const offsetX = pageX - canvasRect.left
+            const offsetY = pageY - canvasRect.top
+
+            this.dndAttr(offsetX, offsetY)
+
+            this.onDragMove()
+          }
         }
+        const onDocumentMouseup = () => {
+          document.removeEventListener('mousemove', onDocumentMousemove)
+          document.removeEventListener('mouseup', onDocumentMouseup)
+        }
+
+        document.addEventListener('mousemove', onDocumentMousemove)
+        document.addEventListener('mouseup', onDocumentMouseup)
       }
     }
 

@@ -1,4 +1,4 @@
-import Group from '../Group'
+import Group from './Group'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {

@@ -1,4 +1,5 @@
-import { absMap, eventList } from './constant'
+import { absMap, eventList } from '../constant'
+import { initStage } from './utils'
 
 export class Stage {
   constructor(option: IOption) {
@@ -58,31 +59,37 @@ export class Stage {
 
     return null
   }
-  prevHover: IShape
+  prevHovered: IShape
 
   addStageEventListener() {
     this.canvasElement.onmousemove = evt => {
-      const hover = this.findHover(evt.offsetX, evt.offsetY)
+      const hovered = this.findHover(evt.offsetX, evt.offsetY)
 
-      if (!hover) {
-        if (this.prevHover) {
-          this.prevHover.onLeave()
-          this.prevHover = undefined
+      if (!hovered) {
+        if (this.prevHovered) {
+          this.prevHovered.onLeave()
+          this.prevHovered = undefined
+
+          this.setCursor('default')
         }
         return
       }
 
-      if (hover && hover !== this.prevHover) {
-        if (this.prevHover) {
-          this.prevHover.onLeave()
+      if (hovered && hovered !== this.prevHovered) {
+        if (this.prevHovered) {
+          this.prevHovered.onLeave()
         }
-        this.prevHover = hover
+        this.prevHovered = hovered
 
-        hover.onEnter()
+        hovered.onEnter()
+
+        if (hovered.data.cursor) {
+          this.setCursor(hovered.data.cursor)
+        }
       }
 
-      if (hover) {
-        hover.onMove()
+      if (hovered) {
+        hovered.onMove()
       }
     }
 
@@ -105,56 +112,8 @@ export class Stage {
   }
 
   setCursor(cursor: ICursor) {
-    this.canvasElement.style.cursor = cursor
+    this.canvasElement.style.setProperty('cursor', cursor)
   }
-}
-
-type ICursor =
-  | 'url'
-  | 'default'
-  | 'auto'
-  | 'crosshair'
-  | 'pointer'
-  | 'move'
-  | 'e-resize'
-  | 'ne-resize'
-  | 'nw-resize'
-  | 'n-resize'
-  | 'se-resize'
-  | 'sw-resize'
-  | 's-resize'
-  | 'w-resize'
-  | 'text'
-  | 'wait'
-  | 'help'
-
-export const dpr = window.devicePixelRatio
-function createCanvas(containerWidth: number, containerHeight: number) {
-  const canvasElement = document.createElement('canvas')
-  const canvasWidth = containerWidth * dpr
-  const canvasHeight = containerHeight * dpr
-
-  canvasElement.width = canvasWidth
-  canvasElement.height = canvasHeight
-  canvasElement.style.width = '100%'
-  canvasElement.style.height = '100%'
-
-  const ctx = canvasElement.getContext('2d')
-
-  ctx.scale(dpr, dpr)
-  ctx.textBaseline = 'top'
-  ctx.font = `${14}px 微软雅黑`
-
-  return { canvasElement, ctx }
-}
-
-function initStage(canvasContainer: HTMLElement) {
-  const { offsetWidth, offsetHeight } = canvasContainer
-  const { canvasElement, ctx } = createCanvas(offsetWidth, offsetHeight)
-
-  canvasContainer.append(canvasElement)
-
-  return { canvasElement, ctx }
 }
 
 export default Stage

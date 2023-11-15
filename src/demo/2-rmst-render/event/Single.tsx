@@ -11,7 +11,15 @@ const Single = () => {
     })
     stageRef.current = stage
 
-    const rect_1 = new Rect({ x: 10, y: 10, width: 100, height: 100, bgColor: 'blueviolet', draggable: true })
+    const rect_1 = new Rect({
+      x: 10,
+      y: 10,
+      width: 100,
+      height: 100,
+      bgColor: 'blueviolet',
+      draggable: true,
+      cursor: 'move'
+    })
 
     rect_1.onClick = () => {
       console.log('rect_1')

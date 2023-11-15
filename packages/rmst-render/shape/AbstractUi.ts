@@ -14,7 +14,7 @@ export interface AbstractUiData {
   clip?: boolean
   draggable?: boolean
   draggableControl?: DraggableControl
-  cursor?: 'pointer'
+  cursor?: ICursor
   [key: string]: any
 }
 
