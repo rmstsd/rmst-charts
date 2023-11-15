@@ -16,7 +16,10 @@ import GroupClipAnimate from '@/demo/2-rmst-render/animate/GroupClipAnimate'
 import WatermarkClip from '@/demo/2-rmst-render/real-case/WatermarkClip'
 
 import DraggableRange from '@/demo/2-rmst-render/drag/DraggableRange'
-import Over from '@/demo/2-rmst-render/event/Over'
+
+import Single from '@/demo/2-rmst-render/event/Single'
+import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
+import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -38,7 +41,11 @@ const rmstRenderRouteConfig: IRouteObject = {
       path: 'event',
       element: <LayoutOutlet />,
       uiConfig: { title: '事件' },
-      children: [{ path: 'over', element: <Over />, uiConfig: { title: 'over' } }]
+      children: [
+        { path: 'single', element: <Single /> },
+        { path: 'adjacent', element: <TwoAdjacentRect /> },
+        { path: 'over', element: <TwoOverRect /> }
+      ]
     },
     {
       path: 'drag',

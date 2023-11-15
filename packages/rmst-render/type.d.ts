@@ -23,7 +23,6 @@ declare global {
   }
 
   interface DebugOption {
-    disabledCanvasHandleMouseMove?: boolean
     disabledCanvasHandleMouseDown?: boolean
     disabledCanvasHandleMouseUp?: boolean
   }

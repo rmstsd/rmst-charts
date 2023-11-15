@@ -46,49 +46,58 @@ export class Stage {
     })
   }
 
-  curShape
+  findHover(x: number, y: number) {
+    const elements = this.elements.toReversed()
+
+    for (const elementItem of elements) {
+      const isInner = elementItem.isInner(x, y)
+      if (isInner) {
+        return elementItem
+      }
+    }
+
+    return null
+  }
+  prevHover: IShape
 
   addStageEventListener() {
+    this.canvasElement.onmousemove = evt => {
+      const hover = this.findHover(evt.offsetX, evt.offsetY)
+
+      if (!hover) {
+        if (this.prevHover) {
+          this.prevHover.onLeave()
+          this.prevHover = undefined
+        }
+        return
+      }
+
+      if (hover && hover !== this.prevHover) {
+        if (this.prevHover) {
+          this.prevHover.onLeave()
+        }
+        this.prevHover = hover
+
+        hover.onEnter()
+      }
+
+      if (hover) {
+        hover.onMove()
+      }
+    }
+
     eventList.forEach(eventName => {
+      if (eventName === 'onmousemove') {
+        return
+      }
+
       this.canvasElement[eventName] = evt => {
         const elements = this.elements.toReversed()
 
         for (const elementItem of elements) {
           const isInner = elementItem[absMap[eventName]](evt.offsetX, evt.offsetY)
-
-          if (eventName !== 'onmousemove') {
-            if (isInner) {
-              break
-            }
-          } else {
-            if (isInner) {
-              if (!elementItem.isMouseInner) {
-                elementItem.isMouseInner = true
-
-                if (this.curShape) {
-                  this.curShape.isMouseInner = false
-                  this.curShape.onLeave()
-
-                  this.setCursor('auto')
-                }
-                this.curShape = elementItem
-                this.curShape.onEnter()
-
-                elementItem.data.cursor && this.setCursor(elementItem.data.cursor)
-              }
-
-              break
-            } else {
-              if (elementItem.isMouseInner) {
-                elementItem.isMouseInner = false
-
-                if (this.curShape) {
-                  this.curShape.onLeave()
-                  this.setCursor('auto')
-                }
-                this.curShape = undefined
-              }
-            }
+          if (isInner) {
+            break
           }
         }
       }

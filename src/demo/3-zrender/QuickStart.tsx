@@ -46,6 +46,8 @@ const QuickStart = () => {
 
     zr.add(bc)
     zr.add(rect)
+
+    console.log(rect)
   }, [])
 
   return <div className="canvas-container"></div>

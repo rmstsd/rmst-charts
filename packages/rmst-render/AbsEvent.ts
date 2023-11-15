@@ -24,6 +24,15 @@ abstract class AbsEvent {
 
   parent: Stage | Group = null
 
+  data
+  path2D
+  surroundBoxCoord
+  clipWidth
+  clipHeight
+  isLine
+  dndAttr
+  dndRecordMouseDownOffset
+
   findStage() {
     let stage = this.parent
 
@@ -101,6 +110,7 @@ abstract class AbsEvent {
     if (debugOption.disabledCanvasHandleMouseDown) {
       return
     }
+
     const isInner = this.isInner(offsetX, offsetY)
     if (isInner) {
       this.onDown()
@@ -126,36 +136,6 @@ abstract class AbsEvent {
 
     if (isInner) {
       this.onUp()
-    }
-
-    return isInner
-  }
-
-  handleMouseMove(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseMove) {
-      return
-    }
-
-    const isInner = this.isInner(offsetX, offsetY)
-
-    if (isInner) {
-      this.onMove()
-    }
-
-    return isInner
-
-    if (isInner) {
-      if (!this.isMouseInner) {
-        this.isMouseInner = true
-        this.onEnter()
-      }
-
-      this.onMove()
-    } else {
-      if (this.isMouseInner) {
-        this.isMouseInner = false
-        this.onLeave()
-      }
     }
 
     return isInner

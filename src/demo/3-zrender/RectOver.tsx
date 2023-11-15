@@ -15,6 +15,10 @@ const RectOver = () => {
       serCursor('move')
       console.log('rect_1 over')
     }
+    rect_1.onmousemove = () => {
+      serCursor('move')
+      console.log('rect_1 move')
+    }
     rect_1.onmouseout = () => {
       serCursor('auto')
       console.log('rect_1 out')
@@ -29,6 +33,10 @@ const RectOver = () => {
     rect_2.onmouseover = () => {
       serCursor('move')
       console.log('rect_2 over')
+    }
+    rect_2.onmousemove = () => {
+      serCursor('move')
+      console.log('rect_2 move')
     }
     rect_2.onmouseout = () => {
       serCursor('auto')
