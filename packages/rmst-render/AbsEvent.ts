@@ -1,6 +1,7 @@
 import { Group } from 'zrender'
 import Stage from './Stage'
-import { dpr } from './constant'
+import { EventType, dpr } from './constant'
+import Handler from 'zrender/lib/Handler'
 
 const debugOption: DebugOption = {
   // disabledCanvasHandleMouseMove: true,
@@ -143,6 +144,36 @@ abstract class AbsEvent {
     }
 
     return isInner
+  }
+
+  eventTypeHandlerMap = new Map<EventType, Handler[]>()
+
+  on(eventType: EventType, handler: Handler) {
+    let handlers = this.eventTypeHandlerMap.get(eventType)
+
+    if (!handlers) {
+      handlers = []
+      this.eventTypeHandlerMap.set(eventType, handlers)
+    }
+
+    handlers.push(handler)
+
+    return () => {
+      this.off(eventType, handler)
+    }
+  }
+
+  off(eventType: EventType, handler: Handler) {
+    const handlers = this.eventTypeHandlerMap.get(eventType)
+
+    if (!handlers || handlers.length === 0) {
+      return
+    }
+
+    this.eventTypeHandlerMap.set(
+      eventType,
+      handlers.filter(item => item !== handler)
+    )
   }
 }
 

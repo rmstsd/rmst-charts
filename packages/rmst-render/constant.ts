@@ -1,11 +1,13 @@
-type eventName = keyof GlobalEventHandlers
+export type EventType = 'mousemove' | 'mousedown' | 'mouseup' | 'click'
+export type OnEventType = `on${EventType}`
+export type Handler = () => void
 
-export const dpr = window.devicePixelRatio
-
-export const eventList: eventName[] = ['onmousemove', 'onmousedown', 'onmouseup', 'onclick']
+export const eventList: OnEventType[] = ['onmousemove', 'onmousedown', 'onmouseup', 'onclick']
 
 export const absMap = {
   onmousedown: 'handleMouseDown',
   onmouseup: 'handleMouseUp',
   onclick: 'handleClick'
 }
+
+export const dpr = window.devicePixelRatio
