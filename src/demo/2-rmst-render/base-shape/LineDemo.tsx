@@ -23,12 +23,12 @@ const LineDemo = () => {
       // closed: true
     })
 
-    line2.onEnter = () => {
+    line2.onmouseenter = () => {
       line2.attr({ lineWidth: 10 })
       stage.setCursor('pointer')
     }
 
-    line2.onLeave = () => {
+    line2.onmouseleave = () => {
       line2.attr({ lineWidth: 5 })
       stage.setCursor('auto')
     }

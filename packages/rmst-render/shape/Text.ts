@@ -1,4 +1,4 @@
-import Group from 'rmst-render/Group'
+import Group from 'rmst-render/shape/Group'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {

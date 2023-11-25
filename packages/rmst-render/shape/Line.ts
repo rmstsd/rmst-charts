@@ -1,4 +1,4 @@
-import Group from '../Group'
+import Group from './Group'
 import { convertToNormalPoints, createPath2D } from '../utils'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
@@ -53,7 +53,9 @@ export class Line extends AbstractUi {
   isLine = true
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
+    if (!(this.parent instanceof Group)) {
+      this.beforeDrawClip(ctx)
+    }
 
     const { bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
 
@@ -78,7 +80,10 @@ export class Line extends AbstractUi {
       ctx.fill(this.path2D)
     }
 
-    if (!(this.parent instanceof Group)) ctx.restore() // 恢复clip
+    // 恢复clip
+    if (!(this.parent instanceof Group)) {
+      ctx.restore()
+    }
   }
 }
 

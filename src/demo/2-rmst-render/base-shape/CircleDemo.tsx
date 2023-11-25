@@ -40,19 +40,19 @@ const CircleDemo = () => {
 
     // 注册鼠标事件
     arcs.forEach(item => {
-      item.onEnter = () => {
+      item.onmouseenter = () => {
         stage.setCursor('pointer')
         item.attr({ bgColor: 'pink' })
         console.log('onEnter', item.constructor.name)
       }
 
-      item.onLeave = () => {
+      item.onmouseleave = () => {
         item.attr({ bgColor: 'blueviolet' })
         stage.setCursor('auto')
         console.log('onLeave', item.constructor.name)
       }
 
-      item.onClick = () => {
+      item.onclick = () => {
         console.log('c')
       }
     })

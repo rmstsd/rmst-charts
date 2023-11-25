@@ -66,7 +66,7 @@ const LayoutView = () => {
           style={{ border: 'none', flexGrow: 1 }}
         />
 
-        <span style={{ paddingRight: 10 }}>最新 build: {__Build_Time__}</span>
+        <span style={{ paddingRight: 10, flexShrink: 0 }}>最新 build: {__Build_Time__}</span>
 
         <a href="https://github.com/rmstsd/rmst-charts" target="_blank">
           github

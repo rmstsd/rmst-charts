@@ -2,11 +2,12 @@ import type { MenuProps } from 'antd'
 
 import { RouteObject, Navigate } from 'react-router-dom'
 
-import newChartsRouteConfig from './router.newCharts'
-import rmstRender from './router.rmstRender'
-import konvaRouteConfig from './router.konva'
-import oldCharts from './router.oldCharts'
-import other from './router.other'
+import rmstChartsRouteConfig from './router.rmstCharts'
+import rmstRenderRouteConfig from './router.rmstRender'
+import zrenderRouteConfig from './router.zrender'
+import oldChartsRouteConfig from './router.oldCharts'
+import otherRouteConfig from './router.other'
+import leaferRouteConfig from './router.leafer'
 
 export type IRouteObject = {
   path: RouteObject['path']
@@ -21,11 +22,12 @@ export const routes: IRouteObject[] = [
     element: <Navigate to="/new-charts/line/base" replace={true} />,
     uiConfig: { hidden: true }
   },
-  newChartsRouteConfig,
-  rmstRender,
-  konvaRouteConfig,
-  oldCharts,
-  other
+  rmstChartsRouteConfig,
+  rmstRenderRouteConfig,
+  zrenderRouteConfig,
+  oldChartsRouteConfig,
+  otherRouteConfig,
+  leaferRouteConfig
 ]
 
 export const convertToAntdData = (
@@ -48,7 +50,7 @@ export const convertToAntdData = (
 export function findPath(routeObject: IRouteObject) {
   let path = ''
 
-  const dfs = routeObject => {
+  const dfs = (routeObject: RouteObject) => {
     if (routeObject.path.startsWith('/')) {
       path += routeObject.path
     } else {

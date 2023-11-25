@@ -1,4 +1,4 @@
-import Group from '../Group'
+import Group from './Group'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
@@ -35,7 +35,9 @@ export class Rect extends AbstractUi {
   declare data: RectData
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!(this.parent instanceof Group)) this.beforeDrawClip(ctx)
+    if (!(this.parent instanceof Group)) {
+      this.beforeDrawClip(ctx)
+    }
 
     const { x, y, width, height, bgColor, cornerRadius, strokeStyle, lineWidth } = this.data
 
@@ -70,7 +72,10 @@ export class Rect extends AbstractUi {
       ctx.stroke(path2D)
     }
 
-    if (!(this.parent instanceof Group)) ctx.restore() // 恢复clip
+    // 恢复clip
+    if (!(this.parent instanceof Group)) {
+      ctx.restore()
+    }
   }
 }
 

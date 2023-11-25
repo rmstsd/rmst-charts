@@ -1,14 +1,7 @@
-import Group from '../Group'
+import Stage from '../Stage'
 
-import Stage, { dpr } from '../Stage'
-import { pointToFlatArray } from 'rmst-charts/utils/utils'
-import { convertToNormalPoints } from 'rmst-render/utils'
-
-const debugOption: DebugOption = {
-  // disabledCanvasHandleMouseMove: true,
-  // disabledCanvasHandleMouseDown: true,
-  // disabledCanvasHandleMouseUp: true
-}
+import { calcTargetValue } from 'rmst-render/animate'
+import AbsEvent from 'rmst-render/AbsEvent'
 
 export interface AbstractUiData {
   x?: number
@@ -20,6 +13,7 @@ export interface AbstractUiData {
   clip?: boolean
   draggable?: boolean
   draggableControl?: DraggableControl
+  cursor?: ICursor
   [key: string]: any
 }
 
@@ -30,46 +24,18 @@ type AnimateCustomCartoonParameter = {
   frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
 }
 
-export abstract class AbstractUi {
-  onClick = () => {}
-  onMove = () => {}
-  onEnter = () => {}
-  onLeave = () => {}
-  onDown = () => {}
-  onUp = () => {}
-  onDragMove = () => {}
-
+export abstract class AbstractUi extends AbsEvent {
   isGroup = false
-
   isLine = false
-
   isText = false
 
   elements = []
-
-  isMouseInner = false // 鼠标是否已经移入某个元素
-
-  mouseDownOffset = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
-
-  mouseDownOffsetPoints: { x: number; y: number }[] = []
 
   extraData
 
   path2D: Path2D
 
   stage: Stage
-
-  parent: Stage | Group = null
-
-  findStage() {
-    let stage = this.parent
-
-    while (stage && stage.parent) {
-      stage = stage.parent
-    }
-
-    return stage as unknown as Stage
-  }
 
   // 若为 undefined 则在绘制的时候暂时取 canvas 的宽高
   // 包围盒的实际盒子信息 仅在设置 clip 属性后执行动画才有用
@@ -90,44 +56,10 @@ export abstract class AbstractUi {
     return
   }
 
-  isInner(offsetX: number, offsetY: number) {
-    const stage = this.findStage()
-
-    if (!stage) return
-
-    stage.ctx.lineWidth = this.data.lineWidth + 5
-    const isInPath = () => {
-      return stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr)
-    }
-    const isInStroke = () => {
-      return stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
-    }
-    const isInSurroundBox = () => {
-      const surroundBoxCoord = this.surroundBoxCoord
-        ? this.surroundBoxCoord
-        : { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 }
-
-      return (
-        offsetX > surroundBoxCoord.lt_x &&
-        offsetX < surroundBoxCoord.lt_x + this.clipWidth &&
-        offsetY > surroundBoxCoord.lt_y &&
-        offsetY < surroundBoxCoord.lt_y + this.clipHeight
-      )
-    }
-
-    if (this.isLine && !this.data.closed) {
-      return isInStroke()
-    }
-
-    if (this.data.clip) {
-      return isInSurroundBox() && (isInPath() || isInStroke())
-    }
-
-    return isInPath() || isInStroke()
-  }
-
   beforeDrawClip(ctx: CanvasRenderingContext2D) {
-    if (!this.data.clip) return
+    if (!this.data.clip) {
+      return
+    }
 
     const surroundBoxCoord: SurroundBoxCoord = this.isGroup
       ? this.getGroupSurroundBoxCoord()
@@ -145,7 +77,7 @@ export abstract class AbstractUi {
         surroundBoxCoord.rb_y - surroundBoxCoord.lt_y
       )
     } else {
-      // charts 的图标动画 // 由于当初急于实现组的动画效果, 此处是不合理的代码
+      // charts 的图表动画 // 由于当初急于实现 组的动画效果, 此处是不合理的代码
       ctx.rect(surroundBoxCoord.lt_x, surroundBoxCoord.lt_y, this.clipWidth, this.clipHeight)
     }
 
@@ -164,136 +96,6 @@ export abstract class AbstractUi {
     this.data = { ...this.data, ...data }
 
     this.findStage()?.renderStage()
-  }
-
-  handleClick(offsetX: number, offsetY: number) {
-    const isInner = this.isInner(offsetX, offsetY)
-    if (isInner) {
-      this.onClick()
-    }
-
-    return isInner
-  }
-
-  documentMousemove(evt: MouseEvent) {
-    evt.preventDefault() // 防止选中文本
-
-    if (this.data.draggable) {
-      const { pageX, pageY } = evt
-
-      const stage = this.findStage()
-      const canvasRect = stage.canvasElement.getBoundingClientRect()
-
-      const offsetX = pageX - canvasRect.left
-      const offsetY = pageY - canvasRect.top
-
-      this.dndAttr(offsetX, offsetY)
-
-      this.onDragMove()
-    }
-  }
-
-  handleMouseDown(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseDown) {
-      return
-    }
-    const isInner = this.isInner(offsetX, offsetY)
-    if (isInner) {
-      this.onDown()
-
-      if (this.data.draggable) {
-        this.dndRecordMouseDownOffset(offsetX, offsetY)
-
-        document.onmousemove = this.documentMousemove.bind(this)
-        document.onmouseup = () => {
-          document.onmousemove = null
-        }
-      }
-    }
-
-    return isInner
-  }
-
-  handleMouseUp(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseUp) {
-      return
-    }
-    const isInner = this.isInner(offsetX, offsetY)
-
-    if (isInner) {
-      this.onUp()
-    }
-
-    return isInner
-  }
-
-  handleMouseMove(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseMove) {
-      return
-    }
-
-    const isInner = this.isInner(offsetX, offsetY)
-
-    if (isInner) {
-      if (!this.isMouseInner) {
-        this.isMouseInner = true
-
-        this.onEnter()
-      }
-
-      this.onMove()
-    } else {
-      if (this.isMouseInner) {
-        this.isMouseInner = false
-
-        this.onLeave()
-      }
-    }
-  }
-
-  dndAttr(offsetX: number, offsetY: number) {
-    if (this.isGroup) {
-      this.elements.forEach(item => {
-        item.dndAttr(offsetX, offsetY)
-      })
-    } else {
-      const x = offsetX - this.mouseDownOffset.x
-      const y = offsetY - this.mouseDownOffset.y
-
-      const pos = this.data.draggableControl
-        ? this.data.draggableControl({ mouseCoord: { offsetX, offsetY }, shapeCoord: { x, y } })
-        : { x, y }
-
-      if (this.isLine) {
-        const c = convertToNormalPoints(this.data.points)
-        c.forEach((item, index) => {
-          const o = this.mouseDownOffsetPoints[index]
-          item.x = offsetX - o.x
-          item.y = offsetY - o.y
-        })
-        this.attr({ points: pointToFlatArray(c) })
-      } else {
-        this.attr({ x: pos.x, y: pos.y })
-      }
-    }
-  }
-
-  dndRecordMouseDownOffset(offsetX: number, offsetY: number) {
-    if (this.isGroup) {
-      this.elements.forEach(item => {
-        item.dndRecordMouseDownOffset(offsetX, offsetY)
-      })
-    } else {
-      if (this.isLine) {
-        this.mouseDownOffsetPoints = convertToNormalPoints(this.data.points).map(item => ({
-          x: offsetX - item.x,
-          y: offsetY - item.y
-        }))
-      } else {
-        this.mouseDownOffset.x = offsetX - this.data.x
-        this.mouseDownOffset.y = offsetY - this.data.y
-      }
-    }
   }
 
   remove() {
@@ -316,7 +118,7 @@ export abstract class AbstractUi {
 
       const elapsedTime = timestamp - this.animateState.startTime
       const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
-      currentValue = calcTargetValue_2(startValue, endValue, elapsedTimeRatio) as number
+      currentValue = calcTargetValue(startValue, endValue, elapsedTimeRatio) as number
 
       if (typeof frameCallback === 'function') {
         frameCallback(currentValue, elapsedTimeRatio)
@@ -372,7 +174,7 @@ export abstract class AbstractUi {
           const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(startValue, surroundBoxWidth, elapsedTimeRatio)
+          const targetValue = calcTargetValue(startValue, surroundBoxWidth, elapsedTimeRatio)
 
           if (targetValue === surroundBoxWidth) {
             console.log('结束')
@@ -422,7 +224,7 @@ export abstract class AbstractUi {
           const elapsedTime = timestamp - this.animateState.startTime
           const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
-          const targetValue = calcTargetValue_2(startValue[propKey], prop[propKey], elapsedTimeRatio)
+          const targetValue = calcTargetValue(startValue[propKey], prop[propKey], elapsedTimeRatio)
 
           // 兼容数组的情况 (做法不太合理)
           if (currDataValue.toString() === prop[propKey].toString()) {
@@ -450,70 +252,3 @@ export abstract class AbstractUi {
 }
 
 export default AbstractUi
-
-// initCount 和 targetCount 目前只存在都为 number 或者 都为 number[] 的情况; 暂时不考虑字符串的情况(颜色)
-const calcTargetValue = (
-  initCount: number | number[],
-  targetCount: number | number[],
-  per: number | number[]
-) => {
-  if (typeof initCount === 'number' && typeof targetCount === 'number' && typeof per === 'number') {
-    return calcValue(initCount, targetCount, per)
-  } else if (Array.isArray(initCount) && Array.isArray(targetCount)) {
-    return initCount.map((item, index) => calcValue(item, targetCount[index], per[index]))
-  }
-
-  function calcValue(initVal: number, targetVal: number, per: number) {
-    if (initVal < targetVal) {
-      const currCount = initVal + per
-      return currCount > targetVal ? targetVal : currCount
-    }
-
-    if (initVal > targetVal) {
-      const currCount = initVal - per
-
-      return currCount < targetVal ? targetVal : currCount
-    }
-
-    return targetVal
-  }
-}
-
-const calcTargetValue_2 = (
-  startCount: number | number[],
-  targetCount: number | number[],
-  elapsedTimeRatio: number
-) => {
-  if (typeof startCount === 'number' && typeof targetCount === 'number') {
-    return calcValue(startCount, targetCount)
-  } else if (Array.isArray(startCount) && Array.isArray(targetCount)) {
-    return startCount.map((item, index) => calcValue(item, targetCount[index]))
-  }
-
-  function calcValue(startVal: number, targetVal: number) {
-    const totalChangedVal = Math.abs(startVal - targetVal)
-    const per = elapsedTimeRatio * totalChangedVal
-
-    if (startVal < targetVal) {
-      const currCount = startVal + per
-      return currCount > targetVal ? targetVal : currCount
-    }
-
-    if (startVal > targetVal) {
-      const currCount = startVal - per
-
-      return currCount < targetVal ? targetVal : currCount
-    }
-
-    return targetVal
-  }
-}
-
-//
-function calcPer(initVal, targetVal, totalTime) {
-  if (Array.isArray(initVal)) {
-    return initVal.map((item, index) => Math.abs(item - targetVal[index]) / (totalTime / (1000 / 60)))
-  }
-
-  return Math.abs(initVal - targetVal) / (totalTime / (1000 / 60))
-}

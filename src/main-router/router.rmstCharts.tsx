@@ -1,23 +1,23 @@
 import LayoutView, { LayoutOutlet } from '@/components/LayoutView/LayoutView'
 
-import Line from '@/demo/1-new-charts/line/Line'
-import Area from '@/demo/1-new-charts/line/Area'
-import Stack from '@/demo/1-new-charts/line/Stack'
-import LineSmooth from '@/demo/1-new-charts/line/LineSmooth'
-import Step from '@/demo/1-new-charts/line/Step'
-import ZExtreme from '@/demo/1-new-charts/line/ZExtreme'
+import Line from '@/demo/1-rmst-charts/line/Line'
+import Area from '@/demo/1-rmst-charts/line/Area'
+import Stack from '@/demo/1-rmst-charts/line/Stack'
+import LineSmooth from '@/demo/1-rmst-charts/line/LineSmooth'
+import Step from '@/demo/1-rmst-charts/line/Step'
+import ZExtreme from '@/demo/1-rmst-charts/line/ZExtreme'
 
-import BarBase from '@/demo/1-new-charts/bar/Base'
-import Background from '@/demo/1-new-charts/bar/Background'
+import BarBase from '@/demo/1-rmst-charts/bar/Base'
+import Background from '@/demo/1-rmst-charts/bar/Background'
 
-import PieBase from '@/demo/1-new-charts/pie/Base'
-import Ring from '@/demo/1-new-charts/pie/Ring'
-import ZExtremePie from '@/demo/1-new-charts/pie/ZExtreme'
+import PieBase from '@/demo/1-rmst-charts/pie/Base'
+import Ring from '@/demo/1-rmst-charts/pie/Ring'
+import ZExtremePie from '@/demo/1-rmst-charts/pie/ZExtreme'
 
-import AreaStackGradient from '@/demo/1-new-charts/line/AreaStackGradient'
-import AreaStack from '@/demo/1-new-charts/line/AreaStack'
-import PolarLabelRadial from '@/demo/1-new-charts/bar/PolarLabelRadial'
-import PolarLabelTangential from '@/demo/1-new-charts/bar/PolarLabelTangential'
+import AreaStackGradient from '@/demo/1-rmst-charts/line/AreaStackGradient'
+import AreaStack from '@/demo/1-rmst-charts/line/AreaStack'
+import PolarLabelRadial from '@/demo/1-rmst-charts/bar/PolarLabelRadial'
+import PolarLabelTangential from '@/demo/1-rmst-charts/bar/PolarLabelTangential'
 
 import { IRouteObject } from './router'
 

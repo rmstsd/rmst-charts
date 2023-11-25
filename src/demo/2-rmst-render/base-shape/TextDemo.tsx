@@ -20,17 +20,17 @@ const TextDemo = () => {
 
     // 注册鼠标事件
     texts.forEach(item => {
-      item.onEnter = () => {
+      item.onmouseenter = () => {
         stage.setCursor('pointer')
         console.log('onEnter', item.constructor.name)
       }
 
-      item.onLeave = () => {
+      item.onmouseleave = () => {
         stage.setCursor('auto')
         console.log('onLeave', item.constructor.name)
       }
 
-      item.onClick = () => {
+      item.onclick = () => {
         console.log('c')
       }
     })

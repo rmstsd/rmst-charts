@@ -57,7 +57,7 @@ export class Circle extends AbstractUi {
     ctx.fill(path)
   }
 
-  // 废弃
+  // 已废弃
   isInnerOld(offsetX: number, offsetY: number) {
     const { x, y, radius, innerRadius, startAngle, endAngle } = this.data
 
@@ -78,6 +78,7 @@ export class Circle extends AbstractUi {
     return false
   }
 
+  // 已废弃
   calcAngle(offsetX: number, offsetY: number) {
     const sinOfAngleX = Math.abs((offsetY - this.data.y) / (offsetX - this.data.x))
 

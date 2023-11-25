@@ -1,20 +1,25 @@
 import LayoutView, { LayoutOutlet } from '@/components/LayoutView/LayoutView'
 
-import RectDemo from '@/demo/2-render/base-shape/RectDemo'
-import Circle from '@/demo/2-render/base-shape/CircleDemo'
-import LineDemo from '@/demo/2-render/base-shape/LineDemo'
-import TextDemo from '@/demo/2-render/base-shape/TextDemo'
-
-import Draggable from '@/demo/2-render/drag/Draggable'
-import GroupDraggable from '@/demo/2-render/drag/GroupDraggable'
-
-import Animate from '@/demo/2-render/animate/Animate'
-import GroupClipAnimate from '@/demo/2-render/animate/GroupClipAnimate'
-
-import WatermarkClip from '@/demo/2-render/real-case/WatermarkClip'
-
 import { IRouteObject } from './router'
-import DraggableRange from '@/demo/2-render/drag/DraggableRange'
+
+import RectDemo from '@/demo/2-rmst-render/base-shape/RectDemo'
+import Circle from '@/demo/2-rmst-render/base-shape/CircleDemo'
+import LineDemo from '@/demo/2-rmst-render/base-shape/LineDemo'
+import TextDemo from '@/demo/2-rmst-render/base-shape/TextDemo'
+
+import Draggable from '@/demo/2-rmst-render/drag/Draggable'
+import GroupDraggable from '@/demo/2-rmst-render/drag/GroupDraggable'
+
+import Animate from '@/demo/2-rmst-render/animate/Animate'
+import GroupClipAnimate from '@/demo/2-rmst-render/animate/GroupClipAnimate'
+
+import WatermarkClip from '@/demo/2-rmst-render/real-case/WatermarkClip'
+
+import DraggableRange from '@/demo/2-rmst-render/drag/DraggableRange'
+
+import Single from '@/demo/2-rmst-render/event/Single'
+import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
+import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -30,6 +35,16 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'circle', element: <Circle />, uiConfig: { title: '圆, 环, 扇, 扇环' } },
         { path: 'line', element: <LineDemo />, uiConfig: { title: '线' } },
         { path: 'text', element: <TextDemo />, uiConfig: { title: '文本' } }
+      ]
+    },
+    {
+      path: 'event',
+      element: <LayoutOutlet />,
+      uiConfig: { title: '事件' },
+      children: [
+        { path: 'single', element: <Single /> },
+        { path: 'adjacent', element: <TwoAdjacentRect /> },
+        { path: 'over', element: <TwoOverRect /> }
       ]
     },
     {

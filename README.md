@@ -16,7 +16,7 @@
 
 2. `src/demo/render` 是渲染引擎的 demo
 
-3. `src/demo/konva` 是用于观察 `konva` 的 UI 效果, 以及使用方式
+3. `src/demo/zrender` 是用于观察 `zrender` 的 UI 效果, 以及使用方式
 
 4. `src/demo/old-charts` 是旧版实现 处于废弃状态, 将使用新版全部实现
 

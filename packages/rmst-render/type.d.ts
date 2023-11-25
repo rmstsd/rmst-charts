@@ -4,7 +4,7 @@ import AbstractUi from './shape/AbstractUi'
 import Rect from './shape/Rect'
 
 declare global {
-  type IGraph = Circle | Rect | AbstractUi | Line
+  type IShape = Circle | Rect | AbstractUi | Line
 
   type IOption = {
     container: HTMLElement
@@ -23,8 +23,26 @@ declare global {
   }
 
   interface DebugOption {
-    disabledCanvasHandleMouseMove?: boolean
     disabledCanvasHandleMouseDown?: boolean
     disabledCanvasHandleMouseUp?: boolean
   }
+
+  type ICursor =
+    | 'url'
+    | 'default'
+    | 'auto'
+    | 'crosshair'
+    | 'pointer'
+    | 'move'
+    | 'e-resize'
+    | 'ne-resize'
+    | 'nw-resize'
+    | 'n-resize'
+    | 'se-resize'
+    | 'sw-resize'
+    | 's-resize'
+    | 'w-resize'
+    | 'text'
+    | 'wait'
+    | 'help'
 }

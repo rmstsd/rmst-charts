@@ -5,6 +5,6 @@ export * from './shape/Circle'
 export * from './shape/Rect'
 export * from './shape/Line'
 
-export * from './Group'
+export * from './shape/Group'
 
 export * from './Stage'

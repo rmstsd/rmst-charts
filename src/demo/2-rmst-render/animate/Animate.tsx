@@ -25,11 +25,11 @@ const Animate = () => {
       radius: 50,
       bgColor: 'pink'
     })
-    sector.onEnter = () => {
+    sector.onmouseenter = () => {
       stage.setCursor('pointer')
     }
 
-    sector.onLeave = () => {
+    sector.onmouseleave = () => {
       stage.setCursor('auto')
     }
 
