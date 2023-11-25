@@ -32,19 +32,19 @@ const GroupDemo = () => {
     group.append(arc)
     group.append(g2)
 
-    group.onDown = () => {
+    group.onmousedown = () => {
       console.log('group down')
     }
 
-    group.onEnter = () => {
+    group.onmouseenter = () => {
       stage.setCursor('move')
     }
 
-    group.onLeave = () => {
+    group.onmouseleave = () => {
       stage.setCursor('auto')
     }
 
-    group.onClick = () => {
+    group.onclick = () => {
       console.log('group.onClick')
     }
 

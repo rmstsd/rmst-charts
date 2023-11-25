@@ -21,11 +21,11 @@ class Legend {
       const legendGroup = new Group({ cursor: 'pointer' })
       legendGroup.append([legendRect, legendText])
 
-      legendGroup.onEnter = () => {
+      legendGroup.onmouseenter = () => {
         this.onSelect(index)
       }
 
-      legendGroup.onLeave = () => {
+      legendGroup.onmouseleave = () => {
         this.onCancelSelect(index)
       }
 

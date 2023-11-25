@@ -31,27 +31,27 @@ const TwoOverRect = () => {
       cursor: 'pointer'
     })
 
-    rect_1.onClick = () => {
+    rect_1.onclick = () => {
       console.log('rect_1')
     }
-    rect_1.onEnter = () => {
-      setCursor('move')
+    rect_1.onmouseenter = () => {
+      setCursor('enter')
       console.log('rect_1 enter')
     }
-    rect_1.onLeave = () => {
-      setCursor('auto')
+    rect_1.onmouseleave = () => {
+      setCursor('leave')
       console.log('rect_1 leave')
     }
 
-    rect_2.onClick = () => {
+    rect_2.onclick = () => {
       console.log('rect_2')
     }
-    rect_2.onEnter = () => {
-      setCursor('move')
+    rect_2.onmouseenter = () => {
+      setCursor('enter')
       console.log('rect_2 enter')
     }
-    rect_2.onLeave = () => {
-      setCursor('auto')
+    rect_2.onmouseleave = () => {
+      setCursor('leave')
       console.log('rect_2 leave')
     }
 
@@ -65,7 +65,7 @@ const TwoOverRect = () => {
   return (
     <>
       <h3>
-        重叠时 onEnter onLeave 的触发 <span className="cursor"></span>
+        覆盖时 onEnter onLeave 的触发 <span className="cursor"></span>
       </h3>
       <div className="canvas-container" ref={canvasRef}></div>
     </>

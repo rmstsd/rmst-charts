@@ -1,4 +1,4 @@
-import { absMap, eventList } from '../constant'
+import { EventType, eventList } from '../constant'
 import { initStage } from './utils'
 
 export class Stage {
@@ -67,7 +67,7 @@ export class Stage {
 
       if (!hovered) {
         if (this.prevHovered) {
-          this.prevHovered.onLeave()
+          this.prevHovered.onmouseleave()
           this.prevHovered = undefined
 
           this.setCursor('default')
@@ -77,11 +77,11 @@ export class Stage {
 
       if (hovered && hovered !== this.prevHovered) {
         if (this.prevHovered) {
-          this.prevHovered.onLeave()
+          this.prevHovered.onmouseleave()
         }
         this.prevHovered = hovered
 
-        hovered.onEnter()
+        hovered.onmouseenter()
 
         if (hovered.data.cursor) {
           this.setCursor(hovered.data.cursor)
@@ -89,7 +89,7 @@ export class Stage {
       }
 
       if (hovered) {
-        hovered.onMove()
+        hovered.onmousemove()
       }
     }
 
@@ -102,8 +102,19 @@ export class Stage {
         const elements = this.elements.toReversed()
 
         for (const elementItem of elements) {
-          const isInner = elementItem[absMap[eventName]](evt.offsetX, evt.offsetY)
+          const isInner = elementItem.isInner(evt.offsetX, evt.offsetY)
+
           if (isInner) {
+            const eventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
+
+            elementItem[eventName](eventParameter)
+
+            const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
+            if (Array.isArray(handlers)) {
+              handlers.forEach(handlerItem => {
+                handlerItem(eventParameter)
+              })
+            }
             break
           }
         }

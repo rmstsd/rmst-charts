@@ -1,13 +1,9 @@
 export type EventType = 'mousemove' | 'mousedown' | 'mouseup' | 'click'
 export type OnEventType = `on${EventType}`
-export type Handler = () => void
+
+export type HandlerArgs = { target; x: number; y: number }
+export type Handler = (parameter: HandlerArgs) => void
 
 export const eventList: OnEventType[] = ['onmousemove', 'onmousedown', 'onmouseup', 'onclick']
-
-export const absMap = {
-  onmousedown: 'handleMouseDown',
-  onmouseup: 'handleMouseUp',
-  onclick: 'handleClick'
-}
 
 export const dpr = window.devicePixelRatio

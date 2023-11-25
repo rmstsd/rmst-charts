@@ -80,11 +80,11 @@ function calcPolarMain(
       extraData: { radius }
     })
 
-    arc.onEnter = () => {
+    arc.onmouseenter = () => {
       stage.setCursor('pointer')
     }
 
-    arc.onLeave = () => {
+    arc.onmouseleave = () => {
       stage.setCursor('auto')
     }
     return arc
@@ -138,11 +138,11 @@ export function createRenderElements(
       bgColor: primaryColor
     })
 
-    rectItem.onEnter = () => {
+    rectItem.onmouseenter = () => {
       stage.setCursor('pointer')
     }
 
-    rectItem.onLeave = () => {
+    rectItem.onmouseleave = () => {
       stage.setCursor('auto')
     }
 

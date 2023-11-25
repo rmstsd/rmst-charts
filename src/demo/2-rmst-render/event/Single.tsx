@@ -21,16 +21,20 @@ const Single = () => {
       cursor: 'move'
     })
 
-    rect_1.onClick = () => {
-      console.log('rect_1')
+    rect_1.on('click', () => {
+      console.log('on-click')
+    })
+
+    rect_1.onclick = () => {
+      console.log('onclick rect_1')
     }
-    rect_1.onEnter = () => {
+    rect_1.onmouseenter = () => {
       console.log('rect_1 enter')
     }
-    rect_1.onMove = () => {
+    rect_1.onmousemove = () => {
       // console.log('rect_1 move')
     }
-    rect_1.onLeave = () => {
+    rect_1.onmouseleave = () => {
       console.log('rect_1 leave')
     }
 

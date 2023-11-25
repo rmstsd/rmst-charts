@@ -24,7 +24,7 @@ const Rotate = () => {
       fillStyle: 'red'
     })
 
-    rect.onClick = () => {
+    rect.onclick = () => {
       console.log('c')
     }
 

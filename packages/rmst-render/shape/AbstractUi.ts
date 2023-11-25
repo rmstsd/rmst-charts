@@ -1,6 +1,5 @@
 import Stage from '../Stage'
-import { pointToFlatArray } from 'rmst-charts/utils/utils'
-import { convertToNormalPoints } from 'rmst-render/utils'
+
 import { calcTargetValue } from 'rmst-render/animate'
 import AbsEvent from 'rmst-render/AbsEvent'
 
@@ -27,9 +26,7 @@ type AnimateCustomCartoonParameter = {
 
 export abstract class AbstractUi extends AbsEvent {
   isGroup = false
-
   isLine = false
-
   isText = false
 
   elements = []
@@ -99,51 +96,6 @@ export abstract class AbstractUi extends AbsEvent {
     this.data = { ...this.data, ...data }
 
     this.findStage()?.renderStage()
-  }
-
-  dndAttr(offsetX: number, offsetY: number) {
-    if (this.isGroup) {
-      this.elements.forEach(item => {
-        item.dndAttr(offsetX, offsetY)
-      })
-    } else {
-      const x = offsetX - this.mouseDownOffset.x
-      const y = offsetY - this.mouseDownOffset.y
-
-      const pos = this.data.draggableControl
-        ? this.data.draggableControl({ mouseCoord: { offsetX, offsetY }, shapeCoord: { x, y } })
-        : { x, y }
-
-      if (this.isLine) {
-        const c = convertToNormalPoints(this.data.points)
-        c.forEach((item, index) => {
-          const o = this.mouseDownOffsetPoints[index]
-          item.x = offsetX - o.x
-          item.y = offsetY - o.y
-        })
-        this.attr({ points: pointToFlatArray(c) })
-      } else {
-        this.attr({ x: pos.x, y: pos.y })
-      }
-    }
-  }
-
-  dndRecordMouseDownOffset(offsetX: number, offsetY: number) {
-    if (this.isGroup) {
-      this.elements.forEach(item => {
-        item.dndRecordMouseDownOffset(offsetX, offsetY)
-      })
-    } else {
-      if (this.isLine) {
-        this.mouseDownOffsetPoints = convertToNormalPoints(this.data.points).map(item => ({
-          x: offsetX - item.x,
-          y: offsetY - item.y
-        }))
-      } else {
-        this.mouseDownOffset.x = offsetX - this.data.x
-        this.mouseDownOffset.y = offsetY - this.data.y
-      }
-    }
   }
 
   remove() {

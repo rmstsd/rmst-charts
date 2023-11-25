@@ -50,12 +50,12 @@ class PieMain {
         animatedProps: { startAngle: item.startAngle, endAngle: item.endAngle }
       })
 
-      arc.onEnter = () => {
+      arc.onmouseenter = () => {
         this.select(index)
 
         this.onSelected(index)
       }
-      arc.onLeave = () => {
+      arc.onmouseleave = () => {
         this.cancelSelect(index)
 
         this.onCancelSelect(index)

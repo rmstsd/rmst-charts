@@ -1,22 +1,22 @@
 import { Group } from 'zrender'
 import Stage from './Stage'
-import { EventType, dpr } from './constant'
-import Handler from 'zrender/lib/Handler'
-
-const debugOption: DebugOption = {
-  // disabledCanvasHandleMouseMove: true,
-  // disabledCanvasHandleMouseDown: true,
-  // disabledCanvasHandleMouseUp: true
-}
+import { EventType, Handler, dpr } from './constant'
+import Draggable from './Draggable'
 
 abstract class AbsEvent {
-  onClick = () => {}
-  onMove = () => {}
-  onEnter = () => {}
-  onLeave = () => {}
-  onDown = () => {}
-  onUp = () => {}
-  onDragMove = () => {}
+  onclick: Handler = () => {}
+  onmousemove: Handler = () => {}
+  onmouseenter: Handler = () => {}
+  onmouseleave: Handler = () => {}
+  onmousedown: Handler = () => {}
+  onmouseup: Handler = () => {}
+  onDragMove: Handler = () => {}
+
+  draggingMgr: Draggable
+
+  constructor() {
+    this.draggingMgr = new Draggable(this)
+  }
 
   isMouseInner = false // 鼠标是否已经移入某个元素
 
@@ -32,9 +32,6 @@ abstract class AbsEvent {
   clipWidth
   clipHeight
   isLine
-
-  dndAttr(offsetX: number, offsetY: number) {}
-  dndRecordMouseDownOffset(offsetX: number, offsetY: number) {}
 
   findStage() {
     let stage = this.parent
@@ -82,72 +79,7 @@ abstract class AbsEvent {
     return isInPath() || isInStroke()
   }
 
-  handleClick(offsetX: number, offsetY: number) {
-    const isInner = this.isInner(offsetX, offsetY)
-    if (isInner) {
-      this.onClick()
-    }
-
-    return isInner
-  }
-
-  handleMouseDown(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseDown) {
-      return
-    }
-
-    const isInner = this.isInner(offsetX, offsetY)
-    if (isInner) {
-      this.onDown()
-
-      if (this.data.draggable) {
-        this.dndRecordMouseDownOffset(offsetX, offsetY)
-
-        const onDocumentMousemove = (evt: MouseEvent) => {
-          evt.preventDefault()
-
-          if (this.data.draggable) {
-            const { pageX, pageY } = evt
-
-            const stage = this.findStage()
-            const canvasRect = stage.canvasElement.getBoundingClientRect()
-
-            const offsetX = pageX - canvasRect.left
-            const offsetY = pageY - canvasRect.top
-
-            this.dndAttr(offsetX, offsetY)
-
-            this.onDragMove()
-          }
-        }
-        const onDocumentMouseup = () => {
-          document.removeEventListener('mousemove', onDocumentMousemove)
-          document.removeEventListener('mouseup', onDocumentMouseup)
-        }
-
-        document.addEventListener('mousemove', onDocumentMousemove)
-        document.addEventListener('mouseup', onDocumentMouseup)
-      }
-    }
-
-    return isInner
-  }
-
-  handleMouseUp(offsetX: number, offsetY: number) {
-    if (debugOption.disabledCanvasHandleMouseUp) {
-      return
-    }
-    const isInner = this.isInner(offsetX, offsetY)
-
-    if (isInner) {
-      this.onUp()
-    }
-
-    return isInner
-  }
-
   eventTypeHandlerMap = new Map<EventType, Handler[]>()
-
   on(eventType: EventType, handler: Handler) {
     let handlers = this.eventTypeHandlerMap.get(eventType)
 

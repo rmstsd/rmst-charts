@@ -73,11 +73,11 @@ const WatermarkClip = () => {
         y: controlRect.data.y
       })
     }
-    controlGroup.onEnter = () => {
+    controlGroup.onmouseenter = () => {
       stage.setCursor('move')
     }
 
-    controlGroup.onLeave = () => {
+    controlGroup.onmouseleave = () => {
       stage.setCursor('auto')
     }
 

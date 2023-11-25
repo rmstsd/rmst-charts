@@ -125,11 +125,11 @@ export function createRenderElements(
         lineWidth: 0
       })
 
-      innerSingleArea.onEnter = () => {
+      innerSingleArea.onmouseenter = () => {
         stage.setCursor('pointer')
         innerSingleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
       }
-      innerSingleArea.onLeave = () => {
+      innerSingleArea.onmouseleave = () => {
         stage.setCursor('auto')
         innerSingleArea.attr({ fillStyle: primaryColorAlpha })
       }
@@ -157,12 +157,12 @@ export function createRenderElements(
           lineWidth: 4
         })
 
-        arcItem.onEnter = () => {
+        arcItem.onmouseenter = () => {
           stage.setCursor('pointer')
           arcItem.animateCartoon({ radius: activeRadius }, 200)
         }
 
-        arcItem.onLeave = () => {
+        arcItem.onmouseleave = () => {
           stage.setCursor('auto')
           arcItem.animateCartoon({ radius: normalRadius }, 200)
         }

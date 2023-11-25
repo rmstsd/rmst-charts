@@ -15,20 +15,20 @@ const TwoAdjacentRect = () => {
     const rect_3 = new Rect({ x: 200, y: 50, width: 100, height: 100, bgColor: 'blue', cursor: 'move' })
     const rect_4 = new Rect({ x: 200, y: 150, width: 100, height: 100, bgColor: 'pink', cursor: 'pointer' })
 
-    rect_3.onEnter = () => {
+    rect_3.onmouseenter = () => {
       setCursor('move')
       console.log('rect_3 enter')
     }
-    rect_3.onLeave = () => {
+    rect_3.onmouseleave = () => {
       setCursor('auto')
       console.log('rect_3 leave')
     }
 
-    rect_4.onEnter = () => {
+    rect_4.onmouseenter = () => {
       setCursor('move')
       console.log('rect_4 enter')
     }
-    rect_4.onLeave = () => {
+    rect_4.onmouseleave = () => {
       setCursor('auto')
       console.log('rect_4 leave')
     }

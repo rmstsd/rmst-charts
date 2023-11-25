@@ -35,14 +35,14 @@ const Draggable = () => {
       draggable: true
     })
 
-    rect.onClick = () => {
+    rect.onclick = () => {
       console.log('rect')
     }
-    arc.onClick = () => {
+    arc.onclick = () => {
       console.log('arc')
     }
 
-    line.onClick = () => {
+    line.onclick = () => {
       console.log('line')
     }
 
