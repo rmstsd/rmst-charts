@@ -19,6 +19,18 @@ export interface AbstractUiData {
 
 type AnimateCartoonParameter = {}
 
+type AnimateCartoonConfig = {
+  duration?: number
+  delay?: number
+  during?: (percent: number, newState: Record<string, string | number>) => void
+  done?: Function
+  aborted?: Function
+  scope?: string
+  force?: boolean
+  additive?: boolean
+  setToFinal?: boolean
+}
+
 type AnimateCustomCartoonParameter = {
   startValue: number
   endValue: number
@@ -104,13 +116,15 @@ export abstract class AbstractUi extends AbsEvent {
   }
 
   // totalTime 毫秒
-  animateCartoon(prop: { [key: string]: any }, totalTime = 1000) {
+  animateCartoon(prop: { [key: string]: any }, cfg: AnimateCartoonConfig = {}) {
     if (!this.findStage()) {
       console.warn('图形', this, '还没有 append 到 stage 上')
       return
     }
 
     if (!prop) return
+
+    const { duration = 1000, during } = cfg
 
     cancelAnimationFrame(this.animateState.rafTimer)
 
@@ -121,40 +135,41 @@ export abstract class AbstractUi extends AbsEvent {
     })
 
     return new Promise(resolve => {
-      keys.forEach(propKey => {
-        const exec = (timestamp: number) => {
-          if (!this.animateState.startTime) {
-            this.animateState.startTime = timestamp
-          }
-
-          const currDataValue = this.data[propKey]
-          if (currDataValue === undefined) {
-            return
-          }
-
-          const elapsedTime = timestamp - this.animateState.startTime
-          let elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
-          elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
-
-          const targetValue = calcTargetValue(startValue[propKey], prop[propKey], elapsedTimeRatio)
-
-          // 兼容数组的情况 (做法不太合理)
-          if (currDataValue.toString() === prop[propKey].toString()) {
-            // console.log(`${propKey} 的动画结束`)
-
-            this.animateState.startTime = null
-
-            resolve(true)
-            return
-          }
-
-          this.attr({ ...this.data, [propKey]: targetValue })
-
-          this.animateState.rafTimer = requestAnimationFrame(exec)
+      const update = (timestamp: number) => {
+        if (!this.animateState.startTime) {
+          this.animateState.startTime = timestamp
         }
 
-        requestAnimationFrame(exec)
-      })
+        const elapsedTime = timestamp - this.animateState.startTime
+        let elapsedTimeRatio = Math.min(elapsedTime / duration, 1)
+        elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
+
+        const newState = {}
+        keys.forEach(propKey => {
+          const targetValue = calcTargetValue(startValue[propKey], prop[propKey], elapsedTimeRatio)
+          newState[propKey] = targetValue
+        })
+
+        this.attr({ ...this.data, ...newState })
+
+        if (elapsedTimeRatio < 1) {
+          this.animateState.rafTimer = requestAnimationFrame(update)
+        }
+
+        if (elapsedTimeRatio === 1) {
+          console.log('ani end')
+
+          this.animateState.startTime = null
+
+          resolve(true)
+        }
+
+        if (during) {
+          during(elapsedTimeRatio, newState)
+        }
+      }
+
+      requestAnimationFrame(update)
     })
   }
 }

@@ -21,8 +21,6 @@ const GroupClipAnimate = () => {
 
     // stage.append(group)
 
-    // group.animateCartoon(undefined, 3000, 'left-right')
-
     const box = new BoxHidden({
       x: 10,
       y: 10,

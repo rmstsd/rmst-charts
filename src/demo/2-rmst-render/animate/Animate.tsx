@@ -43,13 +43,13 @@ const Animate = () => {
 
     stage.append([arc, rect, sector])
 
-    arc.animateCartoon({ radius: 100 }).then(() => {
-      arc.animateCartoon({ radius: 50 })
-    })
-    rect.animateCartoon({ x: 200 + 100 }).then(() => {
+    // arc.animateCartoon({ radius: 100 }).then(() => {
+    //   arc.animateCartoon({ radius: 50 })
+    // })
+    rect.animateCartoon({ x: 200 + 100, height: 200 }).then(() => {
       rect.animateCartoon({ x: 200 })
     })
-    sector.animateCartoon({ endAngle: 100 })
+    // sector.animateCartoon({ endAngle: 100 })
   }, [])
 
   return (

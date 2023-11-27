@@ -17,8 +17,6 @@ const RectDemo = () => {
 
     stage.append(rects)
 
-    rects[0].animateCartoon(undefined, 1000, 'left-right')
-
     // 注册鼠标事件
     rects.forEach(item => {
       item.onmouseenter = () => {
