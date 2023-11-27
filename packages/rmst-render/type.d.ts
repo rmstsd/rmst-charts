@@ -2,9 +2,10 @@ import Circle from './shape/Circle'
 import Line from './shape/Line'
 import AbstractUi from './shape/AbstractUi'
 import Rect from './shape/Rect'
+import Group from './shape/Group'
 
 declare global {
-  type IShape = Circle | Rect | AbstractUi | Line
+  type IShape = Group | Circle | Rect | Line | AbstractUi
 
   type IOption = {
     container: HTMLElement

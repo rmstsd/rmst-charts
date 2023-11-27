@@ -33,7 +33,7 @@ export abstract class AbstractUi extends AbsEvent {
 
   extraData
 
-  path2D: Path2D
+  declare path2D: Path2D
 
   stage: Stage
 
@@ -44,7 +44,7 @@ export abstract class AbstractUi extends AbsEvent {
   clipWidth = 0
   clipHeight = 0
 
-  data: AbstractUiData
+  declare data: AbstractUiData
 
   animateState = {
     startTime: null,
@@ -139,7 +139,6 @@ export abstract class AbstractUi extends AbsEvent {
   // totalTime 毫秒
   animateCartoon(
     prop: {
-      animateCallback?: (_prop: Record<string, any>, elapsedTimeRatio: number) => void
       [key: string]: any
     },
     totalTime = 500,
@@ -201,10 +200,8 @@ export abstract class AbstractUi extends AbsEvent {
 
     cancelAnimationFrame(this.animateState.rafTimer)
 
-    const { animateCallback } = prop
-
     const startValue = {}
-    const keys = Object.keys(prop).filter(item => item !== 'animateCallback')
+    const keys = Object.keys(prop)
     keys.forEach(key => {
       startValue[key] = this.data[key]
     })
@@ -234,10 +231,6 @@ export abstract class AbstractUi extends AbsEvent {
 
             resolve(true)
             return
-          }
-
-          if (typeof animateCallback === 'function') {
-            animateCallback({ [propKey]: targetValue }, elapsedTimeRatio)
           }
 
           this.attr({ ...this.data, [propKey]: targetValue })

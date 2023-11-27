@@ -15,7 +15,7 @@ abstract class AbsEvent {
   draggingMgr: Draggable
 
   constructor() {
-    this.draggingMgr = new Draggable(this)
+    this.draggingMgr = new Draggable(this as unknown as IShape)
   }
 
   isMouseInner = false // 鼠标是否已经移入某个元素

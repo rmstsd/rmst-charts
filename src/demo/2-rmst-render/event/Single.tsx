@@ -22,21 +22,25 @@ const Single = () => {
     })
 
     rect_1.on('click', () => {
-      console.log('on-click')
+      console.log('on-click 1')
+    })
+
+    rect_1.on('click', () => {
+      console.log('on-click 2')
     })
 
     rect_1.onclick = () => {
       console.log('onclick rect_1')
     }
-    rect_1.onmouseenter = () => {
-      console.log('rect_1 enter')
-    }
-    rect_1.onmousemove = () => {
-      // console.log('rect_1 move')
-    }
-    rect_1.onmouseleave = () => {
-      console.log('rect_1 leave')
-    }
+    // rect_1.onmouseenter = () => {
+    //   console.log('rect_1 enter')
+    // }
+    // rect_1.onmousemove = () => {
+    //   // console.log('rect_1 move')
+    // }
+    // rect_1.onmouseleave = () => {
+    //   console.log('rect_1 leave')
+    // }
 
     stage.append([rect_1])
   }, [])

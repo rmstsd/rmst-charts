@@ -11,18 +11,18 @@ const RectOver = () => {
       style: { fill: 'pink' }
     })
 
-    rect_1.onmouseover = () => {
-      serCursor('move')
-      console.log('rect_1 over')
-    }
-    rect_1.onmousemove = () => {
-      serCursor('move')
-      console.log('rect_1 move')
-    }
-    rect_1.onmouseout = () => {
-      serCursor('auto')
-      console.log('rect_1 out')
-    }
+    // rect_1.onmouseover = () => {
+    //   serCursor('move')
+    //   console.log('rect_1 over')
+    // }
+    // rect_1.onmousemove = () => {
+    //   serCursor('move')
+    //   console.log('rect_1 move')
+    // }
+    // rect_1.onmouseout = () => {
+    //   serCursor('auto')
+    //   console.log('rect_1 out')
+    // }
 
     const rect_2 = new zrender.Rect({
       cursor: 'auto',
@@ -74,9 +74,9 @@ const RectOver = () => {
     }
 
     zr.add(rect_1)
-    zr.add(rect_2)
-    zr.add(rect_3)
-    zr.add(rect_4)
+    // zr.add(rect_2)
+    // zr.add(rect_3)
+    // zr.add(rect_4)
 
     function serCursor(c) {
       document.querySelector('.cursor').innerHTML = c
