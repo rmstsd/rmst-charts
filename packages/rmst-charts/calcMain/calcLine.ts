@@ -10,6 +10,7 @@ import { colorPalette, primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { pointToFlatArray } from '../utils/utils.js'
 import { ICoordinateSystemElements } from '../coordinateSystem/index.js'
+import BoxHidden from 'rmst-render/shape/BoxHidden.js'
 
 function calcMain(
   dataSource: number[],
@@ -68,7 +69,7 @@ export function createRenderElements(
     smooth: seriesItem.smooth
   })
 
-  const group = new Group({ clip: true })
+  const group = new BoxHidden({ x: 0, y: 0, width: 0, height: stage.canvasSize.height })
   if (areaStyle) {
     group.append(createArea())
 
@@ -178,23 +179,24 @@ export function createRenderElements(
 
   async function afterAppendStage() {
     let currentIndex = 0
-    group.animateCartoon(
-      undefined,
-      animationDuration,
-      'left-right',
-      function clipCallback(surroundBoxCoord, clipWidth) {
-        if (symbol === 'none') return
+    group.animateCartoon({ width: stage.canvasSize.width })
+    // group.animateCartoon(
+    //   undefined,
+    //   animationDuration,
+    //   'left-right',
+    //   function clipCallback(surroundBoxCoord, clipWidth) {
+    //     if (symbol === 'none') return
 
-        const position = surroundBoxCoord.lt_x + clipWidth
+    //     const position = surroundBoxCoord.lt_x + clipWidth
 
-        if (position >= ticksXs[currentIndex]) {
-          // 数据点的数量可能会比刻度的数量少
-          arcs[currentIndex]?.animateCartoon({ radius: normalRadius }, 300)
+    //     if (position >= ticksXs[currentIndex]) {
+    //       // 数据点的数量可能会比刻度的数量少
+    //       arcs[currentIndex]?.animateCartoon({ radius: normalRadius }, 300)
 
-          currentIndex++
-        }
-      }
-    )
+    //       currentIndex++
+    //     }
+    //   }
+    // )
   }
 
   const elements = [group, ...arcs]

@@ -29,23 +29,6 @@ export class Line extends AbstractUi {
     this.data = { ...defaultData, ...data }
 
     this.path2D = data.path2D ? data.path2D : createPath2D(data)
-
-    if (data.clip) {
-      if (data.path2D) {
-        // 如何根据 path2D 计算包围盒?
-        this.surroundBoxCoord = undefined
-
-        return
-      }
-      const normalPoints = convertToNormalPoints(data.points)
-
-      this.surroundBoxCoord = {
-        lt_x: Math.min(...normalPoints.map(item => item.x)) - this.data.lineWidth / 2,
-        lt_y: Math.min(...normalPoints.map(item => item.y)) - this.data.lineWidth / 2,
-        rb_x: Math.max(...normalPoints.map(item => item.x)) + this.data.lineWidth,
-        rb_y: Math.max(...normalPoints.map(item => item.y)) + this.data.lineWidth
-      }
-    }
   }
 
   declare data: LineData
@@ -53,10 +36,6 @@ export class Line extends AbstractUi {
   isLine = true
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!(this.parent instanceof Group)) {
-      this.beforeDrawClip(ctx)
-    }
-
     const { bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
 
     // 调用 this.attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
@@ -78,11 +57,6 @@ export class Line extends AbstractUi {
 
     if (closed) {
       ctx.fill(this.path2D)
-    }
-
-    // 恢复clip
-    if (!(this.parent instanceof Group)) {
-      ctx.restore()
     }
   }
 }

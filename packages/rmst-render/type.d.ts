@@ -11,8 +11,6 @@ declare global {
     container: HTMLElement
   }
 
-  type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
-
   type DraggableControlCoord = {
     mouseCoord: { offsetX: number; offsetY: number }
     shapeCoord: { x: number; y: number }

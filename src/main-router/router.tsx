@@ -26,8 +26,8 @@ export const routes: IRouteObject[] = [
   rmstRenderRouteConfig,
   zrenderRouteConfig,
   oldChartsRouteConfig,
-  otherRouteConfig,
-  leaferRouteConfig
+  leaferRouteConfig,
+  otherRouteConfig
 ]
 
 export const convertToAntdData = (

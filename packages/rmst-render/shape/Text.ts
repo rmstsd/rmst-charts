@@ -15,7 +15,6 @@ interface TextData extends AbstractUiData {
   fontSize?: number
   textAlign?: CanvasTextAlign
   clip?: boolean
-  surroundBoxCoord?: { x: number; y: number; width: number; height: number }
   [key: string]: any
 }
 
@@ -23,14 +22,6 @@ export class Text extends AbstractUi {
   constructor(data: TextData) {
     super()
 
-    if (data.clip) {
-      this.surroundBoxCoord = {
-        lt_x: data.surroundBoxCoord.x,
-        lt_y: data.surroundBoxCoord.y,
-        rb_x: data.surroundBoxCoord.x + data.surroundBoxCoord.width,
-        rb_y: data.surroundBoxCoord.y + data.surroundBoxCoord.height
-      }
-    }
     this.data = { ...defaultData, ...data }
   }
 
@@ -51,10 +42,6 @@ export class Text extends AbstractUi {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!(this.parent instanceof Group)) {
-      this.beforeDrawClip(ctx)
-    }
-
     const { x, y, content, color, fontSize, textAlign = 'left' } = this.data
 
     setCtxFontSize(ctx, fontSize)
@@ -65,10 +52,6 @@ export class Text extends AbstractUi {
 
     ctx.textAlign = textAlign
     ctx.fillText(content, x, y)
-
-    if (!(this.parent instanceof Group)) {
-      ctx.restore()
-    }
   }
 }
 
