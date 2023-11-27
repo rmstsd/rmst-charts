@@ -35,8 +35,6 @@ const LineDemo = () => {
 
     stage.append([line2])
 
-    // line.animateCartoon(undefined, 1000, 'left-right')
-
     return
 
     const mainPath = new Path2D()

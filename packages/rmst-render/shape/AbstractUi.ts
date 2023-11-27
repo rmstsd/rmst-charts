@@ -1,6 +1,6 @@
 import Stage from '../Stage'
 
-import { calcTargetValue } from 'rmst-render/animate'
+import { calcTargetValue, easingFuncs } from 'rmst-render/animate'
 import AbsEvent from 'rmst-render/AbsEvent'
 
 export interface AbstractUiData {
@@ -16,6 +16,8 @@ export interface AbstractUiData {
   cursor?: ICursor
   [key: string]: any
 }
+
+type AnimateCartoonParameter = {}
 
 type AnimateCustomCartoonParameter = {
   startValue: number
@@ -103,12 +105,9 @@ export abstract class AbstractUi extends AbsEvent {
     this.stage.renderStage()
   }
 
-  animateCustomCartoon({
-    startValue,
-    endValue,
-    totalTime = 500,
-    frameCallback
-  }: AnimateCustomCartoonParameter) {
+  animateCustomCartoon(customCartoonParameter: AnimateCustomCartoonParameter) {
+    const { startValue, endValue, totalTime = 1000, frameCallback } = customCartoonParameter
+
     let currentValue = startValue
 
     const rafCallback: FrameRequestCallback = timestamp => {
@@ -117,7 +116,10 @@ export abstract class AbstractUi extends AbsEvent {
       }
 
       const elapsedTime = timestamp - this.animateState.startTime
-      const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+      let elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+
+      elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
+
       currentValue = calcTargetValue(startValue, endValue, elapsedTimeRatio) as number
 
       if (typeof frameCallback === 'function') {
@@ -138,10 +140,8 @@ export abstract class AbstractUi extends AbsEvent {
 
   // totalTime 毫秒
   animateCartoon(
-    prop: {
-      [key: string]: any
-    },
-    totalTime = 500,
+    prop: { [key: string]: any },
+    totalTime = 1000,
     type?: 'top-bottom' | 'bottom-top' | 'left-right' | 'right-left',
     clipCallback?: (surroundBoxCoord: this['surroundBoxCoord'], clipWidth: number) => void
   ) {
@@ -171,7 +171,9 @@ export abstract class AbstractUi extends AbsEvent {
           }
 
           const elapsedTime = timestamp - this.animateState.startTime
-          const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+
+          let elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+          elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
 
           const targetValue = calcTargetValue(startValue, surroundBoxWidth, elapsedTimeRatio)
 
@@ -219,7 +221,8 @@ export abstract class AbstractUi extends AbsEvent {
           }
 
           const elapsedTime = timestamp - this.animateState.startTime
-          const elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+          let elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
+          elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
 
           const targetValue = calcTargetValue(startValue[propKey], prop[propKey], elapsedTimeRatio)
 
