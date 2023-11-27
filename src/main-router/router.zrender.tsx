@@ -10,8 +10,8 @@ const rmstRenderRouteConfig: IRouteObject = {
   element: <LayoutView />,
   uiConfig: { title: 'zrender', hidden: import.meta.env.PROD },
   children: [
-    { path: 'qs', element: <QuickStart /> },
-    { path: 'ro', element: <RectOver /> }
+    { path: 'QuickStart', element: <QuickStart /> },
+    { path: 'RectOver', element: <RectOver /> }
   ]
 }
 
