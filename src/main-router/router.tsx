@@ -25,8 +25,8 @@ export const routes: IRouteObject[] = [
   rmstChartsRouteConfig,
   rmstRenderRouteConfig,
   zrenderRouteConfig,
-  oldChartsRouteConfig,
   leaferRouteConfig,
+  oldChartsRouteConfig,
   otherRouteConfig
 ]
 
@@ -65,8 +65,4 @@ export function findPath(routeObject: IRouteObject) {
   dfs(routeObject)
 
   return path
-}
-
-function joinPath(...args) {
-  return args.map(item => item.replace(/(^\/)|(\/$)/g, '')).join('/')
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text, Line, AbstractUi } from 'rmst-render'
+import { Stage, Line } from 'rmst-render'
 
 const LineDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -9,12 +9,26 @@ const LineDemo = () => {
     const stage = new Stage({ container: canvasRef.current })
 
     const line = new Line({
-      points: [300, 80, 200, 150, 100, 100, 20, 20],
+      points: [666, 83, 566, 153, 466, 103, 386, 23],
       bgColor: 'pink',
       lineWidth: 2,
-      // clip: true,
+      draggable: true,
       smooth: true
     })
+    line.onDragMove = () => {
+      console.log(line.data.points)
+    }
+
+    const line5 = new Line({
+      points: [354, 142, 434, 222, 534, 272, 634, 202],
+      bgColor: 'brown',
+      lineWidth: 20,
+      draggable: true,
+      smooth: true
+    })
+    line5.onDragMove = () => {
+      console.log(line5.data.points)
+    }
 
     const line2 = new Line({
       points: [0, 0, 100, 100, 200, 100, 300, 300],
@@ -33,25 +47,31 @@ const LineDemo = () => {
       stage.setCursor('auto')
     }
 
-    stage.append([line2])
+    const line3 = new Line({
+      points: [0, 0, 0, 0, 0, 0, 0, 0],
+      bgColor: 'orange',
+      lineWidth: 10,
+      draggable: true
+    })
+    line3.onDragMove = () => {
+      console.log(line3.data.points)
+    }
 
-    return
+    const line4 = new Line({
+      points: [43, 156, 143, 300, 243, 350, 343, 333],
+      bgColor: 'purple',
+      lineWidth: 20,
+      draggable: true
+    })
+    line4.onDragMove = () => {
+      console.log(line4.data.points)
+    }
 
-    const mainPath = new Path2D()
+    stage.append([line, line2, line3, line4, line5])
 
-    mainPath.moveTo(20, 20)
-    mainPath.lineTo(100, 100)
-    mainPath.lineTo(200, 150)
-    mainPath.lineTo(300, 80)
-
-    mainPath.lineTo(300, 120)
-    mainPath.lineTo(200, 200)
-    mainPath.lineTo(100, 120)
-    mainPath.lineTo(20, 40)
-
-    mainPath.closePath()
-
-    stage.ctx.stroke(mainPath)
+    line3.animateCartoon({ points: [616, 314, 516, 384, 416, 334, 336, 254] })
+    line4.animateE2e(3000)
+    line5.animateE2e(3000)
   }, [])
 
   return (

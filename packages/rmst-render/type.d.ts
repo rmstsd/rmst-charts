@@ -3,9 +3,10 @@ import Line from './shape/Line'
 import AbstractUi from './shape/AbstractUi'
 import Rect from './shape/Rect'
 import Group from './shape/Group'
+import Text from './shape/Text'
 
 declare global {
-  type IShape = Group | Circle | Rect | Line | AbstractUi
+  type IShape = Group | Circle | Rect | Line | Text | AbstractUi
 
   type IOption = {
     container: HTMLElement

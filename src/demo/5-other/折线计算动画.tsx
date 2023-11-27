@@ -17,13 +17,13 @@ const LineAnimate = () => {
       { x: 250, y: 100 }
     ]
 
-    drawLine(points)
+    // drawLine(points)
 
     let startTimestamp = undefined
 
     const totalTime = 3000
 
-    function drawLine(points) {
+    function drawLine(points: ICoord[]) {
       ctx.clearRect(0, 0, 1000, 1000)
       const [start, ...rest] = points
       ctx.beginPath()

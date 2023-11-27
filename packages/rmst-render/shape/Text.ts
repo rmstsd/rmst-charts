@@ -46,8 +46,6 @@ export class Text extends AbstractUi {
 
     setCtxFontSize(ctx, fontSize)
 
-    this.setShadow(ctx, this.data)
-
     ctx.fillStyle = color
 
     ctx.textAlign = textAlign

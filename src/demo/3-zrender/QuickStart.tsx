@@ -18,16 +18,9 @@ const QuickStart = () => {
       }
     })
 
-    rect.animateTo(
-      {
-        shape: { x: 100 }
-      },
-      {
-        during: k => {
-          console.log(k)
-        }
-      }
-    )
+    rect.animateTo({
+      shape: { x: 100 }
+    })
 
     zr.add(rect)
   }, [])

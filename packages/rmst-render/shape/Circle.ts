@@ -36,8 +36,6 @@ export class Circle extends AbstractUi {
       this.data
     const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
-    this.setShadow(ctx, this.data)
-
     const d = innerRadius
       ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
       : calcD(radius, startAngle, endAngle, x, y, isWholeArc, offsetAngle)

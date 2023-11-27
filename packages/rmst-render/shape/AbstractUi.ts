@@ -20,7 +20,7 @@ export interface AbstractUiData {
 type AnimateCartoonParameter = {}
 
 type AnimateCartoonConfig = {
-  duration?: number
+  duration?: number // 毫秒
   delay?: number
   during?: (percent: number, newState: Record<string, string | number>) => void
   done?: Function
@@ -56,11 +56,7 @@ export abstract class AbstractUi extends AbsEvent {
 
   declare data: AbstractUiData
 
-  animateState = {
-    startTime: null,
-    rafTimer: null,
-    curr: 0
-  }
+  rafTimer: number
 
   draw(ctx: CanvasRenderingContext2D) {}
 
@@ -85,37 +81,35 @@ export abstract class AbstractUi extends AbsEvent {
   animateCustomCartoon(customCartoonParameter: AnimateCustomCartoonParameter) {
     const { startValue, endValue, totalTime = 1000, frameCallback } = customCartoonParameter
 
-    let currentValue = startValue
+    let startTime: number
 
     const rafCallback: FrameRequestCallback = timestamp => {
-      if (!this.animateState.startTime) {
-        this.animateState.startTime = timestamp
+      if (!startTime) {
+        startTime = timestamp
       }
 
-      const elapsedTime = timestamp - this.animateState.startTime
+      const elapsedTime = timestamp - startTime
       let elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
 
       elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
 
-      currentValue = calcTargetValue(startValue, endValue, elapsedTimeRatio) as number
+      const currentValue = calcTargetValue(startValue, endValue, elapsedTimeRatio) as number
 
       if (typeof frameCallback === 'function') {
         frameCallback(currentValue, elapsedTimeRatio)
       }
 
       if (elapsedTimeRatio === 1) {
-        console.log(`动画结束`)
+        console.log(`animateCustomCartoon end`)
 
-        this.animateState.startTime = null
         return
       }
-      this.animateState.rafTimer = requestAnimationFrame(rafCallback)
+      this.rafTimer = requestAnimationFrame(rafCallback)
     }
 
     requestAnimationFrame(rafCallback)
   }
 
-  // totalTime 毫秒
   animateCartoon(prop: { [key: string]: any }, cfg: AnimateCartoonConfig = {}) {
     if (!this.findStage()) {
       console.warn('图形', this, '还没有 append 到 stage 上')
@@ -126,7 +120,7 @@ export abstract class AbstractUi extends AbsEvent {
 
     const { duration = 1000, during } = cfg
 
-    cancelAnimationFrame(this.animateState.rafTimer)
+    cancelAnimationFrame(this.rafTimer)
 
     const startValue = {}
     const keys = Object.keys(prop)
@@ -134,13 +128,15 @@ export abstract class AbstractUi extends AbsEvent {
       startValue[key] = this.data[key]
     })
 
+    let startTime: number
+
     return new Promise(resolve => {
       const update = (timestamp: number) => {
-        if (!this.animateState.startTime) {
-          this.animateState.startTime = timestamp
+        if (!startTime) {
+          startTime = timestamp
         }
 
-        const elapsedTime = timestamp - this.animateState.startTime
+        const elapsedTime = timestamp - startTime
         let elapsedTimeRatio = Math.min(elapsedTime / duration, 1)
         elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
 
@@ -153,14 +149,10 @@ export abstract class AbstractUi extends AbsEvent {
         this.attr({ ...this.data, ...newState })
 
         if (elapsedTimeRatio < 1) {
-          this.animateState.rafTimer = requestAnimationFrame(update)
+          this.rafTimer = requestAnimationFrame(update)
         }
 
         if (elapsedTimeRatio === 1) {
-          console.log('ani end')
-
-          this.animateState.startTime = null
-
           resolve(true)
         }
 

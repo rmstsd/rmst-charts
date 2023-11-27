@@ -1,8 +1,7 @@
-import { Stage } from 'rmst-render'
+import { Line, Stage } from 'rmst-render'
 
 import { pieColors } from '../constant'
-import { calcTotalLineLength, pointToFlatArray } from 'rmst-charts/utils/utils'
-import { convertToNormalPoints } from 'rmst-render/utils'
+
 import Legend from 'rmst-charts/components/legend'
 import PieMain from 'rmst-charts/pieMain'
 
@@ -72,48 +71,12 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.PieSeries
     })
 
     pieMainInstance.labelElements.forEach((item, index) => {
-      const [exLine, exText] = item.elements
+      const [exLine, exText] = item.elements as unknown as [Line, Text]
 
-      const points = convertToNormalPoints(exLine.data.points)
-      const { totalLineLength, lines, lineLengths } = calcTotalLineLength(points)
+      exLine.animateE2e(seriesItem.animationDuration)
 
-      let currIndex = 0
-      exLine.animateCustomCartoon({
-        startValue: 0,
-        endValue: totalLineLength,
-        totalTime: seriesItem.animationDuration,
-        frameCallback: elapsedLength => {
-          let tempL = 0
-
-          for (let i = 0; i < lineLengths.length; i++) {
-            tempL += lineLengths[i]
-            if (tempL >= elapsedLength) {
-              currIndex = i
-              break
-            }
-          }
-
-          const lastOnePoint = (() => {
-            const currLine = lines[currIndex]
-
-            const currLineElapsedLength =
-              elapsedLength - lineLengths.slice(0, currIndex).reduce((acc, item) => acc + item, 0)
-
-            const ratio = currLineElapsedLength / lineLengths[currIndex]
-
-            // currLineElapsedLength / lineLengths[currIndex] = x - x1 /  x2 - x1
-
-            const x = ratio * (currLine.end.x - currLine.start.x) + currLine.start.x
-            const y = ratio * (currLine.end.y - currLine.start.y) + currLine.start.y
-
-            return { x, y }
-          })()
-
-          const _points = points.slice(0, currIndex + 1).concat(lastOnePoint)
-
-          exLine.attr({ points: pointToFlatArray(_points) })
-        }
-      })
+      // 颜色过渡
+      // exText
     })
   }
 

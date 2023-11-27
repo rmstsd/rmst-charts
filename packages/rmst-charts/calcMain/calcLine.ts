@@ -69,7 +69,12 @@ export function createRenderElements(
     smooth: seriesItem.smooth
   })
 
-  const boxHidden = new BoxHidden({ x: 0, y: 0, width: 0, height: stage.canvasSize.height })
+  const boxHidden = new BoxHidden({
+    x: xAxisData.axis.start.x,
+    y: yAxisData.axis.end.y,
+    width: 0,
+    height: stage.canvasSize.height
+  })
   if (areaStyle) {
     boxHidden.append(createArea())
 
@@ -182,6 +187,7 @@ export function createRenderElements(
     boxHidden.animateCartoon(
       { width: stage.canvasSize.width },
       {
+        duration: seriesItem.animationDuration,
         during(percent, newState) {
           if (symbol === 'none') return
 
