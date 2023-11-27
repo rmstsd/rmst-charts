@@ -11,16 +11,6 @@ const GroupClipAnimate = () => {
       container: canvasRef.current
     })
 
-    // const group = new Group({
-    //   clip: true
-    // })
-
-    // const rect1 = new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple', cornerRadius: 20 })
-    // const rect2 = new Rect({ x: 180, y: 40, width: 120, height: 80, bgColor: '#a18cd1' })
-    // group.append([rect1, rect2])
-
-    // stage.append(group)
-
     const box = new BoxHidden({
       x: 10,
       y: 10,
@@ -28,26 +18,39 @@ const GroupClipAnimate = () => {
       height: 100,
       fillStyle: 'pink'
     })
-
     const arc = new Circle({
       x: 10,
       y: 10,
       radius: 50,
       bgColor: 'purple'
     })
-
     box.append(arc)
+    stage.append(box)
 
-    const rect = new Rect({
+    //
+
+    const group = new BoxHidden({
       x: 200,
-      y: 200,
+      y: 10,
       width: 200,
       height: 200,
       bgColor: 'orange'
     })
 
-    stage.append(box)
-    stage.append(rect)
+    const rect1 = new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple', cornerRadius: 20 })
+    const rect2 = new Rect({ x: 180, y: 40, width: 120, height: 80, bgColor: '#a18cd1' })
+    group.append([rect1, rect2])
+
+    stage.append(group)
+    ;(async () => {
+      await group.animateCartoon({ width: 50 }, { duration: 800 })
+      await group.animateCartoon({ height: 50 }, { duration: 800 })
+
+      await group.animateCartoon({ width: 200 })
+      await group.animateCartoon({ height: 200 })
+
+      await group.animateCartoon({ x: 250, y: 100, width: 180, height: 180 })
+    })()
   }, [])
 
   return (
