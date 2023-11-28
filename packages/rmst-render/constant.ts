@@ -1,8 +1,8 @@
-export type EventType = 'mousemove' | 'mousedown' | 'mouseup' | 'click'
+export type EventType = 'mouseleave' | 'mouseenter' | 'mousemove' | 'mousedown' | 'mouseup' | 'click'
 export type OnEventType = `on${EventType}`
 
-export type HandlerArgs = { target; x: number; y: number }
-export type Handler = (parameter: HandlerArgs) => void
+export type EventParameter = { target: IShape; x: number; y: number }
+export type Handler = (parameter: EventParameter) => void
 
 export const eventList: OnEventType[] = ['onmousemove', 'onmousedown', 'onmouseup', 'onclick']
 

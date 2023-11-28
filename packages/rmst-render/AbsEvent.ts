@@ -15,23 +15,17 @@ abstract class AbsEvent {
   draggingMgr: Draggable
 
   constructor() {
-    this.draggingMgr = new Draggable(this)
+    this.draggingMgr = new Draggable(this as unknown as IShape)
   }
 
-  isMouseInner = false // 鼠标是否已经移入某个元素
-
   mouseDownOffset = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
-
   mouseDownOffsetPoints: { x: number; y: number }[] = []
 
   parent: Stage | Group = null
 
   data
   path2D
-  surroundBoxCoord
-  clipWidth
-  clipHeight
-  isLine
+  isLine?: boolean
 
   findStage() {
     let stage = this.parent
@@ -55,25 +49,9 @@ abstract class AbsEvent {
     const isInStroke = () => {
       return stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
     }
-    const isInSurroundBox = () => {
-      const surroundBoxCoord = this.surroundBoxCoord
-        ? this.surroundBoxCoord
-        : { lt_x: 0, lt_y: 0, rb_x: 0, rb_y: 0 }
-
-      return (
-        offsetX > surroundBoxCoord.lt_x &&
-        offsetX < surroundBoxCoord.lt_x + this.clipWidth &&
-        offsetY > surroundBoxCoord.lt_y &&
-        offsetY < surroundBoxCoord.lt_y + this.clipHeight
-      )
-    }
 
     if (this.isLine && !this.data.closed) {
       return isInStroke()
-    }
-
-    if (this.data.clip) {
-      return isInSurroundBox() && (isInPath() || isInStroke())
     }
 
     return isInPath() || isInStroke()

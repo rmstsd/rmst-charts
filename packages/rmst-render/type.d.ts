@@ -2,15 +2,15 @@ import Circle from './shape/Circle'
 import Line from './shape/Line'
 import AbstractUi from './shape/AbstractUi'
 import Rect from './shape/Rect'
+import Group from './shape/Group'
+import Text from './shape/Text'
 
 declare global {
-  type IShape = Circle | Rect | AbstractUi | Line
+  type IShape = Group | Circle | Rect | Line | Text | AbstractUi
 
   type IOption = {
     container: HTMLElement
   }
-
-  type SurroundBoxCoord = { lt_x: number; lt_y: number; rb_x: number; rb_y: number }
 
   type DraggableControlCoord = {
     mouseCoord: { offsetX: number; offsetY: number }

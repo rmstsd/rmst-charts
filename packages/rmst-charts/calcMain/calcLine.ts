@@ -10,6 +10,7 @@ import { colorPalette, primaryColor, primaryColorAlpha } from '../constant.js'
 import { getCanvasPxFromRealNumber } from '../convert.js'
 import { pointToFlatArray } from '../utils/utils.js'
 import { ICoordinateSystemElements } from '../coordinateSystem/index.js'
+import BoxHidden from 'rmst-render/shape/BoxHidden.js'
 
 function calcMain(
   dataSource: number[],
@@ -68,9 +69,14 @@ export function createRenderElements(
     smooth: seriesItem.smooth
   })
 
-  const group = new Group({ clip: true })
+  const boxHidden = new BoxHidden({
+    x: xAxisData.axis.start.x,
+    y: yAxisData.axis.end.y,
+    width: 0,
+    height: stage.canvasSize.height
+  })
   if (areaStyle) {
-    group.append(createArea())
+    boxHidden.append(createArea())
 
     function createArea() {
       const prevSeries = series[serIndex - 1]
@@ -137,7 +143,7 @@ export function createRenderElements(
       return innerSingleArea
     }
   }
-  group.append(mainLine)
+  boxHidden.append(mainLine)
 
   let arcs: Circle[] = []
   const normalRadius = 2
@@ -159,12 +165,12 @@ export function createRenderElements(
 
         arcItem.onmouseenter = () => {
           stage.setCursor('pointer')
-          arcItem.animateCartoon({ radius: activeRadius }, 200)
+          arcItem.animateCartoon({ radius: activeRadius })
         }
 
         arcItem.onmouseleave = () => {
           stage.setCursor('auto')
-          arcItem.animateCartoon({ radius: normalRadius }, 200)
+          arcItem.animateCartoon({ radius: normalRadius })
         }
 
         return arcItem
@@ -178,26 +184,25 @@ export function createRenderElements(
 
   async function afterAppendStage() {
     let currentIndex = 0
-    group.animateCartoon(
-      undefined,
-      animationDuration,
-      'left-right',
-      function clipCallback(surroundBoxCoord, clipWidth) {
-        if (symbol === 'none') return
+    boxHidden.animateCartoon(
+      { width: stage.canvasSize.width },
+      {
+        duration: seriesItem.animationDuration,
+        during(percent, newState) {
+          if (symbol === 'none') return
 
-        const position = surroundBoxCoord.lt_x + clipWidth
+          if (newState.width >= ticksXs[currentIndex]) {
+            // 数据点的数量可能会比刻度的数量少
+            arcs[currentIndex]?.animateCartoon({ radius: normalRadius }, { duration: 300 })
 
-        if (position >= ticksXs[currentIndex]) {
-          // 数据点的数量可能会比刻度的数量少
-          arcs[currentIndex]?.animateCartoon({ radius: normalRadius }, 300)
-
-          currentIndex++
+            currentIndex++
+          }
         }
       }
     )
   }
 
-  const elements = [group, ...arcs]
+  const elements = [boxHidden, ...arcs]
 
   return { elements, afterAppendStage }
 }

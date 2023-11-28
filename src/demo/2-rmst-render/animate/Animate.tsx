@@ -18,7 +18,7 @@ const Animate = () => {
     })
 
     const sector = new Circle({
-      x: 400,
+      x: 450,
       y: 100,
       startAngle: 0,
       endAngle: 0,
@@ -46,7 +46,7 @@ const Animate = () => {
     arc.animateCartoon({ radius: 100 }).then(() => {
       arc.animateCartoon({ radius: 50 })
     })
-    rect.animateCartoon({ x: 200 + 100 }).then(() => {
+    rect.animateCartoon({ x: 200 + 100, height: 200 }).then(() => {
       rect.animateCartoon({ x: 200 })
     })
     sector.animateCartoon({ endAngle: 100 })

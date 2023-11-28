@@ -10,19 +10,6 @@ export class Group extends AbstractUi {
   isGroup = true
   elements: Group[] = []
 
-  getGroupSurroundBoxCoord() {
-    // 只是个临时解决方案
-    const stage = this.findStage()
-    return { lt_x: 0, lt_y: 0, rb_x: stage.canvasSize.width, rb_y: stage.canvasSize.height }
-
-    const lt_x = Math.min(...this.elements.map(item => item.surroundBoxCoord.lt_x))
-    const lt_y = Math.min(...this.elements.map(item => item.surroundBoxCoord.lt_y))
-    const rb_x = Math.max(...this.elements.map(item => item.surroundBoxCoord.rb_x))
-    const rb_y = Math.max(...this.elements.map(item => item.surroundBoxCoord.rb_y))
-
-    return { lt_x, lt_y, rb_x, rb_y }
-  }
-
   isInner(offsetX: number, offsetY: number): boolean {
     if (!this.elements.length) return false
 
@@ -36,13 +23,9 @@ export class Group extends AbstractUi {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    this.beforeDrawClip(ctx)
-
     this.elements.forEach(item => {
       item.draw(ctx)
     })
-
-    ctx.restore() // 恢复clip
   }
 
   append(element) {

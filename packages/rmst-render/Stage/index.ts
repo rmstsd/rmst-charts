@@ -1,4 +1,4 @@
-import { EventType, eventList } from '../constant'
+import { EventParameter, EventType, OnEventType, eventList } from '../constant'
 import { initStage } from './utils'
 
 export class Stage {
@@ -67,7 +67,9 @@ export class Stage {
 
       if (!hovered) {
         if (this.prevHovered) {
-          this.prevHovered.onmouseleave()
+          const eventParameter: EventParameter = { target: this.prevHovered, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(this.prevHovered, 'onmouseleave', eventParameter)
+
           this.prevHovered = undefined
 
           this.setCursor('default')
@@ -77,11 +79,12 @@ export class Stage {
 
       if (hovered && hovered !== this.prevHovered) {
         if (this.prevHovered) {
-          this.prevHovered.onmouseleave()
+          const eventParameter: EventParameter = { target: this.prevHovered, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(this.prevHovered, 'onmouseleave', eventParameter)
         }
         this.prevHovered = hovered
-
-        hovered.onmouseenter()
+        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+        triggerEventHandlers(hovered, 'onmouseenter', eventParameter)
 
         if (hovered.data.cursor) {
           this.setCursor(hovered.data.cursor)
@@ -89,7 +92,8 @@ export class Stage {
       }
 
       if (hovered) {
-        hovered.onmousemove()
+        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+        triggerEventHandlers(hovered, 'onmousemove', eventParameter)
       }
     }
 
@@ -105,16 +109,9 @@ export class Stage {
           const isInner = elementItem.isInner(evt.offsetX, evt.offsetY)
 
           if (isInner) {
-            const eventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
+            const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
 
-            elementItem[eventName](eventParameter)
-
-            const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
-            if (Array.isArray(handlers)) {
-              handlers.forEach(handlerItem => {
-                handlerItem(eventParameter)
-              })
-            }
+            triggerEventHandlers(elementItem, eventName, eventParameter)
             break
           }
         }
@@ -128,3 +125,14 @@ export class Stage {
 }
 
 export default Stage
+
+function triggerEventHandlers(elementItem: IShape, eventName: OnEventType, eventParameter: EventParameter) {
+  elementItem[eventName](eventParameter)
+
+  const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
+  if (Array.isArray(handlers)) {
+    handlers.forEach(handlerItem => {
+      handlerItem(eventParameter)
+    })
+  }
+}

@@ -1,6 +1,7 @@
 import Group from './Group'
 import { convertToNormalPoints, createPath2D } from '../utils'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
+import { calcTotalLineLength, pointToFlatArray } from 'rmst-charts/utils/utils'
 
 const defaultData = {
   lineWidth: 1,
@@ -29,23 +30,6 @@ export class Line extends AbstractUi {
     this.data = { ...defaultData, ...data }
 
     this.path2D = data.path2D ? data.path2D : createPath2D(data)
-
-    if (data.clip) {
-      if (data.path2D) {
-        // 如何根据 path2D 计算包围盒?
-        this.surroundBoxCoord = undefined
-
-        return
-      }
-      const normalPoints = convertToNormalPoints(data.points)
-
-      this.surroundBoxCoord = {
-        lt_x: Math.min(...normalPoints.map(item => item.x)) - this.data.lineWidth / 2,
-        lt_y: Math.min(...normalPoints.map(item => item.y)) - this.data.lineWidth / 2,
-        rb_x: Math.max(...normalPoints.map(item => item.x)) + this.data.lineWidth,
-        rb_y: Math.max(...normalPoints.map(item => item.y)) + this.data.lineWidth
-      }
-    }
   }
 
   declare data: LineData
@@ -53,16 +37,10 @@ export class Line extends AbstractUi {
   isLine = true
 
   draw(ctx: CanvasRenderingContext2D) {
-    if (!(this.parent instanceof Group)) {
-      this.beforeDrawClip(ctx)
-    }
-
     const { bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
 
     // 调用 this.attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
     this.path2D = this.data.path2D ? this.data.path2D : createPath2D(this.data)
-
-    this.setShadow(ctx, this.data)
 
     ctx.beginPath()
     ctx.lineCap = lineCap
@@ -79,11 +57,53 @@ export class Line extends AbstractUi {
     if (closed) {
       ctx.fill(this.path2D)
     }
+  }
 
-    // 恢复clip
-    if (!(this.parent instanceof Group)) {
-      ctx.restore()
+  animateE2e(totalTime?: number) {
+    if (this.data.smooth) {
+      return
     }
+
+    const points = convertToNormalPoints(this.data.points)
+    const { totalLineLength, lines, lineLengths } = calcTotalLineLength(points)
+
+    let currIndex = 0
+    this.animateCustomCartoon({
+      startValue: 0,
+      endValue: totalLineLength,
+      totalTime,
+      frameCallback: elapsedLength => {
+        let tempL = 0
+
+        for (let i = 0; i < lineLengths.length; i++) {
+          tempL += lineLengths[i]
+          if (tempL >= elapsedLength) {
+            currIndex = i
+            break
+          }
+        }
+
+        const lastOnePoint = (() => {
+          const currLine = lines[currIndex]
+
+          const currLineElapsedLength =
+            elapsedLength - lineLengths.slice(0, currIndex).reduce((acc, item) => acc + item, 0)
+
+          const ratio = currLineElapsedLength / lineLengths[currIndex]
+
+          // currLineElapsedLength / lineLengths[currIndex] = x - x1 /  x2 - x1
+
+          const x = ratio * (currLine.end.x - currLine.start.x) + currLine.start.x
+          const y = ratio * (currLine.end.y - currLine.start.y) + currLine.start.y
+
+          return { x, y }
+        })()
+
+        const _points = points.slice(0, currIndex + 1).concat(lastOnePoint)
+
+        this.attr({ points: pointToFlatArray(_points) })
+      }
+    })
   }
 }
 

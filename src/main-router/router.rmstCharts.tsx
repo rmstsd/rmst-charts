@@ -6,18 +6,17 @@ import Stack from '@/demo/1-rmst-charts/line/Stack'
 import LineSmooth from '@/demo/1-rmst-charts/line/LineSmooth'
 import Step from '@/demo/1-rmst-charts/line/Step'
 import ZExtreme from '@/demo/1-rmst-charts/line/ZExtreme'
+import AreaStackGradient from '@/demo/1-rmst-charts/line/AreaStackGradient'
+import AreaStack from '@/demo/1-rmst-charts/line/AreaStack'
 
 import BarBase from '@/demo/1-rmst-charts/bar/Base'
 import Background from '@/demo/1-rmst-charts/bar/Background'
+import PolarLabelRadial from '@/demo/1-rmst-charts/bar/PolarLabelRadial'
+import PolarLabelTangential from '@/demo/1-rmst-charts/bar/PolarLabelTangential'
 
 import PieBase from '@/demo/1-rmst-charts/pie/Base'
 import Ring from '@/demo/1-rmst-charts/pie/Ring'
 import ZExtremePie from '@/demo/1-rmst-charts/pie/ZExtreme'
-
-import AreaStackGradient from '@/demo/1-rmst-charts/line/AreaStackGradient'
-import AreaStack from '@/demo/1-rmst-charts/line/AreaStack'
-import PolarLabelRadial from '@/demo/1-rmst-charts/bar/PolarLabelRadial'
-import PolarLabelTangential from '@/demo/1-rmst-charts/bar/PolarLabelTangential'
 
 import { IRouteObject } from './router'
 

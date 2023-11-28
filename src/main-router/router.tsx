@@ -25,9 +25,9 @@ export const routes: IRouteObject[] = [
   rmstChartsRouteConfig,
   rmstRenderRouteConfig,
   zrenderRouteConfig,
+  leaferRouteConfig,
   oldChartsRouteConfig,
-  otherRouteConfig,
-  leaferRouteConfig
+  otherRouteConfig
 ]
 
 export const convertToAntdData = (
@@ -65,8 +65,4 @@ export function findPath(routeObject: IRouteObject) {
   dfs(routeObject)
 
   return path
-}
-
-function joinPath(...args) {
-  return args.map(item => item.replace(/(^\/)|(\/$)/g, '')).join('/')
 }

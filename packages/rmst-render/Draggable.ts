@@ -33,7 +33,7 @@ export default class Draggable {
 
         this.dndAttr(offsetX, offsetY)
 
-        shape.onDragMove()
+        shape.onDragMove({ target: shape, x: offsetX, y: offsetY })
       }
     }
     const onDocumentMouseup = () => {
@@ -87,6 +87,7 @@ export default class Draggable {
           item.x = offsetX - o.x
           item.y = offsetY - o.y
         })
+
         shape.attr({ points: pointToFlatArray(c) })
       } else {
         shape.attr({ x: pos.x, y: pos.y })

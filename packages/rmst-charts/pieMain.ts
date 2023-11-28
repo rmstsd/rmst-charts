@@ -128,11 +128,11 @@ class PieMain {
   }
 
   select(index: number) {
-    this.pieElements[index].animateCartoon({ radius: this.hoverRadius, shadowBlur: 20 }, 200)
+    this.pieElements[index].animateCartoon({ radius: this.hoverRadius, shadowBlur: 20 })
   }
 
   cancelSelect(index: number) {
-    this.pieElements[index].animateCartoon({ radius: this.outerRadius, shadowBlur: 20 }, 200)
+    this.pieElements[index].animateCartoon({ radius: this.outerRadius, shadowBlur: 20 })
   }
 
   onSelected = (index: number) => {}

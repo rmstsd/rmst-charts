@@ -23,13 +23,7 @@ const WatermarkClip = () => {
       fontSize: 24,
       color: '#333',
       clip: true,
-      draggable: true,
-      surroundBoxCoord: {
-        x: paperOption.x,
-        y: paperOption.y,
-        width: paperOption.width,
-        height: paperOption.height
-      }
+      draggable: true
     }
 
     const { textWidth, textHeight } = measureText(ctx, textOption.content, textOption.fontSize)

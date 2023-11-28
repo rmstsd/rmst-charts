@@ -65,13 +65,13 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'base', element: <Animate />, uiConfig: { title: 'Animate' } },
         { path: 'groupClipAnimate', element: <GroupClipAnimate />, uiConfig: { title: '组 clip 动画' } }
       ]
-    },
-    {
-      path: 'real-case',
-      element: <LayoutOutlet />,
-      uiConfig: { title: '真实场景' },
-      children: [{ path: 'watermarkClip', element: <WatermarkClip />, uiConfig: { title: '水印' } }]
     }
+    // {
+    //   path: 'real-case',
+    //   element: <LayoutOutlet />,
+    //   uiConfig: { title: '真实场景' },
+    //   children: [{ path: 'watermarkClip', element: <WatermarkClip />, uiConfig: { title: '水印' } }]
+    // }
   ]
 }
 

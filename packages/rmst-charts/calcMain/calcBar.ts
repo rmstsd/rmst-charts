@@ -152,7 +152,6 @@ export function createRenderElements(
   async function afterAppendStage() {
     for (let index = 0; index < rects.length; index++) {
       const rectItem = rects[index]
-
       const dataItem = data[index]
 
       rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height })
