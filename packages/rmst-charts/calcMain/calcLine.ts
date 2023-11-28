@@ -191,7 +191,7 @@ export function createRenderElements(
         during(percent, newState) {
           if (symbol === 'none') return
 
-          if (newState.width >= ticksXs[currentIndex]) {
+          if (xAxisData.axis.start.x + (newState.width as number) >= ticksXs[currentIndex]) {
             // 数据点的数量可能会比刻度的数量少
             arcs[currentIndex]?.animateCartoon({ radius: normalRadius }, { duration: 300 })
 
