@@ -26,6 +26,10 @@ const GroupClipAnimate = () => {
     })
     box.append(arc)
     stage.append(box)
+    ;(async () => {
+      await arc.animateCartoon({ x: 40, y: 40 })
+      arc.animateCartoon({ radius: 20 })
+    })()
 
     //
 
