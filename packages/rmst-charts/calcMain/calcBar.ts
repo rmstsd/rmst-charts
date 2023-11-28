@@ -51,7 +51,7 @@ function calcPolarMain(
 
     const afterAppendStage = () => {
       arcs.forEach(item => {
-        item.animateCartoon({ endAngle: item.data.extraData.endAngle })
+        item.animateCartoon({ endAngle: item.data.extraData.endAngle }, { easing: 'cubicInOut' })
       })
     }
 
@@ -92,7 +92,7 @@ function calcPolarMain(
 
   const afterAppendStage = () => {
     arcs.forEach(item => {
-      item.animateCartoon({ radius: item.data.extraData.radius })
+      item.animateCartoon({ radius: item.data.extraData.radius }, { easing: 'cubicInOut' })
     })
   }
 
@@ -135,16 +135,9 @@ export function createRenderElements(
       y: x_axis_start_y,
       width: item.width,
       height: 0,
-      bgColor: primaryColor
+      bgColor: primaryColor,
+      cursor: 'pointer'
     })
-
-    rectItem.onmouseenter = () => {
-      stage.setCursor('pointer')
-    }
-
-    rectItem.onmouseleave = () => {
-      stage.setCursor('auto')
-    }
 
     return rectItem
   })
@@ -154,7 +147,7 @@ export function createRenderElements(
       const rectItem = rects[index]
       const dataItem = data[index]
 
-      rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height })
+      rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height }, { easing: 'cubicInOut' })
     }
   }
 

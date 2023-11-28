@@ -160,17 +160,16 @@ export function createRenderElements(
           radius: initRadius,
           bgColor: 'white',
           strokeStyle: colorPalette[serIndex],
-          lineWidth: 4
+          lineWidth: 4,
+          cursor: 'pointer'
         })
 
         arcItem.onmouseenter = () => {
-          stage.setCursor('pointer')
-          arcItem.animateCartoon({ radius: activeRadius })
+          arcItem.animateCartoon({ radius: activeRadius }, { duration: 300 })
         }
 
         arcItem.onmouseleave = () => {
-          stage.setCursor('auto')
-          arcItem.animateCartoon({ radius: normalRadius })
+          arcItem.animateCartoon({ radius: normalRadius }, { duration: 300 })
         }
 
         return arcItem
@@ -188,6 +187,7 @@ export function createRenderElements(
       { width: stage.canvasSize.width },
       {
         duration: seriesItem.animationDuration,
+        easing: 'cubicInOut',
         during(percent, newState) {
           if (symbol === 'none') return
 

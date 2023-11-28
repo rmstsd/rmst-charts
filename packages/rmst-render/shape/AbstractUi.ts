@@ -1,6 +1,6 @@
 import Stage from '../Stage'
 
-import { calcTargetValue, easingFuncs } from 'rmst-render/animate'
+import { Easing, calcTargetValue, easingFuncs } from 'rmst-render/animate'
 import AbsEvent from 'rmst-render/AbsEvent'
 
 export interface AbstractUiData {
@@ -29,6 +29,7 @@ type AnimateCartoonConfig = {
   force?: boolean
   additive?: boolean
   setToFinal?: boolean
+  easing?: Easing
 }
 
 type AnimateCustomCartoonParameter = {
@@ -118,7 +119,7 @@ export abstract class AbstractUi extends AbsEvent {
 
     if (!prop) return
 
-    const { duration = 1000, during } = cfg
+    const { duration = 1000, easing = 'linear', during } = cfg
 
     cancelAnimationFrame(this.rafTimer)
 
@@ -138,7 +139,7 @@ export abstract class AbstractUi extends AbsEvent {
 
         const elapsedTime = timestamp - startTime
         let elapsedTimeRatio = Math.min(elapsedTime / duration, 1)
-        elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
+        elapsedTimeRatio = easingFuncs[easing](elapsedTimeRatio)
 
         const newState = {}
         keys.forEach(propKey => {
