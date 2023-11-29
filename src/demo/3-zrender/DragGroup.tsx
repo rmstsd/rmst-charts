@@ -28,7 +28,8 @@ const DragGroup = () => {
       },
       style: {
         fill: 'pink'
-      }
+      },
+      draggable: true
     })
 
     const gr = new zrender.Group({
