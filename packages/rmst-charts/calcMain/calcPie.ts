@@ -33,7 +33,7 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.PieSeries
   const [innerRadius, outerRadiusOpt] = seriesItem.radius || []
 
   const outerRadius = (smallerContainerSize / 2) * ratioDecimal
-  const hoverRadius = outerRadius + 5
+  const hoverRadius = outerRadius + 8
 
   const legendInstance = new Legend(data)
   const pieMainInstance = new PieMain(

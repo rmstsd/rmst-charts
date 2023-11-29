@@ -28,6 +28,7 @@ export const calcTargetValue = (
   }
 }
 
+export type Easing = keyof typeof easingFuncs
 export const easingFuncs = {
   linear: function (k) {
     return k
