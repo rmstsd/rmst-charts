@@ -10,7 +10,8 @@ abstract class AbsEvent {
   onmouseleave: Handler = () => {}
   onmousedown: Handler = () => {}
   onmouseup: Handler = () => {}
-  onDragMove: Handler = () => {}
+
+  ondrag: Handler = () => {}
 
   draggingMgr: Draggable
 

@@ -23,7 +23,7 @@ export default class Draggable {
 
         this.dndAttr(movementX, movementY)
 
-        shape.onDragMove({ target: shape, x: evt.offsetX, y: evt.offsetY })
+        shape.ondrag({ target: shape, x: evt.offsetX, y: evt.offsetY })
       }
     }
 
