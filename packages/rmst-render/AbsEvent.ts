@@ -18,9 +18,6 @@ abstract class AbsEvent {
     this.draggingMgr = new Draggable(this as unknown as IShape)
   }
 
-  mouseDownOffset = { x: 0, y: 0 } // 鼠标按下的时候 鼠标位置相对于 图形的 x, y 的偏移量
-  mouseDownOffsetPoints: { x: number; y: number }[] = []
-
   parent: Stage | Group = null
 
   data

@@ -11,8 +11,7 @@ export interface AbstractUiData {
   shadowOffsetX?: number
   shadowOffsetY?: number
   clip?: boolean
-  draggable?: boolean
-  draggableControl?: DraggableControl
+  draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
   [key: string]: any
 }
@@ -43,8 +42,6 @@ export abstract class AbstractUi extends AbsEvent {
   isGroup = false
   isLine = false
   isText = false
-
-  elements = []
 
   extraData
 

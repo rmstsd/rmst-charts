@@ -57,30 +57,7 @@ const DraggableRange = () => {
       width: 100,
       height: 60,
       fillStyle: 'orange',
-      draggable: true,
-      draggableControl: ({ mouseCoord, shapeCoord }) => {
-        const left = rect.data.x
-        if (shapeCoord.x < left) {
-          shapeCoord.x = left
-        }
-
-        const top = rect.data.x
-        if (shapeCoord.y < top) {
-          shapeCoord.y = top
-        }
-
-        const right = rect.data.x + rect.data.width - dRect.data.width
-        if (shapeCoord.x > right) {
-          shapeCoord.x = right
-        }
-
-        const bottom = rect.data.y + rect.data.height - dRect.data.height
-        if (shapeCoord.y > bottom) {
-          shapeCoord.y = bottom
-        }
-
-        return shapeCoord
-      }
+      draggable: true
     })
 
     stage.append([rect, arc, dRect])

@@ -11,16 +11,32 @@ const GroupDemo = () => {
       container: canvasRef.current
     })
 
-    const rect = new Rect({ x: 10, y: 10, width: 100, height: 100, bgColor: 'pink' })
-    const arc = new Circle({ x: 200, y: 100, radius: 50, bgColor: 'purple' })
+    const rect = new Rect({
+      x: 10,
+      y: 10,
+      width: 100,
+      height: 100,
+      bgColor: 'pink'
+    })
 
-    const g2 = new Group({ draggable: true })
+    const arc = new Circle({
+      x: 200,
+      y: 100,
+      radius: 50,
+      bgColor: 'purple',
+      draggable: true
+    })
+
+    const g2 = new Group({
+      draggable: true,
+      cursor: 'move'
+    })
     const rect2 = new Rect({ x: 220, y: 200, width: 100, height: 100, bgColor: 'orange' })
     const line = new Line({
       points: [100, 200, 200, 200, 200, 300],
       lineWidth: 3,
-      strokeStyle: 'goldenrod',
-      draggable: true
+      strokeStyle: 'goldenrod'
+      // draggable: true
     })
 
     g2.append([rect2, line])
@@ -66,6 +82,7 @@ const GroupDemo = () => {
 
   return (
     <>
+      <h2>元素拖拽 (组内还有组)</h2>
       <button onClick={addToGroup}>向组添加元素</button>
       <div className="canvas-container" ref={canvasRef}></div>
     </>

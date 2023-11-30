@@ -17,11 +17,6 @@ declare global {
     shapeCoord: { x: number; y: number }
   }
 
-  type DraggableControl = (coord: DraggableControlCoord) => {
-    x: number
-    y: number
-  }
-
   interface DebugOption {
     disabledCanvasHandleMouseDown?: boolean
     disabledCanvasHandleMouseUp?: boolean
