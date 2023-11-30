@@ -1,4 +1,4 @@
-import { Cursor, Leafer, Rect } from 'leafer-ui'
+import { Cursor, DragEvent, Leafer, Rect } from 'leafer-ui'
 import { useEffect } from 'react'
 
 const QuickStart = () => {
@@ -20,7 +20,15 @@ const QuickStart = () => {
       cursor: 'move'
     })
 
+    rect.on(DragEvent.DRAG, () => {
+      console.log(leafer.toJSON())
+    })
+
     leafer.add(rect)
+
+    console.log(rect)
+
+    console.log(leafer.toJSON())
   }, [])
 
   return (
