@@ -1,4 +1,6 @@
-import { dpr } from 'rmst-render/constant'
+import { EventParameter, EventType, OnEventType, dpr } from 'rmst-render/constant'
+import Stage from '.'
+import Group from './../shape/Group'
 
 function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')
@@ -26,4 +28,49 @@ export function initStage(canvasContainer: HTMLElement) {
   canvasContainer.append(canvasElement)
 
   return { canvasElement, ctx }
+}
+
+export function triggerEventHandlers(
+  elementItem: IShape,
+  eventName: OnEventType,
+  eventParameter: EventParameter
+) {
+  elementItem[eventName](eventParameter)
+
+  const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
+  if (Array.isArray(handlers)) {
+    handlers.forEach(handlerItem => {
+      handlerItem(eventParameter)
+    })
+  }
+
+  const parent = elementItem.parent
+
+  if (parent && !(parent instanceof Stage)) {
+    const _parent = parent as unknown as IShape
+
+    triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })
+  }
+}
+
+export function findHover(elements: IShape[], x: number, y: number): IShape {
+  const _elements = elements.toReversed()
+
+  for (const elementItem of _elements) {
+    if (elementItem.isGroup) {
+      const hovered = findHover((elementItem as Group).elements, x, y)
+      if (hovered) {
+        return hovered
+      }
+
+      continue
+    }
+
+    const isInner = elementItem.isInner(x, y)
+    if (isInner) {
+      return elementItem
+    }
+  }
+
+  return null
 }

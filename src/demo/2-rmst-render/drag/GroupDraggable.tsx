@@ -4,14 +4,23 @@ import { Stage, Group, Rect, Circle, Text, Line } from 'rmst-render'
 
 const GroupDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
-  const groupRef = useRef<Group>()
+
+  const outerGroupRef = useRef<Group>()
+  const innerGroupRef = useRef<Group>()
 
   useEffect(() => {
     const stage = new Stage({
       container: canvasRef.current
     })
 
-    const rect = new Rect({
+    const outerGroup = new Group({
+      name: 'outer group',
+      draggable: true
+    })
+    outerGroupRef.current = outerGroup
+
+    const rect_1 = new Rect({
+      name: 'pink',
       x: 10,
       y: 10,
       width: 100,
@@ -19,72 +28,78 @@ const GroupDemo = () => {
       bgColor: 'pink'
     })
 
-    const arc = new Circle({
-      x: 200,
-      y: 100,
-      radius: 50,
-      bgColor: 'purple',
+    const rect_2 = new Rect({
+      name: 'blueviolet',
+      x: 150,
+      y: 10,
+      width: 100,
+      height: 100,
+      bgColor: 'blueviolet',
       draggable: true
     })
 
-    const g2 = new Group({
-      draggable: true,
-      cursor: 'move'
+    const innerGroup = new Group({
+      name: 'innerGroup',
+      draggable: true
     })
-    const rect2 = new Rect({ x: 220, y: 200, width: 100, height: 100, bgColor: 'orange' })
-    const line = new Line({
-      points: [100, 200, 200, 200, 200, 300],
-      lineWidth: 3,
-      strokeStyle: 'goldenrod'
-      // draggable: true
+    innerGroupRef.current = innerGroup
+    const arc_1 = new Circle({
+      name: 'red',
+      x: 100,
+      y: 300,
+      radius: 50,
+      bgColor: 'red'
+    })
+    const arc_2 = new Circle({
+      name: 'orange',
+      x: 250,
+      y: 300,
+      radius: 50,
+      bgColor: 'orange'
     })
 
-    g2.append([rect2, line])
+    innerGroup.append([arc_1, arc_2])
 
-    const group = new Group({ draggable: true })
+    outerGroup.append([rect_1, rect_2, innerGroup])
 
-    groupRef.current = group
-    group.append(rect)
-    group.append(arc)
-    group.append(g2)
-
-    group.onmousedown = () => {
-      console.log('group down')
-    }
-
-    group.onmouseenter = () => {
-      stage.setCursor('move')
-    }
-
-    group.onmouseleave = () => {
-      stage.setCursor('auto')
-    }
-
-    group.onclick = () => {
-      console.log('group.onClick')
-    }
-
-    stage.append([group])
+    stage.append([outerGroup])
   }, [])
 
-  const addToGroup = () => {
-    groupRef.current.append(
-      new Circle({
-        x: 200,
-        y: 200,
-        radius: 50,
-        bgColor: 'cornflowerblue'
+  const addToOuterGroup = () => {
+    outerGroupRef.current.append(
+      new Rect({
+        name: 'tan',
+        x: 300,
+        y: 10,
+        width: 100,
+        height: 100,
+        bgColor: 'tan',
+        draggable: false
       })
     )
+  }
 
-    console.log(groupRef.current)
+  const addToInnerGroup = () => {
+    innerGroupRef.current.append(
+      new Circle({
+        x: 450,
+        y: 300,
+        radius: 50,
+        bgColor: 'cornflowerblue',
+        draggable: true
+      })
+    )
   }
 
   return (
     <>
-      <h2>元素拖拽 (组内还有组)</h2>
-      <button onClick={addToGroup}>向组添加元素</button>
-      <div className="canvas-container" ref={canvasRef}></div>
+      <h2>Group 元素拖拽 (组内还有组), 对最近的祖先元素进行拖拽 </h2>
+      <button onClick={addToOuterGroup}>向 outer组 添加 draggable: false 的元素</button>
+      <button onClick={addToInnerGroup} className="ml-2">
+        向 inner组 添加 draggable: true 元素
+      </button>
+
+      <div className="canvas-container mt-2" ref={canvasRef}></div>
     </>
   )
 }

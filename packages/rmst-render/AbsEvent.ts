@@ -1,7 +1,6 @@
 import { Group } from 'zrender'
 import Stage from './Stage'
 import { EventType, Handler, dpr } from './constant'
-import Draggable from './Draggable'
 
 abstract class AbsEvent {
   onclick: Handler = () => {}
@@ -12,12 +11,6 @@ abstract class AbsEvent {
   onmouseup: Handler = () => {}
 
   ondrag: Handler = () => {}
-
-  draggingMgr: Draggable
-
-  constructor() {
-    this.draggingMgr = new Draggable(this as unknown as IShape)
-  }
 
   parent: Stage | Group = null
 
@@ -38,14 +31,19 @@ abstract class AbsEvent {
   isInner(offsetX: number, offsetY: number) {
     const stage = this.findStage()
 
-    if (!stage) return
+    if (!stage) {
+      return
+    }
 
     stage.ctx.lineWidth = this.data.lineWidth + 5
+    const x = offsetX * dpr
+    const y = offsetY * dpr
+
     const isInPath = () => {
-      return stage.ctx.isPointInPath(this.path2D, offsetX * dpr, offsetY * dpr)
+      return stage.ctx.isPointInPath(this.path2D, x, y)
     }
     const isInStroke = () => {
-      return stage.ctx.isPointInStroke(this.path2D, offsetX * dpr, offsetY * dpr)
+      return stage.ctx.isPointInStroke(this.path2D, x, y)
     }
 
     if (this.isLine && !this.data.closed) {
