@@ -34,8 +34,6 @@
         calculateColorTransition('rgba(0,0,0,1)', 'rgba(255,255,0,1)', (index + 1) / count)
       )
 
-      console.log(ans)
-
       for (const rgba of ans) {
         await new Promise((resolve, reject) => {
           setTimeout(() => {

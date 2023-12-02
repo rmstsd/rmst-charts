@@ -15,9 +15,6 @@ const LineDemo = () => {
       draggable: true,
       smooth: true
     })
-    line.onDragMove = () => {
-      console.log(line.data.points)
-    }
 
     const line5 = new Line({
       points: [354, 142, 434, 222, 534, 272, 634, 202],
@@ -26,9 +23,6 @@ const LineDemo = () => {
       draggable: true,
       smooth: true
     })
-    line5.onDragMove = () => {
-      console.log(line5.data.points)
-    }
 
     const line2 = new Line({
       points: [0, 0, 100, 100, 200, 100, 300, 300],
@@ -53,9 +47,6 @@ const LineDemo = () => {
       lineWidth: 10,
       draggable: true
     })
-    line3.onDragMove = () => {
-      console.log(line3.data.points)
-    }
 
     const line4 = new Line({
       points: [43, 156, 143, 300, 243, 350, 343, 333],
@@ -63,9 +54,6 @@ const LineDemo = () => {
       lineWidth: 20,
       draggable: true
     })
-    line4.onDragMove = () => {
-      console.log(line4.data.points)
-    }
 
     stage.append([line, line2, line3, line4, line5])
 

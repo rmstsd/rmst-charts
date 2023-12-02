@@ -41,7 +41,7 @@ namespace ICharts {
 
   interface BarSeries extends BaseSeries {
     type: 'bar'
-    data: Number[]
+    data: number[]
     showBackground?: boolean
   }
 

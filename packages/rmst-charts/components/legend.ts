@@ -10,15 +10,16 @@ class Legend {
       const x = 10
       const y = 10 + (height + gap) * index
 
-      const legendRect = new Rect({ x, y, width, height, bgColor: item.color })
+      const legendRect = new Rect({ x, y, width, height, bgColor: item.color, cursor: 'pointer' })
       const legendText = new Text({
         x: x + width + 5,
         y,
         content: item.label,
         color: item.color,
-        fontSize: 14
+        fontSize: 14,
+        cursor: 'pointer'
       })
-      const legendGroup = new Group({ cursor: 'pointer' })
+      const legendGroup = new Group({})
       legendGroup.append([legendRect, legendText])
 
       legendGroup.onmouseenter = () => {

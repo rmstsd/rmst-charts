@@ -21,9 +21,9 @@ const QuickStart = () => {
     })
 
     rect.on(DragEvent.DRAG, evt => {
-      // console.log(leafer.toJSON())
-
-      console.log(evt)
+      if (rect.x > 200) {
+        rect.x = 200
+      }
     })
 
     leafer.add(rect)

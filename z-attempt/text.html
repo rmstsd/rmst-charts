@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>text</title>
+
+    <style></style>
+  </head>
+
+  <body>
+    <canvas width="600" height="400" style="border: 1px solid #333"></canvas>
+
+    <script>
+      const canvas = document.querySelector('canvas')
+      const ctx = canvas.getContext('2d')
+
+      // ctx.fillText('很符合发给', 10, 10)
+
+      ctx.fillRect(10, 10, 100, 100)
+      ctx.fill()
+
+      console.log(ctx.isPointInPath(20, 20))
+
+      canvas.addEventListener('click', evt => {
+        console.log(evt.offsetX, evt.offsetY)
+
+        console.log(ctx.isPointInPath(evt.offsetX, evt.offsetY))
+        console.log(ctx.isPointInStroke(evt.offsetX, evt.offsetY))
+      })
+    </script>
+  </body>
+</html>

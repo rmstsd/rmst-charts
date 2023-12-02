@@ -64,10 +64,10 @@ class PieMain {
       return arc
     })
 
-    this.labelElements = data.map(item => this.createLabel(item))
+    this.labelElements = data.map((item, idx) => this.createLabel(item, idx))
   }
 
-  createLabel(item) {
+  createLabel(item, idx) {
     // 圆弧中心点坐标
     const radianCenterPoint = getPointOnArc(
       this.center.x,
@@ -107,7 +107,8 @@ class PieMain {
       points: pointToFlatArray(extendLinePoints),
       fillStyle: item.color,
       bgColor: item.color,
-      lineWidth: this.seriesItem.labelLine?.lineStyle?.width || 2
+      lineWidth: this.seriesItem.labelLine?.lineStyle?.width || 2,
+      cursor: 'pointer'
     })
 
     const { textWidth, textHeight } = measureText(this.ctx, item.label, 14)
@@ -117,10 +118,19 @@ class PieMain {
       y: extendLineSecondPoint_y - textHeight / 2,
       content: item.label,
       color: tickColor,
-      textAlign: isInRight ? 'left' : 'right'
+      textAlign: isInRight ? 'left' : 'right',
+      cursor: 'pointer'
     })
 
     const group = new Group()
+
+    group.onmouseenter = () => {
+      this.select(idx)
+    }
+
+    group.onmouseleave = () => {
+      this.cancelSelect(idx)
+    }
 
     group.append([extendLine, labelText])
 
