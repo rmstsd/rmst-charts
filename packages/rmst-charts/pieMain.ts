@@ -33,7 +33,7 @@ class PieMain {
       radius: outerRadius,
       startAngle: 0,
       endAngle: 0,
-      bgColor: 'transparent'
+      fillStyle: 'transparent'
     })
 
     this.pieElements = data.map((item, index) => {
@@ -45,7 +45,7 @@ class PieMain {
         innerRadius: innerRadius ? outerRadius * 0.5 : undefined,
         startAngle: 0,
         endAngle: 0,
-        bgColor: item.color,
+        fillStyle: item.color,
         cursor: 'pointer',
         animatedProps: { startAngle: item.startAngle, endAngle: item.endAngle }
       })
@@ -64,10 +64,10 @@ class PieMain {
       return arc
     })
 
-    this.labelElements = data.map(item => this.createLabel(item))
+    this.labelElements = data.map((item, idx) => this.createLabel(item, idx))
   }
 
-  createLabel(item) {
+  createLabel(item, idx) {
     // 圆弧中心点坐标
     const radianCenterPoint = getPointOnArc(
       this.center.x,
@@ -105,9 +105,9 @@ class PieMain {
     const extendLine = new Line({
       onlyKey: 'extend-line',
       points: pointToFlatArray(extendLinePoints),
-      fillStyle: item.color,
-      bgColor: item.color,
-      lineWidth: this.seriesItem.labelLine?.lineStyle?.width || 2
+      strokeStyle: item.color,
+      lineWidth: this.seriesItem.labelLine?.lineStyle?.width || 2,
+      cursor: 'pointer'
     })
 
     const { textWidth, textHeight } = measureText(this.ctx, item.label, 14)
@@ -116,11 +116,20 @@ class PieMain {
       x: isInRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - 5,
       y: extendLineSecondPoint_y - textHeight / 2,
       content: item.label,
-      color: tickColor,
-      textAlign: isInRight ? 'left' : 'right'
+      fillStyle: tickColor,
+      textAlign: isInRight ? 'left' : 'right',
+      cursor: 'pointer'
     })
 
     const group = new Group()
+
+    group.onmouseenter = () => {
+      this.select(idx)
+    }
+
+    group.onmouseleave = () => {
+      this.cancelSelect(idx)
+    }
 
     group.append([extendLine, labelText])
 

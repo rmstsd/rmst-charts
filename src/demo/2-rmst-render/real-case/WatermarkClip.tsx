@@ -12,8 +12,15 @@ const WatermarkClip = () => {
 
     const { ctx } = stage
 
-    const paperBgRect = new Rect({ x: 0, y: 0, width: width, height, bgColor: '#ddd' })
-    const paperOption = { x: width / 4, y: 0, width: width / 2, height, bgColor: '#fff', strokeStyle: '#aaa' }
+    const paperBgRect = new Rect({ x: 0, y: 0, width: width, height, fillStyle: '#ddd' })
+    const paperOption = {
+      x: width / 4,
+      y: 0,
+      width: width / 2,
+      height,
+      fillStyle: '#fff',
+      strokeStyle: '#aaa'
+    }
     const paperRect = new Rect(paperOption)
 
     const textOption: Text['data'] = {
@@ -21,8 +28,7 @@ const WatermarkClip = () => {
       y: 100,
       content,
       fontSize: 24,
-      color: '#333',
-      clip: true,
+      fillStyle: '#333',
       draggable: true
     }
 
@@ -33,7 +39,7 @@ const WatermarkClip = () => {
       width: textWidth,
       height: textHeight,
       draggable: true,
-      bgColor: 'rgba(0,0,0,0.2)',
+      fillStyle: 'rgba(0,0,0,0.2)',
       strokeStyle: 'blue'
     })
 
@@ -41,24 +47,24 @@ const WatermarkClip = () => {
       draggable: true
     })
 
-    const controlP_lt = new Circle({ x: textOption.x, y: textOption.y, radius: 4, bgColor: 'red' })
+    const controlP_lt = new Circle({ x: textOption.x, y: textOption.y, radius: 4, fillStyle: 'red' })
     const controlP_rt = new Circle({
       x: textOption.x + textWidth,
       y: textOption.y,
       radius: 4,
-      bgColor: 'red'
+      fillStyle: 'red'
     })
     const control_rb = new Circle({
       x: textOption.x,
       y: textOption.y + textHeight,
       radius: 4,
-      bgColor: 'red'
+      fillStyle: 'red'
     })
     const control_lb = new Circle({
       x: textOption.x + textWidth,
       y: textOption.y + textHeight,
       radius: 4,
-      bgColor: 'red'
+      fillStyle: 'red'
     })
 
     controlGroup.onDragMove = () => {

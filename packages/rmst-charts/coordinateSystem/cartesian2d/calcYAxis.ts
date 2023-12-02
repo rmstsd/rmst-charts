@@ -60,18 +60,23 @@ export function createYAxisElements(stage: Stage, series: ICharts.series[]) {
 
   const yAxisLine = new Line({
     points: pointToFlatArray([yAxisData.axis.start, yAxisData.axis.end]),
-    bgColor: splitLineColor
+    strokeStyle: splitLineColor
   })
 
   const ticksLines = yAxisData.ticks.map(item => {
     return new Line({
       points: [item.start.x, item.start.y, item.end.x, item.end.y],
-      bgColor: splitLineColor
+      strokeStyle: splitLineColor
     })
   })
 
   const tickTexts = yAxisData.ticks.map(item => {
-    return new Text({ x: item.text.x, y: item.text.y, content: String(item.text.value), color: tickColor })
+    return new Text({
+      x: item.text.x,
+      y: item.text.y,
+      content: String(item.text.value),
+      fillStyle: tickColor
+    })
   })
 
   return { yAxisLine, ticksLines, tickTexts, yAxisData }

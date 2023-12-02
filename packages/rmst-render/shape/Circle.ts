@@ -1,25 +1,22 @@
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
+  lineWidth: 1,
   startAngle: 0,
   endAngle: 360,
-  shadowColor: '#333',
-  lineWidth: 1,
   offsetAngle: 0
 }
 
 interface CircleData extends AbstractUiData {
   x: number
   y: number
+
   radius: number
   innerRadius?: number
-  bgColor: string
-  strokeStyle?: string
+
   startAngle?: number // 圆弧 饼图 角度 60 180 360
   endAngle?: number // 圆弧 饼图
   offsetAngle?: number // 默认情况下, 圆弧的起始角度是 0, 但是如果需要从其他角度开始, 可以设置 offsetAngle
-  lineWidth?: number
-  [key: string]: any
 }
 
 export class Circle extends AbstractUi {
@@ -32,8 +29,18 @@ export class Circle extends AbstractUi {
   declare data: CircleData
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle, offsetAngle, lineWidth } =
-      this.data
+    const {
+      x,
+      y,
+      radius,
+      innerRadius,
+      strokeStyle,
+      fillStyle,
+      startAngle,
+      endAngle,
+      offsetAngle,
+      lineWidth
+    } = this.data
     const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
     const d = innerRadius
@@ -51,54 +58,8 @@ export class Circle extends AbstractUi {
       ctx.stroke(path)
     }
 
-    ctx.fillStyle = bgColor
+    ctx.fillStyle = fillStyle
     ctx.fill(path)
-  }
-
-  // 已废弃
-  isInnerOld(offsetX: number, offsetY: number) {
-    const { x, y, radius, innerRadius, startAngle, endAngle } = this.data
-
-    const distance = Math.sqrt((offsetX - x) ** 2 + (offsetY - y) ** 2)
-    const isRadiusInner = innerRadius ? distance <= radius && distance >= innerRadius : distance <= radius
-
-    if (!isRadiusInner) return false
-
-    // 如果正好在圆心, 认为在扇形内, 或者在圆内
-    if (offsetX === this.data.x && offsetY === this.data.y) return true
-
-    const angle = this.calcAngle(offsetX, offsetY) - startAngle
-
-    if (angle >= 0 && angle <= endAngle - startAngle) {
-      return true
-    }
-
-    return false
-  }
-
-  // 已废弃
-  calcAngle(offsetX: number, offsetY: number) {
-    const sinOfAngleX = Math.abs((offsetY - this.data.y) / (offsetX - this.data.x))
-
-    const angle = Math.round((Math.atan(sinOfAngleX) * 180) / Math.PI)
-
-    // 第四象限
-    if (offsetX >= this.data.x && offsetY >= this.data.y) {
-      return angle
-    }
-
-    // 第三象限
-    if (offsetX <= this.data.x && offsetY >= this.data.y) {
-      return 180 - angle
-    }
-    // 第二象限
-    if (offsetX <= this.data.x && offsetY <= this.data.y) {
-      return 180 + angle
-    }
-    // 第一象限
-    if (offsetX >= this.data.x && offsetY <= this.data.y) {
-      return 360 - angle
-    }
   }
 }
 

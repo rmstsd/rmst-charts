@@ -1,7 +1,7 @@
 import AbstractUi from './AbstractUi'
 
 export class Group extends AbstractUi {
-  constructor(data: any = {}) {
+  constructor(data = {}) {
     super()
 
     this.data = { ...data }
@@ -9,18 +9,6 @@ export class Group extends AbstractUi {
 
   isGroup = true
   elements: Group[] = []
-
-  isInner(offsetX: number, offsetY: number): boolean {
-    if (!this.elements.length) return false
-
-    return this.elements.some(item => item.isInner(offsetX, offsetY))
-  }
-
-  findActualShape(offsetX: number, offsetY: number) {
-    if (!this.elements.length) return null
-
-    return this.elements.find(item => item.isInner(offsetX, offsetY))
-  }
 
   draw(ctx: CanvasRenderingContext2D): void {
     this.elements.forEach(item => {

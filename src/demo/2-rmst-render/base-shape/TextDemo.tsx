@@ -12,28 +12,19 @@ const TextDemo = () => {
     })
 
     const texts = [
-      new Text({ x: 0, y: 0, content: '人美声甜', color: '#333' }),
-      new Text({ x: 210, y: 10, content: '君不见黄河之水天上来', color: '#333' })
+      new Text({ x: 0, y: 0, content: '人美声甜', fillStyle: '#333', cursor: 'pointer' }),
+      new Text({
+        x: 210,
+        y: 10,
+        content: '君不见黄河之水天上来',
+        fillStyle: '#333',
+        cursor: 'pointer',
+        textAlign: 'center'
+      })
+      // new Circle({ x: 210, y: 10, radius: 2, fillStyle: 'red' })
     ]
 
     stage.append(texts)
-
-    // 注册鼠标事件
-    texts.forEach(item => {
-      item.onmouseenter = () => {
-        stage.setCursor('pointer')
-        console.log('onEnter', item.constructor.name)
-      }
-
-      item.onmouseleave = () => {
-        stage.setCursor('auto')
-        console.log('onLeave', item.constructor.name)
-      }
-
-      item.onclick = () => {
-        console.log('c')
-      }
-    })
   }, [])
 
   return (

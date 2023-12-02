@@ -1,6 +1,6 @@
 import LayoutView from '@/components/LayoutView/LayoutView'
 
-import QuickStart from '@/demo/6-leafer/QuickStart'
+import QuickStart from '@/demo/4-leafer/QuickStart'
 
 import type { IRouteObject } from './router'
 

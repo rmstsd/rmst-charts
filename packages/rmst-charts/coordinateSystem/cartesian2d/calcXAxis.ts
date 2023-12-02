@@ -62,7 +62,7 @@ export function createXAxisElements(stage: Stage, innerOption: ICharts.IOption) 
   })
 
   const tickTexts = xAxisData.ticks.map(item => {
-    return new Text({ x: item.text.x, y: item.text.y, content: item.text.value, color: tickColor })
+    return new Text({ x: item.text.x, y: item.text.y, content: item.text.value, fillStyle: tickColor })
   })
 
   return { xAxisLine, ticksLines, tickTexts, xAxisData }

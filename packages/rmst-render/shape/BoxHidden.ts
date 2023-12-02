@@ -8,18 +8,13 @@ export default class BoxHidden extends Group {
     this.data = { ...data, ...defaultRectData }
   }
 
-  declare data: RectData
-
-  // 待实现
-  isInner() {
-    return false
-  }
+  type = BoxHidden.name
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.save()
 
-    const path2D = drawRect(ctx, this.data)
-    ctx.clip(path2D)
+    this.path2D = drawRect(ctx, this.data)
+    ctx.clip(this.path2D)
 
     this.elements.forEach(item => {
       item.draw(ctx)

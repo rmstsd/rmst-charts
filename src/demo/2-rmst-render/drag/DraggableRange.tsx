@@ -12,78 +12,50 @@ const DraggableRange = () => {
     })
     stageRef.current = stage
 
-    const rect = new Rect({
+    const rect_range = new Rect({
       x: 50,
       y: 50,
       width: 300,
       height: 300,
       strokeStyle: 'purple'
     })
-    const arc = new Circle({
+    const inner_arc = new Circle({
       x: 100,
       y: 100,
       radius: 50,
-      bgColor: 'pink',
+      fillStyle: 'pink',
       draggable: true,
-      draggableControl: ({ mouseCoord, shapeCoord }) => {
-        const _radius = arc.data.radius
-        const left = rect.data.x + _radius
-        if (shapeCoord.x < left) {
-          shapeCoord.x = left
+      cusSetCoord: ({ x, y, dx, dy }) => {
+        const _radius = inner_arc.data.radius
+
+        let nx = inner_arc.data.x + dx
+        let ny = inner_arc.data.y + dy
+
+        const left = rect_range.data.x + _radius
+        if (nx < left) {
+          nx = left
         }
 
-        const right = rect.data.x + rect.data.width - _radius
-        if (shapeCoord.x > right) {
-          shapeCoord.x = right
+        const right = rect_range.data.x + rect_range.data.width - _radius
+        if (nx > right) {
+          nx = right
         }
 
-        const top = rect.data.y + _radius
-        if (shapeCoord.y < top) {
-          shapeCoord.y = top
+        const top = rect_range.data.y + _radius
+        if (ny < top) {
+          ny = top
         }
 
-        const bottom = rect.data.y + rect.data.height - _radius
-        if (shapeCoord.y > bottom) {
-          shapeCoord.y = bottom
+        const bottom = rect_range.data.y + rect_range.data.height - _radius
+        if (ny > bottom) {
+          ny = bottom
         }
 
-        return shapeCoord
+        inner_arc.attr({ x: nx, y: ny })
       }
     })
 
-    const dRect = new Rect({
-      x: 100,
-      y: 110,
-      width: 100,
-      height: 60,
-      fillStyle: 'orange',
-      draggable: true,
-      draggableControl: ({ mouseCoord, shapeCoord }) => {
-        const left = rect.data.x
-        if (shapeCoord.x < left) {
-          shapeCoord.x = left
-        }
-
-        const top = rect.data.x
-        if (shapeCoord.y < top) {
-          shapeCoord.y = top
-        }
-
-        const right = rect.data.x + rect.data.width - dRect.data.width
-        if (shapeCoord.x > right) {
-          shapeCoord.x = right
-        }
-
-        const bottom = rect.data.y + rect.data.height - dRect.data.height
-        if (shapeCoord.y > bottom) {
-          shapeCoord.y = bottom
-        }
-
-        return shapeCoord
-      }
-    })
-
-    stage.append([rect, arc, dRect])
+    stage.append([rect_range, inner_arc])
   }, [])
 
   return (

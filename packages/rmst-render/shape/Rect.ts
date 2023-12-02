@@ -1,4 +1,3 @@
-import Group from './Group'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 export const defaultRectData = {
@@ -11,11 +10,7 @@ export interface RectData extends AbstractUiData {
   y: number
   width: number
   height: number
-  bgColor?: string
-  fillStyle?: string
-  strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
   cornerRadius?: number
-  [key: string]: any
 }
 
 export class Rect extends AbstractUi {
@@ -49,12 +44,7 @@ export default Rect
 // ctx.stroke()
 
 export function drawRect(ctx: CanvasRenderingContext2D, data) {
-  const { x, y, width, height, bgColor, cornerRadius, strokeStyle, lineWidth } = data
-
-  let { fillStyle } = data
-  if (!fillStyle) {
-    fillStyle = bgColor
-  }
+  const { x, y, width, height, cornerRadius, strokeStyle, fillStyle, lineWidth } = data
 
   ctx.fillStyle = fillStyle
   ctx.strokeStyle = strokeStyle

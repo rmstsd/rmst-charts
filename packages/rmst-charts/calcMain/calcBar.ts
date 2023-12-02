@@ -42,7 +42,7 @@ function calcPolarMain(
         endAngle: item.startAngle,
         innerRadius: item.innerRadius,
         radius: item.radius,
-        bgColor: primaryColor,
+        fillStyle: primaryColor,
         extraData: { endAngle: item.endAngle }
       })
 
@@ -76,7 +76,7 @@ function calcPolarMain(
       radius: 0,
       startAngle: item.startAngle + gapAngle,
       endAngle: item.endAngle - gapAngle,
-      bgColor: primaryColor,
+      fillStyle: primaryColor,
       extraData: { radius }
     })
 
@@ -124,7 +124,7 @@ export function createRenderElements(
           y: x_axis_start_y,
           width: item.width,
           height: yAxisData.axis.end.y - yAxisData.axis.start.y,
-          bgColor: 'rgba(180, 180, 180, 0.2)'
+          fillStyle: 'rgba(180, 180, 180, 0.2)'
         })
       })
     : []
@@ -135,7 +135,7 @@ export function createRenderElements(
       y: x_axis_start_y,
       width: item.width,
       height: 0,
-      bgColor: primaryColor,
+      fillStyle: primaryColor,
       cursor: 'pointer'
     })
 

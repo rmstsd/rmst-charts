@@ -1,5 +1,6 @@
-import { EventParameter, EventType, OnEventType, eventList } from '../constant'
-import { initStage } from './utils'
+import Draggable from 'rmst-render/Draggable'
+import { EventParameter, eventList } from '../constant'
+import { findHover, initStage, triggerEventHandlers } from './utils'
 
 export class Stage {
   constructor(option: IOption) {
@@ -11,6 +12,8 @@ export class Stage {
 
     this.addStageEventListener()
   }
+
+  isStage = true
 
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
@@ -47,23 +50,11 @@ export class Stage {
     })
   }
 
-  findHover(x: number, y: number) {
-    const elements = this.elements.toReversed()
-
-    for (const elementItem of elements) {
-      const isInner = elementItem.isInner(x, y)
-      if (isInner) {
-        return elementItem
-      }
-    }
-
-    return null
-  }
   prevHovered: IShape
 
   addStageEventListener() {
     this.canvasElement.onmousemove = evt => {
-      const hovered = this.findHover(evt.offsetX, evt.offsetY)
+      const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
 
       if (!hovered) {
         if (this.prevHovered) {
@@ -103,21 +94,25 @@ export class Stage {
       }
 
       this.canvasElement[eventName] = evt => {
-        const elements = this.elements.toReversed()
-
-        for (const elementItem of elements) {
-          const isInner = elementItem.isInner(evt.offsetX, evt.offsetY)
-
-          if (isInner) {
-            const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
-
-            triggerEventHandlers(elementItem, eventName, eventParameter)
-            break
-          }
+        const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
+        if (hovered) {
+          const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(hovered, eventName, eventParameter)
         }
       }
     })
+
+    // 拖拽
+    this.canvasElement.addEventListener('mousedown', evt => {
+      const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
+      if (hovered) {
+        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+        this.draggingMgr.dragStart(eventParameter)
+      }
+    })
   }
+
+  draggingMgr = new Draggable()
 
   setCursor(cursor: ICursor) {
     this.canvasElement.style.setProperty('cursor', cursor)
@@ -125,14 +120,3 @@ export class Stage {
 }
 
 export default Stage
-
-function triggerEventHandlers(elementItem: IShape, eventName: OnEventType, eventParameter: EventParameter) {
-  elementItem[eventName](eventParameter)
-
-  const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
-  if (Array.isArray(handlers)) {
-    handlers.forEach(handlerItem => {
-      handlerItem(eventParameter)
-    })
-  }
-}

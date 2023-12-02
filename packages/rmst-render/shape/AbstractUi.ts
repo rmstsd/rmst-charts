@@ -2,6 +2,7 @@ import Stage from '../Stage'
 
 import { Easing, calcTargetValue, easingFuncs } from 'rmst-render/animate'
 import AbsEvent from 'rmst-render/AbsEvent'
+import { EventParameter } from 'rmst-render/constant'
 
 export interface AbstractUiData {
   x?: number
@@ -10,10 +11,19 @@ export interface AbstractUiData {
   shadowBlur?: number
   shadowOffsetX?: number
   shadowOffsetY?: number
+  lineWidth?: number
+
+  fillStyle?: CanvasFillStrokeStyles['fillStyle']
+  strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
+
+  lineCap?: CanvasLineCap
+  lineJoin?: CanvasLineJoin
+
   clip?: boolean
-  draggable?: boolean
-  draggableControl?: DraggableControl
+  draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
+  cusSetCoord?: (eventParameter: EventParameter & { dx: number; dy: number }) => void
+
   [key: string]: any
 }
 
@@ -43,8 +53,7 @@ export abstract class AbstractUi extends AbsEvent {
   isGroup = false
   isLine = false
   isText = false
-
-  elements = []
+  type: string
 
   extraData
 
