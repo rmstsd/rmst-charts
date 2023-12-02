@@ -1,4 +1,4 @@
-import { Circle, Group, Line, Text, deg2rad, getPointOnArc, measureText } from 'rmst-render'
+import { Circle, Group, Line, Stage, Text, deg2rad, getPointOnArc, measureText } from 'rmst-render'
 import { pointToFlatArray } from './utils/utils'
 import { tickColor } from './constant'
 
@@ -19,10 +19,12 @@ class PieMain {
 
   ctx
 
-  constructor(center: ICoord, data, innerRadius, outerRadius, hoverRadius, seriesItem, ctx) {
+  constructor(stage: Stage, data, innerRadius, outerRadius, seriesItem) {
+    const { center, ctx } = stage
+
     this.ctx = ctx
     this.outerRadius = outerRadius
-    this.hoverRadius = hoverRadius
+    this.hoverRadius = outerRadius + 6
 
     this.seriesItem = seriesItem
     this.center = center
@@ -47,6 +49,10 @@ class PieMain {
         endAngle: 0,
         fillStyle: item.color,
         cursor: 'pointer',
+        shadowColor: 'rgba(0, 0, 0, 0.5)',
+        shadowOffsetX: 0,
+        shadowOffsetY: 0,
+        shadowBlur: 0,
         animatedProps: { startAngle: item.startAngle, endAngle: item.endAngle }
       })
 
@@ -153,7 +159,7 @@ class PieMain {
     })
 
     this.labelElements.forEach((item, index) => {
-      const [exLine, exText] = item.elements as unknown as [Line, Text]
+      const [exLine, exText] = item.children as unknown as [Line, Text]
 
       exLine.animateE2e(this.seriesItem.animationDuration)
 
@@ -163,11 +169,13 @@ class PieMain {
   }
 
   select(index: number) {
-    this.pieElements[index].animateCartoon({ radius: this.hoverRadius, shadowBlur: 20 }, { duration: 300 })
+    const item = this.pieElements[index]
+    item.pinTop()
+    item.animateCartoon({ radius: this.hoverRadius, shadowBlur: 15 }, { duration: 200 })
   }
 
   cancelSelect(index: number) {
-    this.pieElements[index].animateCartoon({ radius: this.outerRadius, shadowBlur: 20 }, { duration: 300 })
+    this.pieElements[index].animateCartoon({ radius: this.outerRadius, shadowBlur: 0 }, { duration: 200 })
   }
 
   onSelected = (index: number) => {}

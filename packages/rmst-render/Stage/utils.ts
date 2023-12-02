@@ -53,8 +53,8 @@ export function triggerEventHandlers(
   }
 }
 
-export function findHover(elements: IShape[], x: number, y: number): IShape {
-  const _elements = elements.toReversed()
+export function findHover(children: IShape[], x: number, y: number): IShape {
+  const _elements = children.toReversed()
 
   for (const elementItem of _elements) {
     if (elementItem.type === 'BoxHidden') {
@@ -63,8 +63,8 @@ export function findHover(elements: IShape[], x: number, y: number): IShape {
       }
     }
 
-    if (elementItem.isGroup) {
-      const hovered = findHover((elementItem as Group).elements, x, y)
+    if (elementItem.type === 'Group') {
+      const hovered = findHover((elementItem as Group).children, x, y)
       if (hovered) {
         return hovered
       }

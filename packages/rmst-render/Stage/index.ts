@@ -19,7 +19,7 @@ export class Stage {
   ctx: CanvasRenderingContext2D
 
   parent: null
-  elements: IShape[] = []
+  children: IShape[] = []
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -30,14 +30,14 @@ export class Stage {
   }
 
   removeAllElements() {
-    this.elements = []
+    this.children = []
 
     this.renderStage()
   }
 
   append(element: IShape | IShape[]) {
-    this.elements = this.elements.concat(element)
-    this.elements = this.elements.map(item => Object.assign(item, { parent: this }))
+    this.children = this.children.concat(element)
+    this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
     this.renderStage()
   }
@@ -45,7 +45,7 @@ export class Stage {
   renderStage() {
     this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
 
-    this.elements.forEach(elementItem => {
+    this.children.forEach(elementItem => {
       elementItem.draw(this.ctx)
     })
   }
@@ -54,7 +54,7 @@ export class Stage {
 
   addStageEventListener() {
     this.canvasElement.onmousemove = evt => {
-      const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
+      const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
 
       if (!hovered) {
         if (this.prevHovered) {
@@ -94,7 +94,7 @@ export class Stage {
       }
 
       this.canvasElement[eventName] = evt => {
-        const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
+        const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
         if (hovered) {
           const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
           triggerEventHandlers(hovered, eventName, eventParameter)
@@ -104,7 +104,7 @@ export class Stage {
 
     // 拖拽
     this.canvasElement.addEventListener('mousedown', evt => {
-      const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
+      const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
       if (hovered) {
         const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
         this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())

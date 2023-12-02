@@ -55,14 +55,13 @@ const newChartsRouteConfig: IRouteObject = {
         }
       ]
     },
-
     {
       path: 'pie',
       element: <LayoutOutlet />,
       uiConfig: { title: '饼图' },
       children: [
         { path: 'base', element: <PieBase />, uiConfig: { title: '基础饼图' } },
-        { path: 'doughnut', element: <Ring />, uiConfig: { title: '环形饼图' } },
+        { path: 'ring', element: <Ring />, uiConfig: { title: '环形饼图' } },
         { path: 'extremePie', element: <ZExtremePie />, uiConfig: { title: '极端的例子' } }
       ]
     }

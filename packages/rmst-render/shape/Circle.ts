@@ -23,12 +23,16 @@ export class Circle extends AbstractUi {
   constructor(data: CircleData) {
     super()
 
-    this.data = { ...defaultData, ...data }
+    this.type = 'Circle'
+
+    this.data = super.combineDefaultData(data, defaultData)
   }
 
   declare data: CircleData
 
   draw(ctx: CanvasRenderingContext2D) {
+    super.draw(ctx)
+
     const {
       x,
       y,

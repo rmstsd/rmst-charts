@@ -4,21 +4,22 @@ export class Group extends AbstractUi {
   constructor(data = {}) {
     super()
 
+    this.type = 'Group'
+
     this.data = { ...data }
   }
 
-  isGroup = true
-  elements: Group[] = []
+  children: IShape[] = []
 
   draw(ctx: CanvasRenderingContext2D): void {
-    this.elements.forEach(item => {
+    this.children.forEach(item => {
       item.draw(ctx)
     })
   }
 
   append(element) {
-    this.elements = this.elements.concat(element)
-    this.elements = this.elements.map(item => Object.assign(item, { parent: this }))
+    this.children = this.children.concat(element)
+    this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
     this.findStage()?.renderStage()
   }

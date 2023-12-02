@@ -62,12 +62,12 @@ function dndAttr(draggedTarget: IShape, dx: number, dy: number) {
 }
 
 function setShapeCoord(target: IShape, dx: number, dy: number) {
-  if (target.isGroup) {
-    ;(target as Group).elements.forEach(item => {
+  if (target.type === 'Group') {
+    ;(target as Group).children.forEach(item => {
       setShapeCoord(item, dx, dy)
     })
   } else {
-    if (target.isLine) {
+    if (target.type === 'Line') {
       const c = convertToNormalPoints(target.data.points)
       c.forEach(item => {
         item.x += dx

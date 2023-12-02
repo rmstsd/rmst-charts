@@ -17,12 +17,16 @@ export class Rect extends AbstractUi {
   constructor(data: RectData) {
     super()
 
-    this.data = { ...defaultRectData, ...data }
+    this.type = 'Rect'
+
+    this.data = super.combineDefaultData(data, defaultRectData)
   }
 
   declare data: RectData
 
   draw(ctx: CanvasRenderingContext2D) {
+    super.draw(ctx)
+
     this.path2D = drawRect(ctx, this.data)
   }
 }

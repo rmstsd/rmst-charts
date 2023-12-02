@@ -19,16 +19,18 @@ export class Line extends AbstractUi {
   constructor(data: LineData) {
     super()
 
-    this.data = { ...defaultData, ...data }
+    this.type = 'Line'
+
+    this.data = super.combineDefaultData(data, defaultData)
 
     this.path2D = data.path2D ? data.path2D : createPath2D(data)
   }
 
   declare data: LineData
 
-  isLine = true
-
   draw(ctx: CanvasRenderingContext2D) {
+    super.draw(ctx)
+
     const { fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
 
     // 调用 this.attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化

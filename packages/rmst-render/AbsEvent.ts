@@ -4,9 +4,11 @@ import { EventType, Handler, dpr } from './constant'
 
 abstract class AbsEvent {
   onclick: Handler = () => {}
-  onmousemove: Handler = () => {}
+
   onmouseenter: Handler = () => {}
+  onmousemove: Handler = () => {}
   onmouseleave: Handler = () => {}
+
   onmousedown: Handler = () => {}
   onmouseup: Handler = () => {}
 
@@ -18,7 +20,6 @@ abstract class AbsEvent {
 
   data
   path2D
-  isLine?: boolean
 
   findStage() {
     let stage = this.parent
@@ -48,7 +49,7 @@ abstract class AbsEvent {
       return stage.ctx.isPointInStroke(this.path2D, x, y)
     }
 
-    if (this.isLine && !this.data.closed) {
+    if (this.type === 'Line' && !this.data.closed) {
       return isInStroke()
     }
 

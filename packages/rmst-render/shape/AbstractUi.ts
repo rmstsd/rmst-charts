@@ -2,7 +2,7 @@ import Stage from '../Stage'
 
 import { Easing, calcTargetValue, easingFuncs } from 'rmst-render/animate'
 import AbsEvent from 'rmst-render/AbsEvent'
-import { EventParameter } from 'rmst-render/constant'
+import Line from './Line'
 
 export interface AbstractUiData {
   x?: number
@@ -48,32 +48,47 @@ type AnimateCustomCartoonParameter = {
   frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
 }
 
+export const defaultAbsData: AbstractUiData = {
+  lineWidth: 1,
+  shadowBlur: 0,
+  shadowColor: 'orange',
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  lineCap: 'butt',
+  lineJoin: 'miter'
+}
+
 export abstract class AbstractUi extends AbsEvent {
-  isGroup = false
-  isLine = false
-  isText = false
-  type: string
+  type: 'Line' | 'Rect' | 'Circle' | 'Text' | 'Group' | 'BoxHidden'
 
   extraData
+
+  declare data: AbstractUiData
 
   declare path2D: Path2D
 
   stage: Stage
 
-  clipWidth = 0
-  clipHeight = 0
-
-  declare data: AbstractUiData
-
   rafTimer: number
 
-  draw(ctx: CanvasRenderingContext2D) {}
+  combineDefaultData(shapeData, defaultShapeData) {
+    return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
+  }
 
-  setShadow(ctx: CanvasRenderingContext2D, prop) {
-    ctx.shadowColor = prop.shadowColor || 'transparent'
-    ctx.shadowBlur = prop.shadowBlur || 0
-    ctx.shadowOffsetX = prop.shadowOffsetX || 0
-    ctx.shadowOffsetY = prop.shadowOffsetY || 0
+  pinTop() {
+    const parentChildren = this.parent.children as IShape[]
+
+    parentChildren.splice(parentChildren.indexOf(this), 1)
+    parentChildren.push(this)
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY } = this.data
+
+    ctx.shadowOffsetX = shadowOffsetX
+    ctx.shadowOffsetY = shadowOffsetY
+    ctx.shadowColor = shadowColor
+    ctx.shadowBlur = shadowBlur
   }
 
   attr(data) {
@@ -83,7 +98,7 @@ export abstract class AbstractUi extends AbsEvent {
   }
 
   remove() {
-    this.stage.elements = this.stage.elements.filter(item => item !== this)
+    this.stage.children = this.stage.children.filter(item => item !== this)
     this.stage.renderStage()
   }
 
