@@ -136,6 +136,32 @@ class PieMain {
     return group
   }
 
+  afterAppendStage() {
+    this.fakeArc.animateCustomCartoon({
+      startValue: 0,
+      endValue: 360,
+      frameCallback: (currentValue, elapsedTimeRatio) => {
+        this.pieElements
+          .filter(o => o.data.onlyKey === 'main-pie')
+          .forEach(element => {
+            element.attr({
+              startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
+              endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
+            })
+          })
+      }
+    })
+
+    this.labelElements.forEach((item, index) => {
+      const [exLine, exText] = item.elements as unknown as [Line, Text]
+
+      exLine.animateE2e(this.seriesItem.animationDuration)
+
+      // 颜色过渡
+      // exText
+    })
+  }
+
   select(index: number) {
     this.pieElements[index].animateCartoon({ radius: this.hoverRadius, shadowBlur: 20 }, { duration: 300 })
   }

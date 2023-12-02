@@ -22,7 +22,6 @@ export interface AbstractUiData {
   clip?: boolean
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
-  cusSetCoord?: (eventParameter: EventParameter & { dx: number; dy: number }) => void
 
   [key: string]: any
 }

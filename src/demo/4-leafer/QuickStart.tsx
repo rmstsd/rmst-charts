@@ -13,17 +13,28 @@ const QuickStart = () => {
     const rect = new Rect({
       x: 100,
       y: 100,
-      width: 200,
-      height: 200,
+      width: 100,
+      height: 100,
       fill: '#32cd79',
-      draggable: true,
       cursor: 'move'
     })
 
+    let x
+    let y
+
+    rect.on(DragEvent.START, evt => {
+      x = evt.x - rect.x
+      y = evt.y - rect.y
+    })
     rect.on(DragEvent.DRAG, evt => {
-      if (rect.x > 200) {
-        rect.x = 200
-      }
+      const nx = Math.min(evt.x - x, 300)
+      const ny = evt.y - y
+
+      rect.x = nx
+      rect.y = ny
+    })
+    rect.on(DragEvent.END, evt => {
+      console.log('END')
     })
 
     leafer.add(rect)

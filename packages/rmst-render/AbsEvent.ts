@@ -10,7 +10,9 @@ abstract class AbsEvent {
   onmousedown: Handler = () => {}
   onmouseup: Handler = () => {}
 
+  ondragstart: Handler = () => {}
   ondrag: Handler = () => {}
+  ondragend: Handler = () => {}
 
   parent: Stage | Group = null
 

@@ -163,11 +163,11 @@ export function createRenderElements(
         })
 
         arcItem.onmouseenter = () => {
-          arcItem.animateCartoon({ radius: activeRadius }, { duration: 300 })
+          arcItem.animateCartoon({ radius: activeRadius }, { duration: 200 })
         }
 
         arcItem.onmouseleave = () => {
-          arcItem.animateCartoon({ radius: normalRadius }, { duration: 300 })
+          arcItem.animateCartoon({ radius: normalRadius }, { duration: 200 })
         }
 
         return arcItem

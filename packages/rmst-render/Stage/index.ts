@@ -107,7 +107,7 @@ export class Stage {
       const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
       if (hovered) {
         const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
-        this.draggingMgr.dragStart(eventParameter)
+        this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())
       }
     })
   }

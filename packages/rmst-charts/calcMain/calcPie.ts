@@ -1,4 +1,4 @@
-import { Line, Stage } from 'rmst-render'
+import { Stage } from 'rmst-render'
 
 import { pieColors } from '../constant'
 
@@ -54,32 +54,6 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.PieSeries
     pieMainInstance.cancelSelect(index)
   }
 
-  function afterAppendStage() {
-    pieMainInstance.fakeArc.animateCustomCartoon({
-      startValue: 0,
-      endValue: 360,
-      frameCallback: (currentValue, elapsedTimeRatio) => {
-        pieMainInstance.pieElements
-          .filter(o => o.data.onlyKey === 'main-pie')
-          .forEach(element => {
-            element.attr({
-              startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
-              endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
-            })
-          })
-      }
-    })
-
-    pieMainInstance.labelElements.forEach((item, index) => {
-      const [exLine, exText] = item.elements as unknown as [Line, Text]
-
-      exLine.animateE2e(seriesItem.animationDuration)
-
-      // 颜色过渡
-      // exText
-    })
-  }
-
   return {
     elements: [
       pieMainInstance.fakeArc,
@@ -87,6 +61,8 @@ export function createRenderElements(stage: Stage, seriesItem: ICharts.PieSeries
       ...pieMainInstance.pieElements,
       ...pieMainInstance.labelElements
     ],
-    afterAppendStage
+    afterAppendStage: () => {
+      pieMainInstance.afterAppendStage()
+    }
   }
 }
