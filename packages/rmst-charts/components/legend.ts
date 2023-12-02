@@ -10,10 +10,18 @@ class Legend {
       const x = 10
       const y = 10 + (height + gap) * index
 
-      const legendRect = new Rect({ x, y, width, height, bgColor: item.color, cursor: 'pointer' })
+      const legendRect = new Rect({
+        x,
+        y,
+        width,
+        height,
+        bgColor: item.color,
+        cursor: 'pointer',
+        cornerRadius: 4
+      })
       const legendText = new Text({
         x: x + width + 5,
-        y,
+        y: y + 3,
         content: item.label,
         color: item.color,
         fontSize: 14,

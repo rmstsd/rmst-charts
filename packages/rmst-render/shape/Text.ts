@@ -13,8 +13,6 @@ interface TextData extends AbstractUiData {
   color?: string
   fontSize?: number
   textAlign?: CanvasTextAlign
-  clip?: boolean
-  [key: string]: any
 }
 
 export class Text extends AbstractUi {
@@ -32,9 +30,7 @@ export class Text extends AbstractUi {
     const stage = this.findStage()
 
     const { x, y, content, fontSize, textAlign } = this.data
-
     const { textWidth, textHeight } = measureText(stage.ctx, content, fontSize)
-
     const halfWidth = textWidth / 2
 
     const textRect_x = (() => {
@@ -54,7 +50,6 @@ export class Text extends AbstractUi {
     })()
 
     const is_x = offsetX >= textRect_x && offsetX <= textRect_x + textWidth
-
     const is_y = offsetY >= textRect_y && offsetY <= textRect_y + textHeight
 
     const isInner = is_x && is_y

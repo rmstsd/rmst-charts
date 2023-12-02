@@ -1,7 +1,7 @@
 import AbstractUi from './AbstractUi'
 
 export class Group extends AbstractUi {
-  constructor(data: any = {}) {
+  constructor(data = {}) {
     super()
 
     this.data = { ...data }

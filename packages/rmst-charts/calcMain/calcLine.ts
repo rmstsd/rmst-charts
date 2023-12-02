@@ -65,7 +65,6 @@ export function createRenderElements(
     lineWidth: lineStyle.width,
     lineCap: lineStyle.cap,
     lineJoin: lineStyle.join,
-    clip: true,
     smooth: seriesItem.smooth
   })
 
@@ -127,7 +126,6 @@ export function createRenderElements(
         fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
         strokeStyle: 'transparent',
         closed: true,
-        clip: true,
         lineWidth: 0
       })
 

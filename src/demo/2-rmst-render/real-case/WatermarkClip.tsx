@@ -22,7 +22,6 @@ const WatermarkClip = () => {
       content,
       fontSize: 24,
       color: '#333',
-      clip: true,
       draggable: true
     }
 

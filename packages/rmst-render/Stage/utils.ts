@@ -57,6 +57,12 @@ export function findHover(elements: IShape[], x: number, y: number): IShape {
   const _elements = elements.toReversed()
 
   for (const elementItem of _elements) {
+    if (elementItem.type === 'BoxHidden') {
+      if (!elementItem.isInner(x, y)) {
+        return null
+      }
+    }
+
     if (elementItem.isGroup) {
       const hovered = findHover((elementItem as Group).elements, x, y)
       if (hovered) {

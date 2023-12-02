@@ -11,10 +11,19 @@ export interface AbstractUiData {
   shadowBlur?: number
   shadowOffsetX?: number
   shadowOffsetY?: number
+  lineWidth?: number
+
+  fillStyle?: CanvasFillStrokeStyles['fillStyle']
+  strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
+
+  lineCap?: CanvasLineCap
+  lineJoin?: CanvasLineJoin
+
   clip?: boolean
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
   cusSetCoord?: (eventParameter: EventParameter & { dx: number; dy: number }) => void
+
   [key: string]: any
 }
 
@@ -44,6 +53,7 @@ export abstract class AbstractUi extends AbsEvent {
   isGroup = false
   isLine = false
   isText = false
+  type: string
 
   extraData
 

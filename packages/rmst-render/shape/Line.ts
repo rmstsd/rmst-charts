@@ -1,4 +1,3 @@
-import Group from './Group'
 import { convertToNormalPoints, createPath2D } from '../utils'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 import { calcTotalLineLength, pointToFlatArray } from 'rmst-charts/utils/utils'
@@ -13,14 +12,8 @@ interface LineData extends AbstractUiData {
   path2D?: Path2D
   points?: number[]
   bgColor?: string
-  fillStyle?: CanvasFillStrokeStyles['fillStyle']
-  strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
-  lineWidth?: number
-  lineCap?: CanvasLineCap
-  lineJoin?: CanvasLineJoin
   closed?: boolean
   smooth?: boolean
-  [key: string]: any
 }
 
 export class Line extends AbstractUi {

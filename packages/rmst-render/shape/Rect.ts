@@ -1,4 +1,3 @@
-import Group from './Group'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 export const defaultRectData = {
@@ -12,10 +11,7 @@ export interface RectData extends AbstractUiData {
   width: number
   height: number
   bgColor?: string
-  fillStyle?: string
-  strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
   cornerRadius?: number
-  [key: string]: any
 }
 
 export class Rect extends AbstractUi {
