@@ -20,8 +20,10 @@ const QuickStart = () => {
       cursor: 'move'
     })
 
-    rect.on(DragEvent.DRAG, () => {
-      console.log(leafer.toJSON())
+    rect.on(DragEvent.DRAG, evt => {
+      // console.log(leafer.toJSON())
+
+      console.log(evt)
     })
 
     leafer.add(rect)

@@ -1,10 +1,10 @@
 import LayoutView from '@/components/LayoutView/LayoutView'
 
-import LineDemo from '@/demo/4-old-charts/LineDemo'
-import BarDemo from '@/demo/4-old-charts/BarDemo'
-import PieDemo from '@/demo/4-old-charts/PieDemo'
-import ArcAnimate from '@/demo/4-old-charts/ArcAnimate'
-import CandleTask from '@/demo/4-old-charts/CandleTask'
+import LineDemo from '@/demo/5-old-charts/LineDemo'
+import BarDemo from '@/demo/5-old-charts/BarDemo'
+import PieDemo from '@/demo/5-old-charts/PieDemo'
+import ArcAnimate from '@/demo/5-old-charts/ArcAnimate'
+import CandleTask from '@/demo/5-old-charts/CandleTask'
 
 import { IRouteObject } from './router'
 

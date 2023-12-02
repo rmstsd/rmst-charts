@@ -13,7 +13,7 @@ export class Stage {
     this.addStageEventListener()
   }
 
-  isStage: true
+  isStage = true
 
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
@@ -102,7 +102,7 @@ export class Stage {
       }
     })
 
-    // 拖拽临时方案
+    // 拖拽
     this.canvasElement.addEventListener('mousedown', evt => {
       const hovered = findHover(this.elements, evt.offsetX, evt.offsetY)
       if (hovered) {

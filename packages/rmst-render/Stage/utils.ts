@@ -62,13 +62,11 @@ export function findHover(elements: IShape[], x: number, y: number): IShape {
       if (hovered) {
         return hovered
       }
-
-      continue
-    }
-
-    const isInner = elementItem.isInner(x, y)
-    if (isInner) {
-      return elementItem
+    } else {
+      const isInner = elementItem.isInner(x, y)
+      if (isInner) {
+        return elementItem
+      }
     }
   }
 

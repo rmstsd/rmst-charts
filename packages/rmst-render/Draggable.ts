@@ -2,6 +2,7 @@ import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from './utils'
 import Group from './shape/Group'
 import { EventParameter } from './constant'
+import Stage from './Stage'
 
 export default class Draggable {
   dragStart(eventParameter: EventParameter) {
@@ -9,20 +10,30 @@ export default class Draggable {
 
     while (draggedTarget && !draggedTarget.data.draggable) {
       const parent = draggedTarget.parent as unknown as IShape
-      if (parent.isStage) {
+      if ((parent as unknown as Stage).isStage) {
         break
       }
 
       draggedTarget = parent
     }
 
+    if (!draggedTarget.data.draggable) {
+      return
+    }
+
     const onDocumentMousemove = (evt: MouseEvent) => {
       evt.preventDefault()
       const { movementX, movementY } = evt
+      const dx = movementX
+      const dy = movementY
 
-      dndAttr(draggedTarget, movementX, movementY)
+      if (draggedTarget.data.cusSetCoord) {
+        draggedTarget.data.cusSetCoord({ target: draggedTarget, x: evt.offsetX, y: evt.offsetY, dx, dy })
+      } else {
+        dndAttr(draggedTarget, dx, dy)
+      }
 
-      // target.ondrag({ target: target, x: evt.offsetX, y: evt.offsetY })
+      draggedTarget.ondrag({ target: draggedTarget, x: evt.offsetX, y: evt.offsetY })
     }
 
     const onDocumentMouseup = () => {
@@ -45,12 +56,14 @@ function dndAttr(draggedTarget: IShape, dx: number, dy: number) {
     case 'vertical':
       dx = 0
   }
-  setShapePos(target, dx, dy)
+
+  setShapeCoord(target, dx, dy)
 }
-function setShapePos(target: IShape, dx: number, dy: number) {
+
+function setShapeCoord(target: IShape, dx: number, dy: number) {
   if (target.isGroup) {
     ;(target as Group).elements.forEach(item => {
-      setShapePos(item, dx, dy)
+      setShapeCoord(item, dx, dy)
     })
   } else {
     if (target.isLine) {
@@ -62,8 +75,7 @@ function setShapePos(target: IShape, dx: number, dy: number) {
 
       target.attr({ points: pointToFlatArray(c) })
     } else {
-      const oldShapeData = target.data
-      target.attr({ x: oldShapeData.x + dx, y: oldShapeData.y + dy })
+      target.attr({ x: target.data.x + dx, y: target.data.y + dy })
     }
   }
 }

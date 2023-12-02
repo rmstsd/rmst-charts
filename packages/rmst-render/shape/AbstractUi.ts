@@ -2,6 +2,7 @@ import Stage from '../Stage'
 
 import { Easing, calcTargetValue, easingFuncs } from 'rmst-render/animate'
 import AbsEvent from 'rmst-render/AbsEvent'
+import { EventParameter } from 'rmst-render/constant'
 
 export interface AbstractUiData {
   x?: number
@@ -13,6 +14,7 @@ export interface AbstractUiData {
   clip?: boolean
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
+  cusSetCoord?: (eventParameter: EventParameter & { dx: number; dy: number }) => void
   [key: string]: any
 }
 
