@@ -33,18 +33,8 @@ export class Circle extends AbstractUi {
   draw(ctx: CanvasRenderingContext2D) {
     super.draw(ctx)
 
-    const {
-      x,
-      y,
-      radius,
-      innerRadius,
-      strokeStyle,
-      fillStyle,
-      startAngle,
-      endAngle,
-      offsetAngle,
-      lineWidth
-    } = this.data
+    const { x, y, radius, innerRadius, strokeStyle, fillStyle, startAngle, endAngle, offsetAngle, lineWidth } =
+      this.data
     const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
     const d = innerRadius
@@ -91,12 +81,7 @@ export function rad2deg(radian: number) {
 }
 
 // 画一个点 测试使用
-export function drawArcPoint(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  fillStyle: string = 'pink'
-) {
+export function drawArcPoint(ctx: CanvasRenderingContext2D, x: number, y: number, fillStyle: string = 'pink') {
   ctx.beginPath()
   ctx.arc(x, y, 2, 0, Math.PI * 2)
   ctx.fillStyle = fillStyle

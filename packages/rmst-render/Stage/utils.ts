@@ -30,11 +30,7 @@ export function initStage(canvasContainer: HTMLElement) {
   return { canvasElement, ctx }
 }
 
-export function triggerEventHandlers(
-  elementItem: IShape,
-  eventName: OnEventType,
-  eventParameter: EventParameter
-) {
+export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType, eventParameter: EventParameter) {
   elementItem[eventName](eventParameter)
 
   const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
@@ -57,13 +53,13 @@ export function findHover(children: IShape[], x: number, y: number): IShape {
   const _elements = children.toReversed()
 
   for (const elementItem of _elements) {
-    if (elementItem.type === 'BoxHidden') {
-      if (!elementItem.isInner(x, y)) {
-        return null
+    if (elementItem.type === 'Group' || elementItem.type === 'BoxHidden') {
+      if (elementItem.type === 'BoxHidden') {
+        if (!elementItem.isInner(x, y)) {
+          continue
+        }
       }
-    }
 
-    if (elementItem.type === 'Group') {
       const hovered = findHover((elementItem as Group).children, x, y)
       if (hovered) {
         return hovered
