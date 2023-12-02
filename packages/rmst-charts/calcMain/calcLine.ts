@@ -61,7 +61,7 @@ export function createRenderElements(
   // 主折线
   const mainLine = new Line({
     points: mainLinePoints,
-    bgColor: colorPalette[serIndex],
+    strokeStyle: colorPalette[serIndex],
     lineWidth: lineStyle.width,
     lineCap: lineStyle.cap,
     lineJoin: lineStyle.join,
@@ -156,7 +156,7 @@ export function createRenderElements(
           x: item.x,
           y: item.y,
           radius: initRadius,
-          bgColor: 'white',
+          fillStyle: 'white',
           strokeStyle: colorPalette[serIndex],
           lineWidth: 4,
           cursor: 'pointer'

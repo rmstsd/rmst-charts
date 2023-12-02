@@ -1,19 +1,19 @@
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
+  lineWidth: 1,
   startAngle: 0,
   endAngle: 360,
-  shadowColor: '#333',
-  lineWidth: 1,
   offsetAngle: 0
 }
 
 interface CircleData extends AbstractUiData {
   x: number
   y: number
+
   radius: number
   innerRadius?: number
-  bgColor: string
+
   startAngle?: number // 圆弧 饼图 角度 60 180 360
   endAngle?: number // 圆弧 饼图
   offsetAngle?: number // 默认情况下, 圆弧的起始角度是 0, 但是如果需要从其他角度开始, 可以设置 offsetAngle
@@ -26,9 +26,21 @@ export class Circle extends AbstractUi {
     this.data = { ...defaultData, ...data }
   }
 
+  declare data: CircleData
+
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, radius, innerRadius, strokeStyle, bgColor, startAngle, endAngle, offsetAngle, lineWidth } =
-      this.data
+    const {
+      x,
+      y,
+      radius,
+      innerRadius,
+      strokeStyle,
+      fillStyle,
+      startAngle,
+      endAngle,
+      offsetAngle,
+      lineWidth
+    } = this.data
     const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
     const d = innerRadius
@@ -46,7 +58,7 @@ export class Circle extends AbstractUi {
       ctx.stroke(path)
     }
 
-    ctx.fillStyle = bgColor
+    ctx.fillStyle = fillStyle
     ctx.fill(path)
   }
 }

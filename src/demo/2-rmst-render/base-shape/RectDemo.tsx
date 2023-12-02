@@ -12,8 +12,8 @@ const RectDemo = () => {
     })
 
     const rects = [
-      new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple', cornerRadius: 20 }),
-      new Rect({ x: 210, y: 10, width: 120, height: 80, bgColor: '#a18cd1' })
+      new Rect({ x: 120, y: 10, width: 80, height: 80, fillStyle: 'purple', cornerRadius: 20 }),
+      new Rect({ x: 210, y: 10, width: 120, height: 80, fillStyle: '#a18cd1' })
     ]
 
     const box = new BoxHidden({ x: 100, y: 100, width: 80, height: 150, fillStyle: 'pink' })
@@ -22,7 +22,7 @@ const RectDemo = () => {
       y: 120,
       width: 120,
       height: 120,
-      bgColor: '#a18cd1',
+      fillStyle: '#a18cd1',
       cursor: 'pointer'
     })
 

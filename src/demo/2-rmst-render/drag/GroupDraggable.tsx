@@ -25,7 +25,7 @@ const GroupDemo = () => {
       y: 10,
       width: 100,
       height: 100,
-      bgColor: 'pink'
+      fillStyle: 'pink'
     })
 
     const rect_2 = new Rect({
@@ -34,7 +34,7 @@ const GroupDemo = () => {
       y: 10,
       width: 100,
       height: 100,
-      bgColor: 'blueviolet',
+      fillStyle: 'blueviolet',
       draggable: true
     })
 
@@ -48,14 +48,14 @@ const GroupDemo = () => {
       x: 100,
       y: 300,
       radius: 50,
-      bgColor: 'red'
+      fillStyle: 'red'
     })
     const arc_2 = new Circle({
       name: 'orange',
       x: 250,
       y: 300,
       radius: 50,
-      bgColor: 'orange'
+      fillStyle: 'orange'
     })
 
     innerGroup.append([arc_1, arc_2])
@@ -73,7 +73,7 @@ const GroupDemo = () => {
         y: 10,
         width: 100,
         height: 100,
-        bgColor: 'tan',
+        fillStyle: 'tan',
         draggable: false
       })
     )
@@ -85,7 +85,7 @@ const GroupDemo = () => {
         x: 450,
         y: 300,
         radius: 50,
-        bgColor: 'cornflowerblue',
+        fillStyle: 'cornflowerblue',
         draggable: true
       })
     )

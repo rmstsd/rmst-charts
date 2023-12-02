@@ -51,14 +51,14 @@ const LinePath = ({ ver }) => {
     const allPoints = calcAllControlPoint(points, ver)
     console.log('allControlPoint', allPoints)
 
-    const arcs = points.map(item => new Circle({ x: item.x, y: item.y, radius: 3, bgColor: 'red' }))
+    const arcs = points.map(item => new Circle({ x: item.x, y: item.y, radius: 3, fillStyle: 'red' }))
     stage.append(arcs)
 
     let timer
 
     const cps = allPoints.reduce((acc, item) => acc.concat(item.cp1, item.cp2), [])
     const arcscps = cps.map(item => {
-      const cpItem = new Circle({ x: item.x, y: item.y, radius: 3, bgColor: 'blue', draggable: true })
+      const cpItem = new Circle({ x: item.x, y: item.y, radius: 3, fillStyle: 'blue', draggable: true })
 
       cpItem.onDragMove = () => {
         cancelAnimationFrame(timer)

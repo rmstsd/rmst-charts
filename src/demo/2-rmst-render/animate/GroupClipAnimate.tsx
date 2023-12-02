@@ -22,7 +22,7 @@ const GroupClipAnimate = () => {
       x: 10,
       y: 10,
       radius: 50,
-      bgColor: 'purple'
+      fillStyle: 'purple'
     })
     box.append(arc)
     stage.append(box)
@@ -38,11 +38,11 @@ const GroupClipAnimate = () => {
       y: 10,
       width: 200,
       height: 200,
-      bgColor: 'orange'
+      fillStyle: 'orange'
     })
 
-    const rect1 = new Rect({ x: 120, y: 10, width: 80, height: 80, bgColor: 'purple', cornerRadius: 20 })
-    const rect2 = new Rect({ x: 180, y: 40, width: 120, height: 80, bgColor: '#a18cd1' })
+    const rect1 = new Rect({ x: 120, y: 10, width: 80, height: 80, fillStyle: 'purple', cornerRadius: 20 })
+    const rect2 = new Rect({ x: 180, y: 40, width: 120, height: 80, fillStyle: '#a18cd1' })
     group.append([rect1, rect2])
 
     stage.append(group)

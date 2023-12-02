@@ -138,7 +138,7 @@ const getDataForDraw = (
     }
   }
 
-  //极坐标系的角度轴
+  // 极坐标系的角度轴
   const circlesData = tickValues.map((item, index) => ({
     x: center_x,
     y: center_y,
@@ -185,15 +185,12 @@ const getDataForDraw = (
     return { start: radianTickStart, end: radianTickEnd, text: { ...radianTextPoint, value: String(item) } }
   })
 
-  console.log(offsetAngle)
-
   // 协助绘制图表主体扇形
   const radianAngles = angleAxis.data.map((_, index) => ({
     startAngle: index * anglePer + offsetAngle,
     endAngle: (index === angleAxis.data.length - 1 ? 360 : (index + 1) * anglePer) + offsetAngle
   }))
 
-  console.log(radianAngles)
   return {
     circlesData,
     lineAxis,
@@ -220,47 +217,46 @@ export const createPolarElements = (
         x: item.x,
         y: item.y,
         radius: item.radius,
-        bgColor: 'transparent',
+        fillStyle: 'transparent',
         strokeStyle: item.strokeStyle
       })
   )
 
   const lineAxisShape = new Line({
     points: pointToFlatArray([polarAxisData.lineAxis.start, polarAxisData.lineAxis.end]),
-    bgColor: tickColor
+    fillStyle: tickColor
   })
 
   const tickShapes = polarAxisData.lineAxisTicks.map(item => {
-    // return new Circle({
-    //   x: item.start.x,
-    //   y: item.start.y,
-    //   radius: 2,
-    //   bgColor: tickColor
-    // })
     return new Line({
       points: [item.start.x, item.start.y, item.end.x, item.end.y],
-      bgColor: tickColor
+      strokeStyle: tickColor
     })
   })
 
   const textShapes = polarAxisData.lineAxisTicks.map(item => {
-    return new Text({ x: item.text.x, y: item.text.y, content: String(item.text.value), color: tickColor })
+    return new Text({
+      x: item.text.x,
+      y: item.text.y,
+      content: String(item.text.value),
+      fillStyle: tickColor
+    })
   })
 
   const outerTickShapes = polarAxisData.outerTicks.map(
     item =>
       new Line({
         points: pointToFlatArray([item.start, item.end]),
-        bgColor: tickColor
+        strokeStyle: tickColor
       })
   )
 
   const outerTickTextShapes = polarAxisData.outerTicks.map(
-    item => new Text({ x: item.text.x, y: item.text.y, content: item.text.value, color: tickColor })
+    item => new Text({ x: item.text.x, y: item.text.y, content: item.text.value, fillStyle: tickColor })
   )
 
   const ccToTickLineShapes = (polarAxisData.ccToTickLines || []).map(
-    item => new Line({ points: pointToFlatArray([item.start, item.end]), bgColor: splitLineColor })
+    item => new Line({ points: pointToFlatArray([item.start, item.end]), strokeStyle: splitLineColor })
   )
 
   return {

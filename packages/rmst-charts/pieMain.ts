@@ -33,7 +33,7 @@ class PieMain {
       radius: outerRadius,
       startAngle: 0,
       endAngle: 0,
-      bgColor: 'transparent'
+      fillStyle: 'transparent'
     })
 
     this.pieElements = data.map((item, index) => {
@@ -45,7 +45,7 @@ class PieMain {
         innerRadius: innerRadius ? outerRadius * 0.5 : undefined,
         startAngle: 0,
         endAngle: 0,
-        bgColor: item.color,
+        fillStyle: item.color,
         cursor: 'pointer',
         animatedProps: { startAngle: item.startAngle, endAngle: item.endAngle }
       })
@@ -105,8 +105,7 @@ class PieMain {
     const extendLine = new Line({
       onlyKey: 'extend-line',
       points: pointToFlatArray(extendLinePoints),
-      fillStyle: item.color,
-      bgColor: item.color,
+      strokeStyle: item.color,
       lineWidth: this.seriesItem.labelLine?.lineStyle?.width || 2,
       cursor: 'pointer'
     })
@@ -117,7 +116,7 @@ class PieMain {
       x: isInRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - 5,
       y: extendLineSecondPoint_y - textHeight / 2,
       content: item.label,
-      color: tickColor,
+      fillStyle: tickColor,
       textAlign: isInRight ? 'left' : 'right',
       cursor: 'pointer'
     })

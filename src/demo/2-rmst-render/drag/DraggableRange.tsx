@@ -23,7 +23,7 @@ const DraggableRange = () => {
       x: 100,
       y: 100,
       radius: 50,
-      bgColor: 'pink',
+      fillStyle: 'pink',
       draggable: true,
       cusSetCoord: ({ x, y, dx, dy }) => {
         const _radius = inner_arc.data.radius

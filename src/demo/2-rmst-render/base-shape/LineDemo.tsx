@@ -10,7 +10,7 @@ const LineDemo = () => {
 
     const line = new Line({
       points: [666, 83, 566, 153, 466, 103, 386, 23],
-      bgColor: 'pink',
+      strokeStyle: 'pink',
       lineWidth: 2,
       draggable: true,
       smooth: true
@@ -18,7 +18,7 @@ const LineDemo = () => {
 
     const line5 = new Line({
       points: [354, 142, 434, 222, 534, 272, 634, 202],
-      bgColor: 'brown',
+      strokeStyle: 'brown',
       lineWidth: 20,
       draggable: true,
       smooth: true
@@ -43,14 +43,14 @@ const LineDemo = () => {
 
     const line3 = new Line({
       points: [0, 0, 0, 0, 0, 0, 0, 0],
-      bgColor: 'orange',
+      strokeStyle: 'orange',
       lineWidth: 10,
       draggable: true
     })
 
     const line4 = new Line({
       points: [43, 156, 143, 300, 243, 350, 343, 333],
-      bgColor: 'purple',
+      strokeStyle: 'purple',
       lineWidth: 20,
       draggable: true
     })

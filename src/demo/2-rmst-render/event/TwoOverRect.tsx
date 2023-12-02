@@ -17,7 +17,7 @@ const TwoOverRect = () => {
       y: 10,
       width: 100,
       height: 100,
-      bgColor: 'blueviolet',
+      fillStyle: 'blueviolet',
       draggable: true,
       cursor: 'move'
     })
@@ -26,7 +26,7 @@ const TwoOverRect = () => {
       y: 50,
       width: 100,
       height: 100,
-      bgColor: 'pink',
+      fillStyle: 'pink',
       draggable: true,
       cursor: 'pointer'
     })

@@ -16,7 +16,7 @@ const Single = () => {
       y: 10,
       width: 100,
       height: 100,
-      bgColor: 'blueviolet',
+      fillStyle: 'blueviolet',
       draggable: true,
       cursor: 'move'
     })

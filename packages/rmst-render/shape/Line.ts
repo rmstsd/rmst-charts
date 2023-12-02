@@ -11,7 +11,6 @@ const defaultData = {
 interface LineData extends AbstractUiData {
   path2D?: Path2D
   points?: number[]
-  bgColor?: string
   closed?: boolean
   smooth?: boolean
 }
@@ -30,7 +29,7 @@ export class Line extends AbstractUi {
   isLine = true
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { bgColor, fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
+    const { fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed, smooth } = this.data
 
     // 调用 this.attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
     this.path2D = this.data.path2D ? this.data.path2D : createPath2D(this.data)
@@ -40,7 +39,7 @@ export class Line extends AbstractUi {
     ctx.lineJoin = lineJoin
 
     ctx.fillStyle = fillStyle || '#333'
-    ctx.strokeStyle = bgColor || strokeStyle
+    ctx.strokeStyle = strokeStyle
 
     if (lineWidth !== 0) {
       ctx.lineWidth = lineWidth

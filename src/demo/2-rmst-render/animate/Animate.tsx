@@ -14,7 +14,7 @@ const Animate = () => {
       x: 100,
       y: 100,
       radius: 50,
-      bgColor: 'pink'
+      fillStyle: 'pink'
     })
 
     const sector = new Circle({
@@ -23,7 +23,7 @@ const Animate = () => {
       startAngle: 0,
       endAngle: 0,
       radius: 50,
-      bgColor: 'pink'
+      fillStyle: 'pink'
     })
     sector.onmouseenter = () => {
       stage.setCursor('pointer')
@@ -38,7 +38,7 @@ const Animate = () => {
       y: 50,
       width: 100,
       height: 60,
-      bgColor: 'purple'
+      fillStyle: 'purple'
     })
 
     stage.append([arc, rect, sector])

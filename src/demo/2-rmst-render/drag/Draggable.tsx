@@ -17,7 +17,7 @@ const Draggable = () => {
       y: 10,
       width: 100,
       height: 100,
-      bgColor: 'blueviolet',
+      fillStyle: 'blueviolet',
       draggable: true,
       cursor: 'move'
     })
@@ -26,7 +26,7 @@ const Draggable = () => {
       x: 180,
       y: 100,
       radius: 50,
-      bgColor: 'pink',
+      fillStyle: 'pink',
       draggable: 'vertical',
       cursor: 'move'
     })
@@ -59,7 +59,7 @@ const Draggable = () => {
         x: 200,
         y: 200,
         radius: 50,
-        bgColor: 'cornflowerblue',
+        fillStyle: 'cornflowerblue',
         draggable: true,
         cursor: 'move'
       })

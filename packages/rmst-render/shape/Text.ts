@@ -1,7 +1,7 @@
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData = {
-  color: '#333',
+  fillStyle: '#333',
   fontSize: 14,
   textAlign: 'left' as CanvasTextAlign
 }
@@ -10,7 +10,6 @@ interface TextData extends AbstractUiData {
   x: number
   y: number
   content: string
-  color?: string
   fontSize?: number
   textAlign?: CanvasTextAlign
 }
@@ -58,11 +57,11 @@ export class Text extends AbstractUi {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
-    const { x, y, content, color, fontSize, textAlign = 'left' } = this.data
+    const { x, y, content, fillStyle, fontSize, textAlign = 'left' } = this.data
 
     setCtxFontSize(ctx, fontSize)
 
-    ctx.fillStyle = color
+    ctx.fillStyle = fillStyle
 
     ctx.textAlign = textAlign
     ctx.fillText(content, x, y)

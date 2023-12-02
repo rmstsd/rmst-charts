@@ -15,7 +15,7 @@ class Legend {
         y,
         width,
         height,
-        bgColor: item.color,
+        fillStyle: item.color,
         cursor: 'pointer',
         cornerRadius: 4
       })
@@ -23,7 +23,7 @@ class Legend {
         x: x + width + 5,
         y: y + 3,
         content: item.label,
-        color: item.color,
+        fillStyle: item.color,
         fontSize: 14,
         cursor: 'pointer'
       })

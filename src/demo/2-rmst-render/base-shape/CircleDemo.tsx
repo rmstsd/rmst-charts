@@ -11,8 +11,8 @@ const CircleDemo = () => {
     })
 
     const arcs = [
-      new Circle({ x: 180, y: 70, radius: 60, bgColor: 'orange', lineWidth: 2, strokeStyle: 'red' }),
-      new Circle({ x: 50, y: 50, radius: 50, innerRadius: 20, bgColor: 'pink', strokeStyle: 'blue' }),
+      new Circle({ x: 180, y: 70, radius: 60, fillStyle: 'orange', lineWidth: 2, strokeStyle: 'red' }),
+      new Circle({ x: 50, y: 50, radius: 50, innerRadius: 20, fillStyle: 'pink', strokeStyle: 'blue' }),
       new Circle({
         x: 400,
         y: 60,
@@ -20,18 +20,18 @@ const CircleDemo = () => {
         innerRadius: 20,
         startsAngle: 30,
         endAngle: 70,
-        bgColor: '#fcb69f'
+        fillStyle: '#fcb69f'
       }),
-      new Circle({ x: 500, y: 60, radius: 50, startAngle: 100, endAngle: 150, bgColor: '#c2e9fb' }),
-      new Circle({ x: 560, y: 60, radius: 50, startAngle: 190, endAngle: 240, bgColor: '#764ba2' }),
-      new Circle({ x: 100, y: 170, radius: 50, startAngle: 0, endAngle: 160, bgColor: '#2575fc' }),
+      new Circle({ x: 500, y: 60, radius: 50, startAngle: 100, endAngle: 150, fillStyle: '#c2e9fb' }),
+      new Circle({ x: 560, y: 60, radius: 50, startAngle: 190, endAngle: 240, fillStyle: '#764ba2' }),
+      new Circle({ x: 100, y: 170, radius: 50, startAngle: 0, endAngle: 160, fillStyle: '#2575fc' }),
       new Circle({
         x: 240,
         y: 170,
         radius: 50,
         startAngle: 240,
         endAngle: 300,
-        bgColor: '#ff0844',
+        fillStyle: '#ff0844',
         strokeStyle: 'blue'
       })
     ]
@@ -42,12 +42,12 @@ const CircleDemo = () => {
     arcs.forEach(item => {
       item.onmouseenter = () => {
         stage.setCursor('pointer')
-        item.attr({ bgColor: 'pink' })
+        item.attr({ fillStyle: 'pink' })
         console.log('onEnter', item.constructor.name)
       }
 
       item.onmouseleave = () => {
-        item.attr({ bgColor: 'blueviolet' })
+        item.attr({ fillStyle: 'blueviolet' })
         stage.setCursor('auto')
         console.log('onLeave', item.constructor.name)
       }

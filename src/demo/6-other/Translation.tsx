@@ -14,7 +14,7 @@ const Translation = () => {
       y: 0,
       width: 100,
       height: 100,
-      bgColor: 'pink'
+      fillStyle: 'pink'
     })
 
     stage.append(rect)
@@ -29,7 +29,7 @@ const Translation = () => {
             y: 10,
             width: 100,
             height: 100,
-            bgColor: 'rgba(0, 0, 0, 0.5)'
+            fillStyle: 'rgba(0, 0, 0, 0.5)'
           })
 
           stageRef.current.append(rect)
