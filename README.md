@@ -12,20 +12,10 @@
 
 ## src/demo 目录
 
-1. `src/demo/new-charts` 是新版 `rmst-charts` 的 demo
+1. `src/demo/1-rmst-charts` 是新版 `rmst-charts` 的 demo
 
-2. `src/demo/render` 是渲染引擎的 demo
-
-3. `src/demo/zrender` 是用于观察 `zrender` 的 UI 效果, 以及使用方式
-
-4. `src/demo/old-charts` 是旧版实现 处于废弃状态, 将使用新版全部实现
-
-5. `src/demo/other` 是一些杂项例子
-
-> 3,4,5 均为 1,2 服务
+2. `src/demo/2-rmst-render` 是渲染引擎的 demo
 
 # 其他
 
 `vite-plugins` 用于显示最新的构建时间
-
-`z-attempt` 用于尝试 `canvas` 的 `api`, 实现一些小功能, 观察 `echarts` 的 UI 效果等
