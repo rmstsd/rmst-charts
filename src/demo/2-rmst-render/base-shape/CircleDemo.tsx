@@ -41,17 +41,11 @@ const CircleDemo = () => {
     // 注册鼠标事件
     arcs.forEach(item => {
       item.onmouseenter = () => {
-        item.attr({ fillStyle: 'pink' })
-        console.log('onEnter', item.constructor.name)
+        item.animateCartoon({ opacity: 0.5 }, { duration: 300, easing: 'linear' })
       }
 
       item.onmouseleave = () => {
-        item.attr({ fillStyle: 'blueviolet' })
-        console.log('onLeave', item.constructor.name)
-      }
-
-      item.onclick = () => {
-        console.log('c')
+        item.animateCartoon({ opacity: 1 }, { duration: 300, easing: 'linear' })
       }
     })
   }, [])

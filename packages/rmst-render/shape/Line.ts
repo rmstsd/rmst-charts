@@ -18,11 +18,7 @@ interface LineData extends AbstractUiData {
 
 export class Line extends AbstractUi {
   constructor(data: LineData) {
-    super()
-
-    this.type = 'Line'
-
-    this.data = super.combineDefaultData(data, defaultData)
+    super('Line', data, defaultData)
 
     this.path2D = data.path2D ? data.path2D : createPath2D(data)
   }
@@ -54,7 +50,7 @@ export class Line extends AbstractUi {
     }
   }
 
-  animateE2e(totalTime?: number) {
+  animateE2e(duration = 1000) {
     if (this.data.smooth) {
       return
     }
@@ -63,7 +59,7 @@ export class Line extends AbstractUi {
     const { totalLineLength, lines, lineLengths } = calcTotalLineLength(points)
 
     let currIndex = 0
-    const ani = new Animator({ value: 0 }, { value: totalLineLength }, { easing: 'cubicInOut', duration: totalTime })
+    const ani = new Animator({ value: 0 }, { value: totalLineLength }, { easing: 'cubicInOut', duration })
     ani.start()
     ani.onUpdate = ({ value: elapsedLength }) => {
       let tempLength = 0

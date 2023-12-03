@@ -24,6 +24,8 @@ function calcMain(dataSource: ICharts.PieSeries['data'], end_angle = 360) {
 }
 
 export function createRenderElements(stage: Stage, seriesItem: ICharts.PieSeries) {
+  seriesItem = { animationDuration: 1000, ...seriesItem }
+
   const data = calcMain(seriesItem.data as ICharts.PieSeries['data'])
 
   const smallerContainerSize = Math.min(stage.canvasSize.width, stage.canvasSize.height)

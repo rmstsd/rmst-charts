@@ -2,11 +2,7 @@ import AbstractUi from './AbstractUi'
 
 export class Group extends AbstractUi {
   constructor(data = {}) {
-    super()
-
-    this.type = 'Group'
-
-    this.data = { ...data }
+    super('Group', data)
   }
 
   children: IShape[] = []

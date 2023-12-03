@@ -37,7 +37,19 @@ export const defaultAbsData: AbstractUiData = {
   lineJoin: 'miter'
 }
 
+export const combineDefaultData = (shapeData, defaultShapeData) => {
+  return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
+}
+
 export abstract class AbstractUi extends AbsEvent {
+  constructor(type: IShapeType, shapeData, defaultShapeData?) {
+    super()
+
+    this.type = type
+
+    this.data = combineDefaultData(shapeData, defaultShapeData)
+  }
+
   type: IShapeType
 
   extraData
@@ -47,12 +59,6 @@ export abstract class AbstractUi extends AbsEvent {
   declare path2D: Path2D
 
   stage: Stage
-
-  rafTimer: number
-
-  combineDefaultData(shapeData, defaultShapeData) {
-    return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
-  }
 
   pinTop() {
     const parentChildren = this.parent.children as IShape[]
@@ -72,7 +78,7 @@ export abstract class AbstractUi extends AbsEvent {
     ctx.shadowBlur = shadowBlur
   }
 
-  attr(data) {
+  attr(data: AbstractUiData) {
     this.data = { ...this.data, ...data }
 
     this.findStage()?.renderStage()

@@ -15,11 +15,7 @@ export interface RectData extends AbstractUiData {
 
 export class Rect extends AbstractUi {
   constructor(data: RectData) {
-    super()
-
-    this.type = 'Rect'
-
-    this.data = super.combineDefaultData(data, defaultRectData)
+    super('Rect', data, defaultRectData)
   }
 
   declare data: RectData

@@ -16,11 +16,7 @@ interface TextData extends AbstractUiData {
 
 export class Text extends AbstractUi {
   constructor(data: TextData) {
-    super()
-
-    this.type = 'Text'
-
-    this.data = super.combineDefaultData(data, defaultData)
+    super('Text', data, defaultData)
   }
 
   declare data: TextData
