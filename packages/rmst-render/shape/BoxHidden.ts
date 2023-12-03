@@ -5,10 +5,10 @@ export default class BoxHidden extends Group {
   constructor(data: RectData) {
     super()
 
+    this.type = 'BoxHidden'
+
     this.data = { ...data, ...defaultRectData }
   }
-
-  type = BoxHidden.name
 
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.save()
@@ -16,7 +16,7 @@ export default class BoxHidden extends Group {
     this.path2D = drawRect(ctx, this.data)
     ctx.clip(this.path2D)
 
-    this.elements.forEach(item => {
+    this.children.forEach(item => {
       item.draw(ctx)
     })
 

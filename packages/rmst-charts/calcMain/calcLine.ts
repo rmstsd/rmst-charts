@@ -65,7 +65,7 @@ export function createRenderElements(
     lineWidth: lineStyle.width,
     lineCap: lineStyle.cap,
     lineJoin: lineStyle.join,
-    smooth: seriesItem.smooth
+    smooth
   })
 
   const boxHidden = new BoxHidden({
@@ -131,11 +131,11 @@ export function createRenderElements(
 
       innerSingleArea.onmouseenter = () => {
         stage.setCursor('pointer')
-        innerSingleArea.attr({ fillStyle: colorAlpha(primaryColor, 0.7) })
+        innerSingleArea.attr({ opacity: 0.9 })
       }
       innerSingleArea.onmouseleave = () => {
         stage.setCursor('auto')
-        innerSingleArea.attr({ fillStyle: primaryColorAlpha })
+        innerSingleArea.attr({ opacity: 1 })
       }
 
       return innerSingleArea
@@ -163,11 +163,11 @@ export function createRenderElements(
         })
 
         arcItem.onmouseenter = () => {
-          arcItem.animateCartoon({ radius: activeRadius }, { duration: 300 })
+          arcItem.animateCartoon({ radius: activeRadius }, { duration: 200 })
         }
 
         arcItem.onmouseleave = () => {
-          arcItem.animateCartoon({ radius: normalRadius }, { duration: 300 })
+          arcItem.animateCartoon({ radius: normalRadius }, { duration: 200 })
         }
 
         return arcItem
@@ -184,7 +184,7 @@ export function createRenderElements(
     boxHidden.animateCartoon(
       { width: stage.canvasSize.width },
       {
-        duration: seriesItem.animationDuration,
+        duration: animationDuration,
         easing: 'cubicInOut',
         during(percent, newState) {
           if (symbol === 'none') return

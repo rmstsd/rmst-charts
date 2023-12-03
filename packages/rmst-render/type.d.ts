@@ -7,6 +7,7 @@ import Text from './shape/Text'
 
 declare global {
   type IShape = Group | Circle | Rect | Line | Text | AbstractUi
+  type IShapeType = 'Line' | 'Rect' | 'Circle' | 'Text' | 'Group' | 'BoxHidden' | 'Stage'
 
   type IOption = {
     container: HTMLElement

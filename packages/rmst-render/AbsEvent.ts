@@ -1,22 +1,25 @@
 import { Group } from 'zrender'
-import Stage from './Stage'
+import { Stage } from './Stage'
 import { EventType, Handler, dpr } from './constant'
 
 abstract class AbsEvent {
   onclick: Handler = () => {}
-  onmousemove: Handler = () => {}
+
   onmouseenter: Handler = () => {}
+  onmousemove: Handler = () => {}
   onmouseleave: Handler = () => {}
+
   onmousedown: Handler = () => {}
   onmouseup: Handler = () => {}
 
+  ondragstart: Handler = () => {}
   ondrag: Handler = () => {}
+  ondragend: Handler = () => {}
 
   parent: Stage | Group = null
 
   data
   path2D
-  isLine?: boolean
 
   findStage() {
     let stage = this.parent
@@ -46,7 +49,7 @@ abstract class AbsEvent {
       return stage.ctx.isPointInStroke(this.path2D, x, y)
     }
 
-    if (this.isLine && !this.data.closed) {
+    if (this.type === 'Line' && !this.data.closed) {
       return isInStroke()
     }
 

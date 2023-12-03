@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  button {
+    @apply cursor-pointer border border-gray-400 rounded bg-gray-100 px-2 py-1 transition hover:bg-gray-200 active:bg-gray-300;
+  }
+
+  hr {
+    @apply my-2 border-[1px];
+  }
+}
+
 html,
 body,
 #root {
@@ -11,22 +21,5 @@ body,
 .canvas-container {
   width: 700px;
   height: 450px;
-  box-shadow: 0px 0px 0 1px #c3c0c0;
-}
-
-.border-shadow {
-  box-shadow: 0px 0px 0 1px #c3c0c0;
-}
-
-.inline-block {
-  display: inline-block;
-}
-
-hr {
-  border: 1px solid #ddd;
-  border-top: none;
-}
-
-.border {
-  border: 1px solid #333;
+  box-shadow: 0px 0px 0 1px #d8d8d8;
 }

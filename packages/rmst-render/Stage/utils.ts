@@ -1,5 +1,4 @@
 import { EventParameter, EventType, OnEventType, dpr } from 'rmst-render/constant'
-import Stage from '.'
 import Group from './../shape/Group'
 
 function createCanvas(containerWidth: number, containerHeight: number) {
@@ -30,11 +29,7 @@ export function initStage(canvasContainer: HTMLElement) {
   return { canvasElement, ctx }
 }
 
-export function triggerEventHandlers(
-  elementItem: IShape,
-  eventName: OnEventType,
-  eventParameter: EventParameter
-) {
+export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType, eventParameter: EventParameter) {
   elementItem[eventName](eventParameter)
 
   const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
@@ -45,26 +40,25 @@ export function triggerEventHandlers(
   }
 
   const parent = elementItem.parent
-
-  if (parent && !(parent instanceof Stage)) {
+  if (parent && parent.type !== 'Stage') {
     const _parent = parent as unknown as IShape
 
     triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })
   }
 }
 
-export function findHover(elements: IShape[], x: number, y: number): IShape {
-  const _elements = elements.toReversed()
+export function findHover(children: IShape[], x: number, y: number): IShape {
+  const _elements = children.toReversed()
 
   for (const elementItem of _elements) {
-    if (elementItem.type === 'BoxHidden') {
-      if (!elementItem.isInner(x, y)) {
-        return null
+    if (elementItem.type === 'Group' || elementItem.type === 'BoxHidden') {
+      if (elementItem.type === 'BoxHidden') {
+        if (!elementItem.isInner(x, y)) {
+          continue
+        }
       }
-    }
 
-    if (elementItem.isGroup) {
-      const hovered = findHover((elementItem as Group).elements, x, y)
+      const hovered = findHover((elementItem as Group).children, x, y)
       if (hovered) {
         return hovered
       }

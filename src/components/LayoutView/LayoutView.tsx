@@ -9,10 +9,7 @@ const LayoutView = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const [openKeys, setOpenKeys] = useState(() =>
-    routes.reduce(
-      (acc, item) => acc.concat(item.children ? item.children.map(item => '/' + item.path) : []),
-      []
-    )
+    routes.reduce((acc, item) => acc.concat(item.children ? item.children.map(item => '/' + item.path) : []), [])
   )
 
   const headerItems: MenuProps['items'] = convertToAntdData(routes, false)
@@ -21,10 +18,7 @@ const LayoutView = () => {
   const routePathArray = mRoutes.map(item => item.route.path)
   const [mainPath] = routePathArray
 
-  const siderItems: MenuProps['items'] = convertToAntdData(
-    routes.find(item => item.path === mainPath).children,
-    true
-  )
+  const siderItems: MenuProps['items'] = convertToAntdData(routes.find(item => item.path === mainPath).children, true)
 
   const onHeaderMenuClick = info => {
     const { key } = info
@@ -45,19 +39,12 @@ const LayoutView = () => {
   return (
     <Layout style={{ height: '100%', backgroundColor: 'white' }}>
       <Layout.Header
-        style={{
-          backgroundColor: 'transparent',
-          display: 'flex',
-          padding: 0,
-          paddingRight: 20,
-          height: 50,
-          lineHeight: '50px',
-          boxShadow: '0 0 20px rgba(0, 0, 0, 0.05)',
-          position: 'relative',
-          zIndex: 5
-        }}
+        className="flex h-[50px] leading-[50px] shadow relative z-10"
+        style={{ backgroundColor: 'transparent', padding: 0 }}
       >
-        <div style={{ width: 200, textAlign: 'center', fontSize: 24, flexShrink: 0 }}>rmst</div>
+        <div className="text-center shrink-0" style={{ width: 220, fontSize: 24 }}>
+          rmst
+        </div>
         <Menu
           mode="horizontal"
           selectedKeys={routePathArray}
@@ -66,15 +53,15 @@ const LayoutView = () => {
           style={{ border: 'none', flexGrow: 1 }}
         />
 
-        <span style={{ paddingRight: 10, flexShrink: 0 }}>最新 build: {__Build_Time__}</span>
+        <span className="pr-[10px] shrink-0">最新 build: {__Build_Time__}</span>
 
-        <a href="https://github.com/rmstsd/rmst-charts" target="_blank">
+        <a className="text-blue-500" href="https://github.com/rmstsd/rmst-charts" target="_blank">
           github
         </a>
       </Layout.Header>
 
       <Divider style={{ margin: 0 }} />
-      <section style={{ flexGrow: 1, height: 0, display: 'flex', backgroundColor: '#f9f9f9' }}>
+      <section className="flex-grow h-0 flex" style={{ backgroundColor: '#f9f9f9' }}>
         <aside>
           <Menu
             mode="inline"
@@ -83,16 +70,13 @@ const LayoutView = () => {
             selectedKeys={sideMenuKeys}
             items={siderItems}
             onClick={onSideMenuClick}
-            style={{ width: 220, borderRight: 'none' }}
+            className="border-r-0"
+            style={{ width: 220 }}
           />
         </aside>
 
         <Layout.Content className="main-content">
-          {currentRouteConfig.route.uiConfig?.isDeveloping ? (
-            <div style={{ textAlign: 'center', lineHeight: 20, fontSize: 30 }}>开发中</div>
-          ) : (
-            <LayoutOutlet />
-          )}
+          <LayoutOutlet />
         </Layout.Content>
       </section>
     </Layout>

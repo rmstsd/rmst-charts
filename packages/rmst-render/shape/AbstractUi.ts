@@ -1,8 +1,6 @@
-import Stage from '../Stage'
-
-import { Easing, calcTargetValue, easingFuncs } from 'rmst-render/animate'
-import AbsEvent from 'rmst-render/AbsEvent'
-import { EventParameter } from 'rmst-render/constant'
+import { Stage } from '../Stage'
+import { Animator, AnimateCartoonConfig } from '../animate'
+import AbsEvent from '../AbsEvent'
 
 export interface AbstractUiData {
   x?: number
@@ -12,6 +10,7 @@ export interface AbstractUiData {
   shadowOffsetX?: number
   shadowOffsetY?: number
   lineWidth?: number
+  opacity?: number
 
   fillStyle?: CanvasFillStrokeStyles['fillStyle']
   strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
@@ -22,59 +21,54 @@ export interface AbstractUiData {
   clip?: boolean
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
-  cusSetCoord?: (eventParameter: EventParameter & { dx: number; dy: number }) => void
 
   [key: string]: any
 }
 
-type AnimateCartoonParameter = {}
-
-type AnimateCartoonConfig = {
-  duration?: number // 毫秒
-  delay?: number
-  during?: (percent: number, newState: Record<string, string | number>) => void
-  done?: Function
-  aborted?: Function
-  scope?: string
-  force?: boolean
-  additive?: boolean
-  setToFinal?: boolean
-  easing?: Easing
-}
-
-type AnimateCustomCartoonParameter = {
-  startValue: number
-  endValue: number
-  totalTime?: number
-  frameCallback: (currentValue: number, elapsedTimeRatio: number) => void
+export const defaultAbsData: AbstractUiData = {
+  lineWidth: 1,
+  opacity: 1,
+  shadowBlur: 0,
+  shadowColor: 'orange',
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  lineCap: 'butt',
+  lineJoin: 'miter'
 }
 
 export abstract class AbstractUi extends AbsEvent {
-  isGroup = false
-  isLine = false
-  isText = false
-  type: string
+  type: IShapeType
 
   extraData
+
+  declare data: AbstractUiData
 
   declare path2D: Path2D
 
   stage: Stage
 
-  clipWidth = 0
-  clipHeight = 0
-
-  declare data: AbstractUiData
-
   rafTimer: number
 
-  draw(ctx: CanvasRenderingContext2D) {}
+  combineDefaultData(shapeData, defaultShapeData) {
+    return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
+  }
 
-  setShadow(ctx: CanvasRenderingContext2D, prop) {
-    ctx.shadowColor = prop.shadowColor || 'transparent'
-    ctx.shadowBlur = prop.shadowBlur || 0
-    ctx.shadowOffsetX = prop.shadowOffsetX || 0
-    ctx.shadowOffsetY = prop.shadowOffsetY || 0
+  pinTop() {
+    const parentChildren = this.parent.children as IShape[]
+
+    parentChildren.splice(parentChildren.indexOf(this), 1)
+    parentChildren.push(this)
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY, opacity } = this.data
+
+    ctx.globalAlpha = opacity
+
+    ctx.shadowOffsetX = shadowOffsetX
+    ctx.shadowOffsetY = shadowOffsetY
+    ctx.shadowColor = shadowColor
+    ctx.shadowBlur = shadowBlur
   }
 
   attr(data) {
@@ -84,94 +78,31 @@ export abstract class AbstractUi extends AbsEvent {
   }
 
   remove() {
-    this.stage.elements = this.stage.elements.filter(item => item !== this)
+    this.stage.children = this.stage.children.filter(item => item !== this)
     this.stage.renderStage()
   }
 
-  animateCustomCartoon(customCartoonParameter: AnimateCustomCartoonParameter) {
-    const { startValue, endValue, totalTime = 1000, frameCallback } = customCartoonParameter
-
-    let startTime: number
-
-    const rafCallback: FrameRequestCallback = timestamp => {
-      if (!startTime) {
-        startTime = timestamp
-      }
-
-      const elapsedTime = timestamp - startTime
-      let elapsedTimeRatio = Math.min(elapsedTime / totalTime, 1)
-
-      elapsedTimeRatio = easingFuncs.cubicInOut(elapsedTimeRatio)
-
-      const currentValue = calcTargetValue(startValue, endValue, elapsedTimeRatio) as number
-
-      if (typeof frameCallback === 'function') {
-        frameCallback(currentValue, elapsedTimeRatio)
-      }
-
-      if (elapsedTimeRatio === 1) {
-        console.log(`animateCustomCartoon end`)
-
-        return
-      }
-      this.rafTimer = requestAnimationFrame(rafCallback)
-    }
-
-    requestAnimationFrame(rafCallback)
-  }
-
-  animateCartoon(prop: { [key: string]: any }, cfg: AnimateCartoonConfig = {}) {
+  animators: Animator[] = []
+  animateCartoon(targetProp: AbstractUiData, cfg: AnimateCartoonConfig = {}) {
     if (!this.findStage()) {
       console.warn('图形', this, '还没有 append 到 stage 上')
       return
     }
 
-    if (!prop) return
+    const startProp = Object.keys(targetProp).reduce((acc, k) => Object.assign(acc, { [k]: this.data[k] }), {})
+    const animator = new Animator(startProp, targetProp, cfg)
+    this.animators.push(animator)
 
-    const { duration = 1000, easing = 'linear', during } = cfg
+    animator.start()
+    animator.onUpdate = curProp => {
+      this.attr({ ...this.data, ...curProp })
+    }
 
-    cancelAnimationFrame(this.rafTimer)
-
-    const startValue = {}
-    const keys = Object.keys(prop)
-    keys.forEach(key => {
-      startValue[key] = this.data[key]
-    })
-
-    let startTime: number
-
-    return new Promise(resolve => {
-      const update = (timestamp: number) => {
-        if (!startTime) {
-          startTime = timestamp
-        }
-
-        const elapsedTime = timestamp - startTime
-        let elapsedTimeRatio = Math.min(elapsedTime / duration, 1)
-        elapsedTimeRatio = easingFuncs[easing](elapsedTimeRatio)
-
-        const newState = {}
-        keys.forEach(propKey => {
-          const targetValue = calcTargetValue(startValue[propKey], prop[propKey], elapsedTimeRatio)
-          newState[propKey] = targetValue
-        })
-
-        this.attr({ ...this.data, ...newState })
-
-        if (elapsedTimeRatio < 1) {
-          this.rafTimer = requestAnimationFrame(update)
-        }
-
-        if (elapsedTimeRatio === 1) {
-          resolve(true)
-        }
-
-        if (during) {
-          during(elapsedTimeRatio, newState)
-        }
+    return new Promise<void>(resolve => {
+      animator.onDone = () => {
+        this.animators = this.animators.filter(item => item !== animator)
+        resolve()
       }
-
-      requestAnimationFrame(update)
     })
   }
 }

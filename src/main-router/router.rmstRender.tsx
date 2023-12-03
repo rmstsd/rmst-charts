@@ -20,12 +20,20 @@ import DraggableRange from '@/demo/2-rmst-render/drag/DraggableRange'
 import Single from '@/demo/2-rmst-render/event/Single'
 import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
 import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
+import Overview from '@/demo/2-rmst-render/a_overview'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
   element: <LayoutView />,
   uiConfig: { title: 'rmst-render' },
+
   children: [
+    {
+      path: 'overview',
+      element: <LayoutOutlet />,
+      uiConfig: { title: 'overview' },
+      children: [{ path: 'index', element: <Overview />, uiConfig: { title: 'overview' } }]
+    },
     {
       path: 'base',
       element: <LayoutOutlet />,

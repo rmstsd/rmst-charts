@@ -23,26 +23,16 @@ const ChartsTemplate: React.FC<{ option: ICharts.IOption }> = ({ option }) => {
       <button onClick={setOption}>setOption</button>
       <hr />
 
-      <section style={{ display: 'flex', gap: 10 }}>
+      <section className="flex gap-[10px]">
         <div ref={containerRef} className="canvas-container"></div>
 
-        <div
-          style={{
-            flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            height: 500,
-            overflow: 'auto',
-            border: '1px solid #eee'
-          }}
-        >
-          <div style={{ position: 'sticky', top: 0, backgroundColor: '#fff' }}>
-            <h2>配置</h2>
-            <hr />
+        <div className="flex-grow flex flex-col h-[500px] overflow-auto border">
+          <div className="sticky top-0 bg-white">
+            <h2 className="mt-2 ml-2">配置</h2>
           </div>
 
           <textarea
-            style={{ padding: 10, fontFamily: 'Consolas', width: '100%', flexGrow: 1 }}
+            className="p-10px w-full flex-grow font-[Consolas]"
             onChange={evt => {
               setInnerOption(JSON.parse(evt.target.value))
               insRef.current.setOption(JSON.parse(evt.target.value))

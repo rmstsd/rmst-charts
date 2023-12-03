@@ -2,41 +2,41 @@ import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from './utils'
 import Group from './shape/Group'
 import { EventParameter } from './constant'
-import Stage from './Stage'
 
 export default class Draggable {
-  dragStart(eventParameter: EventParameter) {
+  dragStart(eventParameter: EventParameter, canvasElementRect: DOMRect) {
     let draggedTarget = eventParameter.target
 
     while (draggedTarget && !draggedTarget.data.draggable) {
       const parent = draggedTarget.parent as unknown as IShape
-      if ((parent as unknown as Stage).isStage) {
+      if (parent.type === 'Stage') {
         break
       }
 
       draggedTarget = parent
     }
 
-    if (!draggedTarget.data.draggable) {
-      return
-    }
+    draggedTarget.ondragstart({ target: draggedTarget, x: eventParameter.x, y: eventParameter.y })
 
     const onDocumentMousemove = (evt: MouseEvent) => {
       evt.preventDefault()
-      const { movementX, movementY } = evt
-      const dx = movementX
-      const dy = movementY
 
-      if (draggedTarget.data.cusSetCoord) {
-        draggedTarget.data.cusSetCoord({ target: draggedTarget, x: evt.offsetX, y: evt.offsetY, dx, dy })
-      } else {
-        dndAttr(draggedTarget, dx, dy)
+      const x = evt.clientX - canvasElementRect.left
+      const y = evt.clientY - canvasElementRect.top
+
+      draggedTarget.ondrag({ target: draggedTarget, x, y })
+
+      if (!draggedTarget.data.draggable) {
+        return
       }
 
-      draggedTarget.ondrag({ target: draggedTarget, x: evt.offsetX, y: evt.offsetY })
+      const { movementX, movementY } = evt
+      dndAttr(draggedTarget, movementX, movementY)
     }
 
     const onDocumentMouseup = () => {
+      draggedTarget.ondragend({ target: draggedTarget, x: null, y: null })
+
       document.removeEventListener('mousemove', onDocumentMousemove)
       document.removeEventListener('mouseup', onDocumentMouseup)
     }
@@ -61,12 +61,12 @@ function dndAttr(draggedTarget: IShape, dx: number, dy: number) {
 }
 
 function setShapeCoord(target: IShape, dx: number, dy: number) {
-  if (target.isGroup) {
-    ;(target as Group).elements.forEach(item => {
+  if (target.type === 'Group') {
+    ;(target as Group).children.forEach(item => {
       setShapeCoord(item, dx, dy)
     })
   } else {
-    if (target.isLine) {
+    if (target.type === 'Line') {
       const c = convertToNormalPoints(target.data.points)
       c.forEach(item => {
         item.x += dx

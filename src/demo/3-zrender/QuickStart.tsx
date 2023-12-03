@@ -5,24 +5,59 @@ const QuickStart = () => {
   useEffect(() => {
     const zr = zrender.init(document.querySelector('.canvas-container'), {})
 
-    const rect = new zrender.Rect({
+    const rect_1 = new zrender.Rect({
+      name: '1',
       cursor: 'auto',
       shape: {
-        x: 10,
-        y: 10,
+        x: 80,
+        y: 120,
+        width: 50,
+        height: 50
+      },
+      style: {
+        fill: 'blue'
+      }
+    })
+
+    const rect_2 = new zrender.Rect({
+      name: '2',
+      cursor: 'auto',
+      shape: {
+        x: 100,
+        y: 100,
         width: 100,
         height: 100
       },
       style: {
-        fill: 'red'
+        fill: 'pink',
+        stroke: 'purple',
+        lineWidth: 10,
+        opacity: 0.9
+        // shadowBlur: 40,
+        // shadowColor: '#333'
       }
     })
 
-    rect.animateTo({
-      shape: { x: 100 }
-    })
+    // rect_1.animateTo(
+    //   {
+    //     shape: {
+    //       width: 300
+    //     }
+    //   },
+    //   { duration: 3000 }
+    // )
 
-    zr.add(rect)
+    // rect_1.animateTo(
+    //   {
+    //     shape: {
+    //       x: 300
+    //     }
+    //   },
+    //   { duration: 3000 }
+    // )
+
+    zr.add(rect_1)
+    zr.add(rect_2)
   }, [])
 
   return <div className="canvas-container"></div>

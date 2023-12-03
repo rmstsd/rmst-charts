@@ -18,12 +18,12 @@ export class Text extends AbstractUi {
   constructor(data: TextData) {
     super()
 
-    this.data = { ...defaultData, ...data }
+    this.type = 'Text'
+
+    this.data = super.combineDefaultData(data, defaultData)
   }
 
   declare data: TextData
-
-  isText = true
 
   isInner(offsetX: any, offsetY: any): boolean {
     const stage = this.findStage()
@@ -57,6 +57,8 @@ export class Text extends AbstractUi {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    super.draw(ctx)
+
     const { x, y, content, fillStyle, fontSize, textAlign = 'left' } = this.data
 
     setCtxFontSize(ctx, fontSize)
