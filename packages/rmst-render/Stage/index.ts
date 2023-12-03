@@ -77,9 +77,8 @@ export class Stage {
         const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
         triggerEventHandlers(hovered, 'onmouseenter', eventParameter)
 
-        if (hovered.data.cursor) {
-          this.setCursor(hovered.data.cursor)
-        }
+        const cursor = hovered.data.cursor || 'auto'
+        this.setCursor(cursor)
       }
 
       if (hovered) {

@@ -126,16 +126,15 @@ export function createRenderElements(
         fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
         strokeStyle: 'transparent',
         closed: true,
-        lineWidth: 0
+        lineWidth: 0,
+        cursor: 'pointer'
       })
 
       innerSingleArea.onmouseenter = () => {
-        stage.setCursor('pointer')
-        innerSingleArea.attr({ opacity: 0.9 })
+        innerSingleArea.animateCartoon({ opacity: 0.9 }, { duration: 200 })
       }
       innerSingleArea.onmouseleave = () => {
-        stage.setCursor('auto')
-        innerSingleArea.attr({ opacity: 1 })
+        innerSingleArea.animateCartoon({ opacity: 1 }, { duration: 200 })
       }
 
       return innerSingleArea

@@ -67,20 +67,6 @@ const WatermarkClip = () => {
       fillStyle: 'red'
     })
 
-    controlGroup.onDragMove = () => {
-      text.attr({
-        x: controlRect.data.x,
-        y: controlRect.data.y
-      })
-    }
-    controlGroup.onmouseenter = () => {
-      stage.setCursor('move')
-    }
-
-    controlGroup.onmouseleave = () => {
-      stage.setCursor('auto')
-    }
-
     controlGroup.append([controlRect, controlP_lt, controlP_rt, control_rb, control_lb])
 
     const text = new Text(textOption)

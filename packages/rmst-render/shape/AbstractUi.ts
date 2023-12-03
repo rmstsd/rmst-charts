@@ -3,6 +3,7 @@ import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent from '../AbsEvent'
 
 export interface AbstractUiData {
+  name?: string
   x?: number
   y?: number
   shadowColor?: string

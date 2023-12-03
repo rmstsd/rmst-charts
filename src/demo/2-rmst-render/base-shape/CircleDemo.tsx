@@ -41,14 +41,12 @@ const CircleDemo = () => {
     // 注册鼠标事件
     arcs.forEach(item => {
       item.onmouseenter = () => {
-        stage.setCursor('pointer')
         item.attr({ fillStyle: 'pink' })
         console.log('onEnter', item.constructor.name)
       }
 
       item.onmouseleave = () => {
         item.attr({ fillStyle: 'blueviolet' })
-        stage.setCursor('auto')
         console.log('onLeave', item.constructor.name)
       }
 

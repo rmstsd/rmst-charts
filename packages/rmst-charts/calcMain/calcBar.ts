@@ -25,11 +25,7 @@ function calcMain(dataSource: number[], xAxisData, yAxis) {
   return res
 }
 
-function calcPolarMain(
-  stage: Stage,
-  seriesItem: ICharts.series,
-  coordinateSystem: ICoordinateSystemElements
-) {
+function calcPolarMain(stage: Stage, seriesItem: ICharts.series, coordinateSystem: ICoordinateSystemElements) {
   const { polarAxisData } = coordinateSystem.polar
 
   // 极坐标系的径向轴 临时方案, 错误的方案
@@ -43,6 +39,7 @@ function calcPolarMain(
         innerRadius: item.innerRadius,
         radius: item.radius,
         fillStyle: primaryColor,
+        cursor: 'pointer',
         extraData: { endAngle: item.endAngle }
       })
 
@@ -61,12 +58,7 @@ function calcPolarMain(
   const arcs = polarAxisData.radianAngles.map((item, index) => {
     const { min, realInterval, tickInterval } = polarAxisData.tickConstant
 
-    const radius = getCanvasDistanceFromRealNumber(
-      seriesItem.data[index] as number,
-      min,
-      realInterval,
-      tickInterval
-    )
+    const radius = getCanvasDistanceFromRealNumber(seriesItem.data[index] as number, min, realInterval, tickInterval)
 
     const gapAngle = (item.endAngle - item.startAngle) * 0.2
 
@@ -77,16 +69,10 @@ function calcPolarMain(
       startAngle: item.startAngle + gapAngle,
       endAngle: item.endAngle - gapAngle,
       fillStyle: primaryColor,
-      extraData: { radius }
+      extraData: { radius },
+      cursor: 'pointer'
     })
 
-    arc.onmouseenter = () => {
-      stage.setCursor('pointer')
-    }
-
-    arc.onmouseleave = () => {
-      stage.setCursor('auto')
-    }
     return arc
   })
 
@@ -118,18 +104,19 @@ export function createRenderElements(
   const x_axis_start_y = xAxisData.axis.start.y
 
   const backgroundRects = seriesItem.showBackground
-    ? data.map(item => {
-        return new Rect({
-          x: item.x,
-          y: x_axis_start_y,
-          width: item.width,
-          height: yAxisData.axis.end.y - yAxisData.axis.start.y,
-          fillStyle: 'rgba(180, 180, 180, 0.2)'
-        })
-      })
+    ? data.map(
+        item =>
+          new Rect({
+            x: item.x,
+            y: x_axis_start_y,
+            width: item.width,
+            height: yAxisData.axis.end.y - yAxisData.axis.start.y,
+            fillStyle: 'rgba(180, 180, 180, 0.2)'
+          })
+      )
     : []
 
-  const rects = data.map((item, index) => {
+  const rects = data.map(item => {
     const rectItem = new Rect({
       x: item.x,
       y: x_axis_start_y,
@@ -138,6 +125,14 @@ export function createRenderElements(
       fillStyle: primaryColor,
       cursor: 'pointer'
     })
+
+    rectItem.onmouseenter = () => {
+      rectItem.animateCartoon({ opacity: 0.9 }, { duration: 200 })
+    }
+
+    rectItem.onmouseleave = () => {
+      rectItem.animateCartoon({ opacity: 1 }, { duration: 200 })
+    }
 
     return rectItem
   })
