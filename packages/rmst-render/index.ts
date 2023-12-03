@@ -8,3 +8,5 @@ export * from './shape/Line'
 export * from './shape/Group'
 
 export * from './Stage'
+
+export * from './animate'

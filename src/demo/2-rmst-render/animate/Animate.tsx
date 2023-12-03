@@ -10,46 +10,22 @@ const Animate = () => {
       container: canvasRef.current
     })
 
-    const arc = new Circle({
-      x: 100,
-      y: 100,
-      radius: 50,
-      fillStyle: 'pink'
-    })
-
-    const sector = new Circle({
-      x: 450,
-      y: 100,
-      startAngle: 0,
-      endAngle: 0,
-      radius: 50,
-      fillStyle: 'pink'
-    })
-    sector.onmouseenter = () => {
-      stage.setCursor('pointer')
-    }
-
-    sector.onmouseleave = () => {
-      stage.setCursor('auto')
-    }
-
     const rect = new Rect({
       x: 200,
       y: 50,
       width: 100,
       height: 60,
-      fillStyle: 'purple'
+      fillStyle: 'purple',
+      shadowColor: 'red'
     })
 
-    stage.append([arc, rect, sector])
+    stage.append([rect])
 
-    arc.animateCartoon({ radius: 100 }).then(() => {
-      arc.animateCartoon({ radius: 50 })
-    })
-    rect.animateCartoon({ x: 200 + 100, height: 200 }).then(() => {
-      rect.animateCartoon({ x: 200 })
-    })
-    sector.animateCartoon({ endAngle: 100 })
+    rect.animateCartoon({ x: 300 }, { duration: 3000 })
+
+    setTimeout(() => {
+      rect.animateCartoon({ height: 200 }, { duration: 1000 })
+    }, 500)
   }, [])
 
   return (

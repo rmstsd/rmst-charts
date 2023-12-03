@@ -109,9 +109,7 @@ const getDataForDraw = (
     })
 
     // 圆心到外圆刻度的线段, 与 category 轴重叠的线不用画
-    const ccToTickLines = outerTicks
-      .slice(1)
-      .map(item => ({ start: { x: center_x, y: center_y }, end: item.start }))
+    const ccToTickLines = outerTicks.slice(1).map(item => ({ start: { x: center_x, y: center_y }, end: item.start }))
 
     const radianPadding = tickInterval / 5
     // 扇环内外半径的差
@@ -175,12 +173,7 @@ const getDataForDraw = (
 
     const radianTickStart = getPointOnArc(center_x, center_y, outerCircle.radius, tickAngle)
     const radianTickEnd = getPointOnArc(center_x, center_y, outerCircle.radius + 10, tickAngle)
-    const radianTextPoint = getPointOnArc(
-      center_x,
-      center_y,
-      outerCircle.radius + 15,
-      (tickAngle + nextTickAngle) / 2
-    )
+    const radianTextPoint = getPointOnArc(center_x, center_y, outerCircle.radius + 15, (tickAngle + nextTickAngle) / 2)
 
     return { start: radianTickStart, end: radianTickEnd, text: { ...radianTextPoint, value: String(item) } }
   })

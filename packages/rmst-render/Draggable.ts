@@ -2,7 +2,6 @@ import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { convertToNormalPoints } from './utils'
 import Group from './shape/Group'
 import { EventParameter } from './constant'
-import Stage from './Stage'
 
 export default class Draggable {
   dragStart(eventParameter: EventParameter, canvasElementRect: DOMRect) {
@@ -10,7 +9,7 @@ export default class Draggable {
 
     while (draggedTarget && !draggedTarget.data.draggable) {
       const parent = draggedTarget.parent as unknown as IShape
-      if ((parent as unknown as Stage).isStage) {
+      if (parent.type === 'Stage') {
         break
       }
 

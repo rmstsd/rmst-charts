@@ -20,12 +20,13 @@ const Overview = () => {
         fillStyle: 'purple',
         cornerRadius: 20,
         cursor: 'pointer',
+        draggable: true,
         shadowColor
       }),
       new Rect({
         x: 100,
         y: 10,
-        width: 120,
+        width: 0,
         height: 80,
         fillStyle: '#a18cd1',
         draggable: true,
@@ -42,6 +43,7 @@ const Overview = () => {
         fillStyle: 'antiquewhite',
         cornerRadius: 20,
         cursor: 'pointer',
+        draggable: true,
         shadowColor
       }),
       new Circle({
@@ -88,10 +90,31 @@ const Overview = () => {
         draggable: true,
         strokeStyle: 'blueviolet',
         shadowColor
+      }),
+      new Line({
+        points: [180, 120, 230, 120, 250, 140, 270, 140],
+        lineWidth: 5,
+        draggable: true,
+        strokeStyle: 'firebrick',
+        shadowColor
       })
     ]
+    const line = new Line({
+      points: [354, 142, 434, 222, 534, 272, 634, 202],
+      strokeStyle: 'gold',
+      lineWidth: 20,
+      draggable: true,
+      shadowColor
+    })
 
-    const shapes = [...rects, ...arcs, ...lines]
+    const line3 = new Line({
+      points: [0, 0, 0, 0, 0, 0, 0, 0],
+      strokeStyle: 'orange',
+      lineWidth: 10,
+      draggable: true
+    })
+
+    const shapes = [...rects, ...arcs, ...lines, line, line3]
     stage.append(shapes)
 
     shapes.forEach(item => {
@@ -102,6 +125,10 @@ const Overview = () => {
         item.animateCartoon({ shadowBlur: 0 }, { duration: 300 })
       }
     })
+
+    rects[1].animateCartoon({ width: 120 }, { duration: 3000 })
+    line.animateE2e(3000)
+    line3.animateCartoon({ points: [616, 314, 516, 384, 416, 334, 336, 254] }, { duration: 3000 })
   }, [])
 
   return (

@@ -1,4 +1,4 @@
-import { Circle, Group, Line, Stage, Text, deg2rad, getPointOnArc, measureText } from 'rmst-render'
+import { Circle, Group, Line, Stage, Text, deg2rad, getPointOnArc, measureText, Animator } from 'rmst-render'
 import { pointToFlatArray } from './utils/utils'
 import { tickColor } from './constant'
 
@@ -143,20 +143,18 @@ class PieMain {
   }
 
   afterAppendStage() {
-    this.fakeArc.animateCustomCartoon({
-      startValue: 0,
-      endValue: 360,
-      frameCallback: (currentValue, elapsedTimeRatio) => {
-        this.pieElements
-          .filter(o => o.data.onlyKey === 'main-pie')
-          .forEach(element => {
-            element.attr({
-              startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
-              endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
-            })
+    const ani = new Animator({ value: 0 }, { value: 360 }, { easing: 'cubicInOut' })
+    ani.start()
+    ani.onUpdate = (__, elapsedTimeRatio) => {
+      this.pieElements
+        .filter(o => o.data.onlyKey === 'main-pie')
+        .forEach(element => {
+          element.attr({
+            startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
+            endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
           })
-      }
-    })
+        })
+    }
 
     this.labelElements.forEach((item, index) => {
       const [exLine, exText] = item.children as unknown as [Line, Text]

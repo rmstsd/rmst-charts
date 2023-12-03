@@ -9,15 +9,13 @@ const QuickStart = () => {
       name: '1',
       cursor: 'auto',
       shape: {
-        x: 100,
-        y: 100,
-        width: 100,
-        height: 100
+        x: 80,
+        y: 120,
+        width: 50,
+        height: 50
       },
       style: {
-        fill: 'pink',
-        shadowBlur: 40,
-        shadowColor: '#333'
+        fill: 'blue'
       }
     })
 
@@ -25,26 +23,41 @@ const QuickStart = () => {
       name: '2',
       cursor: 'auto',
       shape: {
-        x: 200,
+        x: 100,
         y: 100,
         width: 100,
         height: 100
       },
       style: {
-        fill: '#fff',
+        fill: 'pink',
+        stroke: 'purple',
+        lineWidth: 10,
+        opacity: 0.9
         // shadowBlur: 40,
-        shadowColor: 'orange'
+        // shadowColor: '#333'
       }
     })
 
+    // rect_1.animateTo(
+    //   {
+    //     shape: {
+    //       width: 300
+    //     }
+    //   },
+    //   { duration: 3000 }
+    // )
+
+    // rect_1.animateTo(
+    //   {
+    //     shape: {
+    //       x: 300
+    //     }
+    //   },
+    //   { duration: 3000 }
+    // )
+
     zr.add(rect_1)
     zr.add(rect_2)
-
-    console.log(zr)
-
-    setTimeout(() => {
-      rect_1.attr({ z: 20 })
-    }, 1000)
   }, [])
 
   return <div className="canvas-container"></div>

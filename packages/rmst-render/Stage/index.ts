@@ -13,7 +13,7 @@ export class Stage {
     this.addStageEventListener()
   }
 
-  isStage = true
+  type: IShapeType = 'Stage'
 
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
@@ -118,5 +118,3 @@ export class Stage {
     this.canvasElement.style.setProperty('cursor', cursor)
   }
 }
-
-export default Stage

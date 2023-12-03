@@ -12,7 +12,7 @@ import leaferRouteConfig from './router.leafer'
 export type IRouteObject = {
   path: RouteObject['path']
   element: RouteObject['element']
-  uiConfig?: { hidden?: boolean; title?: string; icon?: any; isDeveloping?: boolean }
+  uiConfig?: { hidden?: boolean; title?: string; icon?: any }
   children?: IRouteObject[]
 }
 
@@ -30,11 +30,7 @@ export const routes: IRouteObject[] = [
   otherRouteConfig
 ]
 
-export const convertToAntdData = (
-  array: IRouteObject[],
-  recur: boolean,
-  parentKey = ''
-): MenuProps['items'] => {
+export const convertToAntdData = (array: IRouteObject[], recur: boolean, parentKey = ''): MenuProps['items'] => {
   return array
     .filter(item => !item.uiConfig?.hidden)
     .map(item => {
