@@ -21,11 +21,7 @@ interface CircleData extends AbstractUiData {
 
 export class Circle extends AbstractUi {
   constructor(data: CircleData) {
-    super()
-
-    this.type = 'Circle'
-
-    this.data = super.combineDefaultData(data, defaultData)
+    super('Circle', data, defaultData)
   }
 
   declare data: CircleData

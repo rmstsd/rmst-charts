@@ -1,3 +1,4 @@
+import { combineDefaultData } from './AbstractUi'
 import { Group } from './Group'
 import { RectData, defaultRectData, drawRect } from './Rect'
 
@@ -7,7 +8,7 @@ export default class BoxHidden extends Group {
 
     this.type = 'BoxHidden'
 
-    this.data = { ...data, ...defaultRectData }
+    this.data = combineDefaultData(data, defaultRectData)
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
