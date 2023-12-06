@@ -1,7 +1,7 @@
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
-import { convertToNormalPoints } from './utils'
-import Group from './shape/Group'
 import { EventParameter } from './constant'
+import { isGroup, isStage } from './utils/isShape'
+import { convertToNormalPoints } from './utils'
 
 export default class Draggable {
   dragStart(eventParameter: EventParameter, canvasElementRect: DOMRect) {
@@ -9,7 +9,7 @@ export default class Draggable {
 
     while (draggedTarget && !draggedTarget.data.draggable) {
       const parent = draggedTarget.parent as unknown as IShape
-      if (parent.type === 'Stage') {
+      if (isStage(parent)) {
         break
       }
 
@@ -61,8 +61,8 @@ function dndAttr(draggedTarget: IShape, dx: number, dy: number) {
 }
 
 function setShapeCoord(target: IShape, dx: number, dy: number) {
-  if (target.type === 'Group') {
-    ;(target as Group).children.forEach(item => {
+  if (isGroup(target)) {
+    target.children.forEach(item => {
       setShapeCoord(item, dx, dy)
     })
   } else {

@@ -1,4 +1,4 @@
-import Line from './shape/Line'
+import Line from 'rmst-render/shape/Line'
 
 export function createPath2D(data: Line['data']) {
   // 创建 Path2D
@@ -84,8 +84,7 @@ export function calcAllControlPoint(
       const distance = (next.x - curr.x) / 2
       const pow2 = (num: number) => Math.pow(num, 2) // 平方: Math.pow(3, 2) = 3 * 3 = 9
 
-      const four_ac =
-        4 * (pow2(k) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
+      const four_ac = 4 * (pow2(k) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
       const det = Math.sqrt(pow2(2 * k * b - 2 * curr.x - 2 * curr.y * k) - four_ac) // 根号下(b方 - 4ac)
       const fb = -(2 * k * b - 2 * curr.x - 2 * curr.y * k) // -b
       const two_a = 2 * (pow2(k) + 1) // 2a
