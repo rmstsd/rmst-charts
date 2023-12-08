@@ -105,7 +105,7 @@ export class Stage {
     this.canvasElement.addEventListener('mousedown', evt => {
       const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
       if (hovered) {
-        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
         this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())
       }
     })
