@@ -68,7 +68,7 @@ const DraggableRange = () => {
 
   return (
     <>
-      <h2>只能在紫色矩形内拖拽</h2>
+      <h3>只能在紫色矩形内拖拽</h3>
       <div className="canvas-container" ref={canvasRef}></div>
     </>
   )

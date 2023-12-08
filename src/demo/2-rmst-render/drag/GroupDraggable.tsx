@@ -93,7 +93,7 @@ const GroupDemo = () => {
 
   return (
     <>
-      <h2>Group 元素拖拽 (组内还有组), 对最近的祖先元素进行拖拽 </h2>
+      <h3>Group 元素拖拽 (组内还有组), 对最近的祖先元素进行拖拽 </h3>
       <button onClick={addToOuterGroup}>向 outer组 添加 draggable: false 的元素</button>
       <button onClick={addToInnerGroup} className="ml-2">
         向 inner组 添加 draggable: true 元素

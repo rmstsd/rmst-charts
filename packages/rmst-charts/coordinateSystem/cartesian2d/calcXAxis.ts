@@ -1,12 +1,7 @@
 // @ts-check
 import { Stage, Line, Text, measureText } from 'rmst-render'
 
-import {
-  canvasPaddingBottom,
-  canvasPaddingLeft,
-  canvasPaddingRight,
-  tickColor
-} from 'rmst-charts/constant.js'
+import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from 'rmst-charts/constant.js'
 import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
 
 function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
