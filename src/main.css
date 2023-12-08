@@ -8,7 +8,11 @@
   }
 
   hr {
-    @apply my-2 border-[1px];
+    @apply my-2 border-0 h-[1px] bg-gray-300;
+  }
+
+  h3 {
+    @apply font-bold text-[18px] my-2 text-gray-800;
   }
 }
 

@@ -14,12 +14,7 @@ import { calcPerfectTick } from '../utils'
 import { getCanvasDistanceFromRealNumber } from 'rmst-charts/convert.js'
 import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
 
-function getYAxis(
-  ctx: CanvasRenderingContext2D,
-  dataSource: number[],
-  containerHeight: number,
-  xAxisEndX: number
-) {
+function getYAxis(ctx: CanvasRenderingContext2D, dataSource: number[], containerHeight: number, xAxisEndX: number) {
   const axis_x = canvasPaddingLeft
   const start_y = containerHeight - canvasPaddingBottom
   const end_y = canvasPaddingTop
@@ -44,6 +39,7 @@ function getYAxis(
       text: { x: start_x - textWidth - 5, y: tick_y - textHeight / 2, value: tickValue }
     }
   })
+
   return { axis, ticks, tickConstant: { min: perfectMin, realInterval: perfectInterval, tickInterval } }
 }
 
@@ -63,10 +59,10 @@ export function createYAxisElements(stage: Stage, series: ICharts.series[]) {
     strokeStyle: splitLineColor
   })
 
-  const ticksLines = yAxisData.ticks.map(item => {
+  const ticksLines = yAxisData.ticks.map((item, idx) => {
     return new Line({
       points: [item.start.x, item.start.y, item.end.x, item.end.y],
-      strokeStyle: splitLineColor
+      strokeStyle: idx === 0 ? 'transparent' : splitLineColor
     })
   })
 

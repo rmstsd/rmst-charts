@@ -68,9 +68,10 @@ const Draggable = () => {
 
   return (
     <>
-      <h2>单个元素拖拽</h2>
+      <h3>单个元素拖拽</h3>
       <button onClick={addToStage}>向舞台添加元素</button>
-      <div className="canvas-container" ref={canvasRef}></div>
+
+      <div className="canvas-container mt-2" ref={canvasRef}></div>
     </>
   )
 }

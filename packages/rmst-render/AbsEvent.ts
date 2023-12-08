@@ -1,6 +1,7 @@
 import { Group } from 'zrender'
 import { Stage } from './Stage'
 import { EventType, Handler, dpr } from './constant'
+import { isLine } from './utils'
 
 abstract class AbsEvent {
   onclick: Handler = () => {}
@@ -49,7 +50,7 @@ abstract class AbsEvent {
       return stage.ctx.isPointInStroke(this.path2D, x, y)
     }
 
-    if (this.type === 'Line' && !this.data.closed) {
+    if (isLine(this as unknown as IShape) && !this.data.closed) {
       return isInStroke()
     }
 

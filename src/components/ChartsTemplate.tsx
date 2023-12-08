@@ -26,9 +26,9 @@ const ChartsTemplate: React.FC<{ option: ICharts.IOption }> = ({ option }) => {
       <section className="flex gap-[10px]">
         <div ref={containerRef} className="canvas-container"></div>
 
-        <div className="flex-grow flex flex-col h-[500px] overflow-auto border">
+        <div className="flex-grow flex flex-col h-[500px] overflow-auto border p-1">
           <div className="sticky top-0 bg-white">
-            <h2 className="mt-2 ml-2">配置</h2>
+            <h3 className="mt-2 ml-2">配置</h3>
           </div>
 
           <textarea
