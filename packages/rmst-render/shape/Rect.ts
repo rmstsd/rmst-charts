@@ -13,7 +13,7 @@ export interface RectData extends AbstractUiData {
   cornerRadius?: number
 }
 
-export class Rect extends AbstractUi {
+export class Rect extends AbstractUi<RectData> {
   constructor(data: RectData) {
     super('Rect', data, defaultRectData)
   }

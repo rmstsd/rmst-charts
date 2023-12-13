@@ -16,7 +16,7 @@ interface LineData extends AbstractUiData {
   percent?: number // 0 - 1
 }
 
-export class Line extends AbstractUi {
+export class Line extends AbstractUi<LineData> {
   constructor(data: LineData) {
     super('Line', data, defaultData)
 

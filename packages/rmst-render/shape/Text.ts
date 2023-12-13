@@ -14,7 +14,7 @@ interface TextData extends AbstractUiData {
   textAlign?: CanvasTextAlign
 }
 
-export class Text extends AbstractUi {
+export class Text extends AbstractUi<TextData> {
   constructor(data: TextData) {
     super('Text', data, defaultData)
   }

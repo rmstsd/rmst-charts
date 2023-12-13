@@ -1,6 +1,6 @@
 import AbstractUi from './AbstractUi'
 
-export class Group extends AbstractUi {
+export class Group extends AbstractUi<any> {
   constructor(data = {}) {
     super('Group', data)
   }

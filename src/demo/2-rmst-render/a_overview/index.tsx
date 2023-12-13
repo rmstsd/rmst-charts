@@ -42,7 +42,6 @@ const Overview = () => {
         radius: 50,
         endAngle: 0,
         fillStyle: 'antiquewhite',
-        cornerRadius: 20,
         cursor: 'pointer',
         draggable: true,
         shadowColor
