@@ -46,14 +46,14 @@ const GroupDemo = () => {
     const arc_1 = new Circle({
       name: 'red',
       x: 100,
-      y: 300,
+      y: 200,
       radius: 50,
       fillStyle: 'red'
     })
     const arc_2 = new Circle({
       name: 'orange',
       x: 250,
-      y: 300,
+      y: 200,
       radius: 50,
       fillStyle: 'orange'
     })

@@ -113,7 +113,8 @@ class PieMain {
       points: pointToFlatArray(extendLinePoints),
       strokeStyle: item.color,
       lineWidth: this.seriesItem.labelLine?.lineStyle?.width || 2,
-      cursor: 'pointer'
+      cursor: 'pointer',
+      percent: 0
     })
 
     const { textWidth, textHeight } = measureText(this.ctx, item.label, 14)
@@ -145,7 +146,7 @@ class PieMain {
   afterAppendStage() {
     const ani = new Animator({ value: 0 }, { value: 360 }, { easing: 'cubicInOut' })
     ani.start()
-    ani.onUpdate = (__, elapsedTimeRatio) => {
+    ani.onUpdate = (_, elapsedTimeRatio) => {
       this.pieElements
         .filter(o => o.data.onlyKey === 'main-pie')
         .forEach(element => {
@@ -159,7 +160,7 @@ class PieMain {
     this.labelElements.forEach((item, index) => {
       const [exLine, exText] = item.children as unknown as [Line, Text]
 
-      exLine.animateE2e(this.seriesItem.animationDuration)
+      exLine.animateCartoon({ percent: 1 }, { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' })
 
       // 颜色过渡
       // exText

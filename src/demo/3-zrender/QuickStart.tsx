@@ -38,6 +38,15 @@ const QuickStart = () => {
       }
     })
 
+    const line = new zrender.Polyline({
+      shape: {
+        points: [
+          [10, 10],
+          [100, 10],
+          [120, 20]
+        ]
+      }
+    })
     // rect_1.animateTo(
     //   {
     //     shape: {
@@ -58,6 +67,7 @@ const QuickStart = () => {
 
     zr.add(rect_1)
     zr.add(rect_2)
+    zr.add(line)
   }, [])
 
   return <div className="canvas-container"></div>

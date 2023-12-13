@@ -1,4 +1,4 @@
-import { Cursor, DragEvent, Leafer, Rect } from 'leafer-ui'
+import { Cursor, DragEvent, Leafer, Line, Rect } from 'leafer-ui'
 import { useEffect } from 'react'
 
 const QuickStart = () => {
@@ -42,6 +42,14 @@ const QuickStart = () => {
     console.log(rect)
 
     console.log(leafer.toJSON())
+
+    const line = new Line({
+      points: [10, 90, 10, 10, 50, 70, 90, 10, 90, 90], // [x,y, x,y ...]
+      strokeWidth: 5,
+      stroke: 'rgb(50,205,121)'
+    })
+
+    leafer.add(line)
   }, [])
 
   return (

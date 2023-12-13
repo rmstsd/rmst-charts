@@ -1,2 +1,2 @@
 export * from './isShape'
-export * from './draw'
+export * from './lineUtil'

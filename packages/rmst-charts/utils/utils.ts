@@ -48,8 +48,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], dist
 
       // (pow2(slope) + 1)*pow2(x) +  (2*slope*b -  2*curr.x - 2*curr.y*slope)*x + pow2(curr.x) - 2*curr.y*b  + pow2(curr.y) + pow2(b) - distance ** 2 = 0
 
-      const four_ac =
-        4 * (pow2(slope) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
+      const four_ac = 4 * (pow2(slope) + 1) * (pow2(curr.x) - 2 * curr.y * b + pow2(curr.y) + pow2(b) - distance ** 2) // 4ac
       const det = Math.sqrt(pow2(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) - four_ac) // 根号下(b方 - 4ac)
       const fb = -(2 * slope * b - 2 * curr.x - 2 * curr.y * slope) // -b
       const two_a = 2 * (pow2(slope) + 1) // 2a
@@ -95,30 +94,6 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], dist
 
 export function pointToFlatArray(list: { x: number; y: number }[]) {
   return list.reduce((acc, item) => acc.concat(item.x, item.y), [])
-}
-
-export function calcTotalLineLength(points: { x: number; y: number }[]) {
-  const lines = points.reduce((acc, item, index) => {
-    if (index === 0) {
-      return acc
-    }
-
-    const lineItem = { start: points[index - 1], end: item }
-
-    return acc.concat(lineItem)
-  }, [])
-
-  const lineLengths = []
-
-  const totalLineLength = lines.reduce((acc, item) => {
-    const lengthItem = calcLineLength(item.start, item.end)
-
-    lineLengths.push(lengthItem)
-
-    return acc + lengthItem
-  }, 0)
-
-  return { totalLineLength, lines, lineLengths }
 }
 
 export function calcLineLength(p1: ICoord, p2: ICoord) {
