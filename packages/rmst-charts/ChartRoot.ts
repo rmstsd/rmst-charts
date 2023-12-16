@@ -2,7 +2,7 @@ import { Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
 
-import Legend from './components/legend'
+import Legend, { LegendDataItem } from './components/legend'
 
 import LineMain from './chart/LineMain'
 import PieMain from './chart/PieMain'
@@ -21,6 +21,8 @@ export class ChartRoot {
 
   finalSeries: ICharts.series[]
 
+  seriesInstances: (LineMain | BarMain | PieMain)[] = []
+
   legend: Legend
 
   coordinateSystem: ICoordinateSystemElements
@@ -32,7 +34,7 @@ export class ChartRoot {
 
     stage.removeAllElements()
 
-    const legendBaseData = []
+    const legendData: LegendDataItem[] = []
 
     const renderedElements = []
 
@@ -57,11 +59,16 @@ export class ChartRoot {
           renderedElements.push(line.lineElements.mainPolyline)
           renderedElements.push(...line.lineElements.arcs)
 
-          // legendBaseData.push(...line.data)
+          if (seriesItem.name) {
+            legendData.push({ label: seriesItem.name, color: line.color })
+          }
 
           afterTasks.push(() => {
             line.afterAppendStage()
           })
+
+          this.seriesInstances.push(line)
+
           break
         }
         case 'bar': {
@@ -76,13 +83,14 @@ export class ChartRoot {
           afterTasks.push(() => {
             bar.afterAppendStage()
           })
+          this.seriesInstances.push(bar)
           break
         }
         case 'pie': {
           const pie = new PieMain(this)
           pie.render(seriesItem)
 
-          legendBaseData.push(...pie.data)
+          legendData.push(...pie.data.map(item => ({ color: item.color, label: item.label })))
 
           renderedElements.push(...pie.pieElements)
           renderedElements.push(...pie.labelElements)
@@ -91,6 +99,7 @@ export class ChartRoot {
             pie.afterAppendStage()
           })
 
+          this.seriesInstances.push(pie)
           break
         }
         default: {
@@ -100,10 +109,17 @@ export class ChartRoot {
     })
 
     this.legend = new Legend(this)
-    this.legend.render(legendBaseData.map(item => ({ label: item.label, color: item.color })))
+    this.legend.render(legendData)
 
     this.legend.onSelect = (index, legendItem) => {
-      console.log(index, legendItem)
+      this.seriesInstances.forEach(item => {
+        item?.select(index)
+      })
+    }
+    this.legend.onCancelSelect = (index, legendItem) => {
+      this.seriesInstances.forEach(item => {
+        item?.cancelSelect(index)
+      })
     }
 
     renderedElements.push(...this.legend.elements)

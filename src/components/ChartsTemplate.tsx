@@ -24,7 +24,7 @@ const ChartsTemplate: React.FC<{ option: ICharts.IOption }> = ({ option }) => {
       <hr />
 
       <section className="flex gap-[10px]">
-        <div ref={containerRef} className="canvas-container"></div>
+        <div ref={containerRef} className="w-[750px] h-[500px] border border-gray-300"></div>
 
         <div className="flex-grow flex flex-col h-[500px] overflow-auto border p-1">
           <div className="sticky top-0 bg-white">

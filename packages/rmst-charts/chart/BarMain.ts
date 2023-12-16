@@ -167,4 +167,8 @@ export default class BarMain {
       rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height }, { easing: 'cubicInOut' })
     })
   }
+
+  select(index: number) {}
+
+  cancelSelect(index: number) {}
 }

@@ -42,8 +42,11 @@ export default class LineMain {
     this.cr = cr
   }
 
+  color: string
+
   render(seriesItem: ICharts.LineSeries, index: number) {
     this.seriesItem = { ...defaultLineSeriesItem, ...seriesItem }
+    this.color = colorPalette[index]
 
     const { coordinateSystem, stage } = this.cr
     const finalSeries = this.cr.finalSeries as ICharts.LineSeries[]
@@ -62,7 +65,7 @@ export default class LineMain {
     // 主折线
     const mainLine = new Line({
       points: mainLinePoints,
-      strokeStyle: colorPalette[index],
+      strokeStyle: this.color,
       lineWidth: lineStyle.width,
       lineCap: lineStyle.cap,
       lineJoin: lineStyle.join,
@@ -76,9 +79,7 @@ export default class LineMain {
       height: stage.canvasSize.height
     })
     if (areaStyle) {
-      boxHidden.append(createArea())
-
-      function createArea() {
+      const createArea = () => {
         const prevSeries = finalSeries[index - 1]
 
         const prevPointData =
@@ -89,7 +90,7 @@ export default class LineMain {
               ]
             : calcLineData(prevSeries.data as number[], xAxisData, yAxisData)
 
-        function calcAreaFillStyle() {
+        const calcAreaFillStyle = () => {
           // 是数组则认为是渐变
           if (Array.isArray(areaStyle.color)) {
             const max_y = Math.max(...pointData.map(item => item.y))
@@ -105,7 +106,7 @@ export default class LineMain {
             return gradient
           }
 
-          return areaStyle.color || colorAlpha(colorPalette[index], 0.6)
+          return areaStyle.color || colorAlpha(this.color, 0.6)
         }
 
         // 注意点的顺序是 从右向左的
@@ -141,12 +142,13 @@ export default class LineMain {
 
         return innerSingleArea
       }
+      boxHidden.append(createArea())
     }
     boxHidden.append(mainLine)
 
     let arcs: Circle[] = []
     if (symbol !== 'none') {
-      arcs = this.createSymbol(pointData, index)
+      arcs = this.createSymbol(pointData)
     }
 
     this.lineElements = { mainPolyline: boxHidden, arcs }
@@ -154,7 +156,7 @@ export default class LineMain {
 
   normalRadius = 2
 
-  createSymbol(pointData, serIndex) {
+  createSymbol(pointData) {
     const initRadius = 0
     const activeRadius = 4
     const arcs = pointData.map(item => {
@@ -163,7 +165,7 @@ export default class LineMain {
         y: item.y,
         radius: initRadius,
         fillStyle: 'white',
-        strokeStyle: colorPalette[serIndex],
+        strokeStyle: this.color,
         lineWidth: 4,
         cursor: 'pointer'
       })
@@ -209,6 +211,10 @@ export default class LineMain {
       }
     )
   }
+
+  select(index: number) {}
+
+  cancelSelect(index: number) {}
 }
 
 // 阶梯折线图 - smooth 应该失效
