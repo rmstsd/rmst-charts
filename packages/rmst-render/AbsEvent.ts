@@ -22,18 +22,8 @@ abstract class AbsEvent {
   data
   path2D
 
-  findStage() {
-    let stage = this.parent
-
-    while (stage && stage.parent) {
-      stage = stage.parent
-    }
-
-    return stage as unknown as Stage
-  }
-
   isInner(offsetX: number, offsetY: number) {
-    const stage = this.findStage()
+    const stage = this.stage
 
     if (!stage) {
       return

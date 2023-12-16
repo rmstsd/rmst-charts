@@ -18,7 +18,7 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
   const axis = { start: { x: start_x, y: axis_y }, end: { x: end_x, y: axis_y }, xAxisInterval }
 
   const ticks = data.map((valueString, index) => {
-    const { textWidth, textHeight } = measureText(ctx, valueString, 14)
+    const { textWidth, textHeight } = measureText(valueString, 14)
     const tickLength = 10
 
     const x = firstPaddingLeft + start_x + index * xAxisInterval

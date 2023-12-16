@@ -11,7 +11,7 @@ import {
 } from 'rmst-charts/constant.js'
 
 import { calcPerfectTick } from '../utils'
-import { getCanvasDistanceFromRealNumber } from 'rmst-charts/convert.js'
+import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert.js'
 import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
 
 function getYAxis(ctx: CanvasRenderingContext2D, dataSource: number[], containerHeight: number, xAxisEndX: number) {
@@ -31,7 +31,7 @@ function getYAxis(ctx: CanvasRenderingContext2D, dataSource: number[], container
       // 新的计算方式能够更好的自定义增加刻度
       start_y - getCanvasDistanceFromRealNumber(tickValue, perfectMin, perfectInterval, tickInterval) // start_y - tickInterval * index
 
-    const { textWidth, textHeight } = measureText(ctx, String(tickValue), 14)
+    const { textWidth, textHeight } = measureText(String(tickValue), 14)
 
     return {
       start: { x: start_x, y: tick_y },

@@ -1,7 +1,7 @@
 import colorAlpha from 'color-alpha'
 
 // 图表距离canvas元素的内边距
-export const canvasPaddingTop = 20
+export const canvasPaddingTop = 50
 export const canvasPaddingRight = 20
 export const canvasPaddingBottom = 40
 export const canvasPaddingLeft = 50
@@ -19,8 +19,6 @@ export const defaultCandleCount = 20 // 初始化默认显示的数量
 // 颜色
 export const primaryColor = '#5C7BD9'
 export const primaryColorAlpha = colorAlpha(primaryColor, 0.8)
-
-export const pieColors = ['#EE6666', '#73C0DE', '#5470C6', '#91CC75', '#FAC858', 'red', 'purple', 'pink']
 
 export const tickColor = '#666' // 坐标轴颜色 和 刻度颜色
 export const splitLineColor = '#E0E6F1' // Y 轴长横线颜色

@@ -81,7 +81,7 @@ export abstract class AbstractUi<T> extends AbsEvent {
   attr(data: Partial<T>) {
     this.data = { ...this.data, ...data }
 
-    this.findStage()?.renderStage()
+    this.stage.renderStage()
   }
 
   remove() {
@@ -91,7 +91,7 @@ export abstract class AbstractUi<T> extends AbsEvent {
 
   animators: Animator[] = []
   animateCartoon(targetProp: Partial<T>, cfg: AnimateCartoonConfig = {}) {
-    if (!this.findStage()) {
+    if (!this.stage) {
       console.warn('图形', this, '还没有 append 到 stage 上')
       return
     }

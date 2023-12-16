@@ -75,5 +75,10 @@ namespace ICharts {
       startAngle?: number
     }
     // 极坐标系相关 ↑
+
+    legend?: {
+      orient: 'vertical' | 'horizontal'
+      left: 'left' | 'center' | 'right'
+    }
   }
 }

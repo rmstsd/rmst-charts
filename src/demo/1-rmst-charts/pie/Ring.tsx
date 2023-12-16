@@ -2,6 +2,10 @@ import ChartsTemplate from '@/components/ChartsTemplate'
 
 // 环形饼图
 const option: ICharts.IOption = {
+  legend: {
+    orient: 'vertical',
+    left: 'left'
+  },
   series: [
     {
       type: 'pie',

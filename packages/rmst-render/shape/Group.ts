@@ -17,7 +17,7 @@ export class Group extends AbstractUi<any> {
     this.children = this.children.concat(element)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
-    this.findStage()?.renderStage()
+    this.stage?.renderStage()
   }
 }
 

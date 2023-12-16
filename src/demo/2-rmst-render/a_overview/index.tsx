@@ -117,7 +117,6 @@ const Overview = () => {
 
     const shapes = [...rects, ...arcs, ...lines, line, line3]
     stage.append(shapes)
-
     shapes.forEach(item => {
       item.onmouseenter = () => {
         item.animateCartoon({ shadowBlur: 20 }, { duration: 300 })

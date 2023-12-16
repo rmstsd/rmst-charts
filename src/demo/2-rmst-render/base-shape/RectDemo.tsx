@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text } from 'rmst-render'
-import BoxHidden from 'rmst-render/shape/BoxHidden'
+import { Stage, Rect, Circle, Text, BoxHidden } from 'rmst-render'
 
 const RectDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)

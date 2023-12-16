@@ -2,7 +2,7 @@ import { combineDefaultData } from './AbstractUi'
 import { Group } from './Group'
 import { RectData, defaultRectData, drawRect } from './Rect'
 
-export default class BoxHidden extends Group {
+export class BoxHidden extends Group {
   constructor(data: RectData) {
     super()
 

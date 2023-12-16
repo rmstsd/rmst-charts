@@ -32,7 +32,7 @@ const WatermarkClip = () => {
       draggable: true
     }
 
-    const { textWidth, textHeight } = measureText(ctx, textOption.content, textOption.fontSize)
+    const { textWidth, textHeight } = measureText(textOption.content, textOption.fontSize)
     const controlRect = new Rect({
       x: textOption.x,
       y: textOption.y,

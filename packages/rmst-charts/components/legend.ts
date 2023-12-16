@@ -1,7 +1,24 @@
+import { ChartRoot } from 'rmst-charts/ChartRoot'
 import { Group, Rect, Text } from 'rmst-render'
 
+export interface LegendDataItem {
+  color: string
+  label: string
+}
+
+const defaultLegendCfg: ICharts.IOption['legend'] = { orient: 'horizontal', left: 'center' }
 class Legend {
-  constructor(data: ICharts.series['data']) {
+  cr: ChartRoot
+
+  constructor(cr: ChartRoot) {
+    this.cr = cr
+  }
+
+  render(data: LegendDataItem[]) {
+    const { cr } = this
+
+    const legendConfig = { ...cr.legend, ...defaultLegendCfg }
+
     this.elements = data.map((item, index) => {
       const width = 40
       const height = 20
@@ -27,15 +44,15 @@ class Legend {
         fontSize: 14,
         cursor: 'pointer'
       })
-      const legendGroup = new Group({})
+      const legendGroup = new Group({ name: 'legend-Group' })
       legendGroup.append([legendRect, legendText])
 
       legendGroup.onmouseenter = () => {
-        this.onSelect(index)
+        this.onSelect(index, item)
       }
 
       legendGroup.onmouseleave = () => {
-        this.onCancelSelect(index)
+        this.onCancelSelect(index, item)
       }
 
       return legendGroup
@@ -44,8 +61,8 @@ class Legend {
 
   elements: Group[]
 
-  onSelect(index: number) {}
-  onCancelSelect(index: number) {}
+  onSelect(index: number, legendItem: LegendDataItem) {}
+  onCancelSelect(index: number, legendItem: LegendDataItem) {}
 }
 
 export default Legend

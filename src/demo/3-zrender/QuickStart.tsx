@@ -43,8 +43,10 @@ const QuickStart = () => {
         points: [
           [10, 10],
           [100, 10],
-          [120, 20]
-        ]
+          [120, 60],
+          [180, 20]
+        ],
+        smooth: 0.6
       }
     })
     // rect_1.animateTo(

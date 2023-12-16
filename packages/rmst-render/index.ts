@@ -6,6 +6,7 @@ export * from './shape/Rect'
 export * from './shape/Line'
 
 export * from './shape/Group'
+export * from './shape/BoxHidden'
 
 export * from './Stage'
 
