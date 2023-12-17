@@ -28,8 +28,11 @@ function calcLineData(
 const defaultLineSeriesItem = {
   animationDuration: 1000,
   lineStyle: { width: 2, cap: 'butt', join: 'bevel' },
-  symbol: 'circle'
-} as const
+  symbol: 'circle',
+  symbolSize: 2
+} as ICharts.LineSeries
+
+const activeDuration = 200
 
 export default class LineMain {
   lineElements: { mainPolyline: BoxHidden; arcs: Circle[] }
@@ -43,6 +46,8 @@ export default class LineMain {
   }
 
   color: string
+
+  opacity = 1
 
   render(seriesItem: ICharts.LineSeries, index: number) {
     this.seriesItem = { ...defaultLineSeriesItem, ...seriesItem }
@@ -69,7 +74,8 @@ export default class LineMain {
       lineWidth: lineStyle.width,
       lineCap: lineStyle.cap,
       lineJoin: lineStyle.join,
-      smooth
+      smooth,
+      opacity: this.opacity
     })
 
     const boxHidden = new BoxHidden({
@@ -130,7 +136,8 @@ export default class LineMain {
           strokeStyle: 'transparent',
           closed: true,
           lineWidth: 0,
-          cursor: 'pointer'
+          cursor: 'pointer',
+          opacity: this.opacity
         })
 
         innerSingleArea.onmouseenter = () => {
@@ -154,11 +161,9 @@ export default class LineMain {
     this.lineElements = { mainPolyline: boxHidden, arcs }
   }
 
-  normalRadius = 2
-
   createSymbol(pointData) {
     const initRadius = 0
-    const activeRadius = 4
+
     const arcs = pointData.map(item => {
       const arcItem = new Circle({
         x: item.x,
@@ -167,15 +172,17 @@ export default class LineMain {
         fillStyle: 'white',
         strokeStyle: this.color,
         lineWidth: 4,
-        cursor: 'pointer'
+        cursor: 'pointer',
+        opacity: this.opacity,
+        zIndex: 3
       })
 
       arcItem.onmouseenter = () => {
-        arcItem.animateCartoon({ radius: activeRadius }, { duration: 200 })
+        this.arcActive(arcItem)
       }
 
       arcItem.onmouseleave = () => {
-        arcItem.animateCartoon({ radius: this.normalRadius }, { duration: 200 })
+        this.arcCancelActive(arcItem)
       }
 
       return arcItem
@@ -203,7 +210,10 @@ export default class LineMain {
 
           if (xAxisData.axis.start.x + (newState.width as number) >= ticksXs[currentIndex]) {
             // 数据点的数量可能会比刻度的数量少
-            this.lineElements.arcs[currentIndex]?.animateCartoon({ radius: this.normalRadius }, { duration: 300 })
+            this.lineElements.arcs[currentIndex]?.animateCartoon(
+              { radius: this.seriesItem.symbolSize },
+              { duration: 300 }
+            )
 
             currentIndex++
           }
@@ -212,9 +222,41 @@ export default class LineMain {
     )
   }
 
-  select(index: number) {}
+  private arcActive(arcItem) {
+    arcItem.animateCartoon({ radius: this.seriesItem.symbolSize + 4 }, { duration: activeDuration })
+  }
 
-  cancelSelect(index: number) {}
+  private arcCancelActive(arcItem) {
+    arcItem.animateCartoon({ radius: this.seriesItem.symbolSize }, { duration: activeDuration })
+  }
+
+  select() {
+    this.lineElements.arcs.forEach(item => {
+      item.animateCartoon({ opacity: 1 }, { duration: activeDuration })
+
+      this.arcActive(item)
+    })
+  }
+
+  cancelSelect() {
+    this.lineElements.mainPolyline.children.forEach(item => {
+      item.animateCartoon({ opacity: 0.2 }, { duration: activeDuration })
+    })
+    this.lineElements.arcs.forEach(item => {
+      item.animateCartoon({ opacity: 0.2 }, { duration: activeDuration })
+    })
+  }
+
+  normalAll() {
+    this.lineElements.mainPolyline.children.forEach(item => {
+      item.animateCartoon({ opacity: 1 }, { duration: activeDuration })
+    })
+    this.lineElements.arcs.forEach(item => {
+      item.animateCartoon({ opacity: 1 }, { duration: activeDuration })
+
+      this.arcCancelActive(item)
+    })
+  }
 }
 
 // 阶梯折线图 - smooth 应该失效

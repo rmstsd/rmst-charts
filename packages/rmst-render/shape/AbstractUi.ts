@@ -12,6 +12,7 @@ export interface AbstractUiData {
   shadowOffsetY?: number
   lineWidth?: number
   opacity?: number
+  zIndex?: number
 
   fillStyle?: CanvasFillStrokeStyles['fillStyle']
   strokeStyle?: CanvasFillStrokeStyles['strokeStyle']

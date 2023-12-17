@@ -21,14 +21,12 @@ class Legend {
 
     const legendConfig = { ...defaultLegendCfg, ...cr.option.legend }
 
-    console.log(legendConfig)
-
     const fontSize = 14
 
     const width = 35
     const height = 18
 
-    const itemGap = 12
+    const itemGap = 16
     const textGap = 5
 
     const x = 10
@@ -76,11 +74,11 @@ class Legend {
       legendGroup.append([legendRect, legendText])
 
       legendGroup.onmouseenter = () => {
-        this.onSelect(index, item)
+        this.onSelect(item, index)
       }
 
       legendGroup.onmouseleave = () => {
-        this.onCancelSelect(index, item)
+        this.onCancelSelect(item, index)
       }
 
       elements.push(legendGroup)
@@ -91,8 +89,8 @@ class Legend {
 
   elements: Group[]
 
-  onSelect(index: number, legendItem: LegendDataItem) {}
-  onCancelSelect(index: number, legendItem: LegendDataItem) {}
+  onSelect(legendItem: LegendDataItem, index: number) {}
+  onCancelSelect(legendItem: LegendDataItem, index: number) {}
 }
 
 export default Legend

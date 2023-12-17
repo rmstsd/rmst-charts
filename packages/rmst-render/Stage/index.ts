@@ -60,6 +60,20 @@ export class Stage {
     this.children.forEach(elementItem => {
       elementItem.draw(this.ctx)
     })
+
+    const dd = children => {
+      children.forEach(item => {
+        const zIndex = item.data.zIndex
+
+        console.log(zIndex)
+
+        if (item.children) {
+          dd(item.children)
+        }
+      })
+    }
+
+    dd(this.children)
   }
 
   prevHovered: IShape

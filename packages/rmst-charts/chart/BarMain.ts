@@ -168,7 +168,7 @@ export default class BarMain {
     })
   }
 
-  select(index: number) {}
+  select(index?: number) {}
 
-  cancelSelect(index: number) {}
+  cancelSelect(index?: number) {}
 }

@@ -21,3 +21,9 @@ body,
 #root {
   height: 100%;
 }
+
+.canvas-container {
+  width: 750px;
+  height: 500px;
+  border: 1px solid #aaa;
+}

@@ -1,17 +1,23 @@
-import { combineDefaultData } from './AbstractUi'
-import { Group } from './Group'
+import AbstractUi from './AbstractUi'
 import { RectData, defaultRectData, drawRect } from './Rect'
 
-export class BoxHidden extends Group {
+export class BoxHidden extends AbstractUi<RectData> {
   constructor(data: RectData) {
-    super()
+    super('BoxHidden', data, defaultRectData)
+  }
 
-    this.type = 'BoxHidden'
+  children: IShape[] = []
 
-    this.data = combineDefaultData(data, defaultRectData)
+  append(element) {
+    this.children = this.children.concat(element)
+    this.children = this.children.map(item => Object.assign(item, { parent: this }))
+
+    this.stage?.renderStage()
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
+    super.draw(ctx)
+
     ctx.save()
 
     this.path2D = drawRect(ctx, this.data)

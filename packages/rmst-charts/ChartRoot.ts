@@ -4,9 +4,7 @@ import { ICoordinateSystemElements, createCoordinateSystemElements } from './coo
 
 import Legend, { LegendDataItem } from './components/legend'
 
-import LineMain from './chart/LineMain'
-import PieMain from './chart/PieMain'
-import BarMain from './chart/BarMain'
+import { SeriesManager } from './SeriesMgr'
 
 export class ChartRoot {
   constructor(canvasContainer: HTMLElement) {
@@ -21,7 +19,7 @@ export class ChartRoot {
 
   finalSeries: ICharts.series[]
 
-  seriesInstances: (LineMain | BarMain | PieMain)[] = []
+  seriesManager: SeriesManager
 
   legend: Legend
 
@@ -34,99 +32,45 @@ export class ChartRoot {
 
     stage.removeAllElements()
 
-    const legendData: LegendDataItem[] = []
-
     const renderedElements = []
 
-    const afterTasks = []
+    const finalSeries = handleSeries(innerOption.series)
+    this.finalSeries = finalSeries
 
-    this.finalSeries = handleSeries(innerOption.series)
-
-    this.coordinateSystem = createCoordinateSystemElements(stage, innerOption, this.finalSeries)
-    if (this.coordinateSystem.hasCartesian2d) {
-      renderedElements.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
-    }
-    if (this.coordinateSystem.hasPolar) {
-      renderedElements.push(...this.coordinateSystem.polar.polarAllShapes)
-    }
-
-    this.finalSeries.forEach((seriesItem, index) => {
-      switch (seriesItem.type) {
-        case 'line': {
-          const line = new LineMain(this)
-          line.render(seriesItem, index)
-
-          renderedElements.push(line.lineElements.mainPolyline)
-          renderedElements.push(...line.lineElements.arcs)
-
-          if (seriesItem.name) {
-            legendData.push({ label: seriesItem.name, color: line.color })
-          }
-
-          afterTasks.push(() => {
-            line.afterAppendStage()
-          })
-
-          this.seriesInstances.push(line)
-
-          break
-        }
-        case 'bar': {
-          const bar = new BarMain(this)
-          bar.render(seriesItem, index)
-
-          renderedElements.push(...bar.backgroundElements)
-          renderedElements.push(...bar.mainElements)
-
-          renderedElements.push(...bar.polarBarElements)
-
-          afterTasks.push(() => {
-            bar.afterAppendStage()
-          })
-          this.seriesInstances.push(bar)
-          break
-        }
-        case 'pie': {
-          const pie = new PieMain(this)
-          pie.render(seriesItem)
-
-          legendData.push(...pie.data.map(item => ({ color: item.color, label: item.label })))
-
-          renderedElements.push(...pie.pieElements)
-          renderedElements.push(...pie.labelElements)
-
-          afterTasks.push(() => {
-            pie.afterAppendStage()
-          })
-
-          this.seriesInstances.push(pie)
-          break
-        }
-        default: {
-          console.log('新图待实现')
-        }
+    {
+      // 坐标系
+      this.coordinateSystem = createCoordinateSystemElements(stage, innerOption, finalSeries)
+      if (this.coordinateSystem.hasCartesian2d) {
+        renderedElements.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
       }
-    })
-
-    this.legend = new Legend(this)
-    this.legend.render(legendData)
-
-    this.legend.onSelect = (index, legendItem) => {
-      this.seriesInstances.forEach(item => {
-        item?.select(index)
-      })
-    }
-    this.legend.onCancelSelect = (index, legendItem) => {
-      this.seriesInstances.forEach(item => {
-        item?.cancelSelect(index)
-      })
+      if (this.coordinateSystem.hasPolar) {
+        renderedElements.push(...this.coordinateSystem.polar.polarAllShapes)
+      }
     }
 
-    renderedElements.push(...this.legend.elements)
+    {
+      this.seriesManager = new SeriesManager(this)
+      this.seriesManager.render(finalSeries)
+      renderedElements.push(...this.seriesManager.elements)
+    }
+
+    {
+      // 图例
+      this.legend = new Legend(this)
+      this.legend.render(this.seriesManager.legendData)
+      renderedElements.push(...this.legend.elements)
+
+      this.legend.onSelect = legendItem => {
+        this.seriesManager.select(legendItem)
+      }
+      this.legend.onCancelSelect = legendItem => {
+        this.seriesManager.cancelSelect(legendItem)
+      }
+    }
 
     stage.append(renderedElements)
 
-    afterTasks.forEach(fn => {
+    this.seriesManager.afterTasks.forEach(fn => {
       fn()
     })
   }

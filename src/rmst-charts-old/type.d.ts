@@ -37,6 +37,7 @@ namespace ICharts {
       join?: CanvasLineJoin
       cap?: CanvasLineCap
     }
+    symbolSize?: number
   }
 
   interface BarSeries extends BaseSeries {

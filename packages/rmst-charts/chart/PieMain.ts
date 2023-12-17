@@ -4,6 +4,7 @@ import { ChartRoot } from 'rmst-charts/ChartRoot'
 
 import { pointToFlatArray } from '../utils/utils'
 import { colorPalette, tickColor } from '../constant'
+import { LegendDataItem } from 'rmst-charts/components/legend'
 
 type pieDataItem = { startAngle: number; endAngle: number; color: string; label: string }
 function calcPieData(dataSource: ICharts.PieSeries['data'], end_angle = 360) {
@@ -96,12 +97,12 @@ class PieMain {
       })
 
       arc.onmouseenter = () => {
-        this.select(index)
+        this.select(undefined, index)
 
         this.onSelected(index)
       }
       arc.onmouseleave = () => {
-        this.cancelSelect(index)
+        this.cancelSelect(undefined, index)
 
         this.onCancelSelect(index)
       }
@@ -170,11 +171,11 @@ class PieMain {
     const group = new Group()
 
     group.onmouseenter = () => {
-      this.select(idx)
+      this.select(undefined, idx)
     }
 
     group.onmouseleave = () => {
-      this.cancelSelect(idx)
+      this.cancelSelect(undefined, idx)
     }
 
     group.append([extendLine, labelText])
@@ -204,14 +205,16 @@ class PieMain {
     })
   }
 
-  select(index: number) {
-    const item = this.pieElements[index]
+  select(legendItem: LegendDataItem, index?: number) {
+    const _index = index ?? this.seriesItem.data.findIndex(item => item.name === legendItem.label)
+    const item = this.pieElements[_index]
     item.pinTop()
     item.animateCartoon({ radius: this.hoverRadius, shadowBlur: 15 }, { duration: 200 })
   }
 
-  cancelSelect(index: number) {
-    this.pieElements[index].animateCartoon({ radius: this.outerRadius, shadowBlur: 0 }, { duration: 200 })
+  cancelSelect(legendItem: LegendDataItem, index?: number) {
+    const _index = index ?? this.seriesItem.data.findIndex(item => item.name === legendItem.label)
+    this.pieElements[_index].animateCartoon({ radius: this.outerRadius, shadowBlur: 0 }, { duration: 200 })
   }
 
   onSelected = (index: number) => {}
