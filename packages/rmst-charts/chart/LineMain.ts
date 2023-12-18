@@ -29,7 +29,7 @@ const defaultLineSeriesItem = {
   animationDuration: 1000,
   lineStyle: { width: 2, cap: 'butt', join: 'bevel' },
   symbol: 'circle',
-  symbolSize: 2
+  symbolSize: 3
 } as ICharts.LineSeries
 
 const activeDuration = 200
@@ -222,11 +222,11 @@ export default class LineMain {
     )
   }
 
-  private arcActive(arcItem) {
+  private arcActive(arcItem: Circle) {
     arcItem.animateCartoon({ radius: this.seriesItem.symbolSize + 4 }, { duration: activeDuration })
   }
 
-  private arcCancelActive(arcItem) {
+  private arcCancelActive(arcItem: Circle) {
     arcItem.animateCartoon({ radius: this.seriesItem.symbolSize }, { duration: activeDuration })
   }
 
@@ -240,14 +240,14 @@ export default class LineMain {
 
   cancelSelect() {
     this.lineElements.mainPolyline.children.forEach(item => {
-      item.animateCartoon({ opacity: 0.2 }, { duration: activeDuration })
+      item.animateCartoon({ opacity: 0.1 }, { duration: activeDuration })
     })
     this.lineElements.arcs.forEach(item => {
-      item.animateCartoon({ opacity: 0.2 }, { duration: activeDuration })
+      item.animateCartoon({ opacity: 0.1 }, { duration: activeDuration })
     })
   }
 
-  normalAll() {
+  resetNormal() {
     this.lineElements.mainPolyline.children.forEach(item => {
       item.animateCartoon({ opacity: 1 }, { duration: activeDuration })
     })
@@ -264,17 +264,23 @@ function calcPointsByUserPoints(pointData: ICoord[], step: ICharts.LineSeries['s
   if (!step) return pointData
 
   const finalPointsCoord = pointData.reduce((acc, item, idx, originArr) => {
-    if (idx === originArr.length - 1) return acc.concat(item)
+    if (idx === originArr.length - 1) {
+      return acc.concat(item)
+    }
 
     const addPoint = []
 
     const nextPoint = originArr[idx + 1]
 
     // 在某个点开始的时候拐弯
-    if (step === 'start') addPoint.push({ x: item.x, y: nextPoint.y })
+    if (step === 'start') {
+      addPoint.push({ x: item.x, y: nextPoint.y })
+    }
 
     // 结束的时候拐弯
-    if (step === 'end') addPoint.push({ x: nextPoint.x, y: item.y })
+    if (step === 'end') {
+      addPoint.push({ x: nextPoint.x, y: item.y })
+    }
 
     if (step === 'middle') {
       const centerX = (item.x + nextPoint.x) / 2

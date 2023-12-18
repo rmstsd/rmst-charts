@@ -107,7 +107,7 @@ export class SeriesManager {
 
   cancelSelect(legendItem: LegendDataItem) {
     this.lineSeriesInstances.forEach(item => {
-      item.normalAll()
+      item.resetNormal()
     })
 
     {

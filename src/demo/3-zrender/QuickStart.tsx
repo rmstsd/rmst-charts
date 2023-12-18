@@ -38,38 +38,8 @@ const QuickStart = () => {
       }
     })
 
-    const line = new zrender.Polyline({
-      shape: {
-        points: [
-          [10, 10],
-          [100, 10],
-          [120, 60],
-          [180, 20]
-        ],
-        smooth: 0.6
-      }
-    })
-    // rect_1.animateTo(
-    //   {
-    //     shape: {
-    //       width: 300
-    //     }
-    //   },
-    //   { duration: 3000 }
-    // )
-
-    // rect_1.animateTo(
-    //   {
-    //     shape: {
-    //       x: 300
-    //     }
-    //   },
-    //   { duration: 3000 }
-    // )
-
     zr.add(rect_1)
     zr.add(rect_2)
-    zr.add(line)
   }, [])
 
   return <div className="canvas-container"></div>

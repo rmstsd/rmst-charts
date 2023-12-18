@@ -1,6 +1,6 @@
 import Draggable from 'rmst-render/Draggable'
 import { EventParameter, eventList } from '../constant'
-import { findHover, initStage, triggerEventHandlers } from './utils'
+import { findHover, initStage, sortByZIndex, triggerEventHandlers } from './utils'
 
 export class Stage {
   constructor(option: IOption) {
@@ -55,25 +55,13 @@ export class Stage {
   }
 
   renderStage() {
+    sortByZIndex(this)
+
     this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
 
     this.children.forEach(elementItem => {
       elementItem.draw(this.ctx)
     })
-
-    const dd = children => {
-      children.forEach(item => {
-        const zIndex = item.data.zIndex
-
-        console.log(zIndex)
-
-        if (item.children) {
-          dd(item.children)
-        }
-      })
-    }
-
-    dd(this.children)
   }
 
   prevHovered: IShape
