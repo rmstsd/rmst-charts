@@ -1,32 +1,73 @@
-import { Circle, Group, Line, Stage, Text, deg2rad, getPointOnArc, measureText, Animator } from 'rmst-render'
-import { pointToFlatArray } from './utils/utils'
-import { tickColor } from './constant'
+import { Circle, Group, Line, Text, deg2rad, getPointOnArc, measureText, Animator } from 'rmst-render'
+
+import { ChartRoot } from 'rmst-charts/ChartRoot'
+
+import { pointToFlatArray } from '../utils/utils'
+import { colorPalette, tickColor } from '../constant'
+import { LegendDataItem } from 'rmst-charts/components/legend'
+
+type pieDataItem = { startAngle: number; endAngle: number; color: string; label: string }
+function calcPieData(dataSource: ICharts.PieSeries['data'], end_angle = 360) {
+  const sum = dataSource.reduce((acc, item) => acc + item.value, 0)
+  const radianArray = dataSource.map(item => (item.value / sum) * end_angle)
+
+  const finalArray: pieDataItem[] = []
+  radianArray.forEach((item, index) => {
+    const lastItem = finalArray[finalArray.length - 1]
+
+    const startAngle = index === 0 ? 0 : lastItem.endAngle
+    const endAngle = index === 0 ? item : lastItem.endAngle + item
+    const nvItem = { startAngle, endAngle, color: colorPalette[index], label: dataSource[index].name }
+
+    finalArray.push(nvItem)
+  })
+
+  return finalArray
+}
 
 class PieMain {
+  cr: ChartRoot
+
+  constructor(cr: ChartRoot) {
+    this.cr = cr
+  }
+
+  pieElements: Circle[]
+  labelElements: Group[]
+
+  data: pieDataItem[]
+
   hoverIndex: number
 
   hoverRadius: number
   outerRadius: number
 
-  pieElements: Circle[]
-  labelElements: Group[]
-
   fakeArc: Circle
 
   center: ICoord
 
-  seriesItem
+  seriesItem: ICharts.PieSeries
 
-  ctx
+  render(seriesItem: ICharts.PieSeries) {
+    seriesItem = { animationDuration: 1000, ...seriesItem }
 
-  constructor(stage: Stage, data, innerRadius, outerRadius, seriesItem) {
-    const { center, ctx } = stage
+    this.seriesItem = seriesItem
 
-    this.ctx = ctx
+    const data = calcPieData(seriesItem.data)
+
+    this.data = data
+    const { canvasSize, center } = this.cr.stage
+
+    const smallerContainerSize = Math.min(canvasSize.width, canvasSize.height)
+    const defaultPercent = '70%'
+    const ratioDecimal = parseInt(defaultPercent) / 100
+
+    const [innerRadius, outerRadiusOpt] = seriesItem.radius || []
+
+    const outerRadius = (smallerContainerSize / 2) * ratioDecimal
     this.outerRadius = outerRadius
     this.hoverRadius = outerRadius + 6
 
-    this.seriesItem = seriesItem
     this.center = center
 
     this.fakeArc = new Circle({
@@ -40,7 +81,7 @@ class PieMain {
 
     this.pieElements = data.map((item, index) => {
       const arc = new Circle({
-        onlyKey: 'main-pie',
+        name: 'main-pie',
         x: center.x,
         y: center.y,
         radius: outerRadius,
@@ -52,17 +93,16 @@ class PieMain {
         shadowColor: 'rgba(0, 0, 0, 0.5)',
         shadowOffsetX: 0,
         shadowOffsetY: 0,
-        shadowBlur: 0,
-        animatedProps: { startAngle: item.startAngle, endAngle: item.endAngle }
+        shadowBlur: 0
       })
 
       arc.onmouseenter = () => {
-        this.select(index)
+        this.select(undefined, index)
 
         this.onSelected(index)
       }
       arc.onmouseleave = () => {
-        this.cancelSelect(index)
+        this.cancelSelect(undefined, index)
 
         this.onCancelSelect(index)
       }
@@ -109,16 +149,17 @@ class PieMain {
     ]
 
     const extendLine = new Line({
-      onlyKey: 'extend-line',
+      name: 'extend-line',
       points: pointToFlatArray(extendLinePoints),
       strokeStyle: item.color,
       lineWidth: this.seriesItem.labelLine?.lineStyle?.width || 2,
-      cursor: 'pointer'
+      cursor: 'pointer',
+      percent: 0
     })
 
-    const { textWidth, textHeight } = measureText(this.ctx, item.label, 14)
+    const { textWidth, textHeight } = measureText(item.label, 14)
     const labelText = new Text({
-      onlyKey: 'label-text',
+      name: 'label-text',
       x: isInRight ? extendLine_2_x_end + 5 : extendLine_2_x_end - 5,
       y: extendLineSecondPoint_y - textHeight / 2,
       content: item.label,
@@ -130,11 +171,11 @@ class PieMain {
     const group = new Group()
 
     group.onmouseenter = () => {
-      this.select(idx)
+      this.select(undefined, idx)
     }
 
     group.onmouseleave = () => {
-      this.cancelSelect(idx)
+      this.cancelSelect(undefined, idx)
     }
 
     group.append([extendLine, labelText])
@@ -145,35 +186,35 @@ class PieMain {
   afterAppendStage() {
     const ani = new Animator({ value: 0 }, { value: 360 }, { easing: 'cubicInOut' })
     ani.start()
-    ani.onUpdate = (__, elapsedTimeRatio) => {
-      this.pieElements
-        .filter(o => o.data.onlyKey === 'main-pie')
-        .forEach(element => {
-          element.attr({
-            startAngle: element.data.animatedProps.startAngle * elapsedTimeRatio,
-            endAngle: element.data.animatedProps.endAngle * elapsedTimeRatio
-          })
-        })
+    ani.onUpdate = ({ value }, elapsedTimeRatio) => {
+      const frameData = calcPieData(this.seriesItem.data, value)
+
+      this.pieElements.forEach((element, index) => {
+        const frameItem = frameData[index]
+        element.attr({ startAngle: frameItem.startAngle, endAngle: frameItem.endAngle })
+      })
     }
 
     this.labelElements.forEach((item, index) => {
       const [exLine, exText] = item.children as unknown as [Line, Text]
 
-      exLine.animateE2e(this.seriesItem.animationDuration)
+      exLine.animateCartoon({ percent: 1 }, { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' })
 
       // 颜色过渡
       // exText
     })
   }
 
-  select(index: number) {
-    const item = this.pieElements[index]
+  select(legendItem: LegendDataItem, index?: number) {
+    const _index = index ?? this.seriesItem.data.findIndex(item => item.name === legendItem.label)
+    const item = this.pieElements[_index]
     item.pinTop()
     item.animateCartoon({ radius: this.hoverRadius, shadowBlur: 15 }, { duration: 200 })
   }
 
-  cancelSelect(index: number) {
-    this.pieElements[index].animateCartoon({ radius: this.outerRadius, shadowBlur: 0 }, { duration: 200 })
+  cancelSelect(legendItem: LegendDataItem, index?: number) {
+    const _index = index ?? this.seriesItem.data.findIndex(item => item.name === legendItem.label)
+    this.pieElements[_index].animateCartoon({ radius: this.outerRadius, shadowBlur: 0 }, { duration: 200 })
   }
 
   onSelected = (index: number) => {}

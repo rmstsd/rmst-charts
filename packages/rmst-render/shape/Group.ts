@@ -1,6 +1,6 @@
 import AbstractUi from './AbstractUi'
 
-export class Group extends AbstractUi {
+export class Group extends AbstractUi<any> {
   constructor(data = {}) {
     super('Group', data)
   }
@@ -17,7 +17,7 @@ export class Group extends AbstractUi {
     this.children = this.children.concat(element)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
-    this.findStage()?.renderStage()
+    this.stage?.renderStage()
   }
 }
 

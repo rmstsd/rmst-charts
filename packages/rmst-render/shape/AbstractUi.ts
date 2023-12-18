@@ -12,6 +12,7 @@ export interface AbstractUiData {
   shadowOffsetY?: number
   lineWidth?: number
   opacity?: number
+  zIndex?: number
 
   fillStyle?: CanvasFillStrokeStyles['fillStyle']
   strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
@@ -23,7 +24,7 @@ export interface AbstractUiData {
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
 
-  [key: string]: any
+  // [key: string]: any
 }
 
 export const defaultAbsData: AbstractUiData = {
@@ -41,7 +42,7 @@ export const combineDefaultData = (shapeData, defaultShapeData) => {
   return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
 }
 
-export abstract class AbstractUi extends AbsEvent {
+export abstract class AbstractUi<T> extends AbsEvent {
   constructor(type: IShapeType, shapeData, defaultShapeData?) {
     super()
 
@@ -78,10 +79,10 @@ export abstract class AbstractUi extends AbsEvent {
     ctx.shadowBlur = shadowBlur
   }
 
-  attr(data: AbstractUiData) {
+  attr(data: Partial<T>) {
     this.data = { ...this.data, ...data }
 
-    this.findStage()?.renderStage()
+    this.stage.renderStage()
   }
 
   remove() {
@@ -90,8 +91,8 @@ export abstract class AbstractUi extends AbsEvent {
   }
 
   animators: Animator[] = []
-  animateCartoon(targetProp: AbstractUiData, cfg: AnimateCartoonConfig = {}) {
-    if (!this.findStage()) {
+  animateCartoon(targetProp: Partial<T>, cfg: AnimateCartoonConfig = {}) {
+    if (!this.stage) {
       console.warn('图形', this, '还没有 append 到 stage 上')
       return
     }

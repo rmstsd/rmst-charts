@@ -21,7 +21,7 @@ const LineDemo = () => {
       strokeStyle: 'brown',
       lineWidth: 20,
       draggable: true,
-      smooth: true
+      percent: 0
     })
 
     const line2 = new Line({
@@ -50,14 +50,40 @@ const LineDemo = () => {
       points: [43, 156, 143, 300, 243, 350, 343, 333],
       strokeStyle: 'purple',
       lineWidth: 20,
-      draggable: true
+      draggable: true,
+      percent: 0
     })
 
     stage.append([line, line2, line3, line4, line5])
 
     line3.animateCartoon({ points: [616, 314, 516, 384, 416, 334, 336, 254] })
-    line4.animateE2e(3000)
-    line5.animateE2e(3000)
+    line4.animateCartoon({ percent: 1 }, { duration: 3000 })
+    line5.animateCartoon({ percent: 1 }, { duration: 3000 })
+  }, [])
+
+  return (
+    <div>
+      <div className="canvas-container" ref={canvasRef}></div>
+    </div>
+  )
+}
+
+const LineDemo_2 = () => {
+  const canvasRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const stage = new Stage({ container: canvasRef.current })
+
+    const line = new Line({
+      points: [10, 10, 100, 10, 120, 60],
+      strokeStyle: 'pink',
+      lineWidth: 2,
+      draggable: true,
+      percent: 0.8,
+      smooth: true
+    })
+
+    stage.append([line])
   }, [])
 
   return (

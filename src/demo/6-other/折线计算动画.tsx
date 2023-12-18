@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import { calcTotalLineLength } from 'rmst-charts/utils/utils'
+
 import { Stage } from 'rmst-render'
+import { calcTotalLineLength } from 'rmst-render/utils'
 
 const LineAnimate = () => {
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { EventParameter, EventType, OnEventType, dpr } from 'rmst-render/constant'
 import Group from './../shape/Group'
+import { Stage } from '.'
 
 function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')
@@ -71,4 +72,19 @@ export function findHover(children: IShape[], x: number, y: number): IShape {
   }
 
   return null
+}
+
+export function sortByZIndex(root: Stage) {
+  if (root.children) {
+    root.children = root.children.toSorted((a, b) => {
+      const a_zIndex = a.data.zIndex ?? 0
+      const b_zIndex = b.data.zIndex ?? 0
+
+      return a_zIndex - b_zIndex
+    })
+
+    for (const item of root.children) {
+      sortByZIndex(item)
+    }
+  }
 }

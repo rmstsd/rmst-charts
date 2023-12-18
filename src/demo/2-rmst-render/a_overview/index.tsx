@@ -40,8 +40,8 @@ const Overview = () => {
         x: 300,
         y: 60,
         radius: 50,
+        endAngle: 0,
         fillStyle: 'antiquewhite',
-        cornerRadius: 20,
         cursor: 'pointer',
         draggable: true,
         shadowColor
@@ -104,7 +104,8 @@ const Overview = () => {
       strokeStyle: 'gold',
       lineWidth: 20,
       draggable: true,
-      shadowColor
+      shadowColor,
+      percent: 0
     })
 
     const line3 = new Line({
@@ -116,7 +117,6 @@ const Overview = () => {
 
     const shapes = [...rects, ...arcs, ...lines, line, line3]
     stage.append(shapes)
-
     shapes.forEach(item => {
       item.onmouseenter = () => {
         item.animateCartoon({ shadowBlur: 20 }, { duration: 300 })
@@ -126,8 +126,10 @@ const Overview = () => {
       }
     })
 
+    arcs[0].animateCartoon({ endAngle: 360 }, { easing: 'sinusoidalInOut' })
+
     rects[1].animateCartoon({ width: 120 }, { duration: 3000 })
-    line.animateE2e(3000)
+    line.animateCartoon({ percent: 1 }, { duration: 3000 })
     line3.animateCartoon({ points: [616, 314, 516, 384, 416, 334, 336, 254] }, { duration: 3000 })
   }, [])
 

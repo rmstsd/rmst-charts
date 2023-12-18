@@ -4,6 +4,9 @@ import { isGroup, isStage } from './utils/isShape'
 import { convertToNormalPoints } from './utils'
 
 export default class Draggable {
+  private prevClientX = 0
+  private prevClientY = 0
+
   dragStart(eventParameter: EventParameter, canvasElementRect: DOMRect) {
     let draggedTarget = eventParameter.target
 
@@ -15,6 +18,9 @@ export default class Draggable {
 
       draggedTarget = parent
     }
+
+    this.prevClientX = eventParameter.nativeEvent.clientX
+    this.prevClientY = eventParameter.nativeEvent.clientY
 
     draggedTarget.ondragstart({ target: draggedTarget, x: eventParameter.x, y: eventParameter.y })
 
@@ -30,8 +36,13 @@ export default class Draggable {
         return
       }
 
-      const { movementX, movementY } = evt
-      dndAttr(draggedTarget, movementX, movementY)
+      const dx = evt.clientX - this.prevClientX
+      const dy = evt.clientY - this.prevClientY
+
+      this.prevClientX = evt.clientX
+      this.prevClientY = evt.clientY
+
+      dndAttr(draggedTarget, dx, dy)
     }
 
     const onDocumentMouseup = () => {

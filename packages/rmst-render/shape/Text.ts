@@ -14,7 +14,7 @@ interface TextData extends AbstractUiData {
   textAlign?: CanvasTextAlign
 }
 
-export class Text extends AbstractUi {
+export class Text extends AbstractUi<TextData> {
   constructor(data: TextData) {
     super('Text', data, defaultData)
   }
@@ -22,10 +22,8 @@ export class Text extends AbstractUi {
   declare data: TextData
 
   isInner(offsetX: any, offsetY: any): boolean {
-    const stage = this.findStage()
-
     const { x, y, content, fontSize, textAlign } = this.data
-    const { textWidth, textHeight } = measureText(stage.ctx, content, fontSize)
+    const { textWidth, textHeight } = measureText(content, fontSize)
     const halfWidth = textWidth / 2
 
     const textRect_x = (() => {
@@ -69,7 +67,9 @@ export class Text extends AbstractUi {
 export default Text
 
 // 测量文本宽高
-export function measureText(ctx: CanvasRenderingContext2D, text: string, fontSize: number) {
+export function measureText(text: string, fontSize: number) {
+  const ctx = document.createElement('canvas').getContext('2d')
+
   setCtxFontSize(ctx, fontSize)
   const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)
 

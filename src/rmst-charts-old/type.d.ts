@@ -37,6 +37,7 @@ namespace ICharts {
       join?: CanvasLineJoin
       cap?: CanvasLineCap
     }
+    symbolSize?: number
   }
 
   interface BarSeries extends BaseSeries {
@@ -75,5 +76,10 @@ namespace ICharts {
       startAngle?: number
     }
     // 极坐标系相关 ↑
+
+    legend?: {
+      orient: 'vertical' | 'horizontal'
+      left: 'left' | 'center' | 'right'
+    }
   }
 }

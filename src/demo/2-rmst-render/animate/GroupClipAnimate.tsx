@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Group, Circle } from 'rmst-render'
-import BoxHidden from 'rmst-render/shape/BoxHidden'
+import { Stage, Rect, Group, Circle, BoxHidden } from 'rmst-render'
 
 const GroupClipAnimate = () => {
   const canvasRef = useRef<HTMLDivElement>(null)

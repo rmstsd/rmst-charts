@@ -38,24 +38,6 @@ const QuickStart = () => {
       }
     })
 
-    // rect_1.animateTo(
-    //   {
-    //     shape: {
-    //       width: 300
-    //     }
-    //   },
-    //   { duration: 3000 }
-    // )
-
-    // rect_1.animateTo(
-    //   {
-    //     shape: {
-    //       x: 300
-    //     }
-    //   },
-    //   { duration: 3000 }
-    // )
-
     zr.add(rect_1)
     zr.add(rect_2)
   }, [])

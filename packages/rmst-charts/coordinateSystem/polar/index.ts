@@ -1,9 +1,10 @@
 import { Circle, Line, AbstractUi, Stage, Text, getPointOnArc, measureText } from 'rmst-render'
 
+import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert'
+
 import { calcPerfectTick } from '../utils'
 import { splitLineColor, tickColor } from '../../constant'
 import { calcB, calcLineLength, calcK, pointToFlatArray } from '../../utils/utils'
-import { getCanvasDistanceFromRealNumber } from 'rmst-charts/convert'
 
 const getDataForDraw = (
   stage: Stage,
@@ -65,7 +66,7 @@ const getDataForDraw = (
       const uy = y - (distance / know) * y
       const ux = (uy - b) / tickSlope
 
-      const { textWidth, textHeight } = measureText(stage.ctx, String(item), 14)
+      const { textWidth, textHeight } = measureText(String(item), 14)
 
       const hypoTextDis = tickInterval / 2 + index * tickInterval
       const hypoTextRatio = hypoTextDis / outerCircle.radius
@@ -154,7 +155,7 @@ const getDataForDraw = (
   const lineAxisTicks = tickValues.map((tickValue, index) => {
     const y = center_y - index * tickInterval
     const end_x = center_x - 6
-    const { textWidth, textHeight } = measureText(stage.ctx, String(tickValue), 14)
+    const { textWidth, textHeight } = measureText(String(tickValue), 14)
 
     return {
       start: { x: center_x, y },

@@ -19,7 +19,7 @@ interface CircleData extends AbstractUiData {
   offsetAngle?: number // 默认情况下, 圆弧的起始角度是 0, 但是如果需要从其他角度开始, 可以设置 offsetAngle
 }
 
-export class Circle extends AbstractUi {
+export class Circle extends AbstractUi<CircleData> {
   constructor(data: CircleData) {
     super('Circle', data, defaultData)
   }

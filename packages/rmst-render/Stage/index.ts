@@ -1,6 +1,6 @@
 import Draggable from 'rmst-render/Draggable'
 import { EventParameter, eventList } from '../constant'
-import { findHover, initStage, triggerEventHandlers } from './utils'
+import { findHover, initStage, sortByZIndex, triggerEventHandlers } from './utils'
 
 export class Stage {
   constructor(option: IOption) {
@@ -39,10 +39,24 @@ export class Stage {
     this.children = this.children.concat(element)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
+    const mountStage = (children: IShape[]) => {
+      children.forEach(item => {
+        item.stage = this
+
+        if (item.children) {
+          mountStage(item.children)
+        }
+      })
+    }
+
+    mountStage(this.children)
+
     this.renderStage()
   }
 
   renderStage() {
+    sortByZIndex(this)
+
     this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
 
     this.children.forEach(elementItem => {
@@ -105,7 +119,7 @@ export class Stage {
     this.canvasElement.addEventListener('mousedown', evt => {
       const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
       if (hovered) {
-        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
         this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())
       }
     })

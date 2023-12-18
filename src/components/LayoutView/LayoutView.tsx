@@ -55,7 +55,7 @@ const LayoutView = () => {
 
         <span className="pr-[10px] shrink-0">最新 build: {__Build_Time__}</span>
 
-        <a className="text-blue-500" href="https://github.com/rmstsd/rmst-charts" target="_blank">
+        <a className="text-blue-500 mr-4" href="https://github.com/rmstsd/rmst-charts" target="_blank">
           github
         </a>
       </Layout.Header>
