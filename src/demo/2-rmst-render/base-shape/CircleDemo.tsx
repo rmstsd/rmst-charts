@@ -18,7 +18,7 @@ const CircleDemo = () => {
         y: 60,
         radius: 50,
         innerRadius: 20,
-        startsAngle: 30,
+        startAngle: 30,
         endAngle: 70,
         fillStyle: '#fcb69f'
       }),
@@ -36,7 +36,9 @@ const CircleDemo = () => {
       })
     ]
 
-    stage.append(arcs)
+    arcs.forEach(item => {
+      stage.append(item)
+    })
 
     // 注册鼠标事件
     arcs.forEach(item => {
