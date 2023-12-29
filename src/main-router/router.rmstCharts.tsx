@@ -19,6 +19,8 @@ import Ring from '@/demo/1-rmst-charts/pie/Ring'
 import ZExtremePie from '@/demo/1-rmst-charts/pie/ZExtreme'
 
 import { IRouteObject } from './router'
+import BasicCandlestick from '@/demo/1-rmst-charts/candlestick/基础K线图'
+import DragCandlestick from '@/demo/1-rmst-charts/candlestick/可拖动K线图'
 
 const newChartsRouteConfig: IRouteObject = {
   path: '/new-charts',
@@ -63,6 +65,15 @@ const newChartsRouteConfig: IRouteObject = {
         { path: 'base', element: <PieBase />, uiConfig: { title: '基础饼图' } },
         { path: 'ring', element: <Ring />, uiConfig: { title: '环形饼图' } },
         { path: 'extremePie', element: <ZExtremePie />, uiConfig: { title: '极端的例子' } }
+      ]
+    },
+    {
+      path: 'candlestick',
+      element: <LayoutOutlet />,
+      uiConfig: { title: 'K线图' },
+      children: [
+        { path: 'base', element: <BasicCandlestick />, uiConfig: { title: '基础 K 线图' } },
+        { path: 'drag', element: <DragCandlestick />, uiConfig: { title: '可拖动 K 线图' } }
       ]
     }
   ]

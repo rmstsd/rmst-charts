@@ -1,12 +1,12 @@
 import colorAlpha from 'color-alpha'
 import { Circle, Line, BoxHidden } from 'rmst-render'
 
-import { ChartRoot } from 'rmst-charts/ChartRoot'
 import { colorPalette } from 'rmst-charts/constant'
 import { getCanvasPxFromRealNumber } from 'rmst-charts/utils/convert'
 import { IXAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcXAxis'
 import { IYAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcYAxis'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
+import _Chart from './_chart'
 
 function calcLineData(
   dataSource: ICharts.LineSeries['data'],
@@ -34,16 +34,8 @@ const defaultLineSeriesItem = {
 
 const activeDuration = 200
 
-export default class LineMain {
+export default class LineMain extends _Chart<ICharts.LineSeries> {
   lineElements: { mainPolyline: BoxHidden; arcs: Circle[] }
-
-  seriesItem: ICharts.LineSeries
-
-  cr: ChartRoot
-
-  constructor(cr: ChartRoot) {
-    this.cr = cr
-  }
 
   color: string
 

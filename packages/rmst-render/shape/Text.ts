@@ -67,8 +67,11 @@ export class Text extends AbstractUi<TextData> {
 export default Text
 
 // 测量文本宽高
+let ctx: CanvasRenderingContext2D
 export function measureText(text: string, fontSize: number) {
-  const ctx = document.createElement('canvas').getContext('2d')
+  if (!ctx) {
+    ctx = document.createElement('canvas').getContext('2d')
+  }
 
   setCtxFontSize(ctx, fontSize)
   const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)

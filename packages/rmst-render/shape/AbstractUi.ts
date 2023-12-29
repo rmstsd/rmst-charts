@@ -1,4 +1,4 @@
-import { Stage } from '../Stage'
+import { Stage } from '../stage'
 import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent from '../AbsEvent'
 

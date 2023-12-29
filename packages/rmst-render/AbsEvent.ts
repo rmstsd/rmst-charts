@@ -1,5 +1,5 @@
 import { Group } from 'zrender'
-import { Stage } from './Stage'
+import { Stage } from './stage'
 import { EventType, Handler, dpr } from './constant'
 import { isLine } from './utils'
 

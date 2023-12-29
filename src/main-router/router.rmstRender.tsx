@@ -21,6 +21,7 @@ import Single from '@/demo/2-rmst-render/event/Single'
 import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
 import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
 import Overview from '@/demo/2-rmst-render/a_overview'
+import Ani_300个动画 from '@/demo/2-rmst-render/animate/Ani_300个动画'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -71,7 +72,8 @@ const rmstRenderRouteConfig: IRouteObject = {
       uiConfig: { title: '动画' },
       children: [
         { path: 'base', element: <Animate />, uiConfig: { title: 'Animate' } },
-        { path: 'groupClipAnimate', element: <GroupClipAnimate />, uiConfig: { title: '组动画' } }
+        { path: 'groupClipAnimate', element: <GroupClipAnimate />, uiConfig: { title: '组动画' } },
+        { path: 'ani 300', element: <Ani_300个动画 />, uiConfig: { title: '300个动画 同时执行' } }
       ]
     }
     // {

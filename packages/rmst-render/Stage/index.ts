@@ -32,10 +32,11 @@ export class Stage {
   removeAllElements() {
     this.children = []
 
-    this.renderStage()
+    // this.renderStage()
   }
 
   append(element: IShape | IShape[]) {
+    console.log('append')
     this.children = this.children.concat(element)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
@@ -54,13 +55,26 @@ export class Stage {
     this.renderStage()
   }
 
+  isRuning = false
+
   renderStage() {
-    sortByZIndex(this)
+    if (this.isRuning) {
+      return
+    }
 
-    this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
+    this.isRuning = true
 
-    this.children.forEach(elementItem => {
-      elementItem.draw(this.ctx)
+    const refresh = () => {
+      sortByZIndex(this)
+      this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
+      this.children.forEach(elementItem => {
+        elementItem.draw(this.ctx)
+      })
+    }
+
+    requestAnimationFrame(() => {
+      refresh()
+      this.isRuning = false
     })
   }
 

@@ -57,7 +57,12 @@ namespace ICharts {
     }
   }
 
-  type series = PieSeries | BarSeries | LineSeries
+  interface CandlestickSeries extends BaseSeries {
+    type: 'candlestick'
+    data: number[][]
+  }
+
+  type series = PieSeries | BarSeries | LineSeries | CandlestickSeries
 
   type IOption = {
     xAxis?: {

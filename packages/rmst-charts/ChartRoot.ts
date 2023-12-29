@@ -2,7 +2,7 @@ import { Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
 
-import Legend, { LegendDataItem } from './components/legend'
+import Legend from './components/legend'
 
 import { SeriesManager } from './SeriesMgr'
 
@@ -49,6 +49,7 @@ export class ChartRoot {
     }
 
     {
+      // 图表主体
       this.seriesManager = new SeriesManager(this)
       this.seriesManager.render(finalSeries)
       renderedElements.push(...this.seriesManager.elements)

@@ -78,6 +78,7 @@ export function initDraw() {
 
   // 计算所有 renderTree
   function calcRenderTree(dataSource) {
+    console.log(dataSource)
     // x轴的 renderTree
     const xAxis = getXAxis(ctx, dataSource, clientWidth, clientHeight)
     renderTree.xAxis = xAxis
@@ -105,14 +106,7 @@ export function initDraw() {
   }
 
   // 更新 tooltip 容器的位置 与 显示隐藏
-  function updateTooltipContainer(
-    visible,
-    toolTipElement,
-    canvasWidth,
-    canvasHeight,
-    translateX,
-    translateY
-  ) {
+  function updateTooltipContainer(visible, toolTipElement, canvasWidth, canvasHeight, translateX, translateY) {
     toolTipElement.style.display = visible ? 'block' : 'none'
     if (!visible) return
 

@@ -5,6 +5,7 @@ import { ChartRoot } from 'rmst-charts/ChartRoot'
 import { pointToFlatArray } from '../utils/utils'
 import { colorPalette, tickColor } from '../constant'
 import { LegendDataItem } from 'rmst-charts/components/legend'
+import _Chart from './_chart'
 
 type pieDataItem = { startAngle: number; endAngle: number; color: string; label: string }
 function calcPieData(dataSource: ICharts.PieSeries['data'], end_angle = 360) {
@@ -25,13 +26,7 @@ function calcPieData(dataSource: ICharts.PieSeries['data'], end_angle = 360) {
   return finalArray
 }
 
-class PieMain {
-  cr: ChartRoot
-
-  constructor(cr: ChartRoot) {
-    this.cr = cr
-  }
-
+class PieMain extends _Chart<ICharts.PieSeries> {
   pieElements: Circle[]
   labelElements: Group[]
 
@@ -45,8 +40,6 @@ class PieMain {
   fakeArc: Circle
 
   center: ICoord
-
-  seriesItem: ICharts.PieSeries
 
   render(seriesItem: ICharts.PieSeries) {
     seriesItem = { animationDuration: 1000, ...seriesItem }
