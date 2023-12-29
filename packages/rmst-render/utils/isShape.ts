@@ -1,4 +1,4 @@
-import { Stage } from 'rmst-render/stage'
+import { Stage } from 'rmst-render/_stage'
 import Group from 'rmst-render/shape/Group'
 import Line from 'rmst-render/shape/Line'
 

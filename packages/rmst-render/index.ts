@@ -8,6 +8,6 @@ export * from './shape/Line'
 export * from './shape/Group'
 export * from './shape/BoxHidden'
 
-export * from './stage'
+export * from './_stage'
 
 export * from './animate'
