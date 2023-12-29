@@ -1,5 +1,5 @@
 import { EventParameter, EventType, OnEventType, dpr } from 'rmst-render/constant'
-import Group from './../shape/Group'
+import Group from '../shape/Group'
 import { Stage } from '.'
 
 function createCanvas(containerWidth: number, containerHeight: number) {
