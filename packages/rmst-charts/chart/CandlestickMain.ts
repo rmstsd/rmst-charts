@@ -6,6 +6,7 @@ import { IYAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcYAx
 import _Chart from './_chart'
 import { Line, Rect } from 'rmst-render'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
+import { candlestickGreen, candlestickRed } from 'rmst-charts/constant'
 
 function calcCandlestickData(
   data: ICharts.CandlestickSeries['data'],
@@ -49,6 +50,8 @@ function calcCandlestickData(
 class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
   elements: IShape[] = []
 
+  afterAppendTasks: Function[] = []
+
   render(seriesItem: ICharts.CandlestickSeries) {
     this.seriesItem = seriesItem
 
@@ -57,38 +60,70 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
 
     const candleArray = calcCandlestickData(seriesItem.data, xAxisData, yAxisData)
 
-    candleArray.forEach((candleItem, index) => {
+    candleArray.forEach(candleItem => {
       const { topLine, centerRect, bottomLine, isRise } = candleItem
       const { x, y, width, height } = centerRect
 
-      const style = isRise ? '#FF443F' : '#00A843'
+      const color = isRise ? candlestickRed : candlestickGreen
+
+      const initial_y = isRise ? y + height : y
 
       const highestLine = new Line({
-        points: pointToFlatArray([topLine.start, topLine.end]),
-        strokeStyle: style,
+        points: isRise
+          ? pointToFlatArray([
+              { x: topLine.start.x, y: initial_y },
+              { x: topLine.end.x, y: initial_y }
+            ])
+          : pointToFlatArray([
+              { x: topLine.start.x, y: initial_y },
+              { x: topLine.end.x, y: initial_y }
+            ]), // pointToFlatArray([topLine.start, topLine.end]),
+        strokeStyle: color,
         cursor: 'pointer'
       })
+      this.afterAppendTasks.push(() => {
+        highestLine.animateCartoon({ points: pointToFlatArray([topLine.start, topLine.end]) })
+      })
+
       const lowestLine = new Line({
-        points: pointToFlatArray([bottomLine.start, bottomLine.end]),
-        strokeStyle: style,
+        points: isRise
+          ? pointToFlatArray([
+              { x: bottomLine.start.x, y: initial_y },
+              { x: bottomLine.end.x, y: initial_y }
+            ])
+          : pointToFlatArray([
+              { x: bottomLine.start.x, y: initial_y },
+              { x: bottomLine.end.x, y: initial_y }
+            ]), // pointToFlatArray([bottomLine.start, bottomLine.end]),
+        strokeStyle: color,
         cursor: 'pointer'
+      })
+      this.afterAppendTasks.push(() => {
+        lowestLine.animateCartoon({ points: pointToFlatArray([bottomLine.start, bottomLine.end]) })
       })
 
       const rect = new Rect({
         x,
-        y,
+        y: initial_y,
         width,
-        height,
-        fillStyle: isRise ? '#fff' : style,
-        strokeStyle: style,
+        height: 0,
+        fillStyle: color,
+        strokeStyle: color,
         cursor: 'pointer'
+      })
+      this.afterAppendTasks.push(() => {
+        rect.animateCartoon({ y, height })
       })
 
       this.elements.push(highestLine, lowestLine, rect)
     })
   }
 
-  afterAppendStage() {}
+  afterAppendStage() {
+    this.afterAppendTasks.forEach(func => {
+      func()
+    })
+  }
 }
 
 export default CandlestickMain

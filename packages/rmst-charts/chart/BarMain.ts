@@ -1,6 +1,5 @@
 import { Circle, Rect } from 'rmst-render'
 
-import { ChartRoot } from 'rmst-charts/ChartRoot'
 import { colorPalette, primaryColor } from 'rmst-charts/constant'
 import { IPolarElements } from 'rmst-charts/coordinateSystem/polar'
 

@@ -34,3 +34,6 @@ export const colorPalette = [
   '#9a60b4',
   '#ea7ccc'
 ]
+
+export const candlestickRed = '#FF443F'
+export const candlestickGreen = '#00A843'

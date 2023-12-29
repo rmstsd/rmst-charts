@@ -13,7 +13,7 @@ export class SeriesManager {
     this.cr = cr
   }
 
-  elements = []
+  elements: IShape[] = []
 
   seriesInstances: (LineMain | PieMain | BarMain | CandlestickMain)[] = []
 
