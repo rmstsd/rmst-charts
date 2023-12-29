@@ -74,14 +74,14 @@ export class SeriesManager {
           break
         }
         case 'candlestick': {
-          const pie = new CandlestickMain(this.cr)
-          pie.render(seriesItem)
-          this.seriesInstances.push(pie)
+          const candlestick = new CandlestickMain(this.cr)
+          candlestick.render(seriesItem)
+          this.seriesInstances.push(candlestick)
 
-          // this.elements.push()
+          this.elements.push(...candlestick.elements)
 
           this.afterTasks.push(() => {
-            pie.afterAppendStage()
+            candlestick.afterAppendStage()
           })
 
           break

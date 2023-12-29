@@ -1,7 +1,6 @@
 import colorAlpha from 'color-alpha'
 import { Circle, Line, BoxHidden } from 'rmst-render'
 
-import { ChartRoot } from 'rmst-charts/ChartRoot'
 import { colorPalette } from 'rmst-charts/constant'
 import { getCanvasPxFromRealNumber } from 'rmst-charts/utils/convert'
 import { IXAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcXAxis'

@@ -4,7 +4,7 @@ import { Stage, Line, Text, measureText } from 'rmst-render'
 import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from 'rmst-charts/constant.js'
 import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
 
-function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
+function getXAxis(xAxis: ICharts.IOption['xAxis'], containerWidth, containerHeight) {
   const start_x = canvasPaddingLeft
   const axis_y = containerHeight - canvasPaddingBottom
   const end_x = containerWidth - canvasPaddingRight
@@ -37,12 +37,7 @@ function getXAxis(ctx, xAxis, containerWidth, containerHeight) {
 
 export type IXAxisElements = ReturnType<typeof createXAxisElements>
 export function createXAxisElements(stage: Stage, innerOption: ICharts.IOption) {
-  const xAxisData = getXAxis(
-    stage.ctx,
-    innerOption.xAxis,
-    stage.canvasElement.offsetWidth,
-    stage.canvasElement.offsetHeight
-  )
+  const xAxisData = getXAxis(innerOption.xAxis, stage.canvasElement.offsetWidth, stage.canvasElement.offsetHeight)
 
   const xAxisLine = new Line({
     points: [xAxisData.axis.start.x, xAxisData.axis.start.y, xAxisData.axis.end.x, xAxisData.axis.end.y],
