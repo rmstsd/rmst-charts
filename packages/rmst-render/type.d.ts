@@ -4,7 +4,7 @@ import AbstractUi from './shape/AbstractUi'
 import Rect from './shape/Rect'
 import Group from './shape/Group'
 import Text from './shape/Text'
-import { Stage } from './stage'
+import { Stage } from './_stage'
 
 declare global {
   type IShape = Group | Circle | Rect | Line | Text | AbstractUi
