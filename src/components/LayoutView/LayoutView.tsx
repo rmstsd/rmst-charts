@@ -1,7 +1,7 @@
-import { Divider, Layout, Menu, MenuProps } from 'antd'
+import { Divider, Layout, Menu, MenuProps, MenuRef } from 'antd'
 import { Outlet, useLocation, useNavigate, matchRoutes } from 'react-router-dom'
 import { convertToAntdData, findPath, routes } from '@/main-router/router'
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 import './LayoutView.css'
 
@@ -35,6 +35,17 @@ const LayoutView = () => {
     .map(item => item.pathname.split('/').slice(2).join('/'))
     .filter(Boolean)
     .map(item => '/' + item)
+
+  const menuRef = useRef<MenuRef>(null)
+
+  useLayoutEffect(() => {
+    if (!menuRef.current) {
+      return
+    }
+
+    const selectedMenuItem = menuRef.current.menu.list.querySelector('li [class~="ant-menu-item-selected"]')
+    selectedMenuItem.scrollIntoView()
+  }, [])
 
   return (
     <Layout style={{ height: '100%', backgroundColor: 'white' }}>
@@ -72,6 +83,7 @@ const LayoutView = () => {
             onClick={onSideMenuClick}
             className="border-r-0"
             style={{ width: 220 }}
+            ref={menuRef}
           />
         </aside>
 

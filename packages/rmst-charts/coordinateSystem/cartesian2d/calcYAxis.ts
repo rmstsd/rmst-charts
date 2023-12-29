@@ -14,7 +14,7 @@ import { calcPerfectTick } from '../utils'
 import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert.js'
 import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
 
-function getYAxis(ctx: CanvasRenderingContext2D, dataSource: number[], containerHeight: number, xAxisEndX: number) {
+function getYAxis(dataSource: number[], containerHeight: number, xAxisEndX: number) {
   const axis_x = canvasPaddingLeft
   const start_y = containerHeight - canvasPaddingBottom
   const end_y = canvasPaddingTop
@@ -45,10 +45,9 @@ function getYAxis(ctx: CanvasRenderingContext2D, dataSource: number[], container
 
 export type IYAxisElements = ReturnType<typeof createYAxisElements>
 export function createYAxisElements(stage: Stage, series: ICharts.series[]) {
-  const seriesData = series.reduce((acc, item) => acc.concat(item.data), []) as number[]
-
+  // K线图 需要 flat 一下, 折线图 和 柱状图 不需要
+  const seriesData = series.reduce((acc, serItem) => acc.concat(serItem.data.flat()), []) as number[]
   const yAxisData = getYAxis(
-    stage.ctx,
     seriesData,
     stage.canvasElement.offsetHeight,
     stage.canvasElement.offsetWidth - canvasPaddingRight

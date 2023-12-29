@@ -5,6 +5,7 @@ import { colorPalette, primaryColor } from 'rmst-charts/constant'
 import { IPolarElements } from 'rmst-charts/coordinateSystem/polar'
 
 import { getCanvasDistanceFromRealNumber, getCanvasPxFromRealNumber } from 'rmst-charts/utils/convert'
+import _Chart from './_chart'
 
 type BarDataItem = { x: number; y: number; width: number; height: number }
 function calcBarData(dataSource: number[], xAxisData, yAxis) {
@@ -87,15 +88,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
   return { elements: arcs, afterAppendStage }
 }
 
-export default class BarMain {
-  seriesItem: ICharts.BarSeries
-
-  cr: ChartRoot
-
-  constructor(cr: ChartRoot) {
-    this.cr = cr
-  }
-
+export default class BarMain extends _Chart<ICharts.BarSeries> {
   data: BarDataItem[] = []
 
   mainElements: Rect[] = []

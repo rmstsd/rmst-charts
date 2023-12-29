@@ -4,6 +4,7 @@ import { LegendDataItem } from './components/legend'
 import LineMain from './chart/LineMain'
 import PieMain from './chart/PieMain'
 import BarMain from './chart/BarMain'
+import CandlestickMain from './chart/CandlestickMain'
 
 export class SeriesManager {
   cr: ChartRoot
@@ -14,7 +15,7 @@ export class SeriesManager {
 
   elements = []
 
-  seriesInstances: (LineMain | PieMain | BarMain)[] = []
+  seriesInstances: (LineMain | PieMain | BarMain | CandlestickMain)[] = []
 
   legendData: LegendDataItem[] = []
 
@@ -65,6 +66,19 @@ export class SeriesManager {
 
           this.elements.push(...pie.pieElements)
           this.elements.push(...pie.labelElements)
+
+          this.afterTasks.push(() => {
+            pie.afterAppendStage()
+          })
+
+          break
+        }
+        case 'candlestick': {
+          const pie = new CandlestickMain(this.cr)
+          pie.render(seriesItem)
+          this.seriesInstances.push(pie)
+
+          // this.elements.push()
 
           this.afterTasks.push(() => {
             pie.afterAppendStage()
