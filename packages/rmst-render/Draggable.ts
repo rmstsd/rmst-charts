@@ -7,6 +7,8 @@ export default class Draggable {
   private prevClientX = 0
   private prevClientY = 0
 
+  dragging = false
+
   dragStart(eventParameter: EventParameter, canvasElementRect: DOMRect) {
     let draggedTarget = eventParameter.target
 
@@ -27,6 +29,8 @@ export default class Draggable {
     const onDocumentMousemove = (evt: MouseEvent) => {
       evt.preventDefault()
 
+      this.dragging = true
+
       const x = evt.clientX - canvasElementRect.left
       const y = evt.clientY - canvasElementRect.top
 
@@ -46,6 +50,8 @@ export default class Draggable {
     }
 
     const onDocumentMouseup = () => {
+      this.dragging = false
+
       draggedTarget.ondragend({ target: draggedTarget, x: null, y: null })
 
       document.removeEventListener('mousemove', onDocumentMousemove)

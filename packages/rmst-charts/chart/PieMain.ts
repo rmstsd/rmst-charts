@@ -1,7 +1,5 @@
 import { Circle, Group, Line, Text, deg2rad, getPointOnArc, measureText, Animator } from 'rmst-render'
 
-import { ChartRoot } from 'rmst-charts/ChartRoot'
-
 import { pointToFlatArray } from '../utils/utils'
 import { colorPalette, tickColor } from '../constant'
 import { LegendDataItem } from 'rmst-charts/components/legend'
@@ -158,7 +156,8 @@ class PieMain extends _Chart<ICharts.PieSeries> {
       content: item.label,
       fillStyle: tickColor,
       textAlign: isInRight ? 'left' : 'right',
-      cursor: 'pointer'
+      cursor: 'pointer',
+      opacity: 0
     })
 
     const group = new Group()
@@ -177,7 +176,11 @@ class PieMain extends _Chart<ICharts.PieSeries> {
   }
 
   afterAppendStage() {
-    const ani = new Animator({ value: 0 }, { value: 360 }, { easing: 'cubicInOut' })
+    const ani = new Animator(
+      { value: 0 },
+      { value: 360 },
+      { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' }
+    )
     ani.start()
     ani.onUpdate = ({ value }, elapsedTimeRatio) => {
       const frameData = calcPieData(this.seriesItem.data, value)
@@ -188,13 +191,11 @@ class PieMain extends _Chart<ICharts.PieSeries> {
       })
     }
 
-    this.labelElements.forEach((item, index) => {
+    this.labelElements.forEach(item => {
       const [exLine, exText] = item.children as unknown as [Line, Text]
 
       exLine.animateCartoon({ percent: 1 }, { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' })
-
-      // 颜色过渡
-      // exText
+      exText.animateCartoon({ opacity: 1 }, { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' })
     })
   }
 

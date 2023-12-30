@@ -25,8 +25,8 @@ abstract class AbsEvent {
   isInner(offsetX: number, offsetY: number) {
     const stage = this.stage
 
-    if (!stage) {
-      return
+    if (!stage || !this.path2D) {
+      return false
     }
 
     stage.ctx.lineWidth = this.data.lineWidth + 5

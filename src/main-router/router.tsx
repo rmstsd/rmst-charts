@@ -2,12 +2,12 @@ import type { MenuProps } from 'antd'
 
 import { RouteObject, Navigate } from 'react-router-dom'
 
-import rmstChartsRouteConfig from './router.rmstCharts'
-import rmstRenderRouteConfig from './router.rmstRender'
-import zrenderRouteConfig from './router.zrender'
-import oldChartsRouteConfig from './router.oldCharts'
-import otherRouteConfig from './router.other'
-import leaferRouteConfig from './router.leafer'
+import rmstChartsRouteConfig from './1-rmst-charts'
+import rmstRenderRouteConfig from './2-rmst-render'
+import zrenderRouteConfig from './3-zrender'
+import leaferRouteConfig from './4-leafer'
+import oldChartsRouteConfig from './5-oldCharts'
+import otherRouteConfig from './6-other'
 
 export type IRouteObject = {
   path: RouteObject['path']

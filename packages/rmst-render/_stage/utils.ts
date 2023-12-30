@@ -88,3 +88,13 @@ export function sortByZIndex(root: Stage) {
     }
   }
 }
+
+export function refreshStage(stage: Stage) {
+  sortByZIndex(stage)
+
+  stage.ctx.clearRect(0, 0, stage.canvasElement.width, stage.canvasElement.height)
+
+  stage.children.forEach(elementItem => {
+    elementItem.draw(stage.ctx)
+  })
+}

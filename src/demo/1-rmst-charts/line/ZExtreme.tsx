@@ -16,8 +16,14 @@ const option: ICharts.IOption = {
     {
       name: 'Step Middle',
       type: 'line',
-      step: 'middle',
-      data: [220, 282, 201, 234, 290, 430]
+      data: [220, 282, 201, 234, 290, 430],
+      animationDuration: 8000,
+      symbol: 'none',
+      lineStyle: {
+        width: 30,
+        cap: 'round',
+        join: 'round'
+      }
     },
     {
       name: 'Step End',

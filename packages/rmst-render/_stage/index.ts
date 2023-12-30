@@ -1,6 +1,6 @@
 import Draggable from 'rmst-render/Draggable'
 import { EventParameter, eventList } from '../constant'
-import { findHover, initStage, sortByZIndex, triggerEventHandlers } from './utils'
+import { findHover, initStage, refreshStage, sortByZIndex, triggerEventHandlers } from './utils'
 
 export class Stage {
   constructor(option: IOption) {
@@ -32,11 +32,10 @@ export class Stage {
   removeAllElements() {
     this.children = []
 
-    // this.renderStage()
+    this.renderStage()
   }
 
   append(element: IShape | IShape[]) {
-    console.log('append')
     this.children = this.children.concat(element)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
@@ -64,16 +63,9 @@ export class Stage {
 
     this.isRuning = true
 
-    const refresh = () => {
-      sortByZIndex(this)
-      this.ctx.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height)
-      this.children.forEach(elementItem => {
-        elementItem.draw(this.ctx)
-      })
-    }
-
     requestAnimationFrame(() => {
-      refresh()
+      refreshStage(this)
+
       this.isRuning = false
     })
   }
@@ -82,6 +74,11 @@ export class Stage {
 
   addStageEventListener() {
     this.canvasElement.onmousemove = evt => {
+      // 此逻辑 可能会影响 拖放功能 的图形拾取; 暂时注释 与 zrender 的 UI 表现一致
+      if (this.draggingMgr.dragging) {
+        return
+      }
+
       const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
 
       if (!hovered) {

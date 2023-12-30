@@ -1,6 +1,6 @@
 import ChartsTemplate from '@/components/ChartsTemplate'
 
-// 极端例子
+// 极端的例子
 const option: ICharts.IOption = {
   legend: {
     orient: 'vertical',

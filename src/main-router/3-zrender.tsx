@@ -4,7 +4,7 @@ import { IRouteObject } from './router'
 
 import QuickStart from '@/demo/3-zrender/QuickStart'
 import RectOver from '@/demo/3-zrender/RectOver'
-import DragGroup from '@/demo/3-zrender/DragGroup'
+import DragOverOther from '@/demo/3-zrender/DragOverOther'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/zrender',
@@ -13,7 +13,7 @@ const rmstRenderRouteConfig: IRouteObject = {
   children: [
     { path: 'QuickStart', element: <QuickStart /> },
     { path: 'RectOver', element: <RectOver /> },
-    { path: 'DragGroup', element: <DragGroup /> }
+    { path: 'drag-over-other', element: <DragOverOther /> }
   ]
 }
 
