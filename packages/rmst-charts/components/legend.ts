@@ -23,10 +23,11 @@ class Legend {
 
     const fontSize = 14
 
-    const width = 35
-    const height = 18
+    const width = 30
+    const height = 16
+    const cornerRadius = 4
 
-    const itemGap = 16
+    const itemGap = 10
     const textGap = 5
 
     const x = 10
@@ -60,11 +61,11 @@ class Legend {
         height,
         fillStyle: item.color,
         cursor: 'pointer',
-        cornerRadius: 4
+        cornerRadius
       })
       const legendText = new Text({
         x: isVertical ? x + width + textGap : rectX + width + textGap,
-        y: isVertical ? verticalY + 3 : y + 3,
+        y: isVertical ? verticalY + 1 : y + 1,
         content: item.label,
         fillStyle: item.color,
         fontSize,
