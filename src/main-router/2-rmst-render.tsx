@@ -73,7 +73,7 @@ const rmstRenderRouteConfig: IRouteObject = {
       children: [
         { path: 'base', element: <Animate />, uiConfig: { title: 'Animate' } },
         { path: 'groupClipAnimate', element: <GroupClipAnimate />, uiConfig: { title: '组动画' } },
-        { path: 'ani 1000', element: <Ani_1000个动画 />, uiConfig: { title: '1000个动画 同时执行' } }
+        { path: 'ani-1000', element: <Ani_1000个动画 />, uiConfig: { title: '1000个动画 同时执行' } }
       ]
     }
     // {
