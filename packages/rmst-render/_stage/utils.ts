@@ -56,6 +56,8 @@ export function findHover(children: IShape[], x: number, y: number): IShape {
       if (elementItem.type === 'BoxHidden') {
         if (!elementItem.isInner(x, y)) {
           continue
+        } else {
+          return elementItem // 解决后代 dataZoom 的 enter 事件bug (需重新思考)
         }
       }
 

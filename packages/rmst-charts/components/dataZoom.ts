@@ -1,5 +1,5 @@
 import { ChartRoot } from 'rmst-charts/ChartRoot'
-import { Group, Line, Rect } from 'rmst-render'
+import { BoxHidden, Group, Line, Rect } from 'rmst-render'
 
 const moveHandleHeight = 6
 
@@ -94,7 +94,8 @@ export default class dataZoom {
       width: this.end_x - this.start_x,
       height: moveHandleHeight
     })
-    const moveHandle = new Rect({
+
+    const moveHandle = new BoxHidden({
       ...calcMoveHandle(),
       fillStyle: 'rgb(210,219,238)',
       opacity: 0.7,
@@ -180,6 +181,28 @@ export default class dataZoom {
       }
     )
 
+    const rect_width = 1.2
+    const rect_height = moveHandle.data.height - 2
+    const rect_y = moveHandle.data.y + moveHandle.data.height / 2 - rect_height / 2
+
+    const rectCfg = { y: rect_y, width: rect_width, height: rect_height, fillStyle: '#fff' }
+
+    const calcRectCenter = () => {
+      return { x: this.start_x + moveHandle.data.width / 2 }
+    }
+    function calcRectLeft() {
+      return { x: rect_center.data.x - rect_width - 2 }
+    }
+    function calcRectRight() {
+      return { x: rect_center.data.x + rect_width + 2 }
+    }
+
+    const rect_center = new Rect({ ...calcRectCenter(), ...rectCfg })
+    const rect_left = new Rect({ ...calcRectLeft(), ...rectCfg })
+    const rect_right = new Rect({ ...calcRectRight(), ...rectCfg })
+
+    moveHandle.append(rect_center, rect_left, rect_right)
+
     moveControlGroup.append(insideRect, handleLeftBgLine, handleRightBgLine, handleLeft, handleRight, moveHandle)
 
     const updateControl = () => {
@@ -191,6 +214,10 @@ export default class dataZoom {
 
       handleLeftBgLine.attr(calcLeftBgLinePoints())
       handleRightBgLine.attr(calcRightBgLinePoints())
+
+      rect_center.attr(calcRectCenter())
+      rect_left.attr(calcRectLeft())
+      rect_right.attr(calcRectRight())
     }
     const controlActive = () => {
       moveHandle.animateCartoon({ fillStyle: activeColor }, { duration: 300 })

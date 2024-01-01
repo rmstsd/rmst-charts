@@ -17,7 +17,7 @@ const RectDemo = () => {
 
     const box = new BoxHidden({ x: 100, y: 100, width: 80, height: 150, fillStyle: 'pink' })
     const inn_rect = new Rect({
-      x: 120,
+      x: 100,
       y: 120,
       width: 120,
       height: 120,
@@ -31,6 +31,10 @@ const RectDemo = () => {
     stage.append(box)
 
     box.animateCartoon({ width: 180 }, { duration: 10000 })
+
+    box.onmouseenter = () => {
+      console.log('box enter')
+    }
 
     // 注册鼠标事件
     rects.forEach(item => {

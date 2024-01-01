@@ -6,6 +6,8 @@ export class BoxHidden extends AbstractUi<RectData> {
     super('BoxHidden', data, defaultRectData)
   }
 
+  declare data: RectData
+
   children: IShape[] = []
 
   append(...args) {
