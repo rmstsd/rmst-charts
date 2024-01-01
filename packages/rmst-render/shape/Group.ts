@@ -1,8 +1,16 @@
-import AbstractUi from './AbstractUi'
+import AbstractUi, { AbstractUiData } from './AbstractUi'
+
+interface GroupData extends AbstractUiData {
+  children?: IShape[]
+}
+
+const defaultData: GroupData = {
+  children: []
+}
 
 export class Group extends AbstractUi<any> {
-  constructor(data = {}) {
-    super('Group', data)
+  constructor(data: GroupData = {}) {
+    super('Group', data, defaultData)
   }
 
   children: IShape[] = []
@@ -13,8 +21,10 @@ export class Group extends AbstractUi<any> {
     })
   }
 
-  append(element) {
-    this.children = this.children.concat(element)
+  append(...args) {
+    const elements = args.flat(1)
+
+    this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
     this.stage?.renderStage()

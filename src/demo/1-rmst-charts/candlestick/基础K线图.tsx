@@ -13,7 +13,8 @@ const option: ICharts.IOption = {
         [40, 35, 30, 50],
         [31, 38, 33, 44],
         [38, 15, 5, 42]
-      ]
+      ],
+      animationDuration: 300
     }
   ]
 }

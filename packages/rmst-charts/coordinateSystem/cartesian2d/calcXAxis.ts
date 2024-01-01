@@ -1,15 +1,22 @@
 // @ts-check
-import { Stage, Line, Text, measureText } from 'rmst-render'
+import { Stage, Line, Text, measureText, Group } from 'rmst-render'
 
-import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, tickColor } from 'rmst-charts/constant.js'
+import {
+  canvasPaddingBottom,
+  canvasPaddingLeft,
+  canvasPaddingRight,
+  dataZoomHeight,
+  tickColor
+} from 'rmst-charts/constant.js'
 import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
+import { hasDataZoom } from 'rmst-charts/components/dataZoom'
 
-function getXAxis(xAxis: ICharts.IOption['xAxis'], containerWidth, containerHeight) {
+function getXAxis(option: ICharts.IOption, containerWidth, containerHeight) {
   const start_x = canvasPaddingLeft
-  const axis_y = containerHeight - canvasPaddingBottom
+  const axis_y = containerHeight - canvasPaddingBottom - (hasDataZoom(option) ? dataZoomHeight : 0)
   const end_x = containerWidth - canvasPaddingRight
 
-  const { data, boundaryGap = true } = xAxis
+  const { data, boundaryGap = true } = option.xAxis
 
   const count = boundaryGap ? data.length : data.length - 1 // x轴刻度值左右的空余距离
   const xAxisInterval = (end_x - start_x) / count
@@ -28,7 +35,7 @@ function getXAxis(xAxis: ICharts.IOption['xAxis'], containerWidth, containerHeig
     return {
       start: { x, y: y_start },
       end: { x, y: y_end },
-      text: { x: x - textWidth / 2, y: y_end + 5, value: valueString }
+      text: { x, y: y_end + 5, textWidth, value: valueString }
     }
   })
 
@@ -37,23 +44,37 @@ function getXAxis(xAxis: ICharts.IOption['xAxis'], containerWidth, containerHeig
 
 export type IXAxisElements = ReturnType<typeof createXAxisElements>
 export function createXAxisElements(stage: Stage, innerOption: ICharts.IOption) {
-  const xAxisData = getXAxis(innerOption.xAxis, stage.canvasElement.offsetWidth, stage.canvasElement.offsetHeight)
+  const xAxisData = getXAxis(innerOption, stage.canvasElement.offsetWidth, stage.canvasElement.offsetHeight)
 
   const xAxisLine = new Line({
     points: [xAxisData.axis.start.x, xAxisData.axis.start.y, xAxisData.axis.end.x, xAxisData.axis.end.y],
     strokeStyle: tickColor
   })
 
-  const ticksLines = xAxisData.ticks.map(item => {
-    return new Line({
-      points: pointToFlatArray([item.start, item.end]),
-      strokeStyle: tickColor
+  let prevTextEndX = 0
+  const ticks: Group[] = []
+  xAxisData.ticks.forEach(item => {
+    if (item.text.x < prevTextEndX + 10) {
+      return
+    }
+
+    prevTextEndX = item.text.x + item.text.textWidth
+
+    const tickGroupItem = new Group()
+    const tickLine = new Line({ points: pointToFlatArray([item.start, item.end]), strokeStyle: tickColor })
+    const tickText = new Text({
+      x: item.text.x,
+      y: item.text.y,
+      content: item.text.value,
+      fillStyle: tickColor,
+      textAlign: 'center',
+      cursor: 'pointer'
     })
+
+    tickGroupItem.append([tickLine, tickText])
+
+    ticks.push(tickGroupItem)
   })
 
-  const tickTexts = xAxisData.ticks.map(item => {
-    return new Text({ x: item.text.x, y: item.text.y, content: item.text.value, fillStyle: tickColor })
-  })
-
-  return { xAxisLine, ticksLines, tickTexts, xAxisData }
+  return { xAxisLine, ticks, xAxisData }
 }

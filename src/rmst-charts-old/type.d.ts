@@ -64,8 +64,16 @@ namespace ICharts {
 
   type series = PieSeries | BarSeries | LineSeries | CandlestickSeries
 
+  interface dataZoomSlider {
+    type: 'slider'
+    start: number // 百分比
+    end: number // 百分比
+  }
+
   type IOption = {
+    grid?: {}
     xAxis?: {
+      type?: 'category' | 'value'
       data: string[]
       boundaryGap?: boolean
     }
@@ -86,5 +94,7 @@ namespace ICharts {
       orient: 'vertical' | 'horizontal'
       left: 'left' | 'center' | 'right'
     }
+
+    dataZoom?: dataZoomSlider[]
   }
 }

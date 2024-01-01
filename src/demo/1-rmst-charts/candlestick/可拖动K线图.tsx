@@ -115,21 +115,14 @@ const option: ICharts.IOption = {
     type: 'category',
     data: data0.categoryData
   },
-  yAxis: {
-    scale: true
-  },
+  // yAxis: {
+  //   scale: true
+  // },
   dataZoom: [
     {
-      type: 'inside',
-      start: 50,
-      end: 100
-    },
-    {
-      show: true,
       type: 'slider',
-      top: '90%',
-      start: 50,
-      end: 100
+      start: 20,
+      end: 50
     }
   ],
   series: [

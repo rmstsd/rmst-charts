@@ -1,4 +1,4 @@
-import { Easing, calcTargetValue, easingFuncs } from './utils'
+import { Easing, calcTargetValue, calculateColorTransition, easingFuncs } from './utils'
 
 export type AnimateCartoonConfig = {
   duration?: number // 毫秒
@@ -44,6 +44,17 @@ export class Animator {
 
       const currentProp = {}
       keys.forEach(propKey => {
+        const startValue = this.startProp[propKey]
+        const endValue = this.targetProp[propKey]
+
+        // 如果是颜色
+        if (typeof startValue === 'string' && typeof endValue === 'string') {
+          const color = calculateColorTransition(startValue, endValue, elapsedTimeRatio)
+          currentProp[propKey] = color
+
+          return
+        }
+
         const targetValue = calcTargetValue(this.startProp[propKey], this.targetProp[propKey], elapsedTimeRatio)
         currentProp[propKey] = targetValue
       })

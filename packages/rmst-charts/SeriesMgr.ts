@@ -5,6 +5,7 @@ import LineMain from './chart/LineMain'
 import PieMain from './chart/PieMain'
 import BarMain from './chart/BarMain'
 import CandlestickMain from './chart/CandlestickMain'
+import { RangeRatio } from './components/dataZoom'
 
 export class SeriesManager {
   cr: ChartRoot
@@ -129,5 +130,11 @@ export class SeriesManager {
         item.cancelSelect(legendItem)
       })
     }
+  }
+
+  setRange(range: RangeRatio) {
+    this.seriesInstances.forEach(item => {
+      item.setRange(range)
+    })
   }
 }

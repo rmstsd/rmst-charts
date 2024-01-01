@@ -39,27 +39,14 @@ const DraggableRange = () => {
       let nx = evt.x - x
       let ny = evt.y - y
 
-      const left = rect_range.data.x + _radius
-      if (nx < left) {
-        nx = left
-      }
+      const ans = boundary(
+        nx,
+        ny,
+        { min: rect_range.data.x + _radius, max: rect_range.data.x + rect_range.data.width - _radius },
+        { min: rect_range.data.y + _radius, max: rect_range.data.y + rect_range.data.height - _radius }
+      )
 
-      const right = rect_range.data.x + rect_range.data.width - _radius
-      if (nx > right) {
-        nx = right
-      }
-
-      const top = rect_range.data.y + _radius
-      if (ny < top) {
-        ny = top
-      }
-
-      const bottom = rect_range.data.y + rect_range.data.height - _radius
-      if (ny > bottom) {
-        ny = bottom
-      }
-
-      inner_arc.attr({ x: nx, y: ny })
+      inner_arc.attr({ x: ans.x, y: ans.y })
     }
     inner_arc.ondragend = evt => {}
 
@@ -75,3 +62,27 @@ const DraggableRange = () => {
 }
 
 export default DraggableRange
+
+interface BoundaryRange {
+  min: number
+  max: number
+}
+function boundary(nx: number, ny: number, x_range: BoundaryRange, y_range: BoundaryRange) {
+  if (nx < x_range.min) {
+    nx = x_range.min
+  }
+
+  if (nx > x_range.max) {
+    nx = x_range.max
+  }
+
+  if (ny < y_range.min) {
+    ny = y_range.min
+  }
+
+  if (ny > y_range.max) {
+    ny = y_range.max
+  }
+
+  return { x: nx, y: ny }
+}

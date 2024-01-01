@@ -34,8 +34,6 @@ export default class Draggable {
       const x = evt.clientX - canvasElementRect.left
       const y = evt.clientY - canvasElementRect.top
 
-      draggedTarget.ondrag({ target: draggedTarget, x, y })
-
       if (!draggedTarget.data.draggable) {
         return
       }
@@ -47,6 +45,8 @@ export default class Draggable {
       this.prevClientY = evt.clientY
 
       dndAttr(draggedTarget, dx, dy)
+
+      draggedTarget.ondrag({ target: draggedTarget, x, y, dx, dy })
     }
 
     const onDocumentMouseup = () => {

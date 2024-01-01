@@ -131,6 +131,10 @@ const Overview = () => {
     rects[1].animateCartoon({ width: 120 }, { duration: 3000 })
     line.animateCartoon({ percent: 1 }, { duration: 3000 })
     line3.animateCartoon({ points: [616, 314, 516, 384, 416, 334, 336, 254] }, { duration: 3000 })
+
+    setTimeout(() => {
+      rects[0].animateCartoon({ fillStyle: 'red' })
+    }, 1000)
   }, [])
 
   return (
