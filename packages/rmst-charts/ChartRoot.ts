@@ -3,6 +3,7 @@ import { Stage } from 'rmst-render'
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
 
 import Legend from './components/legend'
+import dataZoom from './components/dataZoom'
 
 import { SeriesManager } from './SeriesMgr'
 
@@ -22,6 +23,8 @@ export class ChartRoot {
   seriesManager: SeriesManager
 
   legend: Legend
+
+  dataZoom: dataZoom
 
   coordinateSystem: ICoordinateSystemElements
 
@@ -67,6 +70,18 @@ export class ChartRoot {
       this.legend.onCancelSelect = legendItem => {
         this.seriesManager.cancelSelect(legendItem)
       }
+    }
+
+    {
+      // 区域缩放
+      this.dataZoom = new dataZoom(this)
+      this.dataZoom.render()
+
+      this.dataZoom.onRange = range => {
+        this.seriesManager.setRange(range)
+      }
+
+      renderedElements.push(...this.dataZoom.elements)
     }
 
     stage.append(renderedElements)

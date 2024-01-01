@@ -8,8 +8,10 @@ export class BoxHidden extends AbstractUi<RectData> {
 
   children: IShape[] = []
 
-  append(element) {
-    this.children = this.children.concat(element)
+  append(...args) {
+    const elements = args.flat(1)
+
+    this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
     this.stage?.renderStage()

@@ -4,10 +4,12 @@ import { IXAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcXAx
 import { IYAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcYAxis'
 
 import _Chart from './_chart'
-import { Line, Rect } from 'rmst-render'
+import { AnimateCartoonConfig, Line, Rect } from 'rmst-render'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { candlestickGreen, candlestickRed } from 'rmst-charts/constant'
+import { RangeRatio } from 'rmst-charts/components/dataZoom'
 
+type CandleArray = ReturnType<typeof calcCandlestickData>
 function calcCandlestickData(
   data: ICharts.CandlestickSeries['data'],
   xAxisData: IXAxisElements['xAxisData'],
@@ -47,20 +49,26 @@ function calcCandlestickData(
   return candleArray
 }
 
+const defaultLineSeriesItem = { animationDuration: 300 } as ICharts.CandlestickSeries
+
 class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
   elements: IShape[] = []
 
   afterAppendTasks: Function[] = []
 
+  candleArray: CandleArray
+
   render(seriesItem: ICharts.CandlestickSeries) {
-    this.seriesItem = seriesItem
+    this.seriesItem = { ...defaultLineSeriesItem, ...seriesItem }
+
+    const aniCfg: AnimateCartoonConfig = { easing: 'linear', duration: this.seriesItem.animationDuration }
 
     const xAxisData = this.cr.coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
     const yAxisData = this.cr.coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
 
-    const candleArray = calcCandlestickData(seriesItem.data, xAxisData, yAxisData)
+    this.candleArray = calcCandlestickData(seriesItem.data, xAxisData, yAxisData)
 
-    candleArray.forEach(candleItem => {
+    this.candleArray.forEach(candleItem => {
       const { topLine, centerRect, bottomLine, isRise } = candleItem
       const { x, y, width, height } = centerRect
 
@@ -82,7 +90,7 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
         cursor: 'pointer'
       })
       this.afterAppendTasks.push(() => {
-        highestLine.animateCartoon({ points: pointToFlatArray([topLine.start, topLine.end]) })
+        highestLine.animateCartoon({ points: pointToFlatArray([topLine.start, topLine.end]) }, aniCfg)
       })
 
       const lowestLine = new Line({
@@ -99,7 +107,7 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
         cursor: 'pointer'
       })
       this.afterAppendTasks.push(() => {
-        lowestLine.animateCartoon({ points: pointToFlatArray([bottomLine.start, bottomLine.end]) })
+        lowestLine.animateCartoon({ points: pointToFlatArray([bottomLine.start, bottomLine.end]) }, aniCfg)
       })
 
       const rect = new Rect({
@@ -112,7 +120,7 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
         cursor: 'pointer'
       })
       this.afterAppendTasks.push(() => {
-        rect.animateCartoon({ y, height })
+        rect.animateCartoon({ y, height }, aniCfg)
       })
 
       this.elements.push(highestLine, lowestLine, rect)
@@ -123,6 +131,10 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
     this.afterAppendTasks.forEach(func => {
       func()
     })
+  }
+
+  setRange(rangeRatio: RangeRatio) {
+    console.log('cand', rangeRatio)
   }
 }
 

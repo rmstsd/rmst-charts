@@ -12,6 +12,8 @@ class _Chart<T = ICharts.series> {
   render(seriesItem: T, seriesIndex?: number) {}
 
   afterAppendStage() {}
+
+  setRange(rangeRatio: { startRatio: number; endRatio: number }) {}
 }
 
 export default _Chart

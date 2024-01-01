@@ -35,8 +35,10 @@ export class Stage {
     this.renderStage()
   }
 
-  append(element: IShape | IShape[]) {
-    this.children = this.children.concat(element)
+  append(...args) {
+    const elements = args.flat(1)
+
+    this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
     const mountStage = (children: IShape[]) => {

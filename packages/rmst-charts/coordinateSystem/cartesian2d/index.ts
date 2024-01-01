@@ -9,13 +9,12 @@ export const createCartesian2dElements = (
   finalSeries: ICharts.series[]
 ) => {
   const xAxisShape = createXAxisElements(stage, innerOption)
-  const yAxisShape = createYAxisElements(stage, finalSeries)
+  const yAxisShape = createYAxisElements(stage, finalSeries, innerOption)
 
   return {
     cartesian2dAllShapes: [
       xAxisShape.xAxisLine,
-      ...xAxisShape.ticksLines,
-      ...xAxisShape.tickTexts,
+      ...xAxisShape.ticks,
 
       // yAxisShape.yAxisLine,
       ...yAxisShape.ticksLines,

@@ -5,6 +5,7 @@ import {
   canvasPaddingLeft,
   canvasPaddingRight,
   canvasPaddingTop,
+  dataZoomHeight,
   splitLineColor,
   tickColor,
   yAxisPadding
@@ -13,11 +14,14 @@ import {
 import { calcPerfectTick } from '../utils'
 import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert.js'
 import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
+import { hasDataZoom } from 'rmst-charts/components/dataZoom'
 
-function getYAxis(dataSource: number[], containerHeight: number, xAxisEndX: number) {
+function getYAxis(dataSource: number[], containerWidth, containerHeight: number, innerOption: ICharts.IOption) {
   const axis_x = canvasPaddingLeft
-  const start_y = containerHeight - canvasPaddingBottom
+  const start_y = containerHeight - canvasPaddingBottom - (hasDataZoom(innerOption) ? dataZoomHeight : 0)
   const end_y = canvasPaddingTop
+  const xAxisEndX = containerWidth - canvasPaddingRight
+
   const yAxisLength = start_y - end_y
   const axis = { start: { x: axis_x, y: start_y }, end: { x: axis_x, y: end_y } }
 
@@ -44,14 +48,10 @@ function getYAxis(dataSource: number[], containerHeight: number, xAxisEndX: numb
 }
 
 export type IYAxisElements = ReturnType<typeof createYAxisElements>
-export function createYAxisElements(stage: Stage, series: ICharts.series[]) {
+export function createYAxisElements(stage: Stage, series: ICharts.series[], innerOption: ICharts.IOption) {
   // K线图 需要 flat 一下, 折线图 和 柱状图 不需要
   const seriesData = series.reduce((acc, serItem) => acc.concat(serItem.data.flat()), []) as number[]
-  const yAxisData = getYAxis(
-    seriesData,
-    stage.canvasElement.offsetHeight,
-    stage.canvasElement.offsetWidth - canvasPaddingRight
-  )
+  const yAxisData = getYAxis(seriesData, stage.canvasElement.offsetWidth, stage.canvasElement.offsetHeight, innerOption)
 
   const yAxisLine = new Line({
     points: pointToFlatArray([yAxisData.axis.start, yAxisData.axis.end]),

@@ -1,5 +1,6 @@
 import { Box, Cursor, DragEvent, Leafer, Line, Rect } from 'leafer-ui'
 import { useEffect } from 'react'
+import anime from 'animejs'
 
 const QuickStart = () => {
   useEffect(() => {
@@ -10,39 +11,33 @@ const QuickStart = () => {
       pointer: { hitRadius: 0 }
     })
 
-    const rect = new Rect({
-      x: 50,
-      y: 50,
-      width: 100,
-      height: 100,
-      fill: '#32cd79',
-      cursor: 'move',
-      zIndex: 10
+    const rects = Array.from(
+      { length: 1000 },
+      (_, index) =>
+        new Rect({
+          draggable: true,
+          x: 10 + index * 20,
+          y: 10,
+          width: 15,
+          height: 15,
+          fill: '#32cd79',
+          cursor: 'move',
+          zIndex: 10
+        })
+    )
+
+    rects.forEach(item => {
+      leafer.add(item)
     })
 
-    const box = new Box({
-      x: 10,
-      y: 10,
-      width: 100,
-      height: 100,
-      stroke: 'red'
-      // overflow: 'hide'
+    rects.forEach(rect => {
+      anime({
+        targets: rect,
+        y: rect.y + 100,
+        cornerRadius: 0,
+        easing: 'easeInOutQuad'
+      })
     })
-
-    const rect_2 = new Rect({
-      x: 70,
-      y: 70,
-      width: 100,
-      height: 100,
-      fill: 'pink',
-      cursor: 'move',
-      zIndex: 2
-    })
-
-    box.add(rect)
-
-    leafer.add(box)
-    leafer.add(rect_2)
   }, [])
 
   return (

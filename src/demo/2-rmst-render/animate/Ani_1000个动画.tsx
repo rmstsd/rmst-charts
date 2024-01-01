@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 
 import { Stage, Rect } from 'rmst-render'
 
+const length = 1000
+
 const Ani_1000个动画 = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
 
@@ -15,13 +17,14 @@ const Ani_1000个动画 = () => {
 
     const gap = 5
 
-    const width = 17
-    const height = 17
+    const rectSize = 17
+    const width = rectSize
+    const height = rectSize
 
     let curRow = 0
     let curColumn = 0
 
-    const rects = Array.from({ length: 1000 }, _ => {
+    const rects = Array.from({ length }, _ => {
       let x = calcX()
 
       if (x + width > stage.canvasSize.width) {
@@ -52,7 +55,7 @@ const Ani_1000个动画 = () => {
 
   return (
     <div>
-      <h3>1000 个动画同时执行</h3>
+      <h3>{length} 个动画同时执行</h3>
       <div className="canvas-container" ref={canvasRef} style={{ width: 900, height: 600 }}></div>
     </div>
   )
