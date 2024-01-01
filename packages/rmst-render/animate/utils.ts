@@ -1,3 +1,5 @@
+import colorRgba from 'color-rgba'
+
 export const calcTargetValue = (
   startCount: number | number[],
   targetCount: number | number[],
@@ -26,6 +28,19 @@ export const calcTargetValue = (
 
     return targetVal
   }
+}
+
+export function calculateColorTransition(startColor: string, endColor: string, percent: number) {
+  const startRGBA = colorRgba(startColor)
+  const endRGBA = colorRgba(endColor)
+
+  const rgba = startRGBA.map((start, i) => {
+    const end = endRGBA[i]
+    const diff = end - start
+    return Math.round(start + diff * percent)
+  })
+
+  return `rgba(${rgba.join(', ')})`
 }
 
 export type Easing = keyof typeof easingFuncs

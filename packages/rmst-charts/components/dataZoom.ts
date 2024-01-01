@@ -6,6 +6,9 @@ const moveHandleHeight = 6
 const sideHandleSize = { width: 6, height: 20, cornerRadius: 1 } as Rect['data']
 const sideHandleHalfWidth = sideHandleSize.width / 2
 
+const initialColor = 'rgb(210, 219, 238)'
+const activeColor = 'rgb(143, 176, 257)'
+
 export interface RangeRatio {
   startRatio: number
   endRatio: number
@@ -61,7 +64,7 @@ export default class dataZoom {
     const handleLeftBgLine = new Line({
       ...calcLeftBgLinePoints(),
       lineWidth: 1,
-      fillStyle: 'rgb(172,184,209)',
+      fillStyle: initialColor,
       cursor: 'w-resize',
       draggable: 'horizontal'
     })
@@ -114,17 +117,6 @@ export default class dataZoom {
         this.onRange(calcRange())
       }
     )
-
-    const updateControl = () => {
-      moveHandle.attr(calcMoveHandle())
-      insideRect.attr(calcInsideRect())
-
-      handleLeft.attr(calcLeft())
-      handleRight.attr(calcRight())
-
-      handleLeftBgLine.attr(calcLeftBgLinePoints())
-      handleRightBgLine.attr(calcRightBgLinePoints())
-    }
 
     const calcRange = () => {
       const startRatio = (moveHandle.data.x - backGround.data.x) / backGround.data.width
@@ -188,7 +180,33 @@ export default class dataZoom {
       }
     )
 
-    moveControlGroup.append(insideRect, handleLeftBgLine, handleRightBgLine, moveHandle, handleLeft, handleRight)
+    moveControlGroup.append(insideRect, handleLeftBgLine, handleRightBgLine, handleLeft, handleRight, moveHandle)
+
+    const updateControl = () => {
+      moveHandle.attr(calcMoveHandle())
+      insideRect.attr(calcInsideRect())
+
+      handleLeft.attr(calcLeft())
+      handleRight.attr(calcRight())
+
+      handleLeftBgLine.attr(calcLeftBgLinePoints())
+      handleRightBgLine.attr(calcRightBgLinePoints())
+    }
+    const controlActive = () => {
+      moveHandle.animateCartoon({ fillStyle: activeColor }, { duration: 300 })
+    }
+    const controlUnActive = () => {
+      moveHandle.animateCartoon({ fillStyle: initialColor }, { duration: 300 })
+    }
+
+    moveHandle.onmouseenter = controlActive
+    moveHandle.onmouseleave = controlUnActive
+
+    handleLeft.onmouseenter = controlActive
+    handleLeft.onmouseleave = controlUnActive
+
+    handleRight.onmouseenter = controlActive
+    handleRight.onmouseleave = controlUnActive
 
     this.elements.push(backGround, moveControlGroup)
   }
