@@ -3,16 +3,25 @@ import { Stage } from 'rmst-render'
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
 
 import Legend from './components/legend'
-import dataZoom, { RangeRatio } from './components/dataZoom'
+import dataZoom, { RangeRatioDecimal, hasDataZoom } from './components/dataZoom'
 
 import { SeriesManager } from './SeriesMgr'
 
-const rangeRatio2Index = (rangeRatio: RangeRatio, startIdx, endIdx: number) => {
-  const rs = Math.floor(startIdx + (endIdx - startIdx) * (rangeRatio.startRatio / 100))
-  const re = Math.ceil(startIdx + (endIdx - startIdx) * (rangeRatio.endRatio / 100))
+const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx, endIdx: number) => {
+  const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
+  const re = Math.ceil(startIdx + (endIdx - startIdx) * rangeRatio.endRatio)
 
   return { startIndex: rs, endIndex: re }
 }
+
+const getRangeRatio = (option: ICharts.IOption): RangeRatioDecimal => {
+  if (hasDataZoom(option)) {
+    return { startRatio: option.dataZoom[0].start / 100, endRatio: option.dataZoom[0].end / 100 }
+  }
+
+  return { startRatio: 0, endRatio: 100 }
+}
+
 export class ChartRoot {
   constructor(canvasContainer: HTMLElement) {
     this.stage = new Stage({
@@ -25,6 +34,7 @@ export class ChartRoot {
   stage: Stage
 
   userOption: ICharts.IOption
+  dataZoomOption: ICharts.IOption
 
   finalSeries: ICharts.series[]
 
@@ -39,14 +49,14 @@ export class ChartRoot {
   renderedElements = []
 
   private calcFinalSeries() {
-    let finalSeries = handleSeries(this.userOption.series)
+    let finalSeries = handleSeries(this.dataZoomOption.series)
 
     this.finalSeries = finalSeries
   }
 
   private renderCoordinateSystem() {
     const list: IShape[] = []
-    this.coordinateSystem = createCoordinateSystemElements(this.stage, this.userOption, this.finalSeries)
+    this.coordinateSystem = createCoordinateSystemElements(this.stage, this.dataZoomOption, this.finalSeries)
     if (this.coordinateSystem.hasCartesian2d) {
       list.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
     }
@@ -61,32 +71,43 @@ export class ChartRoot {
     // 区域缩放
     this.dataZoom = new dataZoom(this)
 
-    this.dataZoom.render()
+    this.dataZoom.render(this._range)
+
+    this.dataZoom.onRange = r => {
+      this._range = r
+      this.setOption(this.userOption, r)
+    }
 
     return this.dataZoom.elements
   }
 
-  // handleZoom() {
-  //   const startRatio = this.option.dataZoom[0].start
-  //   const endRatio = this.option.dataZoom[0].end
+  _range
 
-  //   const { startIndex, endIndex } = rangeRatio2Index({ startRatio, endRatio }, 0, this.option.xAxis.data.length)
-
-  //   this.option.xAxis.data = this.option.xAxis.data.slice(startIndex, endIndex)
-
-  //   this.option.series.forEach(item => {
-  //     item.data = item.data.slice(startIndex, endIndex)
-  //   })
-  // }
-
-  setOption(innerOption: ICharts.IOption) {
+  setOption(innerOption: ICharts.IOption, rangeRatio?: RangeRatioDecimal) {
     console.log(this.firstSetOption ? '初始化' : '更新')
+
+    this.renderedElements = []
 
     this.firstSetOption = false
 
     this.userOption = innerOption
 
-    console.log(this.userOption)
+    if (!rangeRatio) {
+      rangeRatio = getRangeRatio(this.userOption)
+    }
+
+    const _dataZoomOption = window.structuredClone(this.userOption)
+
+    if (_dataZoomOption.xAxis) {
+      const { startIndex, endIndex } = rangeRatio2Index(rangeRatio, 0, _dataZoomOption.xAxis.data.length)
+
+      _dataZoomOption.xAxis.data = _dataZoomOption.xAxis.data.slice(startIndex, endIndex)
+      _dataZoomOption.series.forEach(item => {
+        item.data = item.data.slice(startIndex, endIndex)
+      })
+    }
+
+    this.dataZoomOption = _dataZoomOption
 
     this.calcFinalSeries()
 
@@ -119,8 +140,6 @@ export class ChartRoot {
 
   refreshChart() {
     const { stage } = this
-
-    console.log(this.renderedElements)
 
     stage.removeAllElements()
     stage.append(this.renderedElements)

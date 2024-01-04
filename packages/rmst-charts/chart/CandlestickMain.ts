@@ -7,7 +7,7 @@ import _Chart from './_chart'
 import { AnimateCartoonConfig, Line, Rect } from 'rmst-render'
 import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { candlestickGreen, candlestickRed } from 'rmst-charts/constant'
-import { RangeRatio } from 'rmst-charts/components/dataZoom'
+import { RangeRatioDecimal } from 'rmst-charts/components/dataZoom'
 
 type CandleArray = ReturnType<typeof calcCandlestickData>
 function calcCandlestickData(
@@ -49,7 +49,7 @@ function calcCandlestickData(
   return candleArray
 }
 
-const defaultLineSeriesItem = { animationDuration: 0, animation: true } as ICharts.CandlestickSeries
+const defaultLineSeriesItem = { animationDuration: 300, animation: true } as ICharts.CandlestickSeries
 
 class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
   elements: IShape[] = []
@@ -79,54 +79,61 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
       const initial_y = isRise ? y + height : y
 
       const highestLine = new Line({
-        points: isRise
-          ? pointToFlatArray([
-              { x: topLine.start.x, y: initial_y },
-              { x: topLine.end.x, y: initial_y }
-            ])
-          : pointToFlatArray([
-              { x: topLine.start.x, y: initial_y },
-              { x: topLine.end.x, y: initial_y }
-            ]), // pointToFlatArray([topLine.start, topLine.end]),
+        points: pointToFlatArray(
+          animation
+            ? [
+                { x: topLine.start.x, y: initial_y },
+                { x: topLine.end.x, y: initial_y }
+              ]
+            : [topLine.start, topLine.end]
+        ),
         strokeStyle: color,
         cursor: 'pointer'
       })
-      this.afterAppendTasks.push(() => {
-        highestLine.animateCartoon({ points: pointToFlatArray([topLine.start, topLine.end]) }, aniCfg)
-      })
+      if (animation) {
+        this.afterAppendTasks.push(() => {
+          highestLine.animateCartoon({ points: pointToFlatArray([topLine.start, topLine.end]) }, aniCfg)
+        })
+      }
 
       const lowestLine = new Line({
-        points: isRise
-          ? pointToFlatArray([
-              { x: bottomLine.start.x, y: initial_y },
-              { x: bottomLine.end.x, y: initial_y }
-            ])
-          : pointToFlatArray([
-              { x: bottomLine.start.x, y: initial_y },
-              { x: bottomLine.end.x, y: initial_y }
-            ]), // pointToFlatArray([bottomLine.start, bottomLine.end]),
+        points: pointToFlatArray(
+          animation
+            ? [
+                { x: bottomLine.start.x, y: initial_y },
+                { x: bottomLine.end.x, y: initial_y }
+              ]
+            : [bottomLine.start, bottomLine.end]
+        ),
         strokeStyle: color,
         cursor: 'pointer'
       })
-      this.afterAppendTasks.push(() => {
-        lowestLine.animateCartoon({ points: pointToFlatArray([bottomLine.start, bottomLine.end]) }, aniCfg)
-      })
+      if (animation) {
+        this.afterAppendTasks.push(() => {
+          lowestLine.animateCartoon({ points: pointToFlatArray([bottomLine.start, bottomLine.end]) }, aniCfg)
+        })
+      }
 
       const rect = new Rect({
         x,
-        y: initial_y,
+        y: animation ? initial_y : y,
         width,
-        height: 0,
+        height: animation ? 0 : height,
         fillStyle: color,
         strokeStyle: color,
         cursor: 'pointer'
       })
-      this.afterAppendTasks.push(() => {
-        rect.animateCartoon({ y, height }, aniCfg)
-      })
+
+      if (animation) {
+        this.afterAppendTasks.push(() => {
+          rect.animateCartoon({ y, height }, aniCfg)
+        })
+      }
 
       this.elements.push(highestLine, lowestLine, rect)
     })
+
+    return this.elements
   }
 
   afterAppendStage() {

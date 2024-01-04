@@ -9,7 +9,7 @@ const sideHandleHalfWidth = sideHandleSize.width / 2
 const initialColor = 'rgb(210, 219, 238)'
 const activeColor = 'rgb(143, 176, 257)'
 
-export interface RangeRatio {
+export interface RangeRatioDecimal {
   startRatio: number // 0.13
   endRatio: number // o.44
 }
@@ -37,9 +37,14 @@ export default class dataZoom {
   private start_x = 0
   private end_x = 0
 
-  rangeRatio: RangeRatio = { startRatio: 0, endRatio: 100 }
+  rangeRatio: RangeRatioDecimal = { startRatio: 0, endRatio: 100 }
 
-  render() {
+  render(r?: RangeRatioDecimal) {
+    if (r) {
+      this.rangeRatio.startRatio = r.startRatio
+      this.rangeRatio.endRatio = r.endRatio
+    }
+
     if (!hasDataZoom(this.cr.userOption)) {
       return
     }
@@ -249,7 +254,7 @@ export default class dataZoom {
     return this.elements
   }
 
-  onRange(rangeRatio: RangeRatio) {}
+  onRange(rangeRatio: RangeRatioDecimal) {}
 }
 
 export const hasDataZoom = option => {

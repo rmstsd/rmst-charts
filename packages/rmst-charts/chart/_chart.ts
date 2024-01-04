@@ -1,5 +1,5 @@
 import { ChartRoot } from 'rmst-charts/ChartRoot'
-import { RangeRatio } from 'rmst-charts/components/dataZoom'
+import { RangeRatioDecimal } from 'rmst-charts/components/dataZoom'
 
 class _Chart<T = ICharts.series> {
   cr: ChartRoot

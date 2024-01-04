@@ -67,8 +67,8 @@ namespace ICharts {
 
   interface dataZoomSlider {
     type: 'slider'
-    start: number // 百分比
-    end: number // 百分比
+    start: number // 百分比 10
+    end: number // 百分比 20
   }
 
   type IOption = {
