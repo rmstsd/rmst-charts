@@ -22,6 +22,7 @@ import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
 import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
 import Overview from '@/demo/2-rmst-render/a_overview'
 import Ani_1000个动画 from '@/demo/2-rmst-render/animate/Ani_1000个动画'
+import Plum from '@/demo/2-rmst-render/z_杂/Plum'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -75,6 +76,12 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'groupClipAnimate', element: <GroupClipAnimate />, uiConfig: { title: '组动画' } },
         { path: 'ani-1000', element: <Ani_1000个动画 />, uiConfig: { title: '1000个动画 同时执行' } }
       ]
+    },
+    {
+      path: 'za',
+      element: <LayoutOutlet />,
+      uiConfig: { title: '杂' },
+      children: [{ path: 'plum', element: <Plum /> }]
     }
     // {
     //   path: 'real-case',
