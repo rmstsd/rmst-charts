@@ -49,7 +49,7 @@ function calcCandlestickData(
   return candleArray
 }
 
-const defaultLineSeriesItem = { animationDuration: 300 } as ICharts.CandlestickSeries
+const defaultLineSeriesItem = { animationDuration: 0, animation: true } as ICharts.CandlestickSeries
 
 class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
   elements: IShape[] = []
@@ -62,6 +62,8 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
     this.seriesItem = { ...defaultLineSeriesItem, ...seriesItem }
 
     const aniCfg: AnimateCartoonConfig = { easing: 'linear', duration: this.seriesItem.animationDuration }
+
+    const { animation } = this.seriesItem
 
     const xAxisData = this.cr.coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
     const yAxisData = this.cr.coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
@@ -131,11 +133,6 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
     this.afterAppendTasks.forEach(func => {
       func()
     })
-  }
-
-  setRange(rangeRatio: RangeRatio) {
-    console.log(this.cr.dataZoom.rangeRatio)
-    // console.log('cand', rangeRatio)
   }
 }
 

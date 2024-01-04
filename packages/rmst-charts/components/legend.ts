@@ -19,7 +19,7 @@ class Legend {
 
     const { stage } = cr
 
-    const legendConfig = { ...defaultLegendCfg, ...cr.option.legend }
+    const legendConfig = { ...defaultLegendCfg, ...cr.userOption.legend }
 
     const fontSize = 14
 

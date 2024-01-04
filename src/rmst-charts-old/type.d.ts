@@ -16,6 +16,7 @@ namespace ICharts {
   interface BaseSeries {
     name?: string
     animationDuration?: number
+    animation?: boolean
     coordinateSystem?: 'polar' | 'cartesian2d'
   }
 
@@ -79,6 +80,7 @@ namespace ICharts {
     }
     series: series[]
     animationDuration?: number // ms
+    animation?: boolean
 
     // 极坐标系相关 ↓
     polar?: any

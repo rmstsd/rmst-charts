@@ -24,7 +24,7 @@ export class ChartRoot {
 
   stage: Stage
 
-  option: ICharts.IOption
+  userOption: ICharts.IOption
 
   finalSeries: ICharts.series[]
 
@@ -39,14 +39,14 @@ export class ChartRoot {
   renderedElements = []
 
   private calcFinalSeries() {
-    let finalSeries = handleSeries(this.option.series)
+    let finalSeries = handleSeries(this.userOption.series)
 
     this.finalSeries = finalSeries
   }
 
   private renderCoordinateSystem() {
     const list: IShape[] = []
-    this.coordinateSystem = createCoordinateSystemElements(this.stage, this.option, this.finalSeries)
+    this.coordinateSystem = createCoordinateSystemElements(this.stage, this.userOption, this.finalSeries)
     if (this.coordinateSystem.hasCartesian2d) {
       list.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
     }
@@ -61,35 +61,32 @@ export class ChartRoot {
     // 区域缩放
     this.dataZoom = new dataZoom(this)
 
-    this.dataZoom.initRangeRatio()
-
     this.dataZoom.render()
 
     return this.dataZoom.elements
   }
 
-  handleZoom() {
-    const startRatio = this.option.dataZoom[0].start
-    const endRatio = this.option.dataZoom[0].end
+  // handleZoom() {
+  //   const startRatio = this.option.dataZoom[0].start
+  //   const endRatio = this.option.dataZoom[0].end
 
-    const { startIndex, endIndex } = rangeRatio2Index({ startRatio, endRatio }, 0, this.option.xAxis.data.length)
+  //   const { startIndex, endIndex } = rangeRatio2Index({ startRatio, endRatio }, 0, this.option.xAxis.data.length)
 
-    this.option.xAxis.data = this.option.xAxis.data.slice(startIndex, endIndex)
+  //   this.option.xAxis.data = this.option.xAxis.data.slice(startIndex, endIndex)
 
-    this.option.series.forEach(item => {
-      item.data = item.data.slice(startIndex, endIndex)
-    })
-  }
+  //   this.option.series.forEach(item => {
+  //     item.data = item.data.slice(startIndex, endIndex)
+  //   })
+  // }
 
   setOption(innerOption: ICharts.IOption) {
     console.log(this.firstSetOption ? '初始化' : '更新')
 
     this.firstSetOption = false
 
-    this.option = innerOption
+    this.userOption = innerOption
 
-    // this.handleZoom()
-    console.log(this.option)
+    console.log(this.userOption)
 
     this.calcFinalSeries()
 

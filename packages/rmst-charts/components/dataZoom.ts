@@ -20,11 +20,11 @@ export default class dataZoom {
   constructor(cr: ChartRoot) {
     this.cr = cr
 
-    if (!hasDataZoom(this.cr.option)) {
+    if (!hasDataZoom(this.cr.userOption)) {
       return
     }
 
-    const [slider] = this.cr.option.dataZoom
+    const [slider] = this.cr.userOption.dataZoom
 
     const { start, end } = slider // 50% 70%
 
@@ -39,10 +39,8 @@ export default class dataZoom {
 
   rangeRatio: RangeRatio = { startRatio: 0, endRatio: 100 }
 
-  initRangeRatio() {}
-
   render() {
-    if (!hasDataZoom(this.cr.option)) {
+    if (!hasDataZoom(this.cr.userOption)) {
       return
     }
 
