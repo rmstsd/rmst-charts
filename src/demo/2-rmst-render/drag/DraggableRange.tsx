@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, Text, Line } from 'rmst-render'
+import { Stage, Rect, Circle } from 'rmst-render'
 
 const DraggableRange = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -23,7 +23,8 @@ const DraggableRange = () => {
       x: 100,
       y: 100,
       radius: 50,
-      fillStyle: 'pink'
+      fillStyle: 'pink',
+      draggable: true
     })
 
     let x

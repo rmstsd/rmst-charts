@@ -16,6 +16,7 @@ namespace ICharts {
   interface BaseSeries {
     name?: string
     animationDuration?: number
+    animation?: boolean
     coordinateSystem?: 'polar' | 'cartesian2d'
   }
 
@@ -66,8 +67,8 @@ namespace ICharts {
 
   interface dataZoomSlider {
     type: 'slider'
-    start: number // 百分比
-    end: number // 百分比
+    start: number // 百分比 10
+    end: number // 百分比 20
   }
 
   type IOption = {
@@ -79,6 +80,7 @@ namespace ICharts {
     }
     series: series[]
     animationDuration?: number // ms
+    animation?: boolean
 
     // 极坐标系相关 ↓
     polar?: any

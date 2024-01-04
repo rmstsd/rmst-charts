@@ -1,4 +1,5 @@
 import { ChartRoot } from 'rmst-charts/ChartRoot'
+import { RangeRatioDecimal } from 'rmst-charts/components/dataZoom'
 
 class _Chart<T = ICharts.series> {
   cr: ChartRoot
@@ -12,8 +13,6 @@ class _Chart<T = ICharts.series> {
   render(seriesItem: T, seriesIndex?: number) {}
 
   afterAppendStage() {}
-
-  setRange(rangeRatio: { startRatio: number; endRatio: number }) {}
 }
 
 export default _Chart

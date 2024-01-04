@@ -1,9 +1,9 @@
 import { message } from 'antd'
 import { useEffect, useRef, useState } from 'react'
-import rmstCharts, { IChartInstance } from 'rmst-charts'
+import rmstCharts, { ChartRoot } from 'rmst-charts'
 
 const ChartsTemplate: React.FC<{ option: ICharts.IOption }> = ({ option }) => {
-  const insRef = useRef<IChartInstance>()
+  const insRef = useRef<ChartRoot>()
   const containerRef = useRef<HTMLDivElement>(null)
 
   const [innerOption, setInnerOption] = useState(option)

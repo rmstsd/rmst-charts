@@ -129,7 +129,8 @@ const option: ICharts.IOption = {
     {
       name: '日K',
       type: 'candlestick',
-      data: data0.values
+      data: data0.values,
+      animation: false
     }
   ]
 }
