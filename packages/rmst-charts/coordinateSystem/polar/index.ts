@@ -200,7 +200,7 @@ export const createPolarElements = (
   stage: Stage,
   innerOption: ICharts.IOption,
   finalSeries: ICharts.series[]
-): { polarAllShapes: AbstractUi[]; polarAxisData } => {
+): { polarAllShapes: IShape[]; polarAxisData } => {
   const seriesData = finalSeries.reduce((acc, item) => acc.concat(item.data), []) as number[]
 
   const polarAxisData = getDataForDraw(stage, innerOption, seriesData)

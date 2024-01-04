@@ -10,8 +10,8 @@ const initialColor = 'rgb(210, 219, 238)'
 const activeColor = 'rgb(143, 176, 257)'
 
 export interface RangeRatio {
-  startRatio: number
-  endRatio: number
+  startRatio: number // 0.13
+  endRatio: number // o.44
 }
 
 export default class dataZoom {
@@ -19,12 +19,27 @@ export default class dataZoom {
 
   constructor(cr: ChartRoot) {
     this.cr = cr
+
+    if (!hasDataZoom(this.cr.option)) {
+      return
+    }
+
+    const [slider] = this.cr.option.dataZoom
+
+    const { start, end } = slider // 50% 70%
+
+    this.rangeRatio.startRatio = start / 100
+    this.rangeRatio.endRatio = end / 100
   }
 
   elements = []
 
-  start_x = 0
-  end_x = 0
+  private start_x = 0
+  private end_x = 0
+
+  rangeRatio: RangeRatio = { startRatio: 0, endRatio: 100 }
+
+  initRangeRatio() {}
 
   render() {
     if (!hasDataZoom(this.cr.option)) {
@@ -32,13 +47,6 @@ export default class dataZoom {
     }
 
     const xAxis = this.cr.coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData.axis
-
-    const [slider] = this.cr.option.dataZoom
-
-    const { start, end } = slider // 50% 70%
-
-    const start_ratio = start / 100
-    const end_ratio = end / 100
 
     const backGround = new Rect({
       x: xAxis.start.x,
@@ -50,8 +58,8 @@ export default class dataZoom {
       strokeStyle: '#d2dbee'
     })
 
-    this.start_x = backGround.data.x + backGround.data.width * start_ratio
-    this.end_x = backGround.data.x + backGround.data.width * end_ratio
+    this.start_x = backGround.data.x + backGround.data.width * this.rangeRatio.startRatio
+    this.end_x = backGround.data.x + backGround.data.width * this.rangeRatio.endRatio
 
     // -------------------------------
 
@@ -86,6 +94,7 @@ export default class dataZoom {
       width: controlWidth(),
       height: backGround.data.height
     })
+
     const insideRect = new Rect({ ...calcInsideRect(), fillStyle: 'rgb(135,175,255)', opacity: 0.2 })
 
     const calcMoveHandle = () => ({
@@ -124,6 +133,8 @@ export default class dataZoom {
       const endRatio = (moveHandle.data.x + moveHandle.data.width - backGround.data.x) / backGround.data.width
 
       const ans = { startRatio: Math.min(startRatio, endRatio), endRatio: Math.max(startRatio, endRatio) }
+
+      this.rangeRatio = ans
 
       return ans
     }
@@ -236,6 +247,8 @@ export default class dataZoom {
     handleRight.onmouseleave = controlUnActive
 
     this.elements.push(backGround, moveControlGroup)
+
+    return this.elements
   }
 
   onRange(rangeRatio: RangeRatio) {}

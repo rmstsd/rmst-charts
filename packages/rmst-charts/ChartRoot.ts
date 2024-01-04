@@ -3,16 +3,24 @@ import { Stage } from 'rmst-render'
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
 
 import Legend from './components/legend'
-import dataZoom from './components/dataZoom'
+import dataZoom, { RangeRatio } from './components/dataZoom'
 
 import { SeriesManager } from './SeriesMgr'
 
+const rangeRatio2Index = (rangeRatio: RangeRatio, startIdx, endIdx: number) => {
+  const rs = Math.floor(startIdx + (endIdx - startIdx) * (rangeRatio.startRatio / 100))
+  const re = Math.ceil(startIdx + (endIdx - startIdx) * (rangeRatio.endRatio / 100))
+
+  return { startIndex: rs, endIndex: re }
+}
 export class ChartRoot {
   constructor(canvasContainer: HTMLElement) {
     this.stage = new Stage({
       container: canvasContainer
     })
   }
+
+  firstSetOption = true // 初始化还是更新
 
   stage: Stage
 
@@ -28,41 +36,78 @@ export class ChartRoot {
 
   coordinateSystem: ICoordinateSystemElements
 
+  renderedElements = []
+
+  private calcFinalSeries() {
+    let finalSeries = handleSeries(this.option.series)
+
+    this.finalSeries = finalSeries
+  }
+
+  private renderCoordinateSystem() {
+    const list: IShape[] = []
+    this.coordinateSystem = createCoordinateSystemElements(this.stage, this.option, this.finalSeries)
+    if (this.coordinateSystem.hasCartesian2d) {
+      list.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
+    }
+    if (this.coordinateSystem.hasPolar) {
+      list.push(...this.coordinateSystem.polar.polarAllShapes)
+    }
+
+    return list
+  }
+
+  private renderDataZoom() {
+    // 区域缩放
+    this.dataZoom = new dataZoom(this)
+
+    this.dataZoom.initRangeRatio()
+
+    this.dataZoom.render()
+
+    return this.dataZoom.elements
+  }
+
+  handleZoom() {
+    const startRatio = this.option.dataZoom[0].start
+    const endRatio = this.option.dataZoom[0].end
+
+    const { startIndex, endIndex } = rangeRatio2Index({ startRatio, endRatio }, 0, this.option.xAxis.data.length)
+
+    this.option.xAxis.data = this.option.xAxis.data.slice(startIndex, endIndex)
+
+    this.option.series.forEach(item => {
+      item.data = item.data.slice(startIndex, endIndex)
+    })
+  }
+
   setOption(innerOption: ICharts.IOption) {
+    console.log(this.firstSetOption ? '初始化' : '更新')
+
+    this.firstSetOption = false
+
     this.option = innerOption
 
-    const { stage } = this
+    // this.handleZoom()
+    console.log(this.option)
 
-    stage.removeAllElements()
+    this.calcFinalSeries()
 
-    const renderedElements = []
-
-    const finalSeries = handleSeries(innerOption.series)
-    this.finalSeries = finalSeries
-
-    {
-      // 坐标系
-      this.coordinateSystem = createCoordinateSystemElements(stage, innerOption, finalSeries)
-      if (this.coordinateSystem.hasCartesian2d) {
-        renderedElements.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
-      }
-      if (this.coordinateSystem.hasPolar) {
-        renderedElements.push(...this.coordinateSystem.polar.polarAllShapes)
-      }
-    }
+    this.renderedElements.push(...this.renderCoordinateSystem())
+    this.renderedElements.push(...this.renderDataZoom())
 
     {
       // 图表主体
       this.seriesManager = new SeriesManager(this)
-      this.seriesManager.render(finalSeries)
-      renderedElements.push(...this.seriesManager.elements)
+      this.seriesManager.render(this.finalSeries)
+      this.renderedElements.push(...this.seriesManager.elements)
     }
 
     {
       // 图例
       this.legend = new Legend(this)
       this.legend.render(this.seriesManager.legendData)
-      renderedElements.push(...this.legend.elements)
+      this.renderedElements.push(...this.legend.elements)
 
       this.legend.onSelect = legendItem => {
         this.seriesManager.select(legendItem)
@@ -72,19 +117,16 @@ export class ChartRoot {
       }
     }
 
-    {
-      // 区域缩放
-      this.dataZoom = new dataZoom(this)
-      this.dataZoom.render()
+    this.refreshChart()
+  }
 
-      this.dataZoom.onRange = range => {
-        this.seriesManager.setRange(range)
-      }
+  refreshChart() {
+    const { stage } = this
 
-      renderedElements.push(...this.dataZoom.elements)
-    }
+    console.log(this.renderedElements)
 
-    stage.append(renderedElements)
+    stage.removeAllElements()
+    stage.append(this.renderedElements)
 
     this.seriesManager.afterTasks.forEach(fn => {
       fn()

@@ -6,8 +6,6 @@ const rmstCharts = {
   }
 }
 
-export type IChartInstance = {
-  setOption: (option: ICharts.IOption) => void
-}
-
 export default rmstCharts
+
+export { ChartRoot }

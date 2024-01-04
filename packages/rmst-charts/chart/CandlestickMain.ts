@@ -134,7 +134,8 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
   }
 
   setRange(rangeRatio: RangeRatio) {
-    console.log('cand', rangeRatio)
+    console.log(this.cr.dataZoom.rangeRatio)
+    // console.log('cand', rangeRatio)
   }
 }
 
