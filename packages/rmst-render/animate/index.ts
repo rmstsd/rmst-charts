@@ -1,4 +1,4 @@
-import { Easing, calcTargetValue, calculateColorTransition, easingFuncs } from './utils'
+import { Easing, easingFuncs, calcTargetValue, interpolateColor } from './utils'
 
 export type AnimateCartoonConfig = {
   duration?: number // 毫秒
@@ -49,7 +49,7 @@ export class Animator {
 
         // 如果是颜色
         if (typeof startValue === 'string' && typeof endValue === 'string') {
-          const color = calculateColorTransition(startValue, endValue, elapsedTimeRatio)
+          const color = interpolateColor(startValue, endValue, elapsedTimeRatio)
           currentProp[propKey] = color
 
           return

@@ -2,27 +2,27 @@ import LayoutView, { LayoutOutlet } from '@/components/LayoutView/LayoutView'
 
 import { IRouteObject } from './router'
 
+import Overview from '@/demo/2-rmst-render/a_overview'
+
 import RectDemo from '@/demo/2-rmst-render/base-shape/RectDemo'
 import Circle from '@/demo/2-rmst-render/base-shape/CircleDemo'
 import LineDemo from '@/demo/2-rmst-render/base-shape/LineDemo'
 import TextDemo from '@/demo/2-rmst-render/base-shape/TextDemo'
 
-import Draggable from '@/demo/2-rmst-render/drag/Draggable'
-import GroupDraggable from '@/demo/2-rmst-render/drag/GroupDraggable'
-
-import Animate from '@/demo/2-rmst-render/animate/Animate'
-import GroupClipAnimate from '@/demo/2-rmst-render/animate/GroupClipAnimate'
-
-import WatermarkClip from '@/demo/2-rmst-render/real-case/WatermarkClip'
-
-import DraggableRange from '@/demo/2-rmst-render/drag/DraggableRange'
-
 import Single from '@/demo/2-rmst-render/event/Single'
 import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
 import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
-import Overview from '@/demo/2-rmst-render/a_overview'
+
+import Draggable from '@/demo/2-rmst-render/drag/Draggable'
+import GroupDraggable from '@/demo/2-rmst-render/drag/GroupDraggable'
+import DraggableRange from '@/demo/2-rmst-render/drag/DraggableRange'
+
+import Animate from '@/demo/2-rmst-render/animate/Animate'
+import GroupClipAnimate from '@/demo/2-rmst-render/animate/GroupClipAnimate'
 import Ani_1000个动画 from '@/demo/2-rmst-render/animate/Ani_1000个动画'
+
 import Plum from '@/demo/2-rmst-render/z_杂/Plum'
+import Bubble from '@/demo/2-rmst-render/z_杂/Bubble'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -78,10 +78,13 @@ const rmstRenderRouteConfig: IRouteObject = {
       ]
     },
     {
-      path: 'za',
+      path: 'funny',
       element: <LayoutOutlet />,
-      uiConfig: { title: '杂' },
-      children: [{ path: 'plum', element: <Plum /> }]
+      uiConfig: { title: 'funny demo' },
+      children: [
+        { path: 'Plum', element: <Plum /> },
+        { path: 'Bubble', element: <Bubble /> }
+      ]
     }
     // {
     //   path: 'real-case',

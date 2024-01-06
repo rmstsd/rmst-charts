@@ -30,17 +30,22 @@ export const calcTargetValue = (
   }
 }
 
-export function calculateColorTransition(startColor: string, endColor: string, percent: number) {
-  const startRGBA = colorRgba(startColor)
-  const endRGBA = colorRgba(endColor)
+export function interpolateColor(startColor: string, endColor: string, percent: number) {
+  if (percent <= 0) {
+    return startColor
+  } else if (percent >= 1) {
+    return endColor
+  }
 
-  const rgba = startRGBA.map((start, i) => {
-    const end = endRGBA[i]
-    const diff = end - start
-    return Math.round(start + diff * percent)
-  })
+  const [c1_r, c1_g, c1_b, c1_a] = colorRgba(startColor)
+  const [c2_r, c2_g, c2_b, c2_a] = colorRgba(endColor)
 
-  return `rgba(${rgba.join(', ')})`
+  const r = Math.round(c1_r + (c2_r - c1_r) * percent)
+  const g = Math.round(c1_g + (c2_g - c1_g) * percent)
+  const b = Math.round(c1_b + (c2_b - c1_b) * percent)
+  const a = c1_a + (c2_a - c1_a) * percent
+
+  return `rgba(${r}, ${g}, ${b}, ${a})`
 }
 
 export type Easing = keyof typeof easingFuncs
