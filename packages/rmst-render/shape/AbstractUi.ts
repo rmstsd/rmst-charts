@@ -20,7 +20,6 @@ export interface AbstractUiData {
   lineCap?: CanvasLineCap
   lineJoin?: CanvasLineJoin
 
-  clip?: boolean
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
 
