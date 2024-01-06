@@ -113,13 +113,11 @@ const calcD = (
 
   const M_y = centerY - radius
 
-  const path = isWholeArc
-    ? `M${centerX},${M_y} A${radius},${radius} 0 1 1, ${centerX - 0.0001},${centerY - radius}Z`
+  const d = isWholeArc
+    ? `M${centerX},${M_y} A${radius},${radius} 0 1 1, ${centerX - 0.01},${centerY - radius}Z`
     : `M${centerX},${centerY} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag},${sweepFlag} ${endX},${endY} Z`
 
-  // M450 200 A226 226 0 1 1, 449.9774 200Z // echarts
-
-  return path
+  return d
 }
 
 // 圆环/扇环
