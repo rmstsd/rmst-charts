@@ -1,3 +1,4 @@
+import { mountStage } from 'rmst-render/_stage/utils'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 interface GroupData extends AbstractUiData {
@@ -26,6 +27,8 @@ export class Group extends AbstractUi<any> {
 
     this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
+
+    mountStage(this.children, this.stage)
 
     this.stage?.renderStage()
   }

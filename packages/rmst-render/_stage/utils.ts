@@ -100,3 +100,13 @@ export function refreshStage(stage: Stage) {
     elementItem.draw(stage.ctx)
   })
 }
+
+export function mountStage(children: IShape[], stage: Stage) {
+  children.forEach(item => {
+    item.stage = stage
+
+    if (item.children) {
+      mountStage(item.children, stage)
+    }
+  })
+}

@@ -1,6 +1,6 @@
 import Draggable from 'rmst-render/Draggable'
 import { EventParameter, eventList } from '../constant'
-import { findHover, initStage, refreshStage, sortByZIndex, triggerEventHandlers } from './utils'
+import { findHover, initStage, mountStage, refreshStage, sortByZIndex, triggerEventHandlers } from './utils'
 
 export class Stage {
   constructor(option: IOption) {
@@ -41,17 +41,7 @@ export class Stage {
     this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
 
-    const mountStage = (children: IShape[]) => {
-      children.forEach(item => {
-        item.stage = this
-
-        if (item.children) {
-          mountStage(item.children)
-        }
-      })
-    }
-
-    mountStage(this.children)
+    mountStage(this.children, this)
 
     this.renderStage()
   }
