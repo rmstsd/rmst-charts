@@ -59,10 +59,11 @@ const GroupDemo = () => {
     })
 
     innerGroup.append([arc_1, arc_2])
-
     outerGroup.append([rect_1, rect_2, innerGroup])
 
     stage.append([outerGroup])
+
+    console.log(stage.children)
   }, [])
 
   const addToOuterGroup = () => {
@@ -80,15 +81,16 @@ const GroupDemo = () => {
   }
 
   const addToInnerGroup = () => {
-    innerGroupRef.current.append(
-      new Circle({
-        x: 450,
-        y: 300,
-        radius: 50,
-        fillStyle: 'cornflowerblue',
-        draggable: true
-      })
-    )
+    const cc = new Circle({
+      x: 450,
+      y: 300,
+      radius: 50,
+      fillStyle: 'cornflowerblue',
+      draggable: true
+    })
+    innerGroupRef.current.append(cc)
+
+    console.log(cc)
   }
 
   return (

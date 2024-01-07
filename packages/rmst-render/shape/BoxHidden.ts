@@ -1,3 +1,4 @@
+import { mountStage } from 'rmst-render/_stage/utils'
 import AbstractUi from './AbstractUi'
 import { RectData, defaultRectData, drawRect } from './Rect'
 
@@ -15,6 +16,8 @@ export class BoxHidden extends AbstractUi<RectData> {
 
     this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
+
+    mountStage(this.children, this.stage)
 
     this.stage?.renderStage()
   }
