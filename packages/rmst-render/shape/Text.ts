@@ -21,35 +21,6 @@ export class Text extends AbstractUi<TextData> {
 
   declare data: TextData
 
-  isInner(offsetX: any, offsetY: any): boolean {
-    const { x, y, content, fontSize, textAlign } = this.data
-    const { textWidth, textHeight } = measureText(content, fontSize)
-    const halfWidth = textWidth / 2
-
-    const textRect_x = (() => {
-      if (textAlign === 'left') {
-        return x
-      }
-      if (textAlign === 'center') {
-        return x - halfWidth
-      }
-      if (textAlign === 'right') {
-        return x - textWidth
-      }
-    })()
-
-    const textRect_y = (() => {
-      return y
-    })()
-
-    const is_x = offsetX >= textRect_x && offsetX <= textRect_x + textWidth
-    const is_y = offsetY >= textRect_y && offsetY <= textRect_y + textHeight
-
-    const isInner = is_x && is_y
-
-    return isInner
-  }
-
   draw(ctx: CanvasRenderingContext2D) {
     super.draw(ctx)
 

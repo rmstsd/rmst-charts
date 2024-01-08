@@ -1,6 +1,4 @@
 import { EventParameter, EventType, OnEventType, dpr } from 'rmst-render/constant'
-import Group from '../shape/Group'
-import { Stage } from '.'
 
 function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')
@@ -46,69 +44,4 @@ export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType
 
     triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })
   }
-}
-
-export function findHover(children: IShape[], x: number, y: number): IShape {
-  const _elements = children.toReversed()
-
-  for (const elementItem of _elements) {
-    if (elementItem.type === 'Group' || elementItem.type === 'BoxHidden') {
-      if (elementItem.type === 'BoxHidden') {
-        if (!elementItem.isInner(x, y)) {
-          continue
-        } else {
-          return elementItem // 解决后代 dataZoom 的 enter 事件bug (需重新思考)
-        }
-      }
-
-      const hovered = findHover((elementItem as Group).children, x, y)
-      if (hovered) {
-        return hovered
-      }
-    } else {
-      const isInner = elementItem.isInner(x, y)
-      if (isInner) {
-        return elementItem
-      }
-    }
-  }
-
-  return null
-}
-
-export function sortByZIndex(root: Stage) {
-  if (root.children) {
-    root.children = root.children.toSorted((a, b) => {
-      const a_zIndex = a.data.zIndex ?? 0
-      const b_zIndex = b.data.zIndex ?? 0
-
-      return a_zIndex - b_zIndex
-    })
-
-    for (const item of root.children) {
-      sortByZIndex(item)
-    }
-  }
-}
-
-// 1. 此方法的 绘制 层级关系 父子关系
-// 2. Circle.draw 递归
-export function refreshStage(stage: Stage) {
-  sortByZIndex(stage)
-
-  stage.ctx.clearRect(0, 0, stage.canvasElement.width, stage.canvasElement.height)
-
-  stage.children.forEach(elementItem => {
-    elementItem.draw(stage.ctx)
-  })
-}
-
-export function mountStage(children: IShape[], stage: Stage) {
-  children.forEach(item => {
-    item.stage = stage
-
-    if (item.children) {
-      mountStage(item.children, stage)
-    }
-  })
 }

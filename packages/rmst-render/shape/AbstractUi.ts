@@ -95,7 +95,9 @@ export abstract class AbstractUi<T> extends AbsEvent {
   }
 
   remove() {
-    this.stage.children = this.stage.children.filter(item => item !== this)
+    const parentChildren = this.parent.children as IShape[]
+    parentChildren.splice(parentChildren.indexOf(this), 1)
+
     this.stage.renderStage()
   }
 

@@ -47,7 +47,7 @@ const DraggableRange = () => {
         { min: rect_range.data.y + _radius, max: rect_range.data.y + rect_range.data.height - _radius }
       )
 
-      inner_arc.attr({ x: ans.x, y: ans.y })
+      inner_arc.attrSync({ x: ans.x, y: ans.y })
     }
     inner_arc.ondragend = evt => {}
 

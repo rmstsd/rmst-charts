@@ -90,7 +90,7 @@ function setShapeCoord(target: IShape, dx: number, dy: number) {
         item.y += dy
       })
 
-      target.attr({ points: pointToFlatArray(c) })
+      target.attrSync({ points: pointToFlatArray(c) })
     } else {
       target.attrSync({ x: target.data.x + dx, y: target.data.y + dy })
     }

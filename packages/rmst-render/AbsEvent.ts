@@ -2,6 +2,7 @@ import { Group } from 'zrender'
 import { Stage } from './_stage'
 import { EventType, Handler, dpr } from './constant'
 import { isLine } from './utils'
+import { BoxHidden } from './shape/BoxHidden'
 
 abstract class AbsEvent {
   onclick: Handler = () => {}
@@ -17,35 +18,10 @@ abstract class AbsEvent {
   ondrag: Handler = () => {}
   ondragend: Handler = () => {}
 
-  parent: Stage | Group = null
+  parent: Stage | Group | BoxHidden = null
 
   data
   path2D
-
-  isInner(offsetX: number, offsetY: number) {
-    const stage = this.stage
-
-    if (!stage || !this.path2D) {
-      return false
-    }
-
-    stage.ctx.lineWidth = this.data.lineWidth + 5
-    const x = offsetX * dpr
-    const y = offsetY * dpr
-
-    const isInPath = () => {
-      return stage.ctx.isPointInPath(this.path2D, x, y)
-    }
-    const isInStroke = () => {
-      return stage.ctx.isPointInStroke(this.path2D, x, y)
-    }
-
-    if (isLine(this as unknown as IShape) && !this.data.closed) {
-      return isInStroke()
-    }
-
-    return isInPath() || isInStroke()
-  }
 
   eventTypeHandlerMap = new Map<EventType, Handler[]>()
   on(eventType: EventType, handler: Handler) {

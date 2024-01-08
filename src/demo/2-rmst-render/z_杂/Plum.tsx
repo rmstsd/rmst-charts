@@ -22,7 +22,7 @@ const Plum = () => {
     const btn = document.querySelector('.dd-rr-aa-ww') as HTMLButtonElement
 
     btn.onclick = () => {
-      stage.removeAllElements()
+      stage.removeAllShape()
 
       ddd(line)
     }

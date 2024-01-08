@@ -1,4 +1,4 @@
-import { mountStage } from 'rmst-render/_stage/utils'
+import { mountStage } from 'rmst-render/_stage/renderUi'
 import AbstractUi from './AbstractUi'
 import { RectData, defaultRectData, drawRect } from './Rect'
 
