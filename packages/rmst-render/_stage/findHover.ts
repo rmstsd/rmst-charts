@@ -1,6 +1,7 @@
 import { dpr } from 'rmst-render/constant'
-import { isBoxHidden, isGroup, isLine } from 'rmst-render/utils'
-import { measureText } from 'rmst-render/shape/Text'
+import { isBoxHidden, isGroup, isLine, isText } from 'rmst-render/utils'
+import Text, { measureText } from 'rmst-render/shape/Text'
+import { IShape } from 'rmst-render'
 
 export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number): IShape {
   const _elements = children.toReversed()
@@ -39,8 +40,8 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
   const hit_x = offsetX * dpr
   const hit_y = offsetY * dpr
 
-  if (elementItem.type === 'Text') {
-    return isTextShapeInner()
+  if (isText(elementItem)) {
+    return isTextShapeInner(elementItem)
   }
 
   const isInPath = () => ctx.isPointInPath(elementItem.path2D, hit_x, hit_y)
@@ -52,7 +53,7 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
 
   return isInPath() || isInStroke()
 
-  function isTextShapeInner(): boolean {
+  function isTextShapeInner(elementItem: Text): boolean {
     const { x, y, content, fontSize, textAlign } = elementItem.data
     const { textWidth, textHeight } = measureText(content, fontSize)
     const halfWidth = textWidth / 2

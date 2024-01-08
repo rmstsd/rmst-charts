@@ -4,6 +4,11 @@ import { initStage, triggerEventHandlers } from './utils'
 import { resetSchedulerCount } from './scheduler'
 import { findHover } from './findHover'
 import { mountStage, drawAllShape } from './renderUi'
+import { ICursor, IShape, IShapeType } from 'rmst-render/type'
+
+interface IOption {
+  container: HTMLElement
+}
 
 export class Stage {
   constructor(option: IOption) {

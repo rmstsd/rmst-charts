@@ -1,3 +1,4 @@
+import { randomColor } from '@/utils'
 import { useEffect, useRef } from 'react'
 
 import { Stage, Rect, Circle, Text, Line } from 'rmst-render'
@@ -59,7 +60,7 @@ const Draggable = () => {
         x: 200,
         y: 200,
         radius: 50,
-        fillStyle: 'cornflowerblue',
+        fillStyle: randomColor(),
         draggable: true,
         cursor: 'move'
       })

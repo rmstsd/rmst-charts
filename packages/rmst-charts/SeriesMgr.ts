@@ -5,6 +5,7 @@ import LineMain from './chart/LineMain'
 import PieMain from './chart/PieMain'
 import BarMain from './chart/BarMain'
 import CandlestickMain from './chart/CandlestickMain'
+import { IShape } from 'rmst-render'
 
 export class SeriesManager {
   cr: ChartRoot

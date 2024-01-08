@@ -1,4 +1,4 @@
-import { Stage } from 'rmst-render'
+import { IShape, Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
 

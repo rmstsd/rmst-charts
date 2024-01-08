@@ -41,8 +41,6 @@ const Plum = () => {
     ddd(line)
 
     async function ddd(line, depth = 0) {
-      console.log('ddd')
-
       if (depth > maxDepth) {
         return
       }

@@ -1,4 +1,5 @@
 import { EventParameter, EventType, OnEventType, dpr } from 'rmst-render/constant'
+import { IShape } from 'rmst-render/type'
 
 function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')

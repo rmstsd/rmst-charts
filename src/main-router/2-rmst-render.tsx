@@ -21,8 +21,8 @@ import Animate from '@/demo/2-rmst-render/animate/Animate'
 import GroupClipAnimate from '@/demo/2-rmst-render/animate/GroupClipAnimate'
 import Ani_1000个动画 from '@/demo/2-rmst-render/animate/Ani_1000个动画'
 
-import Plum from '@/demo/2-rmst-render/z_杂/Plum'
-import Bubble from '@/demo/2-rmst-render/z_杂/Bubble'
+import Plum from '@/demo/2-rmst-render/funny/Plum'
+import Bubble from '@/demo/2-rmst-render/funny/Bubble'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',

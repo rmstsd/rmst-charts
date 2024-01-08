@@ -1,6 +1,7 @@
 import { mountStage } from 'rmst-render/_stage/renderUi'
 import AbstractUi from './AbstractUi'
 import { RectData, defaultRectData, drawRect } from './Rect'
+import { IShape } from 'rmst-render/type'
 
 export class BoxHidden extends AbstractUi<RectData> {
   constructor(data: RectData) {
@@ -37,3 +38,5 @@ export class BoxHidden extends AbstractUi<RectData> {
     ctx.restore()
   }
 }
+
+export default BoxHidden

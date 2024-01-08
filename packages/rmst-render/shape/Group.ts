@@ -1,5 +1,6 @@
 import { mountStage } from 'rmst-render/_stage/renderUi'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
+import { IShape } from 'rmst-render/type'
 
 interface GroupData extends AbstractUiData {
   children?: IShape[]

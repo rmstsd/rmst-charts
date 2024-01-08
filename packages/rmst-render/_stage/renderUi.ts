@@ -1,3 +1,4 @@
+import { IShape } from 'rmst-render/type'
 import { Stage } from '.'
 
 // 1. 此方法的 绘制 层级关系 父子关系
@@ -22,7 +23,7 @@ export function mountStage(children: IShape[], stage: Stage) {
   })
 }
 
-function sortByZIndex(root: Stage) {
+function sortByZIndex(root) {
   if (root.children) {
     root.children = root.children.toSorted((a, b) => {
       const a_zIndex = a.data.zIndex ?? 0

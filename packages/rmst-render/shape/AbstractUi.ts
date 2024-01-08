@@ -2,6 +2,7 @@ import { Stage } from '../_stage'
 import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent from '../AbsEvent'
 import { schedulerTask } from 'rmst-render/_stage/scheduler'
+import { ICursor, IShape, IShapeType } from 'rmst-render/type'
 
 export interface AbstractUiData {
   name?: string
@@ -42,7 +43,7 @@ export const combineDefaultData = (shapeData, defaultShapeData) => {
   return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
 }
 
-export abstract class AbstractUi<T> extends AbsEvent {
+export abstract class AbstractUi<T = {}> extends AbsEvent {
   constructor(type: IShapeType, shapeData, defaultShapeData?) {
     super()
 

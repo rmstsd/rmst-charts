@@ -11,3 +11,5 @@ export * from './shape/BoxHidden'
 export * from './_stage'
 
 export * from './animate'
+
+export * from './type.d'

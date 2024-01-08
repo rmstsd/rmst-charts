@@ -1,6 +1,6 @@
 import { Circle, Group, Line, Text, deg2rad, getPointOnArc, measureText, Animator } from 'rmst-render'
 
-import { pointToFlatArray } from '../utils/utils'
+import { pointToFlatArray } from 'rmst-render/utils'
 import { colorPalette, tickColor } from '../constant'
 import { LegendDataItem } from 'rmst-charts/components/legend'
 import _Chart from './_chart'

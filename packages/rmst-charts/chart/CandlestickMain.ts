@@ -4,8 +4,8 @@ import { IXAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcXAx
 import { IYAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcYAxis'
 
 import _Chart from './_chart'
-import { AnimateCartoonConfig, Line, Rect } from 'rmst-render'
-import { pointToFlatArray } from 'rmst-charts/utils/utils'
+import { AnimateCartoonConfig, IShape, Line, Rect } from 'rmst-render'
+import { pointToFlatArray } from 'rmst-render/utils'
 import { candlestickGreen, candlestickRed } from 'rmst-charts/constant'
 import { RangeRatioDecimal } from 'rmst-charts/components/dataZoom'
 

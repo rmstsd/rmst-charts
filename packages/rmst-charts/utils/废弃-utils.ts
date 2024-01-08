@@ -1,8 +1,13 @@
 import { primaryColor, tickColor } from '../constant.js'
-import { drawArc } from './drawHelpers.js'
+import { drawArc } from './废弃-drawHelpers.js'
+
+interface IC_Coord {
+  x: number
+  y: number
+}
 
 // 计算 和 绘制贝塞尔曲线
-export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], distance: number) {
+function drawBezier(ctx: CanvasRenderingContext2D, points: IC_Coord[], distance: number) {
   const allControlPoint = calcAllControlPoint()
   const finalPoint = calcFinalPoint()
 
@@ -16,7 +21,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], dist
     drawArc(ctx, item.x, item.y, 2, primaryColor, 2)
   })
 
-  function drawBezier(start: ICoord, end: ICoord, cp1: ICoord, cp2: ICoord) {
+  function drawBezier(start: IC_Coord, end: IC_Coord, cp1: IC_Coord, cp2: IC_Coord) {
     ctx.strokeStyle = primaryColor
     ctx.lineWidth = 2
     ctx.beginPath()
@@ -32,7 +37,7 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], dist
   function calcAllControlPoint() {
     distance = distance / 2
 
-    const ans: ICoord[] = []
+    const ans: IC_Coord[] = []
     for (let i = 1; i < points.length - 1; i++) {
       const prev = points[i - 1]
       const curr = points[i]
@@ -90,22 +95,4 @@ export function drawBezier(ctx: CanvasRenderingContext2D, points: ICoord[], dist
     }
     return ans
   }
-}
-
-export function pointToFlatArray(list: { x: number; y: number }[]) {
-  return list.reduce((acc, item) => acc.concat(item.x, item.y), [])
-}
-
-export function calcLineLength(p1: ICoord, p2: ICoord) {
-  return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
-}
-
-// 计算斜率
-export function calcK(p1: ICoord, p2: ICoord) {
-  return (p1.y - p2.y) / (p1.x - p2.x)
-}
-
-// 计算 y = kx + b 中的 b
-export function calcB(k: number, p: ICoord) {
-  return p.y - k * p.x
 }
