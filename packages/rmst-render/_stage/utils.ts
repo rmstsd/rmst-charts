@@ -91,6 +91,8 @@ export function sortByZIndex(root: Stage) {
   }
 }
 
+// 1. 此方法的 绘制 层级关系 父子关系
+// 2. Circle.draw 递归
 export function refreshStage(stage: Stage) {
   sortByZIndex(stage)
 

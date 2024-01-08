@@ -48,6 +48,10 @@ const Ani_1000个动画 = () => {
     stage.append(rects)
 
     rects.forEach(async item => {
+      // item.data.width = 100 // 触发 UI 更新
+      // item.attr('width', 200)
+      // item.attr({ width: 300 })
+
       await item.animateCartoon({ width: width - 10, height: height - 10 })
       await item.animateCartoon({ width, height })
     })

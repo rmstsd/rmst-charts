@@ -26,6 +26,7 @@ export class Circle extends AbstractUi<CircleData> {
 
   declare data: CircleData
 
+  // unstable_draw
   draw(ctx: CanvasRenderingContext2D) {
     super.draw(ctx)
 

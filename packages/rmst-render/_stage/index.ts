@@ -1,6 +1,7 @@
 import Draggable from 'rmst-render/Draggable'
 import { EventParameter, eventList } from '../constant'
 import { findHover, initStage, mountStage, refreshStage, sortByZIndex, triggerEventHandlers } from './utils'
+import { resetSchedulerCount, workLoop } from './scheduler'
 
 export class Stage {
   constructor(option: IOption) {
@@ -46,19 +47,22 @@ export class Stage {
     this.renderStage()
   }
 
-  private isRuning = false
+  private isAsyncSchedulering = false
 
+  // 调度层 - 收集多次任务指令
   renderStage() {
-    if (this.isRuning) {
+    if (this.isAsyncSchedulering) {
       return
     }
 
-    this.isRuning = true
+    this.isAsyncSchedulering = true
 
     requestAnimationFrame(() => {
+      resetSchedulerCount()
+
       refreshStage(this)
 
-      this.isRuning = false
+      this.isAsyncSchedulering = false
     })
   }
 

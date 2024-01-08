@@ -1,6 +1,7 @@
 import { Stage } from '../_stage'
 import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent from '../AbsEvent'
+import { schedulerTask } from 'rmst-render/_stage/scheduler'
 
 export interface AbstractUiData {
   name?: string
@@ -78,7 +79,16 @@ export abstract class AbstractUi<T> extends AbsEvent {
     ctx.shadowBlur = shadowBlur
   }
 
-  attr(data: Partial<T>) {
+  // 应用层方法; 1000次 -> 渲染 1 次
+  public attr(data: Partial<T>) {
+    schedulerTask(() => {
+      this.data = { ...this.data, ...data }
+    })
+
+    this.stage.renderStage()
+  }
+
+  public attrSync(data: Partial<T>) {
     this.data = { ...this.data, ...data }
 
     this.stage.renderStage()
