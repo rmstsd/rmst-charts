@@ -52,7 +52,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     this.data = combineDefaultData(shapeData, defaultShapeData)
   }
 
-  type: IShapeType
+  readonly type: IShapeType
 
   extraData
 
@@ -69,28 +69,17 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     parentChildren.push(this)
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY, opacity } = this.data
-
-    ctx.globalAlpha = opacity
-
-    ctx.shadowOffsetX = shadowOffsetX
-    ctx.shadowOffsetY = shadowOffsetY
-    ctx.shadowColor = shadowColor
-    ctx.shadowBlur = shadowBlur
-  }
-
-  // 应用层方法; 1000次 -> 渲染 1 次
   public attr(data: Partial<T>) {
-    schedulerTask(() => {
-      this.data = { ...this.data, ...data }
-    })
+    this.data = { ...this.data, ...data }
 
     this.stage.renderStage()
   }
 
-  public attrSync(data: Partial<T>) {
-    this.data = { ...this.data, ...data }
+  // 应用层方法; 1000次 -> 渲染 1 次
+  public attrAsync(data: Partial<T>) {
+    schedulerTask(() => {
+      this.data = { ...this.data, ...data }
+    })
 
     this.stage.renderStage()
   }

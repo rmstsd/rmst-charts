@@ -1,24 +1,3 @@
-import { setCtxFontSize } from 'rmst-render'
-import { dpr } from '../constant.js'
-
-export function createCanvas(containerWidth: number, containerHeight: number) {
-  const canvasElement = document.createElement('canvas')
-  const canvasWidth = containerWidth * dpr
-  const canvasHeight = containerHeight * dpr
-
-  canvasElement.width = canvasWidth
-  canvasElement.height = canvasHeight
-  canvasElement.style.width = '100%'
-  canvasElement.style.height = '100%'
-
-  const ctx = canvasElement.getContext('2d')
-
-  setCtxFontSize(ctx, 14)
-  ctx.scale(dpr, dpr)
-
-  return { canvasElement, ctx }
-}
-
 export function initToolTip(canvasContainer: HTMLElement) {
   const toolTipElement = document.createElement('section')
   const toolTipElementStyle = {

@@ -17,12 +17,6 @@ export class Group extends AbstractUi<any> {
 
   children: IShape[] = []
 
-  draw(ctx: CanvasRenderingContext2D): void {
-    this.children.forEach(item => {
-      item.draw(ctx)
-    })
-  }
-
   append(...args) {
     const elements = args.flat(1)
 

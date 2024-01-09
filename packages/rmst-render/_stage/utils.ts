@@ -1,5 +1,6 @@
 import { EventParameter, EventType, OnEventType, dpr } from 'rmst-render/constant'
 import { IShape } from 'rmst-render/type'
+import { isStage } from 'rmst-render/utils'
 
 function createCanvas(containerWidth: number, containerHeight: number) {
   const canvasElement = document.createElement('canvas')
@@ -40,7 +41,7 @@ export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType
   }
 
   const parent = elementItem.parent
-  if (parent && parent.type !== 'Stage') {
+  if (parent && !isStage(parent)) {
     const _parent = parent as unknown as IShape
 
     triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })

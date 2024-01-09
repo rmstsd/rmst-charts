@@ -1,7 +1,6 @@
 import { dpr } from 'rmst-render/constant'
 import { isBoxHidden, isGroup, isLine, isText } from 'rmst-render/utils'
-import Text, { measureText } from 'rmst-render/shape/Text'
-import { IShape } from 'rmst-render'
+import { IShape, Text, measureText } from 'rmst-render'
 
 export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number): IShape {
   const _elements = children.toReversed()

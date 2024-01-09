@@ -3,8 +3,9 @@ import { EventParameter, eventList } from '../constant'
 import { initStage, triggerEventHandlers } from './utils'
 import { resetSchedulerCount } from './scheduler'
 import { findHover } from './findHover'
-import { mountStage, drawAllShape } from './renderUi'
+import { mountStage } from './renderUi'
 import { ICursor, IShape, IShapeType } from 'rmst-render/type'
+import { drawAllShape } from 'rmst-render/renderer/canvas'
 
 interface IOption {
   container: HTMLElement

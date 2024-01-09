@@ -1,5 +1,5 @@
-import { Circle, Line, Stage, Text, getPointOnArc, measureText, IShape } from 'rmst-render'
-import { calcB, calcLineLength, calcK, pointToFlatArray } from 'rmst-render/utils'
+import { Circle, Line, Stage, Text, measureText, IShape } from 'rmst-render'
+import { calcB, calcLineLength, calcK, pointToFlatArray, getPointOnArc } from 'rmst-render/utils'
 
 import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert'
 

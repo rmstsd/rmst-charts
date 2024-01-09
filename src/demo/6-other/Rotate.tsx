@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Rect, Stage, deg2rad } from 'rmst-render'
+import { Rect, Stage } from 'rmst-render'
 
 const Rotate = () => {
   const stageRef = useRef<Stage>(null)

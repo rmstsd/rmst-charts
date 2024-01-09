@@ -1,6 +1,6 @@
 import { mountStage } from 'rmst-render/_stage/renderUi'
 import AbstractUi from './AbstractUi'
-import { RectData, defaultRectData, drawRect } from './Rect'
+import { RectData, defaultRectData } from './Rect'
 import { IShape } from 'rmst-render/type'
 
 export class BoxHidden extends AbstractUi<RectData> {
@@ -21,21 +21,6 @@ export class BoxHidden extends AbstractUi<RectData> {
     mountStage(this.children, this.stage)
 
     this.stage?.renderStage()
-  }
-
-  draw(ctx: CanvasRenderingContext2D): void {
-    super.draw(ctx)
-
-    ctx.save()
-
-    this.path2D = drawRect(ctx, this.data)
-    ctx.clip(this.path2D)
-
-    this.children.forEach(item => {
-      item.draw(ctx)
-    })
-
-    ctx.restore()
   }
 }
 

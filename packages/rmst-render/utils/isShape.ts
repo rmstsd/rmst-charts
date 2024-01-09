@@ -1,8 +1,5 @@
 import { Stage } from 'rmst-render/_stage'
-import { BoxHidden } from 'rmst-render/shape/BoxHidden'
-import Group from 'rmst-render/shape/Group'
-import Line from 'rmst-render/shape/Line'
-import Text from 'rmst-render/shape/Text'
+import { Group, Line, Text, BoxHidden } from 'rmst-render'
 
 import { IShape } from 'rmst-render/type'
 
