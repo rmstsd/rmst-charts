@@ -202,9 +202,15 @@ const rect = new Rect({ x: 10, y: 10, width: 80, height: 80, fillStyle: 'purple'
 stage.append(rect)
 
 // 更新
-rect.attr({
-  x: 20
-})
+rect.attr({ x: 20 })
+// 或者
+rect.attr('x', 20)
+
+// 两种方式均有完整的 ts 的类型定义, 比如
+// 当如下使用时
+rect.attr({ width: '200' })
+rect.attr('x', 'aaa')
+`vscode` 均会提示: 类型 `string` 的参数不能赋给类型 `number` 的参数
 ```
 
 # 拖拽

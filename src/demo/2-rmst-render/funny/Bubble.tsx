@@ -1,6 +1,6 @@
 import { randomColor } from '@/utils'
 import colorAlpha from 'color-alpha'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Stage, Circle } from 'rmst-render'
 

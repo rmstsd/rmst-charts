@@ -2,7 +2,7 @@
 
 import { Stage } from 'rmst-render/_stage'
 import { IShape } from 'rmst-render/type'
-import { createPath2D, getPointOnArc, setCtxFontSize } from 'rmst-render/utils'
+import { createLinePath2D, getPointOnArc, setCtxFontSize } from 'rmst-render/utils'
 
 // 2. Circle.draw 递归
 export function drawAllShape(stage: Stage) {
@@ -50,7 +50,7 @@ export function drawAllShape(stage: Stage) {
           const { fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed } = data
 
           // 调用 attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
-          elementItem.path2D = data.path2D ? data.path2D : createPath2D(data)
+          elementItem.path2D = data.path2D ? data.path2D : createLinePath2D(data)
 
           ctx.beginPath()
           ctx.lineCap = lineCap

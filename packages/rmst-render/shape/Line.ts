@@ -1,4 +1,4 @@
-import { createPath2D } from '../utils'
+import { createLinePath2D } from '../utils'
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
 const defaultData: LineData = {
@@ -20,7 +20,7 @@ export class Line extends AbstractUi<LineData> {
   constructor(data: LineData) {
     super('Line', data, defaultData)
 
-    this.path2D = data.path2D ? data.path2D : createPath2D(this.data)
+    this.path2D = data.path2D ? data.path2D : createLinePath2D(this.data)
   }
 
   declare data: LineData

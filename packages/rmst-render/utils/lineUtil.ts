@@ -1,6 +1,6 @@
 import Line from 'rmst-render/shape/Line'
 
-export function createPath2D(data: Line['data']) {
+export function createLinePath2D(data: Line['data']) {
   let path2D: Path2D
   const { points, closed, smooth, percent } = data
 
@@ -203,7 +203,7 @@ export function calcLineLength(p1: ICoord, p2: ICoord) {
   return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
 }
 
-// 计算斜率
+// 计算斜率 y = kx + b 中的 k
 export function calcK(p1: ICoord, p2: ICoord) {
   return (p1.y - p2.y) / (p1.x - p2.x)
 }

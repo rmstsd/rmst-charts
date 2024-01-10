@@ -69,8 +69,26 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     parentChildren.push(this)
   }
 
-  public attr(data: Partial<T>) {
-    this.data = { ...this.data, ...data }
+  public attr<K extends keyof T>(key: K, value: T[K]): void
+  public attr(data: Partial<T>): void
+
+  public attr(...args) {
+    switch (args.length) {
+      case 1: {
+        const [data] = args
+        this.data = { ...this.data, ...data }
+        break
+      }
+      case 2: {
+        const [key, value] = args
+        this.data[key] = value
+        break
+      }
+
+      default:
+        console.log('未实现的参数数量')
+        break
+    }
 
     this.stage.renderStage()
   }
