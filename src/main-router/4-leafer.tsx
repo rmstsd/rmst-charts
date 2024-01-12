@@ -4,10 +4,12 @@ import QuickStart from '@/demo/4-leafer/QuickStart'
 
 import type { IRouteObject } from './router'
 
+import { isProd } from '@/utils'
+
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/leafer',
   element: <LayoutView />,
-  uiConfig: { title: 'leafer', hidden: import.meta.env.PROD },
+  uiConfig: { title: 'leafer', hidden: isProd },
   children: [{ path: 'qs', element: <QuickStart /> }]
 }
 

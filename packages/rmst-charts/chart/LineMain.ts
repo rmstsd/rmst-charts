@@ -5,7 +5,7 @@ import { colorPalette } from 'rmst-charts/constant'
 import { getCanvasPxFromRealNumber } from 'rmst-charts/utils/convert'
 import { IXAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcXAxis'
 import { IYAxisElements } from 'rmst-charts/coordinateSystem/cartesian2d/calcYAxis'
-import { pointToFlatArray } from 'rmst-charts/utils/utils'
+import { pointToFlatArray } from 'rmst-render/utils'
 import _Chart from './_chart'
 
 function calcLineData(

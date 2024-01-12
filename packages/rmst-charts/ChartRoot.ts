@@ -1,4 +1,4 @@
-import { Stage } from 'rmst-render'
+import { IShape, Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
 
@@ -141,7 +141,7 @@ export class ChartRoot {
   refreshChart() {
     const { stage } = this
 
-    stage.removeAllElements()
+    stage.removeAllShape()
     stage.append(this.renderedElements)
 
     this.seriesManager.afterTasks.forEach(fn => {

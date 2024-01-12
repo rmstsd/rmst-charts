@@ -1,5 +1,5 @@
 import { ChartRoot } from 'rmst-charts/ChartRoot'
-import { BoxHidden, Group, Line, Rect } from 'rmst-render'
+import { BoxHidden, Group, IShape, Line, Rect } from 'rmst-render'
 
 const moveHandleHeight = 6
 

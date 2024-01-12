@@ -1,3 +1,4 @@
+import { randomColor } from '@/utils'
 import { useEffect, useRef } from 'react'
 
 import { Stage, Group, Rect, Circle, Text, Line } from 'rmst-render'
@@ -74,7 +75,7 @@ const GroupDemo = () => {
         y: 10,
         width: 100,
         height: 100,
-        fillStyle: 'tan',
+        fillStyle: randomColor(),
         draggable: false
       })
     )
@@ -85,7 +86,7 @@ const GroupDemo = () => {
       x: 450,
       y: 300,
       radius: 50,
-      fillStyle: 'cornflowerblue',
+      fillStyle: randomColor(),
       draggable: true
     })
     innerGroupRef.current.append(cc)

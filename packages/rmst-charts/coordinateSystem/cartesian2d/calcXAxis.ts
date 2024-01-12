@@ -8,7 +8,7 @@ import {
   dataZoomHeight,
   tickColor
 } from 'rmst-charts/constant.js'
-import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
+import { pointToFlatArray } from 'rmst-render/utils'
 import { hasDataZoom } from 'rmst-charts/components/dataZoom'
 
 function getXAxis(option: ICharts.IOption, containerWidth, containerHeight) {

@@ -1,7 +1,6 @@
-import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import Line from 'rmst-render/shape/Line'
 
-export function createPath2D(data: Line['data']) {
+export function createLinePath2D(data: Line['data']) {
   let path2D: Path2D
   const { points, closed, smooth, percent } = data
 
@@ -78,6 +77,11 @@ export function calcSmoothPath2D(points: number[]) {
   return path2D
 }
 
+// --
+export function pointToFlatArray(list: { x: number; y: number }[]) {
+  return list.reduce((acc, item) => acc.concat(item.x, item.y), [])
+}
+
 export function convertToNormalPoints(points: number[]): ICoord[] {
   return points
     .reduce((acc, item, index) => {
@@ -88,6 +92,7 @@ export function convertToNormalPoints(points: number[]): ICoord[] {
     }, [])
     .map(([x, y]) => ({ x, y }))
 }
+// --
 
 // 计算 两个控制点 和 两个端点
 export function calcAllControlPoint(
@@ -194,6 +199,16 @@ export function calcTotalLineLength(points: { x: number; y: number }[]) {
   return { totalLineLength, lines, lineLengths }
 }
 
-function calcLineLength(p1: ICoord, p2: ICoord) {
+export function calcLineLength(p1: ICoord, p2: ICoord) {
   return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
+}
+
+// 计算斜率 y = kx + b 中的 k
+export function calcK(p1: ICoord, p2: ICoord) {
+  return (p1.y - p2.y) / (p1.x - p2.x)
+}
+
+// 计算 y = kx + b 中的 b
+export function calcB(k: number, p: ICoord) {
+  return p.y - k * p.x
 }

@@ -1,7 +1,7 @@
-import { pointToFlatArray } from 'rmst-charts/utils/utils'
 import { EventParameter } from './constant'
-import { isGroup, isStage } from './utils/isShape'
-import { convertToNormalPoints } from './utils'
+import { isGroup, isLine, isStage } from './utils/isShape'
+import { convertToNormalPoints, pointToFlatArray } from './utils'
+import { IShape } from './type'
 
 export default class Draggable {
   private prevClientX = 0
@@ -83,7 +83,7 @@ function setShapeCoord(target: IShape, dx: number, dy: number) {
       setShapeCoord(item, dx, dy)
     })
   } else {
-    if (target.type === 'Line') {
+    if (isLine(target)) {
       const c = convertToNormalPoints(target.data.points)
       c.forEach(item => {
         item.x += dx

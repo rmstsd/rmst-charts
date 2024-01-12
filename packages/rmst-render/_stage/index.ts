@@ -1,6 +1,15 @@
 import Draggable from 'rmst-render/Draggable'
 import { EventParameter, eventList } from '../constant'
-import { findHover, initStage, mountStage, refreshStage, sortByZIndex, triggerEventHandlers } from './utils'
+import { initStage, triggerEventHandlers } from './utils'
+import { resetSchedulerCount } from './scheduler'
+import { findHover } from './findHover'
+import { mountStage } from './renderUi'
+import { ICursor, IShape, IShapeType } from 'rmst-render/type'
+import { drawAllShape } from 'rmst-render/renderer/canvas'
+
+interface IOption {
+  container: HTMLElement
+}
 
 export class Stage {
   constructor(option: IOption) {
@@ -29,7 +38,7 @@ export class Stage {
     return { width: this.canvasElement.offsetWidth, height: this.canvasElement.offsetHeight }
   }
 
-  removeAllElements() {
+  removeAllShape() {
     this.children = []
 
     this.renderStage()
@@ -46,19 +55,22 @@ export class Stage {
     this.renderStage()
   }
 
-  private isRuning = false
+  private isAsyncRenderTask = false
 
+  // 调度层 - 收集多次任务指令
   renderStage() {
-    if (this.isRuning) {
+    if (this.isAsyncRenderTask) {
       return
     }
 
-    this.isRuning = true
+    this.isAsyncRenderTask = true
 
     requestAnimationFrame(() => {
-      refreshStage(this)
+      resetSchedulerCount()
 
-      this.isRuning = false
+      drawAllShape(this)
+
+      this.isAsyncRenderTask = false
     })
   }
 
@@ -71,7 +83,7 @@ export class Stage {
         return
       }
 
-      const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
+      const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
 
       if (!hovered) {
         if (this.prevHovered) {
@@ -110,7 +122,7 @@ export class Stage {
       }
 
       this.canvasElement[eventName] = evt => {
-        const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
+        const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
         if (hovered) {
           const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
           triggerEventHandlers(hovered, eventName, eventParameter)
@@ -120,7 +132,7 @@ export class Stage {
 
     // 拖拽
     this.canvasElement.addEventListener('mousedown', evt => {
-      const hovered = findHover(this.children, evt.offsetX, evt.offsetY)
+      const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
       if (hovered) {
         const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
         this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())

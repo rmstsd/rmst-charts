@@ -1,5 +1,6 @@
+import { randomColor } from '@/utils'
 import colorAlpha from 'color-alpha'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Stage, Circle } from 'rmst-render'
 
@@ -34,14 +35,6 @@ const Bubble = () => {
 
     function randomY() {
       return maxRadius + Math.random() * (stage.canvasSize.height - maxRadius * 2)
-    }
-
-    function randomColor() {
-      const r = Math.round(255 * Math.random())
-      const g = Math.round(255 * Math.random())
-      const b = Math.round(255 * Math.random())
-
-      return `rgb(${r}, ${g}, ${b})`
     }
 
     const fillStyle = randomColor()

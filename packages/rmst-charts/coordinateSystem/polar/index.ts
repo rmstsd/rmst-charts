@@ -1,10 +1,10 @@
-import { Circle, Line, AbstractUi, Stage, Text, getPointOnArc, measureText } from 'rmst-render'
+import { Circle, Line, Stage, Text, measureText, IShape } from 'rmst-render'
+import { calcB, calcLineLength, calcK, pointToFlatArray, getPointOnArc } from 'rmst-render/utils'
 
 import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert'
 
 import { calcPerfectTick } from '../utils'
 import { splitLineColor, tickColor } from '../../constant'
-import { calcB, calcLineLength, calcK, pointToFlatArray } from '../../utils/utils'
 
 const getDataForDraw = (
   stage: Stage,

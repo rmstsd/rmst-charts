@@ -5,7 +5,6 @@ import AniCurve from '@/demo/6-other/贝塞尔曲线计算动画'
 import LinePath from '@/demo/6-other/过点曲线'
 import CurveRect from '@/demo/6-other/渐变'
 import Translation from '@/demo/6-other/Translation'
-import WaterDrop from '@/demo/6-other/WaterDrop'
 import Brush from '@/demo/6-other/Brush'
 import LineAnimate from '@/demo/6-other/折线计算动画'
 import 贝塞尔曲线峰值吸附 from '@/demo/6-other/贝塞尔曲线峰值吸附'
@@ -13,10 +12,12 @@ import Rotate from '@/demo/6-other/Rotate'
 
 import { IRouteObject } from './router'
 
+import { isProd } from '@/utils'
+
 const otherRouteConfig: IRouteObject = {
   path: '/other',
   element: <LayoutView />,
-  uiConfig: { title: '杂项', hidden: import.meta.env.PROD },
+  uiConfig: { title: '杂项', hidden: isProd },
   children: [
     { path: 'plum', element: <Plum /> },
     { path: '贝塞尔曲线峰值吸附', element: <贝塞尔曲线峰值吸附 /> },
@@ -26,7 +27,6 @@ const otherRouteConfig: IRouteObject = {
     { path: 'curveRect', element: <CurveRect />, uiConfig: { title: '渐变' } },
     { path: 'translation', element: <Translation /> },
     { path: 'rotate', element: <Rotate /> },
-    { path: 'waterDrop', element: <WaterDrop /> },
     { path: 'brush', element: <Brush /> }
   ]
 }

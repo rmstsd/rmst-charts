@@ -1,10 +1,10 @@
 import { tickColor } from '../constant.js'
 
 // 绘制线段
-export function drawSegmentLine(
+function drawSegmentLine(
   ctx: CanvasRenderingContext2D,
-  start: ICoord,
-  end: ICoord,
+  start: { x: number; y: number },
+  end: { x: number; y: number },
   strokeStyle = tickColor,
   lineWidth = 1
 ) {
@@ -35,7 +35,7 @@ export function drawArc(
 }
 
 // 绘制圆角矩形
-export function fillRoundRect(
+function fillRoundRect(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
@@ -57,12 +57,7 @@ export function fillRoundRect(
 }
 
 // 绘制虚线
-export default function drawDashLine(
-  ctx: CanvasRenderingContext2D,
-  start: ICoord,
-  end: ICoord,
-  strokeStyle = '#aaa'
-) {
+function drawDashLine(ctx: CanvasRenderingContext2D, start, end, strokeStyle = '#aaa') {
   ctx.setLineDash([4])
   drawSegmentLine(ctx, start, end, strokeStyle)
   ctx.setLineDash([])

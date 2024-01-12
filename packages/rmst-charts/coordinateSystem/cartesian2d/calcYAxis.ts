@@ -12,8 +12,8 @@ import {
 } from 'rmst-charts/constant.js'
 
 import { calcPerfectTick } from '../utils'
-import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert.js'
-import { pointToFlatArray } from 'rmst-charts/utils/utils.js'
+import { getCanvasDistanceFromRealNumber } from 'rmst-charts/utils/convert'
+import { pointToFlatArray } from 'rmst-render/utils'
 import { hasDataZoom } from 'rmst-charts/components/dataZoom'
 
 function getYAxis(dataSource: number[], containerWidth, containerHeight: number, innerOption: ICharts.IOption) {

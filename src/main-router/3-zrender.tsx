@@ -6,10 +6,12 @@ import QuickStart from '@/demo/3-zrender/QuickStart'
 import RectOver from '@/demo/3-zrender/RectOver'
 import DragOverOther from '@/demo/3-zrender/DragOverOther'
 
+import { isProd } from '@/utils'
+
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/zrender',
   element: <LayoutView />,
-  uiConfig: { title: 'zrender', hidden: import.meta.env.PROD },
+  uiConfig: { title: 'zrender', hidden: isProd },
   children: [
     { path: 'QuickStart', element: <QuickStart /> },
     { path: 'RectOver', element: <RectOver /> },

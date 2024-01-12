@@ -22,7 +22,7 @@ const Plum = () => {
     const btn = document.querySelector('.dd-rr-aa-ww') as HTMLButtonElement
 
     btn.onclick = () => {
-      stage.removeAllElements()
+      stage.removeAllShape()
 
       ddd(line)
     }
@@ -41,8 +41,6 @@ const Plum = () => {
     ddd(line)
 
     async function ddd(line, depth = 0) {
-      console.log('ddd')
-
       if (depth > maxDepth) {
         return
       }

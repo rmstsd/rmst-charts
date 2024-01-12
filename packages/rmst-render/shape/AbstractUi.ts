@@ -1,6 +1,8 @@
 import { Stage } from '../_stage'
 import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent from '../AbsEvent'
+import { schedulerTask } from 'rmst-render/_stage/scheduler'
+import { ICursor, IShape, IShapeType } from 'rmst-render/type'
 
 export interface AbstractUiData {
   name?: string
@@ -41,7 +43,7 @@ export const combineDefaultData = (shapeData, defaultShapeData) => {
   return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
 }
 
-export abstract class AbstractUi<T> extends AbsEvent {
+export abstract class AbstractUi<T = {}> extends AbsEvent {
   constructor(type: IShapeType, shapeData, defaultShapeData?) {
     super()
 
@@ -50,7 +52,7 @@ export abstract class AbstractUi<T> extends AbsEvent {
     this.data = combineDefaultData(shapeData, defaultShapeData)
   }
 
-  type: IShapeType
+  readonly type: IShapeType
 
   extraData
 
@@ -67,25 +69,43 @@ export abstract class AbstractUi<T> extends AbsEvent {
     parentChildren.push(this)
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
-    const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY, opacity } = this.data
+  public attr<K extends keyof T>(key: K, value: T[K]): void
+  public attr(data: Partial<T>): void
 
-    ctx.globalAlpha = opacity
+  public attr(...args) {
+    switch (args.length) {
+      case 1: {
+        const [data] = args
+        this.data = { ...this.data, ...data }
+        break
+      }
+      case 2: {
+        const [key, value] = args
+        this.data[key] = value
+        break
+      }
 
-    ctx.shadowOffsetX = shadowOffsetX
-    ctx.shadowOffsetY = shadowOffsetY
-    ctx.shadowColor = shadowColor
-    ctx.shadowBlur = shadowBlur
+      default:
+        console.log('未实现的参数数量')
+        break
+    }
+
+    this.stage.renderStage()
   }
 
-  attr(data: Partial<T>) {
-    this.data = { ...this.data, ...data }
+  // 应用层方法; 1000次 -> 渲染 1 次
+  public attrAsync(data: Partial<T>) {
+    schedulerTask(() => {
+      this.data = { ...this.data, ...data }
+    })
 
     this.stage.renderStage()
   }
 
   remove() {
-    this.stage.children = this.stage.children.filter(item => item !== this)
+    const parentChildren = this.parent.children as IShape[]
+    parentChildren.splice(parentChildren.indexOf(this), 1)
+
     this.stage.renderStage()
   }
 

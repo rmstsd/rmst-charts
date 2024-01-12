@@ -1,5 +1,6 @@
 import { ChartRoot } from 'rmst-charts/ChartRoot'
-import { Group, Rect, Text, measureText } from 'rmst-render'
+import { Group, Rect, Text } from 'rmst-render'
+import { measureText } from 'rmst-render/utils'
 
 export interface LegendDataItem {
   color: string
