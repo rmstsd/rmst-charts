@@ -7,6 +7,8 @@ import dataZoom, { RangeRatioDecimal, hasDataZoom } from './components/dataZoom'
 
 import { SeriesManager } from './SeriesMgr'
 
+import { stClone } from './utils'
+
 const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx, endIdx: number) => {
   const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
   const re = Math.ceil(startIdx + (endIdx - startIdx) * rangeRatio.endRatio)
@@ -96,7 +98,7 @@ export class ChartRoot {
       rangeRatio = getRangeRatio(this.userOption)
     }
 
-    const _dataZoomOption = window.structuredClone(this.userOption)
+    const _dataZoomOption = stClone(this.userOption)
 
     if (_dataZoomOption.xAxis) {
       const { startIndex, endIndex } = rangeRatio2Index(rangeRatio, 0, _dataZoomOption.xAxis.data.length)

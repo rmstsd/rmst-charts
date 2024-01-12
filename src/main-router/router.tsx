@@ -19,7 +19,7 @@ export type IRouteObject = {
 export const routes: IRouteObject[] = [
   {
     path: '/',
-    element: <Navigate to="/new-charts/line/base" replace={true} />,
+    element: <Navigate to="/charts/line/base" replace={true} />,
     uiConfig: { hidden: true }
   },
   rmstChartsRouteConfig,
