@@ -23,7 +23,7 @@ import BasicCandlestick from '@/demo/1-rmst-charts/candlestick/基础K线图'
 import DragCandlestick from '@/demo/1-rmst-charts/candlestick/可拖动K线图'
 
 const newChartsRouteConfig: IRouteObject = {
-  path: '/new-charts',
+  path: '/charts',
   element: <LayoutView />,
   uiConfig: { title: 'rmst-charts (基于 rmst-render)' },
   children: [

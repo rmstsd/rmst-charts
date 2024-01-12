@@ -1813,6 +1813,11 @@
   resolved "https://registry.npmmirror.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
+"@ungap/structured-clone@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
+  integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
+
 "@vitejs/plugin-legacy@^5.2.0":
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/@vitejs/plugin-legacy/-/plugin-legacy-5.2.0.tgz#2f5b26d241d5e38d18b4ceb051cc780e7ab8ded1"
