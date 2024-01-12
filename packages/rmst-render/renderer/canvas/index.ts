@@ -18,52 +18,47 @@ export function drawAllShape(stage: Stage) {
     list.forEach(elementItem => {
       const { data } = elementItem
 
+      ctx.beginPath()
+
       setCtxStyleProp(ctx, data)
 
       switch (elementItem.type) {
         case 'Circle': {
-          const { x, y, radius, innerRadius, strokeStyle, fillStyle, startAngle, endAngle, offsetAngle, lineWidth } =
-            data
+          const { x, y, radius, innerRadius, strokeStyle, startAngle, endAngle, offsetAngle } = data
           const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
 
           const d = innerRadius
             ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
             : calcD(radius, startAngle, endAngle, x, y, isWholeArc, offsetAngle)
 
-          const path = new Path2D(d)
-          elementItem.path2D = path
+          // {
+          //   const svgHtml = `
+          //     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full"
+          //    width="1125" height="750" style="width: 750px; height: 500px; left:0; top:0; user-select:none">
+          //       <path d="${d}" fill="none" stroke="#E0E6F1"></path>
+          //     </svg>
+          //   `
 
-          ctx.beginPath()
+          //   document.querySelector('.canvas-container').insertAdjacentHTML('beforeend', svgHtml)
+          // }
+
+          elementItem.path2D = new Path2D(d)
 
           if (strokeStyle) {
-            ctx.lineWidth = lineWidth
-            ctx.strokeStyle = strokeStyle
-            ctx.stroke(path)
+            ctx.stroke(elementItem.path2D)
           }
 
-          ctx.fillStyle = fillStyle
-          ctx.fill(path)
+          ctx.fill(elementItem.path2D)
 
           break
         }
         case 'Line': {
-          const { fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, closed } = data
+          const { closed } = data
 
           // 调用 attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
           elementItem.path2D = data.path2D ? data.path2D : createLinePath2D(data)
 
-          ctx.beginPath()
-          ctx.lineCap = lineCap
-          ctx.lineJoin = lineJoin
-
-          ctx.fillStyle = fillStyle
-          ctx.strokeStyle = strokeStyle
-
-          if (lineWidth !== 0) {
-            ctx.lineWidth = lineWidth
-            ctx.stroke(elementItem.path2D)
-          }
-
+          ctx.stroke(elementItem.path2D)
           if (closed) {
             ctx.fill(elementItem.path2D)
           }
@@ -74,11 +69,9 @@ export function drawAllShape(stage: Stage) {
           break
         }
         case 'Text': {
-          const { x, y, content, fillStyle, fontSize, textAlign = 'left' } = data
+          const { x, y, content, fontSize, textAlign = 'left' } = data
 
           setCtxFontSize(ctx, fontSize)
-
-          ctx.fillStyle = fillStyle
 
           ctx.textAlign = textAlign
           ctx.fillText(content, x, y)
@@ -108,7 +101,25 @@ export function drawAllShape(stage: Stage) {
 }
 
 function setCtxStyleProp(ctx: CanvasRenderingContext2D, data) {
-  const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY, opacity } = data
+  const {
+    lineWidth,
+    lineCap,
+    lineJoin,
+    strokeStyle,
+    fillStyle,
+    shadowBlur,
+    shadowColor,
+    shadowOffsetX,
+    shadowOffsetY,
+    opacity
+  } = data
+
+  ctx.lineWidth = lineWidth
+  ctx.lineCap = lineCap
+  ctx.lineJoin = lineJoin
+
+  ctx.strokeStyle = strokeStyle
+  ctx.fillStyle = fillStyle
 
   ctx.globalAlpha = opacity
 
@@ -215,13 +226,8 @@ const calcRingD = (
 }
 
 export function drawRect(ctx: CanvasRenderingContext2D, data) {
-  const { x, y, width, height, cornerRadius, strokeStyle, fillStyle, lineWidth } = data
+  const { x, y, width, height, cornerRadius, strokeStyle, fillStyle } = data
 
-  ctx.fillStyle = fillStyle
-  ctx.strokeStyle = strokeStyle
-  ctx.lineWidth = lineWidth
-
-  ctx.beginPath()
   const path2D = new Path2D()
   path2D.moveTo(x + cornerRadius, y)
   path2D.lineTo(x + width - cornerRadius, y)

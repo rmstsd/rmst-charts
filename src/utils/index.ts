@@ -5,3 +5,5 @@ export function randomColor() {
 
   return `rgb(${r}, ${g}, ${b})`
 }
+
+export const isProd = import.meta.env.PROD

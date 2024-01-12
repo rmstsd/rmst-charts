@@ -12,10 +12,12 @@ import Rotate from '@/demo/6-other/Rotate'
 
 import { IRouteObject } from './router'
 
+import { isProd } from '@/utils'
+
 const otherRouteConfig: IRouteObject = {
   path: '/other',
   element: <LayoutView />,
-  uiConfig: { title: '杂项', hidden: import.meta.env.PROD },
+  uiConfig: { title: '杂项', hidden: isProd },
   children: [
     { path: 'plum', element: <Plum /> },
     { path: '贝塞尔曲线峰值吸附', element: <贝塞尔曲线峰值吸附 /> },

@@ -24,6 +24,10 @@ import Ani_1000个动画 from '@/demo/2-rmst-render/animate/Ani_1000个动画'
 import Plum from '@/demo/2-rmst-render/funny/Plum'
 import Bubble from '@/demo/2-rmst-render/funny/Bubble'
 
+import SoundingBox from '@/demo/2-rmst-render/boundingBox'
+
+import { isProd } from '@/utils'
+
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
   element: <LayoutView />,
@@ -85,6 +89,12 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'Plum', element: <Plum /> },
         { path: 'Bubble', element: <Bubble /> }
       ]
+    },
+    {
+      path: 'sb',
+      element: <LayoutOutlet />,
+      uiConfig: { title: 'SoundingBox', hidden: isProd },
+      children: [{ path: 'sb', element: <SoundingBox /> }]
     }
     // {
     //   path: 'real-case',
