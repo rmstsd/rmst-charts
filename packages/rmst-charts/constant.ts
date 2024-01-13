@@ -11,8 +11,6 @@ export const dataZoomHeight = 60 // 区域缩放高度
 // export const xAxisPadding = 10      // x轴右端间隙
 export const yAxisPadding = 0 // y轴顶端间隙
 
-export const dpr = window.devicePixelRatio
-
 // 蜡烛图相关
 export const maxCandleCount = 40 // 最大数量
 export const minCandleCount = 10 // 最小数量

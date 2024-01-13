@@ -63,16 +63,20 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
   stage: Stage
 
   pinTop() {
+    if (!this.parent) {
+      console.warn('还没有被 append')
+      return
+    }
     const parentChildren = this.parent.children as IShape[]
 
     parentChildren.splice(parentChildren.indexOf(this), 1)
     parentChildren.push(this)
   }
 
-  public attr<K extends keyof T>(key: K, value: T[K]): void
   public attr(data: Partial<T>): void
+  public attr<K extends keyof T>(key: K, value: T[K]): void
 
-  public attr(...args) {
+  public attr<K extends keyof T>(...args) {
     switch (args.length) {
       case 1: {
         const [data] = args
@@ -90,7 +94,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
         break
     }
 
-    this.stage.renderStage()
+    this.stage?.renderStage()
   }
 
   // 应用层方法; 1000次 -> 渲染 1 次
@@ -99,7 +103,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
       this.data = { ...this.data, ...data }
     })
 
-    this.stage.renderStage()
+    this.stage?.renderStage()
   }
 
   remove() {
