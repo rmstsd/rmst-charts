@@ -4,7 +4,6 @@ import { isRectShapeCollision } from './DragManagement'
 
 // 假如是: a.subscribe(b): 则 selfDragRect 是 a , otherDragRect 是 b
 interface SubscribeOther {
-  isCollisionPrev?: boolean
   otherDragRect: DragRect
   onCollision: (selfDragRect: DragRect, otherDragRect: DragRect) => void
   offCollision: (selfDragRect: DragRect, otherDragRect: DragRect) => void
@@ -15,30 +14,42 @@ export class DragRect {
     this.element = new Rect({ x, y, width: 100, height: 100, lineWidth: 3, fillStyle: fillStyle, draggable: true })
 
     this.element.ondrag = () => {
-      this.SubscribeOthers.forEach(item => {
-        // 如果俩个矩形产生了碰撞
-        const bool = isRectShapeCollision(this.element, item.otherDragRect.element)
+      const hovered = this.subscribeOthers.filter(otherItem =>
+        isRectShapeCollision(this.element, otherItem.otherDragRect.element)
+      )
 
-        if (bool) {
-          if (!item.isCollisionPrev) {
-            item.isCollisionPrev = true
+      hovered.forEach(item => {
+        if (!this.prevHovered.has(item)) {
+          item.onCollision(this, item.otherDragRect)
 
-            item.onCollision(this, item.otherDragRect)
-          }
-        } else {
-          if (item.isCollisionPrev) {
-            item.isCollisionPrev = false
-
-            item.offCollision(this, item.otherDragRect)
+          const other = item.otherDragRect.subscribeOthers.find(item => item.otherDragRect === this)
+          if (other) {
+            item.otherDragRect.prevHovered.add(other)
           }
         }
+
+        // console.log('move', item.otherDragRect.element.data.fillStyle)
       })
+
+      this.prevHovered.forEach(item => {
+        if (!hovered.includes(item)) {
+          item.offCollision(this, item.otherDragRect)
+
+          item.otherDragRect.prevHovered.delete(
+            item.otherDragRect.subscribeOthers.find(item => item.otherDragRect === this)
+          )
+        }
+      })
+
+      this.prevHovered = new Set(hovered)
     }
   }
 
   element: Rect
 
   marks = 0
+
+  prevHovered = new Set<SubscribeOther>()
 
   select() {
     this.marks++
@@ -55,7 +66,7 @@ export class DragRect {
     }
   }
 
-  SubscribeOthers: SubscribeOther[] = []
+  subscribeOthers: SubscribeOther[] = []
 
   subscribe(
     otherDragRect: DragRect,
@@ -65,7 +76,7 @@ export class DragRect {
       isEachOther: false // 是否互相订阅
     }
   ) {
-    this.SubscribeOthers.push({ otherDragRect, onCollision, offCollision })
+    this.subscribeOthers.push({ otherDragRect, onCollision, offCollision })
 
     if (option.isEachOther) {
       otherDragRect.subscribe(this, onCollision, offCollision)

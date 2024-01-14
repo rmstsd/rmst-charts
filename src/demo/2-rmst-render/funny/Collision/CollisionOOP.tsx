@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Stage } from 'rmst-render'
 
 import { DragRect } from './ClassOOP'
 
-function eachOtherSubscribe(list: DragRect[]) {
+function eachOtherSubscribe(list: DragRect[], cb) {
   if (list.length < 2) {
     console.log('至少要有两个')
     return
@@ -14,10 +14,17 @@ function eachOtherSubscribe(list: DragRect[]) {
       list[i].subscribe(
         list[j],
         function onCollision(self, other) {
+          console.log('onCollision')
+
+          cb?.('onCollision')
+
           self.select()
           other.select()
         },
         function offCollision(self, other) {
+          console.log('offCollision')
+          cb?.('offCollision')
+
           self.cancelSelect()
           other.cancelSelect()
         },
@@ -46,58 +53,23 @@ const CollisionOOP = () => {
 
     stage.append(dragRects.map(item => item.element))
 
-    eachOtherSubscribe(dragRects)
-
-    // {
-    //   rect_1.subscribe(
-    //     rect_2,
-    //     function onCollision(self, other) {
-    //       console.log('onCollision') // 使用 isCollisionPrev 属性实现 onCollision 和 offCollision 只执行一次; 类似于 onmouseenter 和 onmouseleave
-    //       self.select()
-    //       other.select()
-    //     },
-    //     function offCollision(self, other) {
-    //       console.log('offCollision')
-    //       self.cancelSelect()
-    //       other.cancelSelect()
-    //     },
-    //     { isEachOther: true }
-    //   )
-    // }
-    // {
-    //   rect_1.subscribe(
-    //     rect_3,
-    //     function onCollision(self, other) {
-    //       self.select()
-    //       other.select()
-    //     },
-    //     function offCollision(self, other) {
-    //       self.cancelSelect()
-    //       other.cancelSelect()
-    //     },
-    //     { isEachOther: true }
-    //   )
-    // }
-    // {
-    //   rect_2.subscribe(
-    //     rect_3,
-    //     function onCollision(self, other) {
-    //       self.select()
-    //       other.select()
-    //     },
-    //     function offCollision(self, other) {
-    //       self.cancelSelect()
-    //       other.cancelSelect()
-    //     },
-    //     { isEachOther: true }
-    //   )
-    // }
+    eachOtherSubscribe(dragRects, log => {
+      setLogs(state => state.concat(log))
+    })
   }, [])
 
+  const [logs, setLogs] = useState([])
+
   return (
-    <>
+    <div className="flex">
       <div className="canvas-container" ref={containerRef}></div>
-    </>
+
+      <div className="p-2">
+        {logs.map((item, idx) => (
+          <div key={idx}>{item}</div>
+        ))}
+      </div>
+    </div>
   )
 }
 
