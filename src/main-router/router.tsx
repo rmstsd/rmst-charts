@@ -27,7 +27,12 @@ export const routes: IRouteObject[] = [
   zrenderRouteConfig,
   leaferRouteConfig,
   oldChartsRouteConfig,
-  otherRouteConfig
+  otherRouteConfig,
+  {
+    path: '*',
+    element: <Navigate to="/" replace={true} />,
+    uiConfig: { hidden: true }
+  }
 ]
 
 export const convertToAntdData = (array: IRouteObject[], recur: boolean, parentKey = ''): MenuProps['items'] => {
