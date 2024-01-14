@@ -91,7 +91,7 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'Plum', element: <Plum /> },
         { path: 'Bubble', element: <Bubble /> },
         { path: 'Collision', element: <Collision />, uiConfig: { title: '碰撞' } },
-        { path: 'CollisionOOP', element: <CollisionOOP />, uiConfig: { title: '碰撞OOP', hidden: isProd } }
+        { path: 'CollisionOOP', element: <CollisionOOP />, uiConfig: { title: '碰撞OOP' } }
       ]
     },
     {
