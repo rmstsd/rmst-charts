@@ -23,10 +23,12 @@ import Ani_1000个动画 from '@/demo/2-rmst-render/animate/Ani_1000个动画'
 
 import Plum from '@/demo/2-rmst-render/funny/Plum'
 import Bubble from '@/demo/2-rmst-render/funny/Bubble'
+import Collision from '@/demo/2-rmst-render/funny/Collision'
 
 import SoundingBox from '@/demo/2-rmst-render/boundingBox'
 
 import { isProd } from '@/utils'
+import CollisionOOP from '@/demo/2-rmst-render/funny/Collision/CollisionOop'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -87,7 +89,9 @@ const rmstRenderRouteConfig: IRouteObject = {
       uiConfig: { title: 'funny demo' },
       children: [
         { path: 'Plum', element: <Plum /> },
-        { path: 'Bubble', element: <Bubble /> }
+        { path: 'Bubble', element: <Bubble /> },
+        { path: 'Collision', element: <Collision />, uiConfig: { title: '碰撞' } },
+        { path: 'CollisionOOP', element: <CollisionOOP />, uiConfig: { title: '碰撞OOP', hidden: isProd } }
       ]
     },
     {

@@ -238,6 +238,7 @@ export function drawRect(ctx: CanvasRenderingContext2D, data) {
   path2D.arc(x + cornerRadius, y + height - cornerRadius, cornerRadius, Math.PI / 2, Math.PI)
   path2D.lineTo(x, y + cornerRadius)
   path2D.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
+  path2D.closePath()
 
   if (fillStyle) {
     ctx.fill(path2D)

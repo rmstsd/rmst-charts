@@ -1,4 +1,3 @@
-// @ts-check
 import { dpr } from './constant.js'
 
 export function initCanvas(canvasContainer) {
