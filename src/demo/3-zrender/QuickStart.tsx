@@ -5,41 +5,29 @@ const QuickStart = () => {
   useEffect(() => {
     const zr = zrender.init(document.querySelector('.canvas-container'), {})
 
-    const rect_1 = new zrender.Rect({
-      name: '1',
-      cursor: 'auto',
+    const line_q = new zrender.BezierCurve({
       shape: {
-        x: 80,
-        y: 120,
-        width: 50,
-        height: 50
-      },
-      style: {
-        fill: 'blue'
+        x1: 100,
+        y1: 100,
+        x2: 300,
+        y2: 100
       }
     })
 
-    const rect_2 = new zrender.Rect({
-      name: '2',
-      cursor: 'auto',
-      shape: {
-        x: 100,
-        y: 100,
-        width: 100,
-        height: 100
-      },
+    const sub = line_q.getBoundingRect()
+
+    console.log({ ...sub })
+
+    const rect_1 = new zrender.Rect({
+      shape: { ...sub },
       style: {
-        fill: 'pink',
-        stroke: 'purple',
-        lineWidth: 10,
-        opacity: 0.9
-        // shadowBlur: 40,
-        // shadowColor: '#333'
+        stroke: 'red',
+        fill: 'none'
       }
     })
 
     zr.add(rect_1)
-    zr.add(rect_2)
+    zr.add(line_q)
   }, [])
 
   return <div className="canvas-container"></div>

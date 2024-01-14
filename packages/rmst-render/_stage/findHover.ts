@@ -6,6 +6,10 @@ export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: 
   const _elements = children.toReversed()
 
   for (const elementItem of _elements) {
+    if (elementItem.data.pointerEvents === 'none') {
+      continue
+    }
+
     if (isGroup(elementItem) || isBoxHidden(elementItem)) {
       if (isBoxHidden(elementItem)) {
         if (!isShapeInner(ctx, elementItem, x, y)) {

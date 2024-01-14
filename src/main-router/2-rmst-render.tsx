@@ -1,4 +1,5 @@
 import LayoutView, { LayoutOutlet } from '@/components/LayoutView/LayoutView'
+import DogHead from '@/components/DogHead'
 
 import { IRouteObject } from './router'
 
@@ -98,7 +99,7 @@ const rmstRenderRouteConfig: IRouteObject = {
       path: 'sb',
       element: <LayoutOutlet />,
       uiConfig: { title: 'SoundingBox', hidden: isProd },
-      children: [{ path: 'sb', element: <SoundingBox /> }]
+      children: [{ path: 'sb', element: <SoundingBox />, uiConfig: { icon: <DogHead size={26} /> } }]
     }
     // {
     //   path: 'real-case',
