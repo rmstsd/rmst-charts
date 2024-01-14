@@ -43,7 +43,7 @@ const LayoutView = () => {
       return
     }
     const selectedMenuItem = menuRef.current.menu.list.querySelector('li[class~="ant-menu-item-selected"]')
-    selectedMenuItem.scrollIntoView()
+    selectedMenuItem?.scrollIntoView()
   }, [])
 
   return (

@@ -26,9 +26,9 @@ import Bubble from '@/demo/2-rmst-render/funny/Bubble'
 import Collision from '@/demo/2-rmst-render/funny/Collision'
 
 import SoundingBox from '@/demo/2-rmst-render/boundingBox'
+import CollisionOOP from '@/demo/2-rmst-render/funny/Collision/CollisionOOP'
 
 import { isProd } from '@/utils'
-import CollisionOOP from '@/demo/2-rmst-render/funny/Collision/CollisionOop'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
