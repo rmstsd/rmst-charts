@@ -1,4 +1,4 @@
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { AbstractUiData, BoundingRect } from './AbstractUi'
 
 const defaultData = {
   lineWidth: 1,
@@ -25,6 +25,18 @@ export class Circle extends AbstractUi<CircleData> {
   }
 
   declare data: CircleData
+
+  getBoundingRect(): BoundingRect {
+    const { data } = this
+    const padding = 0
+
+    return {
+      x: data.x - data.radius - padding,
+      y: data.y - data.radius - padding,
+      width: 2 * data.radius + padding * 2,
+      height: 2 * data.radius + padding * 2
+    }
+  }
 }
 
 export default Circle

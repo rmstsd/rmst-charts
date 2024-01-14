@@ -42,7 +42,14 @@ export const convertToAntdData = (array: IRouteObject[], recur: boolean, parentK
       const key = item.path.startsWith('/') ? item.path : `${parentKey}/${item.path}`
 
       return Object.assign(
-        { label: item.uiConfig?.title || item.path, key },
+        {
+          label: (
+            <>
+              {item.uiConfig?.title || item.path} {item.uiConfig?.icon}
+            </>
+          ),
+          key
+        },
         recur && item.children && { children: convertToAntdData(item.children, recur, key) }
       )
     })

@@ -3,6 +3,8 @@ import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent from '../AbsEvent'
 import { schedulerTask } from 'rmst-render/_stage/scheduler'
 import { ICursor, IShape, IShapeType } from 'rmst-render/type'
+import { createRectPath2D, drawCircle, setCtxStyleProp } from 'rmst-render/renderer/canvas'
+import { clipRect } from 'rmst-render/utils'
 
 export interface AbstractUiData {
   name?: string
@@ -25,7 +27,14 @@ export interface AbstractUiData {
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
 
-  // [key: string]: any
+  pointerEvents?: 'none' | 'all' // 是否响应鼠标事件 默认为 true
+}
+
+export interface BoundingRect {
+  x: number
+  y: number
+  width: number
+  height: number
 }
 
 export const defaultAbsData: AbstractUiData = {
@@ -36,7 +45,8 @@ export const defaultAbsData: AbstractUiData = {
   shadowOffsetX: 0,
   shadowOffsetY: 0,
   lineCap: 'butt',
-  lineJoin: 'miter'
+  lineJoin: 'miter',
+  pointerEvents: 'all'
 }
 
 export const combineDefaultData = (shapeData, defaultShapeData) => {
@@ -76,7 +86,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
   public attr(data: Partial<T>): void
   public attr<K extends keyof T>(key: K, value: T[K]): void
 
-  public attr<K extends keyof T>(...args) {
+  public attr(...args) {
     switch (args.length) {
       case 1: {
         const [data] = args
@@ -104,6 +114,48 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     })
 
     this.stage?.renderStage()
+  }
+
+  attrDirty(data: Partial<T>) {
+    const oldSb = this.getBoundingRect()
+
+    this.data = { ...this.data, ...data }
+
+    const nSb = this.getBoundingRect()
+
+    const x = Math.min(oldSb.x, nSb.x)
+    const y = Math.min(oldSb.y, nSb.y)
+    const sb: BoundingRect = {
+      x,
+      y,
+      width: Math.max(oldSb.x + oldSb.width, nSb.x + nSb.width) - x,
+      height: Math.max(oldSb.y + oldSb.height, nSb.y + nSb.height) - y
+    }
+
+    this.stage.renderDirtyRectUi(sb)
+
+    const { ctx } = this.stage
+
+    ctx.clearRect(sb.x, sb.y, sb.width, sb.height)
+
+    const overlapShapes = this.stage.children
+      .filter(item => item.type === 'Circle')
+      .filter(item => item !== this)
+      .filter(item => isRectShapeCollision(sb, item.getBoundingRect()))
+
+    clipRect(ctx, createRectPath2D(sb), () => {
+      const neededUpdatedShapes = overlapShapes.concat(this)
+      const correctSortedShapes = this.stage.children.filter(item => neededUpdatedShapes.includes(item))
+
+      correctSortedShapes.forEach(item => {
+        setCtxStyleProp(ctx, item)
+        drawCircle(ctx, item as any)
+      })
+    })
+  }
+
+  getBoundingRect(): BoundingRect {
+    return
   }
 
   remove() {
@@ -139,3 +191,25 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 }
 
 export default AbstractUi
+
+// 左上角 和 右下角 的坐标
+function isRectCollision(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {
+  const overlapWidth = Math.min(ax2, bx2) - Math.max(ax1, bx1)
+  const overlapHeight = Math.min(ay2, by2) - Math.max(ay1, by1)
+
+  return overlapWidth > 0 && overlapHeight > 0
+}
+
+export function isRectShapeCollision(rect_1: BoundingRect, rect_2: BoundingRect) {
+  return isRectCollision(
+    rect_1.x,
+    rect_1.y,
+    rect_1.x + rect_1.width,
+    rect_1.y + rect_1.height,
+
+    rect_2.x,
+    rect_2.y,
+    rect_2.x + rect_2.width,
+    rect_2.y + rect_2.height
+  )
+}

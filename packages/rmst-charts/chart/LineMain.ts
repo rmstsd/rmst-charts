@@ -61,6 +61,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
 
     // 主折线
     const mainLine = new Line({
+      name: 'mainline',
       points: mainLinePoints,
       strokeStyle: this.color,
       lineWidth: lineStyle.width,
@@ -74,7 +75,8 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
       x: xAxisData.axis.start.x,
       y: yAxisData.axis.end.y,
       width: 0,
-      height: stage.canvasSize.height
+      height: stage.canvasSize.height,
+      lineWidth: 0
     })
     if (areaStyle) {
       const createArea = () => {
@@ -123,6 +125,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
         prevLinePath2D.addPath(mainLinePath2DCopy)
 
         const innerSingleArea = new Line({
+          name: 'innerSingleArea',
           path2D: prevLinePath2D,
           fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
           strokeStyle: 'transparent',

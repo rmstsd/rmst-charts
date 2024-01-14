@@ -6,6 +6,9 @@ import { findHover } from './findHover'
 import { mountStage } from './renderUi'
 import { ICursor, IShape, IShapeType } from 'rmst-render/type'
 import { drawAllShape } from 'rmst-render/renderer/canvas'
+import Rect from 'rmst-render/shape/Rect'
+import { BoundingRect } from 'rmst-render/shape/AbstractUi'
+import colorAlpha from 'color-alpha'
 
 interface IOption {
   container: HTMLElement
@@ -144,5 +147,29 @@ export class Stage {
 
   setCursor(cursor: ICursor) {
     this.canvasElement.style.setProperty('cursor', cursor)
+  }
+
+  dirtyRectUi: Rect
+  timer
+  renderDirtyRectUi(sb: BoundingRect) {
+    if (!this.dirtyRectUi) {
+      this.dirtyRectUi = new Rect({
+        ...sb,
+        fillStyle: colorAlpha('red', 0.2),
+        strokeStyle: 'red',
+        opacity: 0,
+        pointerEvents: 'none'
+      })
+      this.append(this.dirtyRectUi)
+    }
+
+    clearTimeout(this.timer)
+
+    this.dirtyRectUi.attr(sb)
+    this.dirtyRectUi.animateCartoon({ opacity: 1 }, { duration: 300 })
+
+    this.timer = setTimeout(() => {
+      this.dirtyRectUi.animateCartoon({ opacity: 0 }, { duration: 300 })
+    }, 800)
   }
 }

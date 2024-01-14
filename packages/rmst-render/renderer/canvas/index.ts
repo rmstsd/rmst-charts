@@ -1,10 +1,19 @@
-// 1. 此方法的 绘制 层级关系 父子关系
-
 import { Stage } from 'rmst-render/_stage'
+import { Circle, Line, Text } from 'rmst-render'
 import { IShape } from 'rmst-render/type'
-import { createLinePath2D, getPointOnArc, setCtxFontSize } from 'rmst-render/utils'
+import { clipRect, createLinePath2D, getPointOnArc, setCtxFontSize } from 'rmst-render/utils'
 
-// 2. Circle.draw 递归
+// {
+//   const svgHtml = `
+//     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full"
+//    width="1125" height="750" style="width: 750px; height: 500px; left:0; top:0; user-select:none">
+//       <path d="${d}" fill="none" stroke="#E0E6F1"></path>
+//     </svg>
+//   `
+
+//   document.querySelector('.canvas-container').insertAdjacentHTML('beforeend', svgHtml)
+// }
+
 export function drawAllShape(stage: Stage) {
   sortByZIndex(stage)
 
@@ -20,56 +29,42 @@ export function drawAllShape(stage: Stage) {
 
       ctx.beginPath()
 
-      setCtxStyleProp(ctx, data)
+      setCtxStyleProp(ctx, elementItem)
 
       switch (elementItem.type) {
         case 'Circle': {
-          const { x, y, radius, innerRadius, strokeStyle, startAngle, endAngle, offsetAngle } = data
-          const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
-
-          const d = innerRadius
-            ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
-            : calcD(radius, startAngle, endAngle, x, y, isWholeArc, offsetAngle)
-
-          // {
-          //   const svgHtml = `
-          //     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full"
-          //    width="1125" height="750" style="width: 750px; height: 500px; left:0; top:0; user-select:none">
-          //       <path d="${d}" fill="none" stroke="#E0E6F1"></path>
-          //     </svg>
-          //   `
-
-          //   document.querySelector('.canvas-container').insertAdjacentHTML('beforeend', svgHtml)
-          // }
-
-          elementItem.path2D = new Path2D(d)
-
-          if (strokeStyle) {
-            ctx.stroke(elementItem.path2D)
-          }
-
-          ctx.fill(elementItem.path2D)
-
+          drawCircle(ctx, elementItem as Circle)
           break
         }
         case 'Line': {
-          const { closed } = data
+          const { closed, path2D } = data as Line['data']
 
           // 调用 attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
-          elementItem.path2D = data.path2D ? data.path2D : createLinePath2D(data)
+          elementItem.path2D = path2D ? path2D : createLinePath2D(data)
 
-          ctx.stroke(elementItem.path2D)
+          if (hasStroke(data.lineWidth, data.strokeStyle)) {
+            ctx.stroke(elementItem.path2D)
+          }
+
           if (closed) {
             ctx.fill(elementItem.path2D)
           }
           break
         }
         case 'Rect': {
-          elementItem.path2D = drawRect(ctx, data)
+          elementItem.path2D = createRectPath2D(data)
+
+          if (data.fillStyle) {
+            ctx.fill(elementItem.path2D)
+          }
+          if (hasStroke(data.lineWidth, data.strokeStyle)) {
+            ctx.stroke(elementItem.path2D)
+          }
+
           break
         }
         case 'Text': {
-          const { x, y, content, fontSize, textAlign = 'left' } = data
+          const { x, y, content, fontSize, textAlign = 'left' } = data as Text['data']
 
           setCtxFontSize(ctx, fontSize)
 
@@ -82,14 +77,19 @@ export function drawAllShape(stage: Stage) {
           break
         }
         case 'BoxHidden': {
-          ctx.save()
+          elementItem.path2D = createRectPath2D(data)
 
-          elementItem.path2D = drawRect(ctx, data)
-          ctx.clip(elementItem.path2D)
+          clipRect(ctx, elementItem.path2D, () => {
+            if (elementItem.data.fillStyle) {
+              ctx.fill(elementItem.path2D)
+            }
+            if (hasStroke(elementItem.data.lineWidth, elementItem.data.strokeStyle)) {
+              ctx.stroke(elementItem.path2D)
+            }
 
-          drawSs(elementItem.children)
+            drawSs(elementItem.children)
+          })
 
-          ctx.restore()
           break
         }
 
@@ -100,19 +100,27 @@ export function drawAllShape(stage: Stage) {
   }
 }
 
-function setCtxStyleProp(ctx: CanvasRenderingContext2D, data) {
-  const {
-    lineWidth,
-    lineCap,
-    lineJoin,
-    strokeStyle,
-    fillStyle,
-    shadowBlur,
-    shadowColor,
-    shadowOffsetX,
-    shadowOffsetY,
-    opacity
-  } = data
+export function drawCircle(ctx: CanvasRenderingContext2D, elementItem: Circle) {
+  const { x, y, radius, innerRadius, strokeStyle, startAngle, endAngle, offsetAngle } = elementItem.data
+  const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
+
+  const d = innerRadius
+    ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
+    : calcD(radius, startAngle, endAngle, x, y, isWholeArc, offsetAngle)
+
+  elementItem.path2D = new Path2D(d)
+
+  if (strokeStyle) {
+    ctx.stroke(elementItem.path2D)
+  }
+
+  ctx.fill(elementItem.path2D)
+}
+
+export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem) {
+  const { data } = elementItem
+  const { lineWidth, lineCap, lineJoin, strokeStyle, fillStyle, opacity } = data
+  const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY } = data
 
   ctx.lineWidth = lineWidth
   ctx.lineCap = lineCap
@@ -129,20 +137,25 @@ function setCtxStyleProp(ctx: CanvasRenderingContext2D, data) {
   ctx.shadowBlur = shadowBlur
 }
 
-function sortByZIndex(root) {
+export function sortByZIndex(root) {
   if (root.children) {
-    root.children = root.children.toSorted((a, b) => {
-      const a_zIndex = a.data.zIndex ?? 0
-      const b_zIndex = b.data.zIndex ?? 0
-
-      return a_zIndex - b_zIndex
-    })
+    root.children = sortChildren(root.children)
 
     for (const item of root.children) {
       sortByZIndex(item)
     }
   }
 }
+
+function sortChildren(children: IShape[]) {
+  return children.toSorted((a, b) => {
+    const a_zIndex = a.data.zIndex ?? 0
+    const b_zIndex = b.data.zIndex ?? 0
+
+    return a_zIndex - b_zIndex
+  })
+}
+
 // 圆形/扇形 返回 path 的 d属性 返回的是 圆弧  -起始角度遵循数学上的平面直角坐标系
 const calcD = (
   radius: number,
@@ -225,8 +238,8 @@ const calcRingD = (
   }
 }
 
-export function drawRect(ctx: CanvasRenderingContext2D, data) {
-  const { x, y, width, height, cornerRadius, strokeStyle, fillStyle } = data
+export function createRectPath2D(data) {
+  const { x, y, width, height, cornerRadius = 0 } = data
 
   const path2D = new Path2D()
   path2D.moveTo(x + cornerRadius, y)
@@ -240,12 +253,9 @@ export function drawRect(ctx: CanvasRenderingContext2D, data) {
   path2D.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
   path2D.closePath()
 
-  if (fillStyle) {
-    ctx.fill(path2D)
-  }
-  if (strokeStyle) {
-    ctx.stroke(path2D)
-  }
-
   return path2D
+}
+
+function hasStroke(lineWidth: number, strokeStyle: CanvasFillStrokeStyles['strokeStyle']) {
+  return lineWidth > 0 && lineWidth !== Infinity && strokeStyle
 }
