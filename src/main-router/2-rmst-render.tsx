@@ -98,7 +98,7 @@ const rmstRenderRouteConfig: IRouteObject = {
     {
       path: 'sb',
       element: <LayoutOutlet />,
-      uiConfig: { title: 'SoundingBox', hidden: isProd },
+      uiConfig: { title: 'SoundingBox' },
       children: [{ path: 'sb', element: <SoundingBox />, uiConfig: { icon: <DogHead size={26} /> } }]
     }
     // {

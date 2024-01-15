@@ -1,4 +1,4 @@
-import type { MenuProps } from 'antd'
+import { Tag, type MenuProps } from 'antd'
 
 import { RouteObject, Navigate } from 'react-router-dom'
 
@@ -12,7 +12,7 @@ import otherRouteConfig from './6-other'
 export type IRouteObject = {
   path: RouteObject['path']
   element: RouteObject['element']
-  uiConfig?: { hidden?: boolean; title?: string; icon?: any }
+  uiConfig?: { hidden?: boolean; developing?: boolean; title?: string; icon?: any }
   children?: IRouteObject[]
 }
 
@@ -44,9 +44,12 @@ export const convertToAntdData = (array: IRouteObject[], recur: boolean, parentK
       return Object.assign(
         {
           label: (
-            <>
-              {item.uiConfig?.title || item.path} {item.uiConfig?.icon}
-            </>
+            <div className="flex items-center">
+              <div className="flex-grow overflow-hidden text-ellipsis whitespace-nowrap">
+                {item.uiConfig?.title || item.path} {item.uiConfig?.icon}
+              </div>
+              {item.uiConfig?.developing && <Tag color="processing">dev</Tag>}
+            </div>
           ),
           key
         },
