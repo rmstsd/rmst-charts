@@ -35,11 +35,8 @@ export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: 
 }
 
 function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offsetX: number, offsetY: number) {
-  if (!elementItem.path2D) {
-    return false
-  }
-
   ctx.lineWidth = elementItem.data.lineWidth + 5
+
   const hit_x = offsetX * dpr
   const hit_y = offsetY * dpr
 
@@ -47,8 +44,20 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
     return isTextShapeInner(elementItem)
   }
 
-  const isInPath = () => ctx.isPointInPath(elementItem.path2D, hit_x, hit_y)
-  const isInStroke = () => ctx.isPointInStroke(elementItem.path2D, hit_x, hit_y)
+  const isInPath = () => {
+    if (!elementItem.path2D) {
+      return false
+    }
+
+    return ctx.isPointInPath(elementItem.path2D, hit_x, hit_y)
+  }
+  const isInStroke = () => {
+    if (!elementItem.path2D) {
+      return false
+    }
+
+    return ctx.isPointInStroke(elementItem.path2D, hit_x, hit_y)
+  }
 
   if (isLine(elementItem) && !elementItem.data.closed) {
     return isInStroke()
@@ -59,6 +68,7 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
   function isTextShapeInner(elementItem: Text): boolean {
     const { x, y, content, fontSize, textAlign } = elementItem.data
     const { textWidth, textHeight } = measureText(content, fontSize)
+
     const halfWidth = textWidth / 2
 
     const textRect_x = (() => {
@@ -77,8 +87,8 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
       return y
     })()
 
-    const is_x = textRect_x <= hit_x && hit_x <= textRect_x + textWidth
-    const is_y = textRect_y <= hit_y && hit_y <= textRect_y + textHeight
+    const is_x = textRect_x <= offsetX && offsetX <= textRect_x + textWidth
+    const is_y = textRect_y <= offsetY && offsetY <= textRect_y + textHeight
 
     return is_x && is_y
   }
