@@ -1,0 +1,10 @@
+{
+  "name": "rmst",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm run -C packages/playground dev",
+    "build:rmst-render": "pnpm run -C packages/rmst-render build",
+    "build:rmst-charts": "pnpm run -C packages/rmst-charts build"
+  }
+}
