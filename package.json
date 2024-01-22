@@ -1,41 +1,10 @@
 {
-  "name": "rmst-charts",
-  "version": "0.0.0",
-  "type": "module",
+  "name": "rmst",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "tsc": "tsc"
-  },
-  "dependencies": {
-    "@types/animejs": "^3.1.12",
-    "@ungap/structured-clone": "^1.2.0",
-    "animejs": "^3.2.2",
-    "antd": "^5.2.2",
-    "color-alpha": "^1.1.3",
-    "color-rgba": "^2.4.0",
-    "core-js": "^3.34.0",
-    "leafer-ui": "^1.0.0-rc.5",
-    "perfect-freehand": "^1.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.1",
-    "zrender": "^5.4.4"
-  },
-  "devDependencies": {
-    "@types/color-rgba": "^2.1.0",
-    "@types/node": "^18.15.0",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "@vitejs/plugin-legacy": "^5.2.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.16",
-    "path": "^0.12.7",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.5",
-    "terser": "^5.25.0",
-    "typescript": "^4.6.4",
-    "vite": "^5.0.6"
+    "dev": "pnpm run -C packages/playground dev",
+    "build:rmst-render": "pnpm run -C packages/rmst-render build",
+    "build:rmst-charts": "pnpm run -C packages/rmst-charts build"
   }
 }
