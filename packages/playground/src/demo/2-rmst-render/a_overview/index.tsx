@@ -115,7 +115,17 @@ const Overview = () => {
       draggable: true
     })
 
-    const shapes = [...rects, ...arcs, ...lines, line, line3]
+    const line4 = new Line({
+      points: [27, 189, 107, 269, 207, 319, 307, 249],
+      strokeStyle: 'blueviolet',
+      lineWidth: 20,
+      draggable: true,
+      shadowColor,
+      smooth: true,
+      percent: 0
+    })
+
+    const shapes = [...rects, ...arcs, ...lines, line, line3, line4]
     stage.append(shapes)
     shapes.forEach(item => {
       item.onmouseenter = () => {
@@ -131,6 +141,8 @@ const Overview = () => {
     rects[1].animateCartoon({ width: 120 }, { duration: 3000 })
     line.animateCartoon({ percent: 1 }, { duration: 3000 })
     line3.animateCartoon({ points: [616, 314, 516, 384, 416, 334, 336, 254] }, { duration: 3000 })
+
+    line4.animateCartoon({ percent: 1 }, { duration: 5000 })
 
     setTimeout(() => {
       rects[0].animateCartoon({ fillStyle: 'red' })

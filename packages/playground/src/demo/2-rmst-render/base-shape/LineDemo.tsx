@@ -13,21 +13,25 @@ const LineDemo = () => {
       strokeStyle: 'pink',
       lineWidth: 2,
       draggable: true,
-      smooth: true
+      smooth: true,
+      cursor: 'move'
     })
 
     const line5 = new Line({
-      points: [354, 142, 434, 222, 534, 272, 634, 202],
+      points: [354, 142, 434, 242, 534, 272, 634, 202],
       strokeStyle: 'brown',
       lineWidth: 20,
       draggable: true,
-      percent: 0
+      percent: 0,
+      smooth: true,
+      cursor: 'move'
     })
 
     const line2 = new Line({
       points: [0, 0, 100, 100, 200, 100, 300, 300],
       lineWidth: 5,
-      strokeStyle: '#45eeb8'
+      strokeStyle: '#45eeb8',
+      cursor: 'move'
       // closed: true
     })
 
@@ -43,7 +47,8 @@ const LineDemo = () => {
       points: [0, 0, 0, 0, 0, 0, 0, 0],
       strokeStyle: 'orange',
       lineWidth: 10,
-      draggable: true
+      draggable: true,
+      cursor: 'move'
     })
 
     const line4 = new Line({
@@ -51,14 +56,15 @@ const LineDemo = () => {
       strokeStyle: 'purple',
       lineWidth: 20,
       draggable: true,
-      percent: 0
+      percent: 0,
+      cursor: 'move'
     })
 
     stage.append([line, line2, line3, line4, line5])
 
     line3.animateCartoon({ points: [616, 314, 516, 384, 416, 334, 336, 254] })
-    line4.animateCartoon({ percent: 1 }, { duration: 3000 })
-    line5.animateCartoon({ percent: 1 }, { duration: 3000 })
+    line4.animateCartoon({ percent: 1 }, { duration: 5000 })
+    line5.animateCartoon({ percent: 1 }, { duration: 5000 })
   }, [])
 
   return (
