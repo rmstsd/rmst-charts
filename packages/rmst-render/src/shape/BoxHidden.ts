@@ -12,6 +12,9 @@ export class BoxHidden extends AbstractUi<RectData> {
 
   children: IShape[] = []
 
+  append(p: IShape[]): void
+  append(p: IShape): void
+  append(...args: IShape[]): void
   append(...args) {
     const elements = args.flat(1)
 

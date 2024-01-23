@@ -1,3 +1,5 @@
+import colorAlpha from 'color-alpha'
+
 import Draggable from '../Draggable'
 import { EventParameter, eventList } from '../constant'
 import { initStage, triggerEventHandlers } from './utils'
@@ -5,10 +7,9 @@ import { resetSchedulerCount } from './scheduler'
 import { findHover } from './findHover'
 import { mountStage } from './renderUi'
 import { ICursor, IShape, IShapeType } from '../type'
-import { drawAllShape } from '../renderer/canvas'
+import { drawStageShapes } from '../renderer/canvas'
 import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
-import colorAlpha from 'color-alpha'
 
 interface IOption {
   container: HTMLElement
@@ -47,6 +48,9 @@ export class Stage {
     this.renderStage()
   }
 
+  append(p: IShape[]): void
+  append(p: IShape): void
+  append(...args: IShape[]): void
   append(...args) {
     const elements = args.flat(1)
 
@@ -71,7 +75,7 @@ export class Stage {
     requestAnimationFrame(() => {
       resetSchedulerCount()
 
-      drawAllShape(this)
+      drawStageShapes(this)
 
       this.isAsyncRenderTask = false
     })

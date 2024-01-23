@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { calculateControlPoint } from './贝塞尔曲线计算动画'
-import { Line, Stage } from 'rmst-render'
+import { Line, Stage, calculateControlPoint } from 'rmst-render'
 
 const 贝塞尔曲线峰值吸附 = () => {
   const ref = useRef<HTMLCanvasElement>()
@@ -106,7 +105,7 @@ function calcPointAtCurve(p0, p1, p2, p3) {
   let t = 0
 
   const ans = []
-  const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
+  const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, cp1: p1, cp2: p2, end: p3 })
   ans.push(tempEnd)
 
   dg()
@@ -122,7 +121,7 @@ function calcPointAtCurve(p0, p1, p2, p3) {
       t = 1
     }
 
-    const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, p1, p2, end: p3 })
+    const { cp1, cp2, tempEnd } = calculateControlPoint(t, { start: p0, cp1: p1, cp2: p2, end: p3 })
 
     ans.push(tempEnd)
     dg()

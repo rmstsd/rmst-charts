@@ -14,7 +14,7 @@ import { IShape } from '../../type'
 //   document.querySelector('.canvas-container').insertAdjacentHTML('beforeend', svgHtml)
 // }
 
-export function drawAllShape(stage: Stage) {
+export function drawStageShapes(stage: Stage) {
   sortByZIndex(stage)
 
   const { ctx } = stage
