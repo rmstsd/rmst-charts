@@ -3,6 +3,8 @@ import { isBoxHidden, isGroup, isLine, isText } from '../utils'
 import { Text, measureText } from '..'
 import { IShape } from '../type'
 
+// 需要通过 四叉树算法 优化图形的拾取
+
 export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number): IShape {
   const _elements = children.toReversed()
 
