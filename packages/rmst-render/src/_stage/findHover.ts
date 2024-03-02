@@ -15,10 +15,15 @@ export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: 
 
     if (isGroup(elementItem) || isBoxHidden(elementItem)) {
       if (isBoxHidden(elementItem)) {
-        if (!isShapeInner(ctx, elementItem, x, y)) {
-          continue
+        if (isShapeInner(ctx, elementItem, x, y)) {
+          const hovered = findHover(ctx, elementItem.children, x, y)
+          if (hovered) {
+            return hovered
+          }
+
+          return elementItem
         } else {
-          return elementItem // 解决后代 dataZoom 的 enter 事件bug (需重新思考)
+          continue
         }
       }
 

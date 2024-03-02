@@ -3,6 +3,8 @@ import { IShape } from './type'
 export type EventType = 'mouseleave' | 'mouseenter' | 'mousemove' | 'mousedown' | 'mouseup' | 'click'
 export type OnEventType = `on${EventType}`
 
+export const supportBubblesEventType: EventType[] = ['click']
+
 export type EventParameter = {
   target: IShape
   x: number

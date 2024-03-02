@@ -10,6 +10,7 @@ import { ICursor, IShape, IShapeType } from '../type'
 import { drawStageShapes } from '../renderer/canvas'
 import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
+import { isStage } from '../utils'
 
 interface IOption {
   container: HTMLElement
@@ -83,6 +84,8 @@ export class Stage {
 
   private prevHovered: IShape
 
+  private hoveredStack: IShape[] = []
+
   private addStageEventListener() {
     this.canvasElement.onmousemove = evt => {
       // 此逻辑 可能会影响 拖放功能 的图形拾取; 暂时注释 与 zrender 的 UI 表现一致
@@ -92,6 +95,76 @@ export class Stage {
 
       const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
 
+      if (hovered) {
+        {
+          let hasCursorTarget = hovered
+
+          while (hasCursorTarget && !hasCursorTarget.data.cursor) {
+            const parent = hasCursorTarget.parent as unknown as IShape
+            if (isStage(parent)) {
+              break
+            }
+
+            hasCursorTarget = parent
+          }
+
+          const cursor = hasCursorTarget.data.cursor || 'auto'
+
+          this.setCursor(cursor)
+
+          const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(hovered, 'onmousemove', eventParameter)
+        }
+
+        if (this.hoveredStack.length === 0) {
+          const stack = [hovered]
+          let parent = hovered.parent
+          while (parent && !isStage(parent)) {
+            stack.unshift(parent)
+            parent = parent.parent
+          }
+
+          stack.forEach(eleItem => {
+            const eventParameter: EventParameter = { target: eleItem, x: evt.offsetX, y: evt.offsetY }
+            triggerEventHandlers(eleItem, 'onmouseenter', eventParameter)
+          })
+
+          this.hoveredStack = stack
+        }
+
+        if (!this.hoveredStack.find(item => item === hovered)) {
+          const stackTopElement = this.hoveredStack.at(-1)
+
+          // 对于同级元素直接替换掉栈顶元素
+          if (hovered.parent !== stackTopElement) {
+            this.hoveredStack[this.hoveredStack.length - 1] = hovered
+
+            const eventParameter: EventParameter = { target: stackTopElement, x: evt.offsetX, y: evt.offsetY }
+            triggerEventHandlers(stackTopElement, 'onmouseleave', eventParameter)
+          } else {
+            this.hoveredStack.push(hovered)
+          }
+
+          const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(hovered, 'onmouseenter', eventParameter)
+        }
+
+        if (this.hoveredStack.at(-1) !== hovered) {
+          const elementItem = this.hoveredStack.pop()
+          const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
+        }
+      } else {
+        this.setCursor('default')
+
+        if (this.hoveredStack.length) {
+          const elementItem = this.hoveredStack.pop()
+          const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
+        }
+      }
+
+      return
       if (!hovered) {
         if (this.prevHovered) {
           const eventParameter: EventParameter = { target: this.prevHovered, x: evt.offsetX, y: evt.offsetY }
