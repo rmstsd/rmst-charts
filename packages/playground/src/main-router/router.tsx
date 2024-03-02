@@ -35,6 +35,28 @@ export const routes: IRouteObject[] = [
   }
 ]
 
+const routesFlatten = (() => {
+  return flat(routes)
+
+  function flat(routes, path = '', depth = 1) {
+    return routes.reduce((acc, item) => {
+      const nPath = depth === 1 ? path + item.path : path + '/' + item.path
+
+      if (item.children) {
+        acc.push(...flat(item.children, nPath, depth + 1))
+      } else {
+        acc.push({ ...item, path: nPath })
+      }
+
+      return acc
+    }, [])
+  }
+})()
+
+export const findRouteItem = (pathname: string): IRouteObject => {
+  return routesFlatten.find(item => item.path === pathname)
+}
+
 export const convertToAntdData = (array: IRouteObject[], recur: boolean, parentKey = ''): MenuProps['items'] => {
   return array
     .filter(item => !item.uiConfig?.hidden)

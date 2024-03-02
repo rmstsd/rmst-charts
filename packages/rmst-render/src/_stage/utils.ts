@@ -1,4 +1,4 @@
-import { EventParameter, EventType, OnEventType, dpr } from '../constant'
+import { EventParameter, EventType, OnEventType, dpr, supportBubblesEventType } from '../constant'
 import { IShape } from '../type'
 import { isStage } from '../utils'
 
@@ -32,8 +32,9 @@ export function initStage(canvasContainer: HTMLElement) {
 
 export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType, eventParameter: EventParameter) {
   elementItem[eventName](eventParameter)
+  const eventType = eventName.slice(2) as EventType
 
-  const handlers = elementItem.eventTypeHandlerMap.get(eventName.slice(2) as EventType)
+  const handlers = elementItem.eventTypeHandlerMap.get(eventType)
   if (Array.isArray(handlers)) {
     handlers.forEach(handlerItem => {
       handlerItem(eventParameter)
@@ -42,8 +43,10 @@ export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType
 
   const parent = elementItem.parent
   if (parent && !isStage(parent)) {
-    const _parent = parent as unknown as IShape
+    if (supportBubblesEventType.includes(eventType)) {
+      const _parent = parent as unknown as IShape
 
-    triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })
+      triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })
+    }
   }
 }
