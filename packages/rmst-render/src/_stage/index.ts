@@ -44,6 +44,18 @@ export class Stage {
   }
 
   removeAllShape() {
+    const dispose = (children: IShape[]) => {
+      children.forEach(item => {
+        item.dispose()
+
+        if (Array.isArray(item['children'])) {
+          dispose(item['children'])
+        }
+      })
+    }
+
+    dispose(this.children)
+
     this.children = []
 
     this.renderStage()
