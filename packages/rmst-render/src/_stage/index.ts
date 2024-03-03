@@ -43,18 +43,22 @@ export class Stage {
     return { width: this.canvasElement.offsetWidth, height: this.canvasElement.offsetHeight }
   }
 
-  removeAllShape() {
-    const dispose = (children: IShape[]) => {
+  dispose() {
+    const disposeAll = (children: IShape[]) => {
       children.forEach(item => {
         item.dispose()
 
         if (Array.isArray(item['children'])) {
-          dispose(item['children'])
+          disposeAll(item['children'])
         }
       })
     }
 
-    dispose(this.children)
+    disposeAll(this.children)
+  }
+
+  removeAllShape() {
+    this.dispose()
 
     this.children = []
 

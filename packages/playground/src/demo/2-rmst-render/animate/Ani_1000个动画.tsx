@@ -14,6 +14,10 @@ const Ani_1000个动画 = () => {
     stageRef.current = stage
 
     renderRects()
+
+    return () => {
+      stageRef.current.dispose()
+    }
   }, [])
 
   const [count, setCount] = useState(5000)
