@@ -1,17 +1,29 @@
-import { useEffect, useRef } from 'react'
+import { Button, Input, InputNumber } from 'antd'
+import { useEffect, useRef, useState } from 'react'
 
 import { Stage, Rect } from 'rmst-render'
 
-const length = 1000
-
 const Ani_1000个动画 = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
+  const stageRef = useRef<Stage>(null)
 
   useEffect(() => {
     const stage = new Stage({
       container: canvasRef.current
     })
+    stageRef.current = stage
 
+    renderRects()
+  }, [])
+
+  const [count, setCount] = useState(5000)
+  const confirm = () => {
+    stageRef.current.removeAllShape()
+    renderRects()
+  }
+
+  function renderRects() {
+    const stage = stageRef.current
     const start_x = 5
     const start_y = 5
 
@@ -24,7 +36,7 @@ const Ani_1000个动画 = () => {
     let curRow = 0
     let curColumn = 0
 
-    const rects = Array.from({ length }, _ => {
+    const rects = Array.from({ length: count }, _ => {
       let x = calcX()
 
       if (x + width > stage.canvasSize.width) {
@@ -47,20 +59,25 @@ const Ani_1000个动画 = () => {
 
     stage.append(rects)
 
-    rects.forEach(async item => {
-      // item.data.width = 100 // 触发 UI 更新
-      // item.attr('width', 200)
-      // item.attr({ width: 300 })
+    rects.forEach(item => {
+      exec()
 
-      await item.animateCartoon({ width: width - 10, height: height - 10 })
-      await item.animateCartoon({ width, height })
+      async function exec() {
+        await item.animateCartoon({ width: width - 10, height: height - 10 })
+        await item.animateCartoon({ width, height })
+
+        exec()
+      }
     })
-  }, [])
+  }
 
   return (
     <div>
-      <h3>{length} 个动画同时执行</h3>
-      <div className="canvas-container" ref={canvasRef} style={{ width: 900, height: 600 }}></div>
+      <InputNumber value={count} onChange={value => setCount(value)} />
+      <Button onClick={confirm}>确定</Button>
+
+      <h3>{count} 个动画同时执行, 自测极限是 5000个不掉帧. (调整浏览器缩放查看全部图形) </h3>
+      <div className="canvas-container" ref={canvasRef} style={{ width: 2000, height: 1500 }}></div>
     </div>
   )
 }

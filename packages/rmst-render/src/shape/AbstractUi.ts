@@ -190,6 +190,12 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
       }
     })
   }
+
+  dispose() {
+    this.animators.forEach(item => {
+      item.stop()
+    })
+  }
 }
 
 export default AbstractUi

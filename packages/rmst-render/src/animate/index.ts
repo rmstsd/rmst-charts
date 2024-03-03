@@ -80,4 +80,8 @@ export class Animator {
   onUpdate(currentProp, elapsedTimeRatio: number) {}
 
   onDone() {}
+
+  stop() {
+    cancelAnimationFrame(this.rafTimer)
+  }
 }
