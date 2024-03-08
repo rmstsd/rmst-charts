@@ -13,6 +13,7 @@ import TextDemo from '@/demo/2-rmst-render/base-shape/TextDemo'
 import Single from '@/demo/2-rmst-render/event/Single'
 import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
 import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
+import NestRect from '@/demo/2-rmst-render/event/NestRect'
 
 import Draggable from '@/demo/2-rmst-render/drag/Draggable'
 import GroupDraggable from '@/demo/2-rmst-render/drag/GroupDraggable'
@@ -59,9 +60,10 @@ const rmstRenderRouteConfig: IRouteObject = {
       element: <LayoutOutlet />,
       uiConfig: { title: '事件' },
       children: [
-        { path: 'single', element: <Single /> },
-        { path: 'adjacent', element: <TwoAdjacentRect /> },
-        { path: 'over', element: <TwoOverRect /> }
+        { path: 'single', element: <Single />, uiConfig: { title: '单个图形' } },
+        { path: 'adjacent', element: <TwoAdjacentRect />, uiConfig: { title: '同级相邻' } },
+        { path: 'over', element: <TwoOverRect />, uiConfig: { title: '同级覆盖' } },
+        { path: 'nest', element: <NestRect />, uiConfig: { title: '父子嵌套' } }
       ]
     },
     {
