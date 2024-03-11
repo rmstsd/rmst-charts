@@ -15,6 +15,13 @@ export type EventParameter = {
 }
 export type Handler = (parameter: EventParameter) => void
 
-export const eventList: OnEventType[] = ['onmousemove', 'onmousedown', 'onmouseup', 'onclick']
+export const eventStageList: OnEventType[] = [
+  'onmouseleave',
+  'onmouseenter',
+  'onmousemove',
+  'onmousedown',
+  'onmouseup',
+  'onclick'
+]
 
 export const dpr = window.devicePixelRatio

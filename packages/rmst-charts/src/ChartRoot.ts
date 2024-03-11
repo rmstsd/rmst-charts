@@ -1,9 +1,7 @@
 import { IShape, Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
-
-import Legend from './components/legend'
-import dataZoom, { RangeRatioDecimal, hasDataZoom } from './components/dataZoom'
+import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine } from './components'
 
 import { SeriesManager } from './SeriesMgr'
 
@@ -47,6 +45,8 @@ export class ChartRoot {
   dataZoom: dataZoom
 
   coordinateSystem: ICoordinateSystemElements
+
+  assistTick: AssistLine
 
   renderedElements = []
 
@@ -134,6 +134,15 @@ export class ChartRoot {
       }
       this.legend.onCancelSelect = legendItem => {
         this.seriesManager.cancelSelect(legendItem)
+      }
+    }
+
+    {
+      // 辅助刻度尺 仅对 二维的直角坐标系 有效
+      if (this.coordinateSystem.hasCartesian2d) {
+        this.assistTick = new AssistLine(this)
+        this.assistTick.render()
+        this.renderedElements.push(...this.assistTick.elements)
       }
     }
 

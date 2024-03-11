@@ -24,6 +24,8 @@ export interface AbstractUiData {
   lineCap?: CanvasLineCap
   lineJoin?: CanvasLineJoin
 
+  lineDash?: number[]
+
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
 
@@ -48,6 +50,7 @@ export const defaultAbsData: AbstractUiData = {
   shadowOffsetY: 0,
   lineCap: 'butt',
   lineJoin: 'miter',
+  lineDash: [],
   pointerEvents: 'all'
 }
 

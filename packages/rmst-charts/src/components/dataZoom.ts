@@ -1,5 +1,6 @@
-import { ChartRoot } from '../ChartRoot'
 import { BoxHidden, Group, IShape, Line, Rect } from 'rmst-render'
+
+import { ChartRoot } from '../ChartRoot'
 
 const moveHandleHeight = 6
 
@@ -14,7 +15,7 @@ export interface RangeRatioDecimal {
   endRatio: number // o.44
 }
 
-export default class dataZoom {
+export class dataZoom {
   cr: ChartRoot
 
   constructor(cr: ChartRoot) {
