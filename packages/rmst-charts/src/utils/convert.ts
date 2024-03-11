@@ -1,11 +1,13 @@
 import { ICartesian2dElements } from '../coordinateSystem/cartesian2d'
 
-// 在鼠标移动过程中 计算鼠标在那个蜡烛上, 返回索引
-export function getActiveIndexFromOffsetX(offsetX: number, xAxis_start_x: number, xAxisInterval: number) {
-  // 除以的是 半个刻度的距离px
-  const tickCount = (offsetX - xAxis_start_x) / (xAxisInterval / 2)
-  const index = Math.floor(tickCount / 2)
-  return index
+export const detectNear = (tickCount: number, offsetVal: number) => {
+  const offsetRatio = tickCount - Math.floor(tickCount)
+
+  if (offsetRatio < offsetVal || offsetRatio > 1 - offsetVal) {
+    return { isNear: true, nearValue: Math.round(tickCount) }
+  }
+
+  return { isNear: false }
 }
 
 // 在鼠标移动过程中 计算图表坐标系中 y轴的真实刻度值 (鼠标位置 -> canvas坐标)
@@ -18,14 +20,10 @@ export function getYTickFromOffsetY(
   yTicks: ICartesian2dElements['cartesian2dAxisData']['yAxisData']['ticks']
 ) {
   const tickCount = (yAxis_start_y - offsetY) / tickInterval
-  const offsetRatio = tickCount - Math.floor(tickCount)
 
-  const offsetVal = 0.05 // 比例
-
-  // 吸附功能
-  if (offsetRatio < offsetVal || offsetRatio > 1 - offsetVal) {
-    const index = Math.round(tickCount)
-    const targetTick = yTicks[index]
+  const neared = detectNear((yAxis_start_y - offsetY) / tickInterval, 0.05)
+  if (neared.isNear) {
+    const targetTick = yTicks[neared.nearValue]
 
     return {
       assistY: targetTick.start.y,
