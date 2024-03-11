@@ -1,7 +1,7 @@
 import colorAlpha from 'color-alpha'
 
 import Draggable from '../Draggable'
-import { EventParameter, eventList } from '../constant'
+import { EventParameter, Handler, eventStageList } from '../constant'
 import { initStage, triggerEventHandlers } from './utils'
 import { resetSchedulerCount } from './scheduler'
 import { findHover } from './findHover'
@@ -65,6 +65,15 @@ export class Stage {
     this.renderStage()
   }
 
+  onclick: Handler = () => {}
+
+  onmouseenter: Handler = () => {}
+  onmousemove: Handler = () => {}
+  onmouseleave: Handler = () => {}
+
+  onmousedown: Handler = () => {}
+  onmouseup: Handler = () => {}
+
   append(p: IShape[]): void
   append(p: IShape): void
   append(...args: IShape[]): void
@@ -104,6 +113,9 @@ export class Stage {
 
   private addStageEventListener() {
     this.canvasElement.onmousemove = evt => {
+      const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+      this.onmousemove(eventParameter)
+
       // 此逻辑 可能会影响 拖放功能 的图形拾取; 暂时注释 与 zrender 的 UI 表现一致
       if (this.draggingMgr.dragging) {
         return
@@ -212,12 +224,18 @@ export class Stage {
       }
     }
 
-    eventList.forEach(eventName => {
+    eventStageList.forEach(eventName => {
       if (eventName === 'onmousemove') {
         return
       }
 
       this.canvasElement[eventName] = evt => {
+        {
+          // 触发舞台(canvas Element)的事件
+          const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+          this[eventName](eventParameter)
+        }
+
         const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
         if (hovered) {
           const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }

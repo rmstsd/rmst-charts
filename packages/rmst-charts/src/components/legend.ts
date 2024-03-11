@@ -1,6 +1,6 @@
+import { Group, Rect, Text, measureText } from 'rmst-render'
+
 import { ChartRoot } from '../ChartRoot'
-import { Group, Rect, Text } from 'rmst-render'
-import { measureText } from 'rmst-render'
 
 export interface LegendDataItem {
   color: string
@@ -8,7 +8,7 @@ export interface LegendDataItem {
 }
 
 const defaultLegendCfg: ICharts.IOption['legend'] = { orient: 'horizontal', left: 'center' }
-class Legend {
+export class Legend {
   cr: ChartRoot
 
   constructor(cr: ChartRoot) {
@@ -94,5 +94,3 @@ class Legend {
   onSelect(legendItem: LegendDataItem, index: number) {}
   onCancelSelect(legendItem: LegendDataItem, index: number) {}
 }
-
-export default Legend

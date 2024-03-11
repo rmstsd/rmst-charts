@@ -1,3 +1,5 @@
+import { ICartesian2dElements } from '../coordinateSystem/cartesian2d'
+
 // 在鼠标移动过程中 计算鼠标在那个蜡烛上, 返回索引
 export function getActiveIndexFromOffsetX(offsetX: number, xAxis_start_x: number, xAxisInterval: number) {
   // 除以的是 半个刻度的距离px
@@ -13,7 +15,7 @@ export function getYTickFromOffsetY(
   tickInterval: number,
   realInterval: number,
   realMin: number,
-  yTicks: number
+  yTicks: ICartesian2dElements['cartesian2dAxisData']['yAxisData']['ticks']
 ) {
   const tickCount = (yAxis_start_y - offsetY) / tickInterval
   const offsetRatio = tickCount - Math.floor(tickCount)
@@ -26,7 +28,7 @@ export function getYTickFromOffsetY(
     const targetTick = yTicks[index]
 
     return {
-      assistY: targetTick.start[1],
+      assistY: targetTick.start.y,
       realTickValue: targetTick.text.value.toFixed(2)
     }
   }

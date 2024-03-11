@@ -119,7 +119,7 @@ export function drawCircle(ctx: CanvasRenderingContext2D, elementItem: Circle) {
 
 export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem) {
   const { data } = elementItem
-  const { lineWidth, lineCap, lineJoin, strokeStyle, fillStyle, opacity } = data
+  const { lineWidth, lineCap, lineJoin, strokeStyle, fillStyle, opacity, lineDash } = data
   const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY } = data
 
   ctx.lineWidth = lineWidth
@@ -128,6 +128,8 @@ export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem) {
 
   ctx.strokeStyle = strokeStyle
   ctx.fillStyle = fillStyle
+
+  ctx.setLineDash(lineDash)
 
   ctx.globalAlpha = opacity
 
