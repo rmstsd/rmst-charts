@@ -29,8 +29,9 @@ export class AssistLine {
 
     const { stage } = cr
 
-    this.horizontal = new Line({ points: [0, 0, 0, 0], strokeStyle: '#ccc', lineDash: [4] })
-    this.vertical = new Line({ points: [0, 0, 0, stage.canvasSize.height], strokeStyle: '#ccc', lineDash: [4] })
+    const reusedOption = { zIndex: 8, pointerEvents: 'none' as const, lineDash: [4] }
+    this.horizontal = new Line({ points: [0, 0, 0, 0], strokeStyle: '#ccc', ...reusedOption })
+    this.vertical = new Line({ points: [0, 0, 0, stage.canvasSize.height], strokeStyle: '#ccc', ...reusedOption })
     const height = 22
     this.tickRect = new Rect({ x: 0, y: 0, width: 80, height, fillStyle: '#eee', cornerRadius: 4, zIndex: 8 })
     this.tickText = new Text({ x: 0, y: 0, fillStyle: '#444', content: '', zIndex: 10 })
