@@ -1,7 +1,7 @@
 import { Line, Rect, Text } from 'rmst-render'
 
 import { ChartRoot } from '../ChartRoot'
-import { getActiveIndexFromOffsetX, getYTickFromOffsetY, isInnerRect } from '../utils'
+import { getYTickFromOffsetY, isInnerRect, detectNear } from '../utils'
 
 export class AssistLine {
   cr: ChartRoot
@@ -40,9 +40,6 @@ export class AssistLine {
 
     this.elements = [this.horizontal, this.vertical, this.tickRect, this.tickText]
 
-    stage.onmouseenter = evt => {
-      this.setVisible(true)
-    }
     stage.onmousemove = evt => {
       const offsetX = evt.x
       const offsetY = evt.y
@@ -69,8 +66,24 @@ export class AssistLine {
           yAxisData.ticks
         )
 
-        const activeIndex = getActiveIndexFromOffsetX(offsetX, xAxis_start_x, xAxisData.axis.xAxisInterval)
-        const verticalX = xAxisData.ticks[activeIndex].start.x
+        let activeIndex = 0
+
+        const xAxisDataTicks = xAxisData.ticks
+
+        if (offsetX < xAxisDataTicks.at(0).start.x) {
+          activeIndex = 0
+        } else if (offsetX > xAxisDataTicks.at(-1).start.x) {
+          activeIndex = xAxisDataTicks.length - 1
+        } else {
+          const tickCount = (offsetX - xAxisDataTicks.at(0).start.x) / xAxisData.axis.xAxisInterval
+
+          const neared = detectNear(tickCount, 0.5)
+          if (neared.isNear) {
+            activeIndex = neared.nearValue
+          }
+        }
+
+        const verticalX = xAxisDataTicks[activeIndex].start.x
 
         this.horizontal.attr({ points: [0, assistY, stage.canvasSize.width, assistY] })
         this.vertical.attr({ points: [verticalX, 0, verticalX, stage.canvasSize.height] })
@@ -80,6 +93,11 @@ export class AssistLine {
         this.tickText.attr({ x: tickRectCoord.x + 10, y: tickRectCoord.y + 5, content: realTickValue })
       }
     }
+
+    stage.onmouseenter = evt => {
+      this.setVisible(true)
+    }
+
     stage.onmouseleave = evt => {
       this.setVisible(false)
     }
