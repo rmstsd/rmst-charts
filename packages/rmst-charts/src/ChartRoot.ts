@@ -1,13 +1,13 @@
 import { IShape, Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
-import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine } from './components'
+import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine, Tooltip } from './components'
 
 import { SeriesManager } from './SeriesMgr'
 
 import { stClone } from './utils'
 
-const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx, endIdx: number) => {
+const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx: number, endIdx: number) => {
   const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
   const re = Math.ceil(startIdx + (endIdx - startIdx) * rangeRatio.endRatio)
 
@@ -24,10 +24,31 @@ const getRangeRatio = (option: ICharts.IOption): RangeRatioDecimal => {
 
 export class ChartRoot {
   constructor(canvasContainer: HTMLElement) {
-    this.stage = new Stage({
-      container: canvasContainer
-    })
+    const div = document.createElement('div')
+    div.style.setProperty('position', 'relative')
+    div.style.setProperty('width', '100%')
+    div.style.setProperty('height', '100%')
+
+    canvasContainer.appendChild(div)
+
+    this.stage = new Stage({ container: div })
+    this.wrapperContainer = div
+
+    this.stage.onmousemove = evt => {
+      this.assistTick?.onStageMousemove(evt)
+      this.tooltip?.onStageMousemove(evt)
+    }
+    this.stage.onmouseenter = evt => {
+      this.assistTick?.onStageMouseenter(evt)
+      this.tooltip?.onStageMouseenter(evt)
+    }
+    this.stage.onmouseleave = evt => {
+      this.assistTick?.onStageMouseleave(evt)
+      this.tooltip?.onStageMouseleave(evt)
+    }
   }
+
+  wrapperContainer: HTMLDivElement
 
   firstSetOption = true // 初始化还是更新
 
@@ -47,6 +68,8 @@ export class ChartRoot {
   coordinateSystem: ICoordinateSystemElements
 
   assistTick: AssistLine
+
+  tooltip: Tooltip
 
   renderedElements = []
 
@@ -144,6 +167,10 @@ export class ChartRoot {
         this.assistTick.render()
         this.renderedElements.push(...this.assistTick.elements)
       }
+    }
+
+    {
+      this.tooltip = new Tooltip(this)
     }
 
     this.refreshChart()
