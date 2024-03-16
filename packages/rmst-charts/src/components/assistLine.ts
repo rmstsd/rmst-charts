@@ -31,7 +31,7 @@ export class AssistLine {
     const reusedOption = { zIndex: 8, pointerEvents: 'none' as const, lineDash: [4] }
     this.horizontal = new Line({ points: [0, 0, 0, 0], strokeStyle: '#ccc', ...reusedOption })
     this.vertical = new Line({ points: [0, 0, 0, stage.canvasSize.height], strokeStyle: '#ccc', ...reusedOption })
-    this.tickRect = new Rect({ x: 0, y: 0, width: 80, height: 22, fillStyle: '#eee', cornerRadius: 4, zIndex: 8 })
+    this.tickRect = new Rect({ x: 0, y: 0, width: 60, height: 22, fillStyle: '#eee', cornerRadius: 4, zIndex: 8 })
     this.tickText = new Text({ x: 0, y: 0, fillStyle: '#444', content: '', zIndex: 10 })
 
     this.setVisible(false)
@@ -40,6 +40,7 @@ export class AssistLine {
   }
 
   elements = []
+  activeIndex: number
 
   onStageMousemove(evt) {
     const { cr } = this
@@ -87,12 +88,23 @@ export class AssistLine {
         }
       }
 
-      const verticalX = xAxisDataTicks[activeIndex].start.x
+      if (this.activeIndex !== activeIndex) {
+        this.activeIndex = activeIndex
+        const verticalX = xAxisDataTicks[activeIndex].start.x
+        this.vertical.animateCartoon(
+          { points: [verticalX, 0, verticalX, stage.canvasSize.height] },
+          { duration: 200, easing: 'cubicInOut' }
+        )
+
+        this.onActiveIndexChange(this.activeIndex)
+      }
 
       this.horizontal.attr({ points: [0, assistY, stage.canvasSize.width, assistY] })
-      this.vertical.attr({ points: [verticalX, 0, verticalX, stage.canvasSize.height] })
 
-      const tickRectCoord: ICoord = { x: xAxis_start_x + 10, y: assistY - this.tickRect.data.height / 2 }
+      const tickRectCoord: ICoord = {
+        x: xAxis_start_x - this.tickRect.data.width,
+        y: assistY - this.tickRect.data.height / 2
+      }
       this.tickRect.attr({ x: tickRectCoord.x, y: tickRectCoord.y })
       this.tickText.attr({ x: tickRectCoord.x + 10, y: tickRectCoord.y + 5, content: realTickValue })
     }
@@ -105,4 +117,6 @@ export class AssistLine {
   onStageMouseleave(evt) {
     this.setVisible(false)
   }
+
+  onActiveIndexChange(index: number) {}
 }

@@ -85,3 +85,5 @@ export class Animator {
     cancelAnimationFrame(this.rafTimer)
   }
 }
+
+export * from './AnimatorSingle'

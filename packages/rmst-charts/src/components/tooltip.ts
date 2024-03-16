@@ -5,6 +5,12 @@ export class Tooltip {
 
   constructor(cr: ChartRoot) {
     this.cr = cr
+
+    this.cr.assistLine.onActiveIndexChange = index => {
+      const dd = this.cr.finalSeries.map(item => item.data[index])
+
+      console.log(dd)
+    }
   }
 
   tooltipContainer: HTMLDivElement
@@ -18,6 +24,14 @@ export class Tooltip {
 
       this.cr.wrapperContainer.appendChild(div)
     }
+
+    const css = {
+      position: 'absolute',
+      left: evt.x,
+      top: evt.y
+    }
+
+    // this.tooltipContainer.setAttribute('style', JSON.stringify(css))
   }
 
   onStageMouseenter(evt) {}

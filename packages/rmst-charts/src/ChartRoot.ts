@@ -35,15 +35,15 @@ export class ChartRoot {
     this.wrapperContainer = div
 
     this.stage.onmousemove = evt => {
-      this.assistTick?.onStageMousemove(evt)
+      this.assistLine?.onStageMousemove(evt)
       this.tooltip?.onStageMousemove(evt)
     }
     this.stage.onmouseenter = evt => {
-      this.assistTick?.onStageMouseenter(evt)
+      this.assistLine?.onStageMouseenter(evt)
       this.tooltip?.onStageMouseenter(evt)
     }
     this.stage.onmouseleave = evt => {
-      this.assistTick?.onStageMouseleave(evt)
+      this.assistLine?.onStageMouseleave(evt)
       this.tooltip?.onStageMouseleave(evt)
     }
   }
@@ -67,7 +67,7 @@ export class ChartRoot {
 
   coordinateSystem: ICoordinateSystemElements
 
-  assistTick: AssistLine
+  assistLine: AssistLine
 
   tooltip: Tooltip
 
@@ -163,9 +163,9 @@ export class ChartRoot {
     {
       // 辅助刻度尺 仅对 二维的直角坐标系 有效
       if (this.coordinateSystem.hasCartesian2d) {
-        this.assistTick = new AssistLine(this)
-        this.assistTick.render()
-        this.renderedElements.push(...this.assistTick.elements)
+        this.assistLine = new AssistLine(this)
+        this.assistLine.render()
+        this.renderedElements.push(...this.assistLine.elements)
       }
     }
 
