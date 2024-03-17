@@ -12,8 +12,18 @@ export const calcTargetValue = (
   }
 
   function calcValue(startVal: number, targetVal: number) {
-    const totalChangedVal = Math.abs(startVal - targetVal)
+    const totalChangedVal = targetVal - startVal
     const per = elapsedTimeRatio * totalChangedVal
+
+    let cur = startVal + per
+
+    const min = startVal < targetVal ? startVal : targetVal
+    const max = startVal > targetVal ? startVal : targetVal
+
+    cur = Math.max(cur, min)
+    cur = Math.min(cur, max)
+
+    return cur
 
     if (startVal < targetVal) {
       const currCount = startVal + per
