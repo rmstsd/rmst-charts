@@ -39,7 +39,7 @@ const UpAniEnd = () => {
     const setBtn = document.querySelector('.set') as HTMLButtonElement
     setBtn.onclick = () => {
       console.log(11)
-      x += 100
+      x = x + 100
 
       // ani 中断
 
@@ -58,6 +58,18 @@ const UpAniEnd = () => {
       const target = evt.target as HTMLDivElement
       const x = evt.clientX - target.getBoundingClientRect().left
 
+      // {
+      //   ani.setAheadEnd()
+      //   ani = new AnimatorSingle(ani.centerValue, x, { duration: 300 })
+      //   ani.onUpdate = v => {
+      //     setDomX(v)
+      //   }
+
+      //   ani.setEndValue(x)
+
+      //   return
+      // }
+
       const tt = 200
       const isNeared = detectNear(x / tt, 0.5)
 
@@ -66,15 +78,15 @@ const UpAniEnd = () => {
           ac = isNeared.nearValue
           // aniRef.current.setBreak(true)
 
-          const nn = tt * isNeared.nearValue
+          const near_x = tt * isNeared.nearValue
 
-          ani.setDuration(0.0001)
-          ani = new AnimatorSingle(ani.centerValue, nn)
+          ani.setAheadEnd()
+          ani = new AnimatorSingle(ani.centerValue, near_x, { duration: 200 })
           ani.onUpdate = v => {
             setDomX(v)
           }
 
-          ani.setEndValue(x)
+          ani.setEndValue(near_x)
         }
       }
     }

@@ -68,8 +68,16 @@ export class AnimatorSingle {
     this.cfg.duration = ms
   }
 
+  handEnd = false
+
+  setAheadEnd() {
+    this.handEnd = true
+    this.onUpdate(this.endValue, 1)
+    this.setBreak(true)
+    this.stop()
+  }
+
   start() {
-    console.log('start')
     this.runing = true
 
     const rafCb = (perNowTime: number) => {

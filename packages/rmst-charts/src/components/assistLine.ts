@@ -1,4 +1,4 @@
-import { Line, Rect, Text } from 'rmst-render'
+import { AnimatorSingle, Line, Rect, Text } from 'rmst-render'
 
 import { ChartRoot } from '../ChartRoot'
 import { getYTickFromOffsetY, isInnerRect, detectNear } from '../utils'
@@ -29,10 +29,10 @@ export class AssistLine {
     const { stage } = cr
 
     const reusedOption = { zIndex: 8, pointerEvents: 'none' as const, lineDash: [4] }
-    this.horizontal = new Line({ points: [0, 0, 0, 0], strokeStyle: '#ccc', ...reusedOption })
-    this.vertical = new Line({ points: [0, 0, 0, stage.canvasSize.height], strokeStyle: '#ccc', ...reusedOption })
-    this.tickRect = new Rect({ x: 0, y: 0, width: 60, height: 22, fillStyle: '#eee', cornerRadius: 4, zIndex: 8 })
-    this.tickText = new Text({ x: 0, y: 0, fillStyle: '#444', content: '', zIndex: 10 })
+    this.horizontal = new Line({ points: [0, 0, 0, 0], strokeStyle: '#bbb', ...reusedOption })
+    this.vertical = new Line({ points: [0, 0, 0, stage.canvasSize.height], strokeStyle: '#bbb', ...reusedOption })
+    this.tickRect = new Rect({ x: 0, y: 0, width: 50, height: 22, fillStyle: '#eee', cornerRadius: 4, zIndex: 8 })
+    this.tickText = new Text({ x: 0, y: 0, fillStyle: '#444', content: '', zIndex: 10, textAlign: 'center' })
 
     this.setVisible(false)
 
@@ -41,6 +41,8 @@ export class AssistLine {
 
   elements = []
   activeIndex: number
+
+  ani = new AnimatorSingle(0, 0)
 
   onStageMousemove(evt) {
     const { cr } = this
@@ -90,23 +92,33 @@ export class AssistLine {
 
       if (this.activeIndex !== activeIndex) {
         this.activeIndex = activeIndex
-        const verticalX = xAxisDataTicks[activeIndex].start.x
-        this.vertical.animateCartoon(
-          { points: [verticalX, 0, verticalX, stage.canvasSize.height] },
-          { duration: 200, easing: 'cubicInOut' }
-        )
+        const verticalX = xAxisDataTicks[this.activeIndex].start.x
+        // this.vertical.animateCartoon(
+        //   { points: [verticalX, 0, verticalX, stage.canvasSize.height] },
+        //   { duration: 200, easing: 'cubicInOut' }
+        // )
+
+        this.ani.setAheadEnd()
+        this.ani = new AnimatorSingle(this.ani.centerValue, verticalX, { duration: 150 })
+        this.ani.onUpdate = _cv => {
+          this.vertical.attr({ points: [_cv, 0, _cv, stage.canvasSize.height] })
+        }
+
+        this.ani.setEndValue(verticalX)
 
         this.onActiveIndexChange(this.activeIndex)
       }
 
       this.horizontal.attr({ points: [0, assistY, stage.canvasSize.width, assistY] })
 
-      const tickRectCoord: ICoord = {
-        x: xAxis_start_x - this.tickRect.data.width,
-        y: assistY - this.tickRect.data.height / 2
-      }
+      const tickRectData = this.tickRect.data
+      const tickRectCoord: ICoord = { x: xAxis_start_x - tickRectData.width, y: assistY - tickRectData.height / 2 }
       this.tickRect.attr({ x: tickRectCoord.x, y: tickRectCoord.y })
-      this.tickText.attr({ x: tickRectCoord.x + 10, y: tickRectCoord.y + 5, content: realTickValue })
+      this.tickText.attr({
+        x: tickRectCoord.x + tickRectData.width / 2,
+        y: tickRectCoord.y + 5,
+        content: realTickValue
+      })
     }
   }
 
