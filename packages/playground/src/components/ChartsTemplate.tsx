@@ -29,11 +29,12 @@ const ChartsTemplate: React.FC<{ option: ICharts.IOption }> = ({ option }) => {
 
         <div className="flex-grow flex flex-col h-[500px] overflow-auto border p-1">
           <div className="sticky top-0 bg-white">
-            <h3 className="mt-2 ml-2">配置 (修改后实时生效)</h3>
+            <h3 className="mt-2 ml-2">配置</h3>
           </div>
 
           <textarea
             className="p-[10px] w-full flex-grow font-[Consolas] outline-none border focus:border-gray-500"
+            readOnly
             onChange={evt => {
               const option = parseJsonString(evt.target.value)
               setInnerOption(option)

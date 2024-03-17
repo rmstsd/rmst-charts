@@ -1,13 +1,13 @@
 import { IShape, Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
-import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine } from './components'
+import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine, Tooltip } from './components'
 
 import { SeriesManager } from './SeriesMgr'
 
 import { stClone } from './utils'
 
-const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx, endIdx: number) => {
+const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx: number, endIdx: number) => {
   const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
   const re = Math.ceil(startIdx + (endIdx - startIdx) * rangeRatio.endRatio)
 
@@ -24,10 +24,31 @@ const getRangeRatio = (option: ICharts.IOption): RangeRatioDecimal => {
 
 export class ChartRoot {
   constructor(canvasContainer: HTMLElement) {
-    this.stage = new Stage({
-      container: canvasContainer
-    })
+    const div = document.createElement('div')
+    div.style.setProperty('position', 'relative')
+    div.style.setProperty('width', '100%')
+    div.style.setProperty('height', '100%')
+
+    canvasContainer.appendChild(div)
+
+    this.stage = new Stage({ container: div })
+    this.wrapperContainer = div
+
+    this.stage.onmousemove = evt => {
+      this.assistLine?.onStageMousemove(evt)
+      this.tooltip?.onStageMousemove(evt)
+    }
+    this.stage.onmouseenter = evt => {
+      this.assistLine?.onStageMouseenter(evt)
+      this.tooltip?.onStageMouseenter(evt)
+    }
+    this.stage.onmouseleave = evt => {
+      this.assistLine?.onStageMouseleave(evt)
+      this.tooltip?.onStageMouseleave(evt)
+    }
   }
+
+  wrapperContainer: HTMLDivElement
 
   firstSetOption = true // 初始化还是更新
 
@@ -46,7 +67,9 @@ export class ChartRoot {
 
   coordinateSystem: ICoordinateSystemElements
 
-  assistTick: AssistLine
+  assistLine: AssistLine
+
+  tooltip: Tooltip
 
   renderedElements = []
 
@@ -140,10 +163,14 @@ export class ChartRoot {
     {
       // 辅助刻度尺 仅对 二维的直角坐标系 有效
       if (this.coordinateSystem.hasCartesian2d) {
-        this.assistTick = new AssistLine(this)
-        this.assistTick.render()
-        this.renderedElements.push(...this.assistTick.elements)
+        this.assistLine = new AssistLine(this)
+        this.assistLine.render()
+        this.renderedElements.push(...this.assistLine.elements)
       }
+    }
+
+    {
+      this.tooltip = new Tooltip(this)
     }
 
     this.refreshChart()

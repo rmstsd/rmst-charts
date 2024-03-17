@@ -9,6 +9,7 @@ import Brush from '@/demo/6-other/Brush'
 import LineAnimate from '@/demo/6-other/折线计算动画'
 import 贝塞尔曲线峰值吸附 from '@/demo/6-other/贝塞尔曲线峰值吸附'
 import Rotate from '@/demo/6-other/Rotate'
+import UpAniEnd from '@/demo/6-other/UpAniEnd'
 
 import { IRouteObject } from './router'
 
@@ -27,7 +28,8 @@ const otherRouteConfig: IRouteObject = {
     { path: 'curveRect', element: <CurveRect />, uiConfig: { title: '渐变' } },
     { path: 'translation', element: <Translation /> },
     { path: 'rotate', element: <Rotate /> },
-    { path: 'brush', element: <Brush /> }
+    { path: 'brush', element: <Brush /> },
+    { path: 'UpAniEnd', element: <UpAniEnd /> }
   ]
 }
 

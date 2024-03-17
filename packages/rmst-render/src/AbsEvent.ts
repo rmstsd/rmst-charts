@@ -19,8 +19,8 @@ abstract class AbsEvent {
 
   parent: Stage | Group | BoxHidden = null
 
-  data
-  path2D
+  data = null
+  path2D: Path2D = null
 
   eventTypeHandlerMap = new Map<EventType, Handler[]>()
   on(eventType: EventType, handler: Handler) {

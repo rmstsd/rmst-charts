@@ -1,4 +1,4 @@
-import { Line, Rect, Text } from 'rmst-render'
+import { AnimatorSingle, Line, Rect, Text } from 'rmst-render'
 
 import { ChartRoot } from '../ChartRoot'
 import { getYTickFromOffsetY, isInnerRect, detectNear } from '../utils'
@@ -26,82 +26,109 @@ export class AssistLine {
 
   render() {
     const { cr } = this
-
     const { stage } = cr
 
     const reusedOption = { zIndex: 8, pointerEvents: 'none' as const, lineDash: [4] }
-    this.horizontal = new Line({ points: [0, 0, 0, 0], strokeStyle: '#ccc', ...reusedOption })
-    this.vertical = new Line({ points: [0, 0, 0, stage.canvasSize.height], strokeStyle: '#ccc', ...reusedOption })
-    const height = 22
-    this.tickRect = new Rect({ x: 0, y: 0, width: 80, height, fillStyle: '#eee', cornerRadius: 4, zIndex: 8 })
-    this.tickText = new Text({ x: 0, y: 0, fillStyle: '#444', content: '', zIndex: 10 })
+    this.horizontal = new Line({ points: [0, 0, 0, 0], strokeStyle: '#bbb', ...reusedOption })
+    this.vertical = new Line({ points: [0, 0, 0, stage.canvasSize.height], strokeStyle: '#bbb', ...reusedOption })
+    this.tickRect = new Rect({ x: 0, y: 0, width: 50, height: 22, fillStyle: '#eee', cornerRadius: 4, zIndex: 8 })
+    this.tickText = new Text({ x: 0, y: 0, fillStyle: '#444', content: '', zIndex: 10, textAlign: 'center' })
 
     this.setVisible(false)
 
     this.elements = [this.horizontal, this.vertical, this.tickRect, this.tickText]
-
-    stage.onmousemove = evt => {
-      const offsetX = evt.x
-      const offsetY = evt.y
-
-      const { yAxisData, xAxisData } = this.cr.coordinateSystem.cartesian2d.cartesian2dAxisData
-
-      const xAxis_start_x = xAxisData.axis.start.x
-      const xAxis_end_x = xAxisData.axis.end.x
-
-      const yAxis_start_y = yAxisData.axis.start.y
-      const yAxis_end_y = yAxisData.axis.end.y
-
-      if (!isInnerRect(offsetX, offsetY, xAxis_start_x, xAxis_end_x, yAxis_end_y, yAxis_start_y)) {
-        this.setVisible(false)
-      } else {
-        this.setVisible(true)
-
-        const { assistY, realTickValue } = getYTickFromOffsetY(
-          offsetY,
-          yAxis_start_y,
-          yAxisData.tickConstant.tickInterval,
-          yAxisData.tickConstant.realInterval,
-          yAxisData.tickConstant.min,
-          yAxisData.ticks
-        )
-
-        let activeIndex = 0
-
-        const xAxisDataTicks = xAxisData.ticks
-
-        if (offsetX < xAxisDataTicks.at(0).start.x) {
-          activeIndex = 0
-        } else if (offsetX > xAxisDataTicks.at(-1).start.x) {
-          activeIndex = xAxisDataTicks.length - 1
-        } else {
-          const tickCount = (offsetX - xAxisDataTicks.at(0).start.x) / xAxisData.axis.xAxisInterval
-
-          const neared = detectNear(tickCount, 0.5)
-          if (neared.isNear) {
-            activeIndex = neared.nearValue
-          }
-        }
-
-        const verticalX = xAxisDataTicks[activeIndex].start.x
-
-        this.horizontal.attr({ points: [0, assistY, stage.canvasSize.width, assistY] })
-        this.vertical.attr({ points: [verticalX, 0, verticalX, stage.canvasSize.height] })
-
-        const tickRectCoord: ICoord = { x: xAxis_start_x + 10, y: assistY - height / 2 }
-        this.tickRect.attr({ x: tickRectCoord.x, y: tickRectCoord.y })
-        this.tickText.attr({ x: tickRectCoord.x + 10, y: tickRectCoord.y + 5, content: realTickValue })
-      }
-    }
-
-    stage.onmouseenter = evt => {
-      this.setVisible(true)
-    }
-
-    stage.onmouseleave = evt => {
-      this.setVisible(false)
-    }
   }
 
   elements = []
+  activeIndex: number
+
+  ani = new AnimatorSingle(0, 0)
+
+  onStageMousemove(evt) {
+    const { cr } = this
+    const { stage } = cr
+
+    const offsetX = evt.x
+    const offsetY = evt.y
+
+    const { yAxisData, xAxisData } = cr.coordinateSystem.cartesian2d.cartesian2dAxisData
+
+    const xAxis_start_x = xAxisData.axis.start.x
+    const xAxis_end_x = xAxisData.axis.end.x
+
+    const yAxis_start_y = yAxisData.axis.start.y
+    const yAxis_end_y = yAxisData.axis.end.y
+
+    if (!isInnerRect(offsetX, offsetY, xAxis_start_x, xAxis_end_x, yAxis_end_y, yAxis_start_y)) {
+      this.setVisible(false)
+    } else {
+      this.setVisible(true)
+
+      const { assistY, realTickValue } = getYTickFromOffsetY(
+        offsetY,
+        yAxis_start_y,
+        yAxisData.tickConstant.tickInterval,
+        yAxisData.tickConstant.realInterval,
+        yAxisData.tickConstant.min,
+        yAxisData.ticks
+      )
+
+      let activeIndex = 0
+
+      const xAxisDataTicks = xAxisData.ticks
+
+      if (offsetX < xAxisDataTicks.at(0).start.x) {
+        activeIndex = 0
+      } else if (offsetX > xAxisDataTicks.at(-1).start.x) {
+        activeIndex = xAxisDataTicks.length - 1
+      } else {
+        const tickCount = (offsetX - xAxisDataTicks.at(0).start.x) / xAxisData.axis.xAxisInterval
+
+        const neared = detectNear(tickCount, 0.5)
+        if (neared.isNear) {
+          activeIndex = neared.nearValue
+        }
+      }
+
+      if (this.activeIndex !== activeIndex) {
+        this.activeIndex = activeIndex
+        const verticalX = xAxisDataTicks[this.activeIndex].start.x
+        // this.vertical.animateCartoon(
+        //   { points: [verticalX, 0, verticalX, stage.canvasSize.height] },
+        //   { duration: 200, easing: 'cubicInOut' }
+        // )
+
+        this.ani.setAheadEnd()
+        this.ani = new AnimatorSingle(this.ani.centerValue, verticalX, { duration: 150 })
+        this.ani.onUpdate = _cv => {
+          this.vertical.attr({ points: [_cv, 0, _cv, stage.canvasSize.height] })
+        }
+
+        this.ani.setEndValue(verticalX)
+
+        this.onActiveIndexChange(this.activeIndex)
+      }
+
+      this.horizontal.attr({ points: [0, assistY, stage.canvasSize.width, assistY] })
+
+      const tickRectData = this.tickRect.data
+      const tickRectCoord: ICoord = { x: xAxis_start_x - tickRectData.width, y: assistY - tickRectData.height / 2 }
+      this.tickRect.attr({ x: tickRectCoord.x, y: tickRectCoord.y })
+      this.tickText.attr({
+        x: tickRectCoord.x + tickRectData.width / 2,
+        y: tickRectCoord.y + 5,
+        content: realTickValue
+      })
+    }
+  }
+
+  onStageMouseenter(evt) {
+    this.setVisible(true)
+  }
+
+  onStageMouseleave(evt) {
+    this.setVisible(false)
+  }
+
+  onActiveIndexChange(index: number) {}
 }
