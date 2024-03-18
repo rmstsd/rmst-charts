@@ -10,7 +10,7 @@ export class Tooltip {
       this.cr.assistLine.onActiveIndexChange = index => {
         const dd = this.cr.finalSeries.map(item => item.data[index])
 
-        console.log(dd)
+        // console.log(dd)
       }
     }
   }
