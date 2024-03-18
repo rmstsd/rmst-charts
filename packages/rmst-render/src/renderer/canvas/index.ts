@@ -64,10 +64,11 @@ export function drawStageShapes(stage: Stage) {
           break
         }
         case 'Text': {
-          const { x, y, content, fontSize, textAlign = 'left' } = data as Text['data']
+          const { x, y, content, fontSize, textAlign = 'left', textBaseline } = data as Text['data']
 
           setCtxFontSize(ctx, fontSize)
 
+          ctx.textBaseline = textBaseline
           ctx.textAlign = textAlign
           ctx.fillText(content, x, y)
           break
