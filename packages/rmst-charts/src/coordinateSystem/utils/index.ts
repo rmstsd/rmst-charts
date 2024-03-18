@@ -19,15 +19,12 @@ export const calcPerfectTick = (data: number[], isPolar?: boolean): PerfectTick 
   const maxRealValue = Math.max(...data)
   const minRealValue = isPolar ? 0 : Math.min(...data) // 如果是极坐标系, 则最小值为0 (临时方案, 与 echarts 效果不一致)
 
-  // return calcPerfect_2(maxRealValue, minRealValue)
-
   return calcPerfect(maxRealValue, minRealValue)
 }
 
-// 计算理想的 y轴最大值, 最小值, 刻度间隔
-
 function calcPerfect(max: number, min: number) {
-  const tempMax = getStandardInterval(max - min)
+  const tempMax = getBeautifulValMax(max - min)
+
   const base = [1, 2, 3, 4, 5]
 
   const intervals = base.map(item => (item * tempMax) / 10)
@@ -45,23 +42,20 @@ function calcPerfect(max: number, min: number) {
     perfectMin = floor(min, inter)
 
     const decimalCount = (perfectMax - perfectMin) / inter
-    if (decimalCount >= minCount && decimalCount <= maxCount) {
+    if (minCount <= decimalCount && decimalCount <= maxCount) {
       perfectCount = Math.ceil(decimalCount)
       perfectInterval = inter
       break
     }
   }
 
-  const intervalCount = (perfectMax - perfectMin) / perfectInterval // 间隔数量
-
+  const intervalCount = (perfectMax - perfectMin) / perfectInterval
   const tickValues: number[] = Array.from(
     { length: intervalCount + 1 },
     (_, index) => perfectMin + index * perfectInterval
   )
 
   const ans = { perfectMax, perfectMin, perfectInterval, intervalCount, tickValues }
-
-  console.log(ans)
 
   return ans
 }
@@ -72,10 +66,10 @@ function calcPerfect_2(max: number, min: number) {
   const min_p = minP(min)
   console.log(max_p, min_p)
 
-  const perMax = getStandardInterval(max)
+  const perMax = getBeautifulValMax(max)
 
   const intervalCount = 5
-  const perfectInterval = getStandardInterval((max_p - min_p) / intervalCount)
+  const perfectInterval = getBeautifulValMax((max_p - min_p) / intervalCount)
   console.log(perfectInterval)
 
   const tickValues: number[] = Array.from(
@@ -147,7 +141,7 @@ function ceil(num = 123, multiple = 100) {
   return stack.pop()
 }
 
-const getStandardInterval = (t: number) => {
+const getBeautifulValMax = (t: number) => {
   if (t <= 0.1) {
     t = 0.1
   } else if (t <= 0.2) {
@@ -161,7 +155,7 @@ const getStandardInterval = (t: number) => {
   } else if (t < 1) {
     t = 1
   } else {
-    t = getStandardInterval(t / 10) * 10
+    t = getBeautifulValMax(t / 10) * 10
   }
 
   return t

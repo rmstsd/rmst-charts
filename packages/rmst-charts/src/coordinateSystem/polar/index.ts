@@ -104,7 +104,7 @@ const getDataForDraw = (
 
       const radianTickStart = getPointOnArc(center_x, center_y, outerCircle.radius, tickAngle)
       const radianTickEnd = getPointOnArc(center_x, center_y, outerCircle.radius + 10, tickAngle)
-      const radianTextPoint = getPointOnArc(center_x, center_y, outerCircle.radius + 15, tickAngle)
+      const radianTextPoint = getPointOnArc(center_x, center_y, outerCircle.radius + 20, tickAngle)
 
       return { start: radianTickStart, end: radianTickEnd, text: { ...radianTextPoint, value: String(item) } }
     })
@@ -246,7 +246,15 @@ export const createPolarElements = (
   )
 
   const outerTickTextShapes = polarAxisData.outerTicks.map(
-    item => new Text({ x: item.text.x, y: item.text.y, content: item.text.value, fillStyle: tickColor })
+    item =>
+      new Text({
+        x: item.text.x,
+        y: item.text.y,
+        content: item.text.value,
+        fillStyle: tickColor,
+        textAlign: 'center',
+        textBaseline: 'middle'
+      })
   )
 
   const ccToTickLineShapes = (polarAxisData.ccToTickLines || []).map(

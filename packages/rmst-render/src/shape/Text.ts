@@ -1,9 +1,10 @@
 import AbstractUi, { AbstractUiData } from './AbstractUi'
 
-const defaultData = {
+const defaultData: TextData = {
   fillStyle: '#333',
   fontSize: 14,
-  textAlign: 'left' as CanvasTextAlign
+  textAlign: 'left',
+  textBaseline: 'top'
 }
 
 interface TextData extends AbstractUiData {
@@ -12,6 +13,7 @@ interface TextData extends AbstractUiData {
   content?: string
   fontSize?: number
   textAlign?: CanvasTextAlign
+  textBaseline?: CanvasTextBaseline
 }
 
 export class Text extends AbstractUi<TextData> {

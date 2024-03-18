@@ -8,7 +8,7 @@ const option: ICharts.IOption = {
   series: [
     {
       type: 'line',
-      data: [620, 932, 901, 934, 800, 800]
+      data: [620, 932, 901, 934, 800, 1001]
       // data: [0.1, 0.2, 0.3, 0.2, 0.1]
       // smooth: true
     }
