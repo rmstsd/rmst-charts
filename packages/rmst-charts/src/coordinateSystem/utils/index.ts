@@ -38,8 +38,8 @@ function calcPerfect(max: number, min: number) {
   let perfectMin
 
   for (const inter of intervals) {
-    perfectMax = ceil(max, inter)
-    perfectMin = floor(min, inter)
+    perfectMax = ceilByMultiple(max, inter)
+    perfectMin = floorByMultiple(min, inter)
 
     const decimalCount = (perfectMax - perfectMin) / inter
     if (minCount <= decimalCount && decimalCount <= maxCount) {
@@ -60,85 +60,28 @@ function calcPerfect(max: number, min: number) {
   return ans
 }
 
-function calcPerfect_2(max: number, min: number) {
-  console.log(max, min)
-  const max_p = maxP(max)
-  const min_p = minP(min)
-  console.log(max_p, min_p)
-
-  const perMax = getBeautifulValMax(max)
-
-  const intervalCount = 5
-  const perfectInterval = getBeautifulValMax((max_p - min_p) / intervalCount)
-  console.log(perfectInterval)
-
-  const tickValues: number[] = Array.from(
-    { length: intervalCount },
-    (_, index) => perMax - index * perfectInterval
-  ).toReversed()
-
-  console.log(tickValues)
-
-  // const tickValues = []
-  // let i = 0
-
-  // while (!tickValues.at(0) || tickValues.at(0) >= min) {
-  //   tickValues.unshift(perMax - i * perfectInterval)
-  //   i++
-  // }
-
-  console.log(tickValues)
-
-  return {
-    perfectMax: perMax,
-    perfectMin: min_p,
-    perfectInterval,
-    intervalCount: tickValues.length - 1,
-    tickValues
-  }
-
-  function maxP(max) {
-    const zhenshuMax = Math.ceil(max)
-    const aa = String(zhenshuMax)
-
-    const dd = aa.slice(0, 1) + '.' + aa.slice(1)
-    const ff = `1${'0'.repeat(aa.length - 1)}`
-    const max_p = Math.ceil(Number(dd)) * Number(ff)
-    return max_p
-  }
-
-  function minP(min) {
-    const zhenshuMax = Math.floor(min)
-    const aa = String(zhenshuMax)
-
-    const dd = aa.slice(0, 1) + '.' + aa.slice(1)
-    const ff = `1${'0'.repeat(aa.length - 1)}`
-    const min_p = Math.floor(Number(dd)) * Number(ff)
-
-    return min_p
-  }
-}
-
 // return 100
-function floor(num = 123, multiple = 100) {
+function floorByMultiple(num = 123, multiple = 100) {
   const stack = []
   let i = 0
-  while (!stack.length || stack[stack.length - 1] <= num) {
+  while (!stack.length || stack.at(-1) <= num) {
     stack.push(i * multiple)
     i++
   }
-  stack.pop()
-  return stack.pop()
+
+  return stack.at(-2)
 }
+
 // return 200
-function ceil(num = 123, multiple = 100) {
-  const stack = []
+function ceilByMultiple(num = 123, multiple = 100) {
   let i = 0
-  while (!stack.length || stack[stack.length - 1] <= num) {
-    stack.push(i * multiple)
+  let _num: number
+  while (_num === undefined || _num <= num) {
+    _num = i * multiple
     i++
   }
-  return stack.pop()
+
+  return _num
 }
 
 const getBeautifulValMax = (t: number) => {
