@@ -71,7 +71,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
     })
 
     const boxHidden = new BoxHidden({
-      x: xAxisData.axis.start.x,
+      x: xAxisData.ticks[0].start.x - lineStyle.width,
       y: yAxisData.axis.end.y,
       width: 0,
       height: stage.canvasSize.height,
@@ -196,7 +196,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
       { width: stage.canvasSize.width },
       {
         duration: this.seriesItem.animationDuration,
-        easing: 'cubicInOut',
+        easing: 'quadraticInOut',
         during: (percent, newState) => {
           if (this.seriesItem.symbol === 'none') {
             return

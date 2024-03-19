@@ -32,6 +32,9 @@ namespace ICharts {
     type: 'bar'
     data: number[]
     showBackground?: boolean
+    itemStyle?: {
+      shortLength?: number | string
+    }
   }
 
   interface PieSeries extends BaseSeries {

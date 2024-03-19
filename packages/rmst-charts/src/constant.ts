@@ -16,24 +16,24 @@ export const maxCandleCount = 40 // 最大数量
 export const minCandleCount = 10 // 最小数量
 export const defaultCandleCount = 20 // 初始化默认显示的数量
 
-// 颜色
-export const primaryColor = '#5C7BD9'
-export const primaryColorAlpha = colorAlpha(primaryColor, 0.8)
-
-export const tickColor = '#666' // 坐标轴颜色 和 刻度颜色
-export const splitLineColor = '#E0E6F1' // Y 轴长横线颜色
-
 export const colorPalette = [
-  '#5470c6',
-  '#91cc75',
-  '#fac858',
-  '#ee6666',
-  '#73c0de',
-  '#3ba272',
-  '#fc8452',
-  '#9a60b4',
-  '#ea7ccc'
+  '#0052D9',
+  '#029CD4',
+  '#2BA471',
+  '#F5BA18',
+  '#E37318',
+  '#D54941',
+  '#E851B3',
+  '#8E56DD',
+  '#E851B3'
 ]
 
-export const candlestickRed = '#FF443F'
-export const candlestickGreen = '#00A843'
+// 颜色
+export const primaryColor = colorPalette[0]
+export const primaryColorAlpha = colorAlpha(primaryColor, 0.8)
+
+export const tickColor = '#86909C' // 坐标轴颜色 和 刻度颜色
+export const splitLineColor = '#E5E6EB' // Y 轴横向长横线颜色
+
+export const candlestickRed = '#ED589D'
+export const candlestickGreen = '#14D460'

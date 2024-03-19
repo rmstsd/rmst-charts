@@ -27,11 +27,11 @@ export function getYTickFromOffsetY(
 
     return {
       assistY: targetTick.start.y,
-      realTickValue: targetTick.text.value.toFixed(2)
+      realTickValue: targetTick.text.value
     }
   }
 
-  const realTickValue = (tickCount * realInterval + realMin).toFixed(2)
+  const realTickValue = Number((tickCount * realInterval + realMin).toFixed())
   return { assistY: offsetY, realTickValue }
 }
 

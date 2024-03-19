@@ -95,7 +95,7 @@ export class AssistLine {
         const verticalX = xAxisDataTicks[this.activeIndex].start.x
         // this.vertical.animateCartoon(
         //   { points: [verticalX, 0, verticalX, stage.canvasSize.height] },
-        //   { duration: 200, easing: 'cubicInOut' }
+        //   { duration: 200, easing: 'quadraticInOut' }
         // )
 
         this.ani.setAheadEnd()
@@ -117,7 +117,7 @@ export class AssistLine {
       this.tickText.attr({
         x: tickRectCoord.x + tickRectData.width / 2,
         y: tickRectCoord.y + 5,
-        content: realTickValue
+        content: String(realTickValue)
       })
     }
   }

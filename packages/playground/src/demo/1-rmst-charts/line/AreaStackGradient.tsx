@@ -17,7 +17,7 @@ const option: ICharts.IOption = {
       areaStyle: {
         opacity: 0.8,
         color: [
-          { offset: 0, color: 'rgb(128, 255, 165)' },
+          { offset: 0, color: 'rgb(128, 255, 15)' },
           { offset: 1, color: 'rgb(1, 191, 236)' }
         ]
       },
@@ -33,8 +33,8 @@ const option: ICharts.IOption = {
       areaStyle: {
         opacity: 0.8,
         color: [
-          { offset: 0, color: 'rgb(0, 221, 255)' },
-          { offset: 1, color: 'rgb(77, 119, 255)' }
+          { offset: 0, color: 'rgb(0, 221, 25)' },
+          { offset: 1, color: 'rgb(77, 119, 25)' }
         ]
       },
       data: [120, 282, 111, 234, 220, 340, 310]
@@ -49,8 +49,8 @@ const option: ICharts.IOption = {
       areaStyle: {
         opacity: 0.8,
         color: [
-          { offset: 0, color: 'rgb(55, 162, 255)' },
-          { offset: 1, color: 'rgb(116, 21, 219)' }
+          { offset: 0, color: 'rgb(55, 162, 25)' },
+          { offset: 1, color: 'rgb(116, 21, 19)' }
         ]
       },
       data: [320, 132, 201, 334, 190, 130, 220]
@@ -65,8 +65,8 @@ const option: ICharts.IOption = {
       areaStyle: {
         opacity: 0.8,
         color: [
-          { offset: 0, color: 'rgb(255, 0, 135)' },
-          { offset: 1, color: 'rgb(135, 0, 157)' }
+          { offset: 0, color: 'rgb(25, 0, 13)' },
+          { offset: 1, color: 'rgb(135, 0, 15)' }
         ]
       },
       data: [220, 402, 231, 134, 190, 230, 120]

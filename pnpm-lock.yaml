@@ -104,6 +104,9 @@ importers:
 
   packages/rmst-charts:
     dependencies:
+      '@react-spring/web':
+        specifier: ^9.7.3
+        version: 9.7.3(react-dom@18.2.0)(react@18.2.0)
       '@ungap/structured-clone':
         specifier: ^1.2.0
         version: 1.2.0

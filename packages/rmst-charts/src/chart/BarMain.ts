@@ -1,4 +1,4 @@
-import { Circle, Rect } from 'rmst-render'
+import { Circle, Rect, Trapezoid } from 'rmst-render'
 
 import { colorPalette, primaryColor } from '../constant'
 import { IPolarElements } from '../coordinateSystem/polar'
@@ -50,7 +50,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
 
     const afterAppendStage = () => {
       arcs.forEach(item => {
-        item.animateCartoon({ endAngle: item.data.extraData.endAngle }, { easing: 'cubicInOut' })
+        item.animateCartoon({ endAngle: item.data.extraData.endAngle }, { easing: 'quadraticInOut' })
       })
     }
 
@@ -80,7 +80,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
 
   const afterAppendStage = () => {
     arcs.forEach(item => {
-      item.animateCartoon({ radius: item.data.extraData.radius }, { easing: 'cubicInOut' })
+      item.animateCartoon({ radius: item.data.extraData.radius }, { easing: 'quadraticInOut' })
     })
   }
 
@@ -131,14 +131,17 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
       : []
 
     this.mainElements = this.data.map(item => {
-      const rectItem = new Rect({
+      const commonOpt = {
         x: item.x,
         y: x_axis_start_y,
         width: item.width,
         height: 0,
         fillStyle: colorPalette[seriesIndex],
-        cursor: 'pointer'
-      })
+        cursor: 'pointer' as const
+      }
+      const rectItem = Reflect.has(seriesItem.itemStyle || {}, 'shortLength')
+        ? new Trapezoid({ ...commonOpt, shortLength: seriesItem.itemStyle.shortLength })
+        : new Rect(commonOpt)
 
       rectItem.onmouseenter = () => {
         rectItem.animateCartoon({ opacity: 0.9 }, { duration: 200 })
@@ -156,7 +159,7 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
     this.mainElements.forEach((rectItem, index) => {
       const dataItem = this.data[index]
 
-      rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height }, { easing: 'cubicInOut' })
+      rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height }, { easing: 'quadraticInOut', duration: 500 })
     })
   }
 

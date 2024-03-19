@@ -1,3 +1,5 @@
+// 直线相关的工具函数
+
 import { convertToNormalPoints, pointToFlatArray } from '.'
 import { ICoord } from '../../type'
 
