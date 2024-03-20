@@ -12,6 +12,7 @@ import AreaStack from '@/demo/1-rmst-charts/line/AreaStack'
 import BarBase from '@/demo/1-rmst-charts/bar/Base'
 import TrapezoidBase from '@/demo/1-rmst-charts/bar/TrapezoidBase'
 import Background from '@/demo/1-rmst-charts/bar/Background'
+import Combine from '@/demo/1-rmst-charts/bar/Combine'
 import PolarLabelRadial from '@/demo/1-rmst-charts/bar/PolarLabelRadial'
 import PolarLabelTangential from '@/demo/1-rmst-charts/bar/PolarLabelTangential'
 
@@ -37,10 +38,10 @@ const newChartsRouteConfig: IRouteObject = {
         { path: 'base', element: <Line />, uiConfig: { title: '折线图' } },
         { path: 'line-smooth', element: <LineSmooth />, uiConfig: { title: '曲线折线图' } },
         { path: 'area', element: <Area />, uiConfig: { title: '面积图' } },
-        { path: 'stack', element: <Stack />, uiConfig: { title: '堆叠' } },
-        { path: 'areaStack', element: <AreaStack />, uiConfig: { title: '堆叠面积' } },
-        { path: 'areaStackGradient', element: <AreaStackGradient />, uiConfig: { title: '渐变堆叠' } },
-        { path: 'step', element: <Step />, uiConfig: { title: '阶梯' } },
+        { path: 'combine', element: <Stack />, uiConfig: { title: '聚合图' } },
+        { path: 'combineStack', element: <AreaStack />, uiConfig: { title: '聚合面积图' } },
+        { path: 'gradient', element: <AreaStackGradient />, uiConfig: { title: '渐变图' } },
+        { path: 'step', element: <Step />, uiConfig: { title: '拐角图' } },
         { path: 'extreme', element: <ZExtreme />, uiConfig: { title: '极端例子' } }
       ]
     },
@@ -52,6 +53,7 @@ const newChartsRouteConfig: IRouteObject = {
         { path: 'base', element: <BarBase />, uiConfig: { title: '柱状图' } },
         { path: 'trapezoid', element: <TrapezoidBase />, uiConfig: { title: '梯形' } },
         { path: 'background', element: <Background />, uiConfig: { title: '有背景色' } },
+        { path: 'combine', element: <Combine />, uiConfig: { title: '聚合' } },
         { path: 'polarRadial', element: <PolarLabelRadial />, uiConfig: { title: '极坐标-角度轴' } },
         { path: 'polarTangential', element: <PolarLabelTangential />, uiConfig: { title: '极坐标-径向轴' } }
       ]

@@ -7,7 +7,7 @@ import { getCanvasDistanceFromRealNumber, getCanvasPxFromRealNumber } from '../u
 import _Chart from './_chart'
 
 type BarDataItem = { x: number; y: number; width: number; height: number }
-function calcBarData(dataSource: number[], xAxisData, yAxis) {
+function calcBarData(dataSource: number[], xAxisData, yAxis, prevDataSource: null | number[]) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
   const { axis, ticks } = xAxisData
@@ -19,7 +19,12 @@ function calcBarData(dataSource: number[], xAxisData, yAxis) {
     const x = ticks[index].start.x - width / 2
     const y = getCanvasPxFromRealNumber(dataItem, yAxis_start_y, min, realInterval, tickInterval)
 
-    const height = axis.start.y - y
+    let height: number
+    if (prevDataSource === null) {
+      height = axis.start.y - y
+    } else {
+      height = getCanvasPxFromRealNumber(prevDataSource[index], yAxis_start_y, min, realInterval, tickInterval) - y
+    }
 
     return { x, y, width, height }
   })
@@ -50,7 +55,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
 
     const afterAppendStage = () => {
       arcs.forEach(item => {
-        item.animateCartoon({ endAngle: item.data.extraData.endAngle }, { easing: 'quadraticInOut' })
+        item.animateCartoon({ endAngle: item.data.extraData.endAngle }, { duration: 500, easing: 'quadraticInOut' })
       })
     }
 
@@ -80,7 +85,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
 
   const afterAppendStage = () => {
     arcs.forEach(item => {
-      item.animateCartoon({ radius: item.data.extraData.radius }, { easing: 'quadraticInOut' })
+      item.animateCartoon({ radius: item.data.extraData.radius }, { duration: 500, easing: 'quadraticInOut' })
     })
   }
 
@@ -113,7 +118,13 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
     const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
     const yAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
 
-    this.data = calcBarData(seriesItem.data as number[], xAxisData, yAxisData)
+    const finalSeries = this.cr.finalSeries as ICharts.LineSeries[]
+    this.data = calcBarData(
+      seriesItem.data as number[],
+      xAxisData,
+      yAxisData,
+      seriesIndex === 0 ? null : finalSeries[seriesIndex - 1].data
+    )
 
     const x_axis_start_y = xAxisData.axis.start.y
 
@@ -133,7 +144,7 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
     this.mainElements = this.data.map(item => {
       const commonOpt = {
         x: item.x,
-        y: x_axis_start_y,
+        y: item.y + item.height,
         width: item.width,
         height: 0,
         fillStyle: colorPalette[seriesIndex],
@@ -144,7 +155,7 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
         : new Rect(commonOpt)
 
       rectItem.onmouseenter = () => {
-        rectItem.animateCartoon({ opacity: 0.9 }, { duration: 200 })
+        rectItem.animateCartoon({ opacity: 0.8 }, { duration: 200 })
       }
 
       rectItem.onmouseleave = () => {

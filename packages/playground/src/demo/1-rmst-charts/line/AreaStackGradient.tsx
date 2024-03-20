@@ -10,7 +10,7 @@ const option: ICharts.IOption = {
     {
       name: 'Line 1',
       type: 'line',
-      stack: 'Total',
+      stack: 'sign',
       smooth: true,
       lineStyle: { width: 0 },
       symbol: 'none',
@@ -26,7 +26,7 @@ const option: ICharts.IOption = {
     {
       name: 'Line 2',
       type: 'line',
-      stack: 'Total',
+      stack: 'sign',
       smooth: true,
       lineStyle: { width: 0 },
       symbol: 'none',
@@ -42,7 +42,7 @@ const option: ICharts.IOption = {
     {
       name: 'Line 3',
       type: 'line',
-      stack: 'Total',
+      stack: 'sign',
       smooth: true,
       lineStyle: { width: 0 },
       symbol: 'none',
@@ -58,7 +58,7 @@ const option: ICharts.IOption = {
     {
       name: 'Line 4',
       type: 'line',
-      stack: 'Total',
+      stack: 'sign',
       smooth: true,
       lineStyle: { width: 0 },
       symbol: 'none',
@@ -74,7 +74,7 @@ const option: ICharts.IOption = {
     {
       name: 'Line 5',
       type: 'line',
-      stack: 'Total',
+      stack: 'sign',
       smooth: true,
       lineStyle: { width: 0 },
       symbol: 'none',

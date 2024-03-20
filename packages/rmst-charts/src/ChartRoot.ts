@@ -189,53 +189,54 @@ export class ChartRoot {
 }
 
 function handleSeries(series: ICharts.series[]): ICharts.series[] {
-  return (
-    series
-      // 设置默认的 2d 坐标系
-      .map(item => {
-        const nvItem = { ...item }
+  const ans = series
+    // 设置默认的 2d 坐标系
+    .map(item => {
+      const nvItem = { ...item }
 
-        // 饼图没有坐标系
-        if (nvItem.type === 'pie') {
-          nvItem.coordinateSystem = undefined
-          return nvItem
-        }
-
-        // 默认坐标系为 二维的直角坐标系
-        if (!nvItem.coordinateSystem) {
-          nvItem.coordinateSystem = 'cartesian2d'
-          return nvItem
-        }
-
+      // 饼图没有坐标系
+      if (nvItem.type === 'pie') {
+        nvItem.coordinateSystem = undefined
         return nvItem
-      })
-      // 折线图堆叠 data求和计算
-      .map((serItem, serIndex) => {
-        switch (serItem.type) {
-          case 'line':
-            if (serItem.stack !== 'Total') {
-              return serItem
-            }
+      }
 
-            const lineSeries = series.filter(item => item.type === 'line') as ICharts.LineSeries[]
+      // 默认坐标系为 二维的直角坐标系
+      if (!nvItem.coordinateSystem) {
+        nvItem.coordinateSystem = 'cartesian2d'
+        return nvItem
+      }
 
-            return {
-              ...serItem,
-              data: serItem.data.map((dataItem, dataIndex) => {
-                return (
-                  dataItem +
-                  lineSeries
-                    .filter(item => item.stack === 'Total')
-                    .slice(0, serIndex)
-                    .map(item => item.data[dataIndex])
-                    .reduce((prev, cur) => prev + cur, 0)
-                )
-              })
-            }
-
-          default:
+      return nvItem
+    })
+    // 堆叠 data求和计算 // todo: 应该先进行分组, 再计算数据求和
+    .map((serItem, serIndex) => {
+      switch (serItem.type) {
+        case 'line':
+        case 'bar':
+          if (serItem.stack !== 'sign') {
             return serItem
-        }
-      })
-  )
+          }
+
+          const lineSeries = series
+
+          return {
+            ...serItem,
+            data: serItem.data.map((dataItem, dataIndex) => {
+              return (
+                dataItem +
+                lineSeries
+                  .filter(item => item.stack === 'sign')
+                  .slice(0, serIndex)
+                  .map(item => item.data[dataIndex])
+                  .reduce((prev, cur) => prev + cur, 0)
+              )
+            })
+          }
+
+        default:
+          return serItem
+      }
+    })
+
+  return ans
 }
