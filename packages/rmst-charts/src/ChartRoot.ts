@@ -5,7 +5,7 @@ import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine, Tooltip }
 
 import { SeriesManager } from './SeriesMgr'
 
-import { stClone } from './utils'
+import { isInnerRect, stClone } from './utils'
 
 const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx: number, endIdx: number) => {
   const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
@@ -34,18 +34,39 @@ export class ChartRoot {
     this.stage = new Stage({ container: div })
     this.wrapperContainer = div
 
+    let isInner = false
     this.stage.onmousemove = evt => {
-      this.assistLine?.onStageMousemove(evt)
-      this.tooltip?.onStageMousemove(evt)
+      if (this.coordinateSystem.hasCartesian2d) {
+        if (this.isInnerCartesian2dRect(evt.x, evt.y)) {
+          if (!isInner) {
+            isInner = true
+
+            this.assistLine?.onCartesian2dRectMouseenter(evt)
+            this.tooltip?.onCartesian2dRectMouseenter(evt)
+          }
+
+          this.assistLine?.onCartesian2dRectMousemove(evt)
+          this.tooltip?.onCartesian2dRectMousemove(evt)
+        } else if (isInner) {
+          isInner = false
+
+          this.assistLine?.onCartesian2dRectMouseleave(evt)
+          this.tooltip?.onCartesian2dRectMouseleave(evt)
+        }
+      }
     }
-    this.stage.onmouseenter = evt => {
-      this.assistLine?.onStageMouseenter(evt)
-      this.tooltip?.onStageMouseenter(evt)
-    }
-    this.stage.onmouseleave = evt => {
-      this.assistLine?.onStageMouseleave(evt)
-      this.tooltip?.onStageMouseleave(evt)
-    }
+  }
+
+  private isInnerCartesian2dRect(x: number, y: number) {
+    const { yAxisData, xAxisData } = this.coordinateSystem.cartesian2d.cartesian2dAxisData
+
+    const xAxis_start_x = xAxisData.axis.start.x
+    const xAxis_end_x = xAxisData.axis.end.x
+
+    const yAxis_start_y = yAxisData.axis.start.y
+    const yAxis_end_y = yAxisData.axis.end.y
+
+    return isInnerRect(x, y, xAxis_start_x, xAxis_end_x, yAxis_end_y, yAxis_start_y)
   }
 
   wrapperContainer: HTMLDivElement
@@ -82,11 +103,14 @@ export class ChartRoot {
   private renderCoordinateSystem() {
     const list: IShape[] = []
     this.coordinateSystem = createCoordinateSystemElements(this.stage, this.dataZoomOption, this.finalSeries)
-    if (this.coordinateSystem.hasCartesian2d) {
-      list.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
+
+    const { coordinateSystem } = this
+    if (coordinateSystem.hasCartesian2d) {
+      const { cartesian2dAllShapes } = coordinateSystem.cartesian2d
+      list.push(...cartesian2dAllShapes)
     }
-    if (this.coordinateSystem.hasPolar) {
-      list.push(...this.coordinateSystem.polar.polarAllShapes)
+    if (coordinateSystem.hasPolar) {
+      list.push(...coordinateSystem.polar.polarAllShapes)
     }
 
     return list

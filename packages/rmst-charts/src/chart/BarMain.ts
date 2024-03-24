@@ -5,6 +5,7 @@ import { IPolarElements } from '../coordinateSystem/polar'
 
 import { getCanvasDistanceFromRealNumber, getCanvasPxFromRealNumber } from '../utils/convert'
 import _Chart from './_chart'
+import { style } from '../style'
 
 type BarDataItem = { x: number; y: number; width: number; height: number }
 function calcBarData(dataSource: number[], xAxisData, yAxis, prevDataSource: null | number[]) {
@@ -92,6 +93,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
   return { elements: arcs, afterAppendStage }
 }
 
+const defaultBarSeriesItem = {}
 export default class BarMain extends _Chart<ICharts.BarSeries> {
   data: BarDataItem[] = []
 
@@ -100,8 +102,11 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
 
   polarBarElements = []
 
+  color: string
+
   render(seriesItem: ICharts.BarSeries, seriesIndex: number) {
     const { coordinateSystem } = this.cr
+    this.seriesItem = { ...defaultBarSeriesItem, ...seriesItem }
 
     if (seriesItem.coordinateSystem === 'polar') {
       const { elements, afterAppendStage } = calcPolarMain(this.cr.stage.center, seriesItem, coordinateSystem.polar)
@@ -114,6 +119,8 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
 
       return
     }
+
+    this.color = colorPalette[seriesIndex]
 
     const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
     const yAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
@@ -147,7 +154,7 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
         y: item.y + item.height,
         width: item.width,
         height: 0,
-        fillStyle: colorPalette[seriesIndex],
+        fillStyle: this.color,
         cursor: 'pointer' as const
       }
       const rectItem = Reflect.has(seriesItem.itemStyle || {}, 'shortLength')
@@ -177,4 +184,13 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
   select(index?: number) {}
 
   cancelSelect(index?: number) {}
+
+  getTooltipContent(index: number) {
+    return `
+    <div style="${style.row}">
+      <div style="${style.tagSign(this.color)}"></div> 
+      <div>${this.seriesItem.name || ''}</div>
+      <div style="${style.value}">${this.seriesItem.data[index]}</div>
+    </div>`
+  }
 }

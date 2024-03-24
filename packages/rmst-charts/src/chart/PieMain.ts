@@ -213,6 +213,10 @@ class PieMain extends _Chart<ICharts.PieSeries> {
 
   onSelected = (index: number) => {}
   onCancelSelect = (index: number) => {}
+
+  getTooltipContent() {
+    return ''
+  }
 }
 
 export default PieMain

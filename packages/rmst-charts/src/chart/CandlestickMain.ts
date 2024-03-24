@@ -7,6 +7,7 @@ import { IYAxisElements } from '../coordinateSystem/cartesian2d/calcYAxis'
 
 import _Chart from './_chart'
 import { candlestickGreen, candlestickRed } from '../constant'
+import { style } from '../style'
 
 type CandleArray = ReturnType<typeof calcCandlestickData>
 function calcCandlestickData(
@@ -139,6 +140,37 @@ class CandlestickMain extends _Chart<ICharts.CandlestickSeries> {
     this.afterAppendTasks.forEach(func => {
       func()
     })
+  }
+
+  getTooltipContent(index: number) {
+    const [open, close, lowest, highest] = this.seriesItem.data[index]
+    const color = this.candleArray[index].isRise ? candlestickRed : candlestickGreen
+
+    return `
+    <div style="${style.row}">
+      <div style="${style.tagSign(color)}"></div> 
+      <div>opening</div>
+      <div style="${style.value}">${open}</div>
+    </div>
+
+    <div style="${style.row}">
+      <div style="${style.tagSign(color)}"></div> 
+      <div>closing</div>
+      <div style="${style.value}">${close}</div>
+    </div>
+
+    <div style="${style.row}">
+      <div style="${style.tagSign(color)}"></div> 
+      <div>top</div>
+      <div style="${style.value}">${lowest}</div>
+    </div>
+
+    <div style="${style.row}">
+      <div style="${style.tagSign(color)}"></div> 
+      <div>bottom</div>
+      <div style="${style.value}">${highest}</div>
+    </div>
+`
   }
 }
 

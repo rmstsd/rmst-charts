@@ -132,4 +132,10 @@ export class SeriesManager {
       })
     }
   }
+
+  getAxisTooltipContent(activeIndex: number) {
+    const innerHtmlList = this.seriesInstances.map(item => item.getTooltipContent(activeIndex))
+
+    return innerHtmlList.reduce((acc, item) => acc + item, '')
+  }
 }
