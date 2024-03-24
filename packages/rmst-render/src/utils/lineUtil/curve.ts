@@ -1,3 +1,5 @@
+// 曲线的相关函数
+
 import { convertToNormalPoints } from '.'
 import { ICoord } from '../../type'
 

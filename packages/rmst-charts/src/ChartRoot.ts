@@ -5,7 +5,7 @@ import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine, Tooltip }
 
 import { SeriesManager } from './SeriesMgr'
 
-import { stClone } from './utils'
+import { isInnerRect, stClone } from './utils'
 
 const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx: number, endIdx: number) => {
   const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
@@ -34,18 +34,39 @@ export class ChartRoot {
     this.stage = new Stage({ container: div })
     this.wrapperContainer = div
 
+    let isInner = false
     this.stage.onmousemove = evt => {
-      this.assistLine?.onStageMousemove(evt)
-      this.tooltip?.onStageMousemove(evt)
+      if (this.coordinateSystem.hasCartesian2d) {
+        if (this.isInnerCartesian2dRect(evt.x, evt.y)) {
+          if (!isInner) {
+            isInner = true
+
+            this.assistLine?.onCartesian2dRectMouseenter(evt)
+            this.tooltip?.onCartesian2dRectMouseenter(evt)
+          }
+
+          this.assistLine?.onCartesian2dRectMousemove(evt)
+          this.tooltip?.onCartesian2dRectMousemove(evt)
+        } else if (isInner) {
+          isInner = false
+
+          this.assistLine?.onCartesian2dRectMouseleave(evt)
+          this.tooltip?.onCartesian2dRectMouseleave(evt)
+        }
+      }
     }
-    this.stage.onmouseenter = evt => {
-      this.assistLine?.onStageMouseenter(evt)
-      this.tooltip?.onStageMouseenter(evt)
-    }
-    this.stage.onmouseleave = evt => {
-      this.assistLine?.onStageMouseleave(evt)
-      this.tooltip?.onStageMouseleave(evt)
-    }
+  }
+
+  private isInnerCartesian2dRect(x: number, y: number) {
+    const { yAxisData, xAxisData } = this.coordinateSystem.cartesian2d.cartesian2dAxisData
+
+    const xAxis_start_x = xAxisData.axis.start.x
+    const xAxis_end_x = xAxisData.axis.end.x
+
+    const yAxis_start_y = yAxisData.axis.start.y
+    const yAxis_end_y = yAxisData.axis.end.y
+
+    return isInnerRect(x, y, xAxis_start_x, xAxis_end_x, yAxis_end_y, yAxis_start_y)
   }
 
   wrapperContainer: HTMLDivElement
@@ -82,11 +103,14 @@ export class ChartRoot {
   private renderCoordinateSystem() {
     const list: IShape[] = []
     this.coordinateSystem = createCoordinateSystemElements(this.stage, this.dataZoomOption, this.finalSeries)
-    if (this.coordinateSystem.hasCartesian2d) {
-      list.push(...this.coordinateSystem.cartesian2d.cartesian2dAllShapes)
+
+    const { coordinateSystem } = this
+    if (coordinateSystem.hasCartesian2d) {
+      const { cartesian2dAllShapes } = coordinateSystem.cartesian2d
+      list.push(...cartesian2dAllShapes)
     }
-    if (this.coordinateSystem.hasPolar) {
-      list.push(...this.coordinateSystem.polar.polarAllShapes)
+    if (coordinateSystem.hasPolar) {
+      list.push(...coordinateSystem.polar.polarAllShapes)
     }
 
     return list
@@ -143,6 +167,11 @@ export class ChartRoot {
       // 图表主体
       this.seriesManager = new SeriesManager(this)
       this.seriesManager.render(this.finalSeries)
+      this.seriesManager.onSelect = (index, pie) => {
+        console.log(index, pie)
+
+        this.tooltip.externalShow(pie, index)
+      }
       this.renderedElements.push(...this.seriesManager.elements)
     }
 
@@ -189,53 +218,54 @@ export class ChartRoot {
 }
 
 function handleSeries(series: ICharts.series[]): ICharts.series[] {
-  return (
-    series
-      // 设置默认的 2d 坐标系
-      .map(item => {
-        const nvItem = { ...item }
+  const ans = series
+    // 设置默认的 2d 坐标系
+    .map(item => {
+      const nvItem = { ...item }
 
-        // 饼图没有坐标系
-        if (nvItem.type === 'pie') {
-          nvItem.coordinateSystem = undefined
-          return nvItem
-        }
-
-        // 默认坐标系为 二维的直角坐标系
-        if (!nvItem.coordinateSystem) {
-          nvItem.coordinateSystem = 'cartesian2d'
-          return nvItem
-        }
-
+      // 饼图没有坐标系
+      if (nvItem.type === 'pie') {
+        nvItem.coordinateSystem = undefined
         return nvItem
-      })
-      // 折线图堆叠 data求和计算
-      .map((serItem, serIndex) => {
-        switch (serItem.type) {
-          case 'line':
-            if (serItem.stack !== 'Total') {
-              return serItem
-            }
+      }
 
-            const lineSeries = series.filter(item => item.type === 'line') as ICharts.LineSeries[]
+      // 默认坐标系为 二维的直角坐标系
+      if (!nvItem.coordinateSystem) {
+        nvItem.coordinateSystem = 'cartesian2d'
+        return nvItem
+      }
 
-            return {
-              ...serItem,
-              data: serItem.data.map((dataItem, dataIndex) => {
-                return (
-                  dataItem +
-                  lineSeries
-                    .filter(item => item.stack === 'Total')
-                    .slice(0, serIndex)
-                    .map(item => item.data[dataIndex])
-                    .reduce((prev, cur) => prev + cur, 0)
-                )
-              })
-            }
-
-          default:
+      return nvItem
+    })
+    // 堆叠 data求和计算 // todo: 应该先进行分组, 再计算数据求和
+    .map((serItem, serIndex) => {
+      switch (serItem.type) {
+        case 'line':
+        case 'bar':
+          if (serItem.stack !== 'sign') {
             return serItem
-        }
-      })
-  )
+          }
+
+          const lineSeries = series
+
+          return {
+            ...serItem,
+            data: serItem.data.map((dataItem, dataIndex) => {
+              return (
+                dataItem +
+                lineSeries
+                  .filter(item => item.stack === 'sign')
+                  .slice(0, serIndex)
+                  .map(item => item.data[dataIndex])
+                  .reduce((prev, cur) => prev + cur, 0)
+              )
+            })
+          }
+
+        default:
+          return serItem
+      }
+    })
+
+  return ans
 }

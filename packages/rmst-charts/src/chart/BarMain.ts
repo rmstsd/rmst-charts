@@ -1,13 +1,14 @@
-import { Circle, Rect } from 'rmst-render'
+import { Circle, Rect, Trapezoid } from 'rmst-render'
 
 import { colorPalette, primaryColor } from '../constant'
 import { IPolarElements } from '../coordinateSystem/polar'
 
 import { getCanvasDistanceFromRealNumber, getCanvasPxFromRealNumber } from '../utils/convert'
 import _Chart from './_chart'
+import { style } from '../style'
 
 type BarDataItem = { x: number; y: number; width: number; height: number }
-function calcBarData(dataSource: number[], xAxisData, yAxis) {
+function calcBarData(dataSource: number[], xAxisData, yAxis, prevDataSource: null | number[]) {
   const { min, realInterval, tickInterval } = yAxis.tickConstant
 
   const { axis, ticks } = xAxisData
@@ -19,7 +20,12 @@ function calcBarData(dataSource: number[], xAxisData, yAxis) {
     const x = ticks[index].start.x - width / 2
     const y = getCanvasPxFromRealNumber(dataItem, yAxis_start_y, min, realInterval, tickInterval)
 
-    const height = axis.start.y - y
+    let height: number
+    if (prevDataSource === null) {
+      height = axis.start.y - y
+    } else {
+      height = getCanvasPxFromRealNumber(prevDataSource[index], yAxis_start_y, min, realInterval, tickInterval) - y
+    }
 
     return { x, y, width, height }
   })
@@ -50,7 +56,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
 
     const afterAppendStage = () => {
       arcs.forEach(item => {
-        item.animateCartoon({ endAngle: item.data.extraData.endAngle }, { easing: 'cubicInOut' })
+        item.animateCartoon({ endAngle: item.data.extraData.endAngle }, { duration: 500, easing: 'quadraticInOut' })
       })
     }
 
@@ -80,13 +86,14 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
 
   const afterAppendStage = () => {
     arcs.forEach(item => {
-      item.animateCartoon({ radius: item.data.extraData.radius }, { easing: 'cubicInOut' })
+      item.animateCartoon({ radius: item.data.extraData.radius }, { duration: 500, easing: 'quadraticInOut' })
     })
   }
 
   return { elements: arcs, afterAppendStage }
 }
 
+const defaultBarSeriesItem = {}
 export default class BarMain extends _Chart<ICharts.BarSeries> {
   data: BarDataItem[] = []
 
@@ -95,8 +102,11 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
 
   polarBarElements = []
 
+  color: string
+
   render(seriesItem: ICharts.BarSeries, seriesIndex: number) {
     const { coordinateSystem } = this.cr
+    this.seriesItem = { ...defaultBarSeriesItem, ...seriesItem }
 
     if (seriesItem.coordinateSystem === 'polar') {
       const { elements, afterAppendStage } = calcPolarMain(this.cr.stage.center, seriesItem, coordinateSystem.polar)
@@ -110,10 +120,18 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
       return
     }
 
+    this.color = colorPalette[seriesIndex]
+
     const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
     const yAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.yAxisData
 
-    this.data = calcBarData(seriesItem.data as number[], xAxisData, yAxisData)
+    const finalSeries = this.cr.finalSeries as ICharts.LineSeries[]
+    this.data = calcBarData(
+      seriesItem.data as number[],
+      xAxisData,
+      yAxisData,
+      seriesIndex === 0 ? null : finalSeries[seriesIndex - 1].data
+    )
 
     const x_axis_start_y = xAxisData.axis.start.y
 
@@ -131,17 +149,20 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
       : []
 
     this.mainElements = this.data.map(item => {
-      const rectItem = new Rect({
+      const commonOpt = {
         x: item.x,
-        y: x_axis_start_y,
+        y: item.y + item.height,
         width: item.width,
         height: 0,
-        fillStyle: colorPalette[seriesIndex],
-        cursor: 'pointer'
-      })
+        fillStyle: this.color,
+        cursor: 'pointer' as const
+      }
+      const rectItem = Reflect.has(seriesItem.itemStyle || {}, 'shortLength')
+        ? new Trapezoid({ ...commonOpt, shortLength: seriesItem.itemStyle.shortLength })
+        : new Rect(commonOpt)
 
       rectItem.onmouseenter = () => {
-        rectItem.animateCartoon({ opacity: 0.9 }, { duration: 200 })
+        rectItem.animateCartoon({ opacity: 0.8 }, { duration: 200 })
       }
 
       rectItem.onmouseleave = () => {
@@ -156,11 +177,20 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
     this.mainElements.forEach((rectItem, index) => {
       const dataItem = this.data[index]
 
-      rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height }, { easing: 'cubicInOut' })
+      rectItem.animateCartoon({ y: dataItem.y, height: dataItem.height }, { easing: 'quadraticInOut', duration: 500 })
     })
   }
 
   select(index?: number) {}
 
   cancelSelect(index?: number) {}
+
+  getTooltipContent(index: number) {
+    return `
+    <div style="${style.row}">
+      <div style="${style.tagSign(this.color)}"></div> 
+      <div>${this.seriesItem.name || ''}</div>
+      <div style="${style.value}">${this.seriesItem.data[index]}</div>
+    </div>`
+  }
 }

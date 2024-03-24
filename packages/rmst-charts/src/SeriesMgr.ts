@@ -1,6 +1,7 @@
 import { IShape } from 'rmst-render'
 
 import { ChartRoot } from './ChartRoot'
+
 import { LegendDataItem } from './components/legend'
 
 import LineMain from './chart/LineMain'
@@ -62,6 +63,11 @@ export class SeriesManager {
         case 'pie': {
           const pie = new PieMain(this.cr)
           pie.render(seriesItem)
+          pie.onSelected = index => {
+            console.log(index, pie)
+
+            this.onSelect(index, pie)
+          }
           this.seriesInstances.push(pie)
 
           this.legendData.push(...pie.data.map(item => ({ color: item.color, label: item.label })))
@@ -131,5 +137,13 @@ export class SeriesManager {
         item.cancelSelect(legendItem)
       })
     }
+  }
+
+  onSelect(index: number, pie: PieMain) {}
+
+  getAxisTooltipContent(activeIndex: number) {
+    const innerHtmlList = this.seriesInstances.map(item => item.getTooltipContent(activeIndex))
+
+    return innerHtmlList.reduce((acc, item) => acc + item, '')
   }
 }

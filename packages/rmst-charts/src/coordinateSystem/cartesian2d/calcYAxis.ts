@@ -61,7 +61,8 @@ export function createYAxisElements(stage: Stage, series: ICharts.series[], inne
   const ticksLines = yAxisData.ticks.map((item, idx) => {
     return new Line({
       points: [item.start.x, item.start.y, item.end.x, item.end.y],
-      strokeStyle: idx === 0 ? 'transparent' : splitLineColor
+      strokeStyle: idx === 0 ? 'transparent' : splitLineColor,
+      lineDash: [4]
     })
   })
 

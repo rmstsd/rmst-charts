@@ -6,18 +6,6 @@ const NestRect = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const nativeLog = console.log
-
-    console.log = function (msg) {
-      setLogs(v => v.concat(msg))
-    }
-
-    return () => {
-      console.log = nativeLog
-    }
-  }, [])
-
-  useEffect(() => {
     const stage = new Stage({
       container: canvasRef.current
     })
@@ -35,38 +23,43 @@ const NestRect = () => {
     stage.append(box_pink)
 
     box_pink.onmouseenter = () => {
-      console.log('粉色矩形 enter')
+      logLog('粉色矩形 enter')
     }
 
     box_pink.onmouseleave = () => {
-      console.log('粉色矩形 leave')
+      logLog('粉色矩形 leave')
     }
 
     inn_rect.onmouseenter = () => {
-      console.log('绿色矩形 enter')
+      logLog('绿色矩形 enter')
     }
 
     inn_rect.onmouseleave = () => {
-      console.log('绿色矩形 leave')
+      logLog('绿色矩形 leave')
     }
     // ----
 
     box_2.onmouseenter = () => {
-      console.log('米色矩形 enter')
+      logLog('米色矩形 enter')
     }
 
     box_2.onmouseleave = () => {
-      console.log('米色矩形 leave')
+      logLog('米色矩形 leave')
     }
 
     inn_cir.onmouseenter = () => {
-      console.log('蓝色圆形 enter')
+      logLog('蓝色圆形 enter')
     }
 
     inn_cir.onmouseleave = () => {
-      console.log('蓝色圆形 leave')
+      logLog('蓝色圆形 leave')
     }
   }, [])
+
+  const logLog = (msg: string) => {
+    console.log(msg)
+    setLogs(v => v.concat(msg))
+  }
 
   const [logs, setLogs] = useState([])
 

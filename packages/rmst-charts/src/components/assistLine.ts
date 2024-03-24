@@ -44,7 +44,7 @@ export class AssistLine {
 
   ani = new AnimatorSingle(0, 0)
 
-  onStageMousemove(evt) {
+  onCartesian2dRectMousemove(evt) {
     const { cr } = this
     const { stage } = cr
 
@@ -59,74 +59,68 @@ export class AssistLine {
     const yAxis_start_y = yAxisData.axis.start.y
     const yAxis_end_y = yAxisData.axis.end.y
 
-    if (!isInnerRect(offsetX, offsetY, xAxis_start_x, xAxis_end_x, yAxis_end_y, yAxis_start_y)) {
-      this.setVisible(false)
+    const { assistY, realTickValue } = getYTickFromOffsetY(
+      offsetY,
+      yAxis_start_y,
+      yAxisData.tickConstant.tickInterval,
+      yAxisData.tickConstant.realInterval,
+      yAxisData.tickConstant.min,
+      yAxisData.ticks
+    )
+
+    let activeIndex = 0
+
+    const xAxisDataTicks = xAxisData.ticks
+
+    if (offsetX < xAxisDataTicks.at(0).start.x) {
+      activeIndex = 0
+    } else if (offsetX > xAxisDataTicks.at(-1).start.x) {
+      activeIndex = xAxisDataTicks.length - 1
     } else {
-      this.setVisible(true)
+      const tickCount = (offsetX - xAxisDataTicks.at(0).start.x) / xAxisData.axis.xAxisInterval
 
-      const { assistY, realTickValue } = getYTickFromOffsetY(
-        offsetY,
-        yAxis_start_y,
-        yAxisData.tickConstant.tickInterval,
-        yAxisData.tickConstant.realInterval,
-        yAxisData.tickConstant.min,
-        yAxisData.ticks
-      )
-
-      let activeIndex = 0
-
-      const xAxisDataTicks = xAxisData.ticks
-
-      if (offsetX < xAxisDataTicks.at(0).start.x) {
-        activeIndex = 0
-      } else if (offsetX > xAxisDataTicks.at(-1).start.x) {
-        activeIndex = xAxisDataTicks.length - 1
-      } else {
-        const tickCount = (offsetX - xAxisDataTicks.at(0).start.x) / xAxisData.axis.xAxisInterval
-
-        const neared = detectNear(tickCount, 0.5)
-        if (neared.isNear) {
-          activeIndex = neared.nearValue
-        }
+      const neared = detectNear(tickCount, 0.5)
+      if (neared.isNear) {
+        activeIndex = neared.nearValue
       }
-
-      if (this.activeIndex !== activeIndex) {
-        this.activeIndex = activeIndex
-        const verticalX = xAxisDataTicks[this.activeIndex].start.x
-        // this.vertical.animateCartoon(
-        //   { points: [verticalX, 0, verticalX, stage.canvasSize.height] },
-        //   { duration: 200, easing: 'cubicInOut' }
-        // )
-
-        this.ani.setAheadEnd()
-        this.ani = new AnimatorSingle(this.ani.centerValue, verticalX, { duration: 150 })
-        this.ani.onUpdate = _cv => {
-          this.vertical.attr({ points: [_cv, 0, _cv, stage.canvasSize.height] })
-        }
-
-        this.ani.setEndValue(verticalX)
-
-        this.onActiveIndexChange(this.activeIndex)
-      }
-
-      this.horizontal.attr({ points: [0, assistY, stage.canvasSize.width, assistY] })
-
-      const tickRectData = this.tickRect.data
-      const tickRectCoord: ICoord = { x: xAxis_start_x - tickRectData.width, y: assistY - tickRectData.height / 2 }
-      this.tickRect.attr({ x: tickRectCoord.x, y: tickRectCoord.y })
-      this.tickText.attr({
-        x: tickRectCoord.x + tickRectData.width / 2,
-        y: tickRectCoord.y + 5,
-        content: realTickValue
-      })
     }
+
+    if (this.activeIndex !== activeIndex) {
+      this.activeIndex = activeIndex
+      const verticalX = xAxisDataTicks[this.activeIndex].start.x
+      // this.vertical.animateCartoon(
+      //   { points: [verticalX, 0, verticalX, stage.canvasSize.height] },
+      //   { duration: 200, easing: 'quadraticInOut' }
+      // )
+
+      this.ani.setAheadEnd()
+      this.ani = new AnimatorSingle(this.ani.centerValue, verticalX, { duration: 150 })
+      this.ani.onUpdate = _cv => {
+        this.vertical.attr({ points: [_cv, 0, _cv, stage.canvasSize.height] })
+      }
+
+      this.ani.setEndValue(verticalX)
+
+      this.onActiveIndexChange(this.activeIndex)
+    }
+
+    this.horizontal.attr({ points: [0, assistY, stage.canvasSize.width, assistY] })
+
+    const tickRectData = this.tickRect.data
+    const tickRectCoord: ICoord = { x: xAxis_start_x - tickRectData.width, y: assistY - tickRectData.height / 2 }
+    this.tickRect.attr({ x: tickRectCoord.x, y: tickRectCoord.y })
+    this.tickText.attr({
+      x: tickRectCoord.x + tickRectData.width / 2,
+      y: tickRectCoord.y + 5,
+      content: String(realTickValue)
+    })
   }
 
-  onStageMouseenter(evt) {
+  onCartesian2dRectMouseenter(evt) {
     this.setVisible(true)
   }
 
-  onStageMouseleave(evt) {
+  onCartesian2dRectMouseleave(evt) {
     this.setVisible(false)
   }
 

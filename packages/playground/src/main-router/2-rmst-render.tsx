@@ -8,6 +8,7 @@ import Overview from '@/demo/2-rmst-render/a_overview'
 import RectDemo from '@/demo/2-rmst-render/base-shape/RectDemo'
 import Circle from '@/demo/2-rmst-render/base-shape/CircleDemo'
 import LineDemo from '@/demo/2-rmst-render/base-shape/LineDemo'
+import TrapezoidDemo from '@/demo/2-rmst-render/base-shape/TrapezoidDemo'
 import TextDemo from '@/demo/2-rmst-render/base-shape/TextDemo'
 
 import Single from '@/demo/2-rmst-render/event/Single'
@@ -50,6 +51,7 @@ const rmstRenderRouteConfig: IRouteObject = {
       uiConfig: { title: '基础图形' },
       children: [
         { path: 'rect', element: <RectDemo />, uiConfig: { title: '矩形' } },
+        { path: 'trapezoid', element: <TrapezoidDemo />, uiConfig: { title: '梯形' } },
         { path: 'circle', element: <Circle />, uiConfig: { title: '圆, 环, 扇, 扇环' } },
         { path: 'line', element: <LineDemo />, uiConfig: { title: '线' } },
         { path: 'text', element: <TextDemo />, uiConfig: { title: '文本' } }

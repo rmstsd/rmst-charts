@@ -1,4 +1,4 @@
-import { Circle, Line, Text } from '../../shape'
+import { Circle, Line, Rect, Text, Trapezoid } from '../../shape'
 import { clipRect, createLinePath2D, getPointOnArc, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
@@ -34,6 +34,18 @@ export function drawStageShapes(stage: Stage) {
       switch (elementItem.type) {
         case 'Circle': {
           drawCircle(ctx, elementItem as Circle)
+          break
+        }
+        case 'Trapezoid': {
+          elementItem.path2D = createTrapezoidPath2D(elementItem.data)
+
+          if (data.fillStyle) {
+            ctx.fill(elementItem.path2D)
+          }
+          if (hasStroke(data.lineWidth, data.strokeStyle)) {
+            ctx.stroke(elementItem.path2D)
+          }
+
           break
         }
         case 'Line': {
@@ -95,6 +107,7 @@ export function drawStageShapes(stage: Stage) {
         }
 
         default:
+          console.log(elementItem.type, '该图形 暂未实现')
           break
       }
     })
@@ -241,7 +254,7 @@ const calcRingD = (
   }
 }
 
-export function createRectPath2D(data) {
+export function createRectPath2D(data: Rect['data']) {
   const { x, y, width, height, cornerRadius = 0 } = data
 
   const path2D = new Path2D()
@@ -254,6 +267,29 @@ export function createRectPath2D(data) {
   path2D.arc(x + cornerRadius, y + height - cornerRadius, cornerRadius, Math.PI / 2, Math.PI)
   path2D.lineTo(x, y + cornerRadius)
   path2D.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
+  path2D.closePath()
+
+  return path2D
+}
+
+function createTrapezoidPath2D(data: Trapezoid['data']) {
+  const { x, y, width, height, shortLength } = data
+
+  const path2D = new Path2D()
+
+  let _shortLength: number
+
+  if (typeof shortLength === 'number') {
+    _shortLength = shortLength
+  } else if (typeof shortLength === 'string') {
+    _shortLength = (parseFloat(shortLength) / 100) * width
+  }
+
+  path2D.moveTo(x + (width / 2 - _shortLength / 2), y)
+  path2D.lineTo(x + (width / 2 - _shortLength / 2) + _shortLength, y)
+  path2D.lineTo(x + width, y + height)
+  path2D.lineTo(x, y + height)
+
   path2D.closePath()
 
   return path2D

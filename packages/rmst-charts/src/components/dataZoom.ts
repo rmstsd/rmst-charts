@@ -1,6 +1,7 @@
-import { BoxHidden, Group, IShape, Line, Rect } from 'rmst-render'
+import { BoxHidden, Circle, Group, IShape, Rect } from 'rmst-render'
 
 import { ChartRoot } from '../ChartRoot'
+import { dataZoomHeight } from '../constant'
 
 const moveHandleHeight = 6
 
@@ -56,10 +57,10 @@ export class dataZoom {
       x: xAxis.start.x,
       y: xAxis.start.y + 50,
       width: xAxis.end.x - xAxis.start.x,
-      height: 30,
+      height: dataZoomHeight - 26,
       cornerRadius: 2,
       fillStyle: '#fff',
-      strokeStyle: '#d2dbee'
+      strokeStyle: '#B5C7FF'
     })
 
     this.start_x = backGround.data.x + backGround.data.width * this.rangeRatio.startRatio
@@ -73,22 +74,7 @@ export class dataZoom {
     const controlWidth = () => this.end_x - this.start_x
 
     const calcLeftBgLinePoints = () => ({ points: [this.start_x, control_lt.y, this.start_x, control_rb.y] })
-    const handleLeftBgLine = new Line({
-      ...calcLeftBgLinePoints(),
-      lineWidth: 1,
-      fillStyle: initialColor,
-      cursor: 'w-resize',
-      draggable: 'horizontal'
-    })
-
     const calcRightBgLinePoints = () => ({ points: [this.end_x, control_lt.y, this.end_x, control_rb.y] })
-    const handleRightBgLine = new Line({
-      ...calcRightBgLinePoints(),
-      lineWidth: 1,
-      fillStyle: 'rgb(172,184,209)',
-      cursor: 'w-resize',
-      draggable: 'horizontal'
-    })
 
     const moveControlGroup = new Group({})
 
@@ -99,7 +85,12 @@ export class dataZoom {
       height: backGround.data.height
     })
 
-    const insideRect = new Rect({ ...calcInsideRect(), fillStyle: 'rgb(135,175,255)', opacity: 0.2 })
+    const insideRect = new Rect({
+      ...calcInsideRect(),
+      fillStyle: 'rgb(135,175,255)',
+      strokeStyle: '#B5C7FF',
+      opacity: 0.2
+    })
 
     const calcMoveHandle = () => ({
       x: this.start_x,
@@ -143,16 +134,14 @@ export class dataZoom {
       return ans
     }
 
-    const calcLeft = () => ({
-      x: this.start_x - sideHandleHalfWidth,
-      y: control_lt.y + (backGround.data.height - sideHandleSize.height) / 2
-    })
-
-    const handleLeft = new Rect({
+    const calcLeft = () => ({ x: this.start_x, y: control_lt.y + backGround.data.height / 2 })
+    const radius = backGround.data.height / 2 + 2
+    const handleLeft = new Circle({
       ...calcLeft(),
-      ...sideHandleSize,
+      radius,
+      lineWidth: 2,
       fillStyle: '#fff',
-      strokeStyle: 'rgb(172,184,209)',
+      strokeStyle: '#0052D9',
       cursor: 'w-resize',
       draggable: 'horizontal'
     })
@@ -170,15 +159,13 @@ export class dataZoom {
       }
     )
 
-    const calcRight = () => ({
-      x: this.end_x - sideHandleSize.width / 2,
-      y: control_lt.y + (backGround.data.height - sideHandleSize.height) / 2
-    })
-    const handleRight = new Rect({
+    const calcRight = () => ({ x: this.end_x, y: control_lt.y + backGround.data.height / 2 })
+    const handleRight = new Circle({
       ...calcRight(),
-      ...sideHandleSize,
+      radius,
       fillStyle: '#fff',
-      strokeStyle: 'rgb(172,184,209)',
+      strokeStyle: '#0052D9',
+      lineWidth: 2,
       cursor: 'w-resize',
       draggable: 'horizontal'
     })
@@ -217,8 +204,7 @@ export class dataZoom {
     const rect_right = new Rect({ ...calcRectRight(), ...rectCfg })
 
     moveHandle.append(rect_center, rect_left, rect_right)
-
-    moveControlGroup.append(insideRect, handleLeftBgLine, handleRightBgLine, handleLeft, handleRight, moveHandle)
+    moveControlGroup.append(insideRect, moveHandle, handleLeft, handleRight)
 
     const updateControl = () => {
       moveHandle.attr(calcMoveHandle())
@@ -227,18 +213,15 @@ export class dataZoom {
       handleLeft.attr(calcLeft())
       handleRight.attr(calcRight())
 
-      handleLeftBgLine.attr(calcLeftBgLinePoints())
-      handleRightBgLine.attr(calcRightBgLinePoints())
-
       rect_center.attr(calcRectCenter())
       rect_left.attr(calcRectLeft())
       rect_right.attr(calcRectRight())
     }
     const controlActive = () => {
-      moveHandle.animateCartoon({ fillStyle: activeColor }, { duration: 300 })
+      // moveHandle.animateCartoon({ fillStyle: activeColor }, { duration: 300 })
     }
     const controlUnActive = () => {
-      moveHandle.animateCartoon({ fillStyle: initialColor }, { duration: 300 })
+      // moveHandle.animateCartoon({ fillStyle: initialColor }, { duration: 300 })
     }
 
     moveHandle.onmouseenter = controlActive

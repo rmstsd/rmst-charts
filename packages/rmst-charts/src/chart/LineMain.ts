@@ -6,6 +6,7 @@ import { getCanvasPxFromRealNumber } from '../utils/convert'
 import { IXAxisElements } from '../coordinateSystem/cartesian2d/calcXAxis'
 import { IYAxisElements } from '../coordinateSystem/cartesian2d/calcYAxis'
 import _Chart from './_chart'
+import { style } from '../style'
 
 function calcLineData(
   dataSource: ICharts.LineSeries['data'],
@@ -71,7 +72,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
     })
 
     const boxHidden = new BoxHidden({
-      x: xAxisData.axis.start.x,
+      x: xAxisData.ticks[0].start.x - lineStyle.width,
       y: yAxisData.axis.end.y,
       width: 0,
       height: stage.canvasSize.height,
@@ -196,7 +197,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
       { width: stage.canvasSize.width },
       {
         duration: this.seriesItem.animationDuration,
-        easing: 'cubicInOut',
+        easing: 'quadraticInOut',
         during: (percent, newState) => {
           if (this.seriesItem.symbol === 'none') {
             return
@@ -250,6 +251,15 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
 
       this.arcCancelActive(item)
     })
+  }
+
+  getTooltipContent(index: number) {
+    return `
+    <div style="${style.row}">
+      <div style="${style.tagSign(this.color)}"></div> 
+      <div>${this.seriesItem.name || ''}</div>
+      <div style="${style.value}">${this.seriesItem.data[index]}</div>
+    </div>`
   }
 }
 

@@ -101,8 +101,6 @@ export class Stage extends AbsEvent {
     })
   }
 
-  private prevHovered: IShape
-
   private hoveredStack: IShape[] = []
 
   private addStageEventListener() {
@@ -110,10 +108,9 @@ export class Stage extends AbsEvent {
       {
         // 触发舞台(canvas Element)的事件
         const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-        this.onmousemove(eventParameter)
+        triggerEventHandlers(this, 'onmousemove', eventParameter)
       }
 
-      // 此逻辑 可能会影响 拖放功能 的图形拾取; 暂时注释 与 zrender 的 UI 表现一致
       if (this.draggingMgr.dragging) {
         return
       }
@@ -188,58 +185,36 @@ export class Stage extends AbsEvent {
           triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
         }
       }
+    }
 
-      return
-      if (!hovered) {
-        if (this.prevHovered) {
-          const eventParameter: EventParameter = { target: this.prevHovered, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(this.prevHovered, 'onmouseleave', eventParameter)
+    this.canvasElement.onmouseleave = evt => {
+      if (this.hoveredStack.length) {
+        this.hoveredStack.toReversed().forEach(eleItem => {
+          const eventParameter: EventParameter = { target: eleItem, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(eleItem, 'onmouseleave', eventParameter)
+        })
 
-          this.prevHovered = undefined
-
-          this.setCursor('default')
-        }
-        return
+        this.hoveredStack = []
       }
 
-      if (hovered && hovered !== this.prevHovered) {
-        if (this.prevHovered) {
-          const eventParameter: EventParameter = { target: this.prevHovered, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(this.prevHovered, 'onmouseleave', eventParameter)
-        }
-        this.prevHovered = hovered
-        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
-        triggerEventHandlers(hovered, 'onmouseenter', eventParameter)
-
-        const cursor = hovered.data.cursor || 'auto'
-        this.setCursor(cursor)
-      }
-
-      if (hovered) {
-        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
-        triggerEventHandlers(hovered, 'onmousemove', eventParameter)
+      {
+        // 触发舞台(canvas Element)的事件
+        const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+        this.onmouseleave(eventParameter)
       }
     }
 
-    eventStageList.forEach(eventName => {
-      if (eventName === 'onmousemove') {
-        return
-      }
-
-      this.canvasElement[eventName] = evt => {
-        {
-          // 触发舞台(canvas Element)的事件
-          const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-          this[eventName](eventParameter)
+    eventStageList
+      .filter(n => !['onmousemove', 'onmouseleave'].includes(n))
+      .forEach(eventName => {
+        this.canvasElement[eventName] = evt => {
+          {
+            // 触发舞台(canvas Element)的事件
+            const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+            this[eventName](eventParameter)
+          }
         }
-
-        const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
-        if (hovered) {
-          const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(hovered, eventName, eventParameter)
-        }
-      }
-    })
+      })
 
     // 拖拽
     this.canvasElement.addEventListener('mousedown', evt => {

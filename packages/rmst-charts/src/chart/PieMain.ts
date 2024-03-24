@@ -40,7 +40,7 @@ class PieMain extends _Chart<ICharts.PieSeries> {
   center: ICoord
 
   render(seriesItem: ICharts.PieSeries) {
-    seriesItem = { animationDuration: 1000, ...seriesItem }
+    seriesItem = { animationDuration: 500, ...seriesItem }
 
     this.seriesItem = seriesItem
 
@@ -179,7 +179,7 @@ class PieMain extends _Chart<ICharts.PieSeries> {
     const ani = new Animator(
       { value: 0 },
       { value: 360 },
-      { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' }
+      { duration: this.seriesItem.animationDuration, easing: 'quadraticInOut' }
     )
     ani.start()
     ani.onUpdate = ({ value }, elapsedTimeRatio) => {
@@ -194,8 +194,8 @@ class PieMain extends _Chart<ICharts.PieSeries> {
     this.labelElements.forEach(item => {
       const [exLine, exText] = item.children as unknown as [Line, Text]
 
-      exLine.animateCartoon({ percent: 1 }, { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' })
-      exText.animateCartoon({ opacity: 1 }, { duration: this.seriesItem.animationDuration, easing: 'cubicInOut' })
+      exLine.animateCartoon({ percent: 1 }, { duration: this.seriesItem.animationDuration, easing: 'quadraticInOut' })
+      exText.animateCartoon({ opacity: 1 }, { duration: this.seriesItem.animationDuration, easing: 'quadraticInOut' })
     })
   }
 
@@ -213,6 +213,10 @@ class PieMain extends _Chart<ICharts.PieSeries> {
 
   onSelected = (index: number) => {}
   onCancelSelect = (index: number) => {}
+
+  getTooltipContent() {
+    return ''
+  }
 }
 
 export default PieMain
