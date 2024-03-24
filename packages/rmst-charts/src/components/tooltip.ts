@@ -1,5 +1,6 @@
 import { ChartRoot } from '../ChartRoot'
-import { style, tooltipContainerStyle } from '../style'
+import PieMain from '../chart/PieMain'
+import { tooltipContainerStyle } from '../style'
 
 export class Tooltip {
   cr: ChartRoot
@@ -16,8 +17,15 @@ export class Tooltip {
         let innerHtml = `<div style=${tooltipContainerStyle.title}>${tick.text.value}</div>`
         this.tooltipContainer.innerHTML = innerHtml + html
       }
+    } else {
+      this.cr.stage.on('mousemove', evt => {
+        if (this.isShow) {
+        }
+      })
     }
   }
+
+  isShow = false
 
   tooltipContainer: HTMLDivElement
 
@@ -45,13 +53,17 @@ export class Tooltip {
     }
   }
 
-  onCartesian2dRectMouseenter(evt) {
+  private initContainer() {
     if (!this.tooltipContainer) {
       const div = document.createElement('div')
       div.setAttribute('tooltip', '')
       this.tooltipContainer = div
       this.cr.wrapperContainer.appendChild(div)
     }
+  }
+
+  onCartesian2dRectMouseenter(evt) {
+    this.initContainer()
 
     this.show()
   }
@@ -66,5 +78,13 @@ export class Tooltip {
 
   private show() {
     this.tooltipContainer.style.display = 'flex'
+  }
+
+  externalShow(pie: PieMain, index: number) {
+    this.initContainer()
+
+    this.show()
+
+    console.log(pie.seriesItem.data[index], pie.data[index].color)
   }
 }

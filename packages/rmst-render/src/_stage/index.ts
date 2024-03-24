@@ -108,7 +108,7 @@ export class Stage extends AbsEvent {
       {
         // 触发舞台(canvas Element)的事件
         const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-        this.onmousemove(eventParameter)
+        triggerEventHandlers(this, 'onmousemove', eventParameter)
       }
 
       if (this.draggingMgr.dragging) {

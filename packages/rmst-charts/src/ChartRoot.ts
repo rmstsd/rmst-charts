@@ -167,6 +167,11 @@ export class ChartRoot {
       // 图表主体
       this.seriesManager = new SeriesManager(this)
       this.seriesManager.render(this.finalSeries)
+      this.seriesManager.onSelect = (index, pie) => {
+        console.log(index, pie)
+
+        this.tooltip.externalShow(pie, index)
+      }
       this.renderedElements.push(...this.seriesManager.elements)
     }
 
