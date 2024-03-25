@@ -1,21 +1,21 @@
 import { Stage } from './_stage'
-import { EventType, Handler } from './constant'
+import { EventType, Handler, Noop } from './constant'
 import { BoxHidden } from './shape/BoxHidden'
 import { Group } from './shape'
 
 abstract class AbsEvent {
-  onclick: Handler = () => {}
+  onclick: Handler = Noop
 
-  onmouseenter: Handler = () => {}
-  onmousemove: Handler = () => {}
-  onmouseleave: Handler = () => {}
+  onmouseenter: Handler = Noop
+  onmousemove: Handler = Noop
+  onmouseleave: Handler = Noop
 
-  onmousedown: Handler = () => {}
-  onmouseup: Handler = () => {}
+  onmousedown: Handler = Noop
+  onmouseup: Handler = Noop
 
-  ondragstart: Handler = () => {}
-  ondrag: Handler = () => {}
-  ondragend: Handler = () => {}
+  ondragstart: Handler = Noop
+  ondrag: Handler = Noop
+  ondragend: Handler = Noop
 
   parent: Stage | Group | BoxHidden = null
 

@@ -2,7 +2,7 @@ import colorAlpha from 'color-alpha'
 
 import Draggable from '../Draggable'
 import { EventParameter, Handler, eventStageList } from '../constant'
-import { initStage, triggerEventHandlers } from './utils'
+import { findToRoot, initStage, triggerEventHandlers } from './utils'
 import { resetSchedulerCount } from './scheduler'
 import { findHover } from './findHover'
 import { mountStage } from './renderUi'
@@ -37,6 +37,8 @@ export class Stage extends AbsEvent {
 
   parent: null
   children: IShape[] = []
+
+  draggingMgr = new Draggable()
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -115,83 +117,14 @@ export class Stage extends AbsEvent {
         return
       }
 
-      const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
-
-      if (hovered) {
-        {
-          let hasCursorTarget = hovered
-
-          while (hasCursorTarget && !hasCursorTarget.data.cursor) {
-            const parent = hasCursorTarget.parent as unknown as IShape
-            if (isStage(parent)) {
-              break
-            }
-
-            hasCursorTarget = parent
-          }
-
-          const cursor = hasCursorTarget.data.cursor || 'auto'
-
-          this.setCursor(cursor)
-
-          const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(hovered, 'onmousemove', eventParameter)
-        }
-
-        if (this.hoveredStack.length === 0) {
-          const stack = [hovered]
-          let parent = hovered.parent
-          while (parent && !isStage(parent)) {
-            stack.unshift(parent)
-            parent = parent.parent
-          }
-
-          stack.forEach(eleItem => {
-            const eventParameter: EventParameter = { target: eleItem, x: evt.offsetX, y: evt.offsetY }
-            triggerEventHandlers(eleItem, 'onmouseenter', eventParameter)
-          })
-
-          this.hoveredStack = stack
-        }
-
-        if (!this.hoveredStack.find(item => item === hovered)) {
-          const stackTopElement = this.hoveredStack.at(-1)
-
-          // 对于同级元素直接替换掉栈顶元素
-          if (hovered.parent !== stackTopElement) {
-            this.hoveredStack[this.hoveredStack.length - 1] = hovered
-
-            const eventParameter: EventParameter = { target: stackTopElement, x: evt.offsetX, y: evt.offsetY }
-            triggerEventHandlers(stackTopElement, 'onmouseleave', eventParameter)
-          } else {
-            this.hoveredStack.push(hovered)
-          }
-
-          const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(hovered, 'onmouseenter', eventParameter)
-        }
-
-        if (this.hoveredStack.at(-1) !== hovered) {
-          const elementItem = this.hoveredStack.pop()
-          const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-        }
-      } else {
-        this.setCursor('default')
-
-        if (this.hoveredStack.length) {
-          const elementItem = this.hoveredStack.pop()
-          const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-        }
-      }
+      this.handleHoveredElement(evt.offsetX, evt.offsetY)
     }
 
     this.canvasElement.onmouseleave = evt => {
       if (this.hoveredStack.length) {
-        this.hoveredStack.toReversed().forEach(eleItem => {
-          const eventParameter: EventParameter = { target: eleItem, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(eleItem, 'onmouseleave', eventParameter)
+        this.hoveredStack.toReversed().forEach(elementItem => {
+          const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
+          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
         })
 
         this.hoveredStack = []
@@ -226,9 +159,63 @@ export class Stage extends AbsEvent {
     })
   }
 
-  draggingMgr = new Draggable()
+  private handleHoveredElement(x: number, y: number) {
+    const hovered = findHover(this.ctx, this.children, x, y)
 
-  setCursor(cursor: ICursor) {
+    if (hovered) {
+      this.setHoveredElementCursor(hovered)
+
+      const eventParameter: EventParameter = { target: hovered, x, y }
+      triggerEventHandlers(hovered, 'onmousemove', eventParameter)
+
+      const stack = findToRoot(hovered)
+
+      for (let i = this.hoveredStack.length - 1; i >= 0; i--) {
+        const elementItem = this.hoveredStack[i]
+
+        if (!stack.includes(elementItem)) {
+          const eventParameter: EventParameter = { target: elementItem, x, y }
+          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
+
+          this.hoveredStack.splice(i, 1)
+        }
+      }
+
+      stack.forEach(item => {
+        if (!this.hoveredStack.includes(item)) {
+          const eventParameter: EventParameter = { target: item, x, y }
+          triggerEventHandlers(item, 'onmouseenter', eventParameter)
+
+          this.hoveredStack.push(item)
+        }
+      })
+    } else {
+      this.setCursor('default')
+
+      this.hoveredStack.toReversed().forEach(elementItem => {
+        const eventParameter: EventParameter = { target: elementItem, x, y }
+        triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
+      })
+
+      this.hoveredStack = []
+    }
+  }
+
+  private setHoveredElementCursor(hovered: IShape) {
+    let hasCursorTarget = hovered
+    while (hasCursorTarget && !hasCursorTarget.data.cursor) {
+      const parent = hasCursorTarget.parent as unknown as IShape
+      if (isStage(parent)) {
+        break
+      }
+
+      hasCursorTarget = parent
+    }
+    const cursor = hasCursorTarget.data.cursor || 'auto'
+    this.setCursor(cursor)
+  }
+
+  private setCursor(cursor: ICursor) {
     this.canvasElement.style.setProperty('cursor', cursor)
   }
 

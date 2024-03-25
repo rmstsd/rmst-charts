@@ -20,7 +20,17 @@ const NestRect = () => {
 
     box_pink.append(box_2)
 
-    stage.append(box_pink)
+    const ot = new Circle({ x: 220, y: 320, radius: 30, fillStyle: 'red' })
+
+    stage.append(box_pink, ot)
+
+    ot.onmouseenter = () => {
+      logLog('红色圆形 enter')
+    }
+
+    ot.onmouseleave = () => {
+      logLog('红色圆形 leave')
+    }
 
     box_pink.onmouseenter = () => {
       logLog('粉色矩形 enter')
