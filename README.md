@@ -261,13 +261,15 @@ rect_1.onclick = () => {
 type EventType = 'mouseleave' | 'mouseenter' | 'mousemove' | 'mousedown' | 'mouseup' | 'click'
 ```
 
+**且支持后代元素的鼠标事件触发, 其行为与 dom 表现一致** [在线示例](https://charts.rmst.site/#/rmst-render/event/nest)
+
 设置了 `draggable: true` 的图形，额外有 `ondragstart` `ondrag` `ondragend` 事件，可用于自定义拖拽范围
 
 其中 `'mouseleave' | 'mouseenter'`事件的触发行为与 dom 表现一致，当两个图形位置相邻或者产生覆盖的时候，会先触发上一个图形的 `'mouseleave'` 再触发下一个图形的 `'mouseenter'` ，且这两次触发在同一轮事件循环内完成。 [在线示例](https://charts.rmst.site/#/rmst-render/event/over)
 
 # 动画
 
-[1000 个动画同时执行不掉帧示例](https://charts.rmst.site/#/rmst-render/animate/ani-1000)
+[上千个动画同时执行不掉帧示例](https://charts.rmst.site/#/rmst-render/animate/ani-1000)
 
 执行图形上的 `animateCartoon` 方法执行动画
 
