@@ -74,7 +74,7 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
   return isInPath() || isInStroke()
 
   function isTextShapeInner(elementItem: Text): boolean {
-    const { x, y, content, fontSize, textAlign } = elementItem.data
+    const { x, y, content, fontSize, textAlign, textBaseline } = elementItem.data
     const { textWidth, textHeight } = measureText(content, fontSize)
 
     const halfWidth = textWidth / 2
@@ -92,6 +92,9 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
     })()
 
     const textRect_y = (() => {
+      if (textBaseline === 'middle') {
+        return y - textHeight / 2
+      }
       return y
     })()
 

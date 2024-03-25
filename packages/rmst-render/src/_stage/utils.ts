@@ -1,3 +1,4 @@
+import { Stage } from '..'
 import { EventParameter, EventType, OnEventType, dpr, supportBubblesEventType } from '../constant'
 import { IShape } from '../type'
 import { isStage } from '../utils'
@@ -30,7 +31,11 @@ export function initStage(canvasContainer: HTMLElement) {
   return { canvasElement, ctx }
 }
 
-export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType, eventParameter: EventParameter) {
+export function triggerEventHandlers(
+  elementItem: IShape | Stage,
+  eventName: OnEventType,
+  eventParameter: EventParameter
+) {
   elementItem[eventName](eventParameter)
   const eventType = eventName.slice(2) as EventType
 
@@ -49,4 +54,15 @@ export function triggerEventHandlers(elementItem: IShape, eventName: OnEventType
       triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })
     }
   }
+}
+
+export const findToRoot = (elementItem: IShape) => {
+  const stack = [elementItem]
+  let parent = elementItem.parent
+  while (parent && !isStage(parent)) {
+    stack.unshift(parent)
+    parent = parent.parent
+  }
+
+  return stack
 }

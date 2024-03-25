@@ -66,13 +66,14 @@ export class Legend {
       })
       const legendText = new Text({
         x: isVertical ? x + width + textGap : rectX + width + textGap,
-        y: isVertical ? verticalY + 1 : y + 1,
+        y: isVertical ? verticalY + height / 2 : y + height / 2 + 1,
         content: item.label,
         fillStyle: item.color,
         fontSize,
-        cursor: 'pointer'
+        cursor: 'pointer',
+        textBaseline: 'middle'
       })
-      const legendGroup = new Group({ name: 'legend-Group' })
+      const legendGroup = new Group({ name: 'legend-Group - ' + index })
       legendGroup.append([legendRect, legendText])
 
       legendGroup.onmouseenter = () => {
