@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Stage, Rect } from 'rmst-render'
+import { Stage, Rect, Circle } from 'rmst-render'
 
 const Single = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -44,7 +44,17 @@ const Single = () => {
       setLogs(state => state.concat('rect_1 leave'))
     }
 
-    stage.append([rect_1])
+    const r2 = new Rect({
+      x: 180,
+      y: 180,
+      width: 70,
+      height: 70,
+      fillStyle: 'pink',
+      draggable: true,
+      cursor: 'move'
+    })
+
+    stage.append([r2, rect_1])
   }, [])
 
   const [logs, setLogs] = useState([])

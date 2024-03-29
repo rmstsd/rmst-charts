@@ -2,6 +2,7 @@ import { Circle, Line, Rect, Text, Trapezoid } from '../../shape'
 import { clipRect, createLinePath2D, getPointOnArc, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
+import { matrixMap } from '../../constant'
 
 // {
 //   const svgHtml = `
@@ -131,7 +132,7 @@ export function drawCircle(ctx: CanvasRenderingContext2D, elementItem: Circle) {
   ctx.fill(elementItem.path2D)
 }
 
-export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem) {
+export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem: IShape) {
   const { data } = elementItem
   const { lineWidth, lineCap, lineJoin, strokeStyle, fillStyle, opacity, lineDash } = data
   const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY } = data

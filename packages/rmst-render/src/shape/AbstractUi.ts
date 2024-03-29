@@ -1,12 +1,12 @@
 import { Stage } from '../_stage'
 import { Animator, AnimateCartoonConfig } from '../animate'
-import AbsEvent from '../AbsEvent'
+import AbsEvent, { EventOpt } from '../AbsEvent'
 import { schedulerTask } from '../_stage/scheduler'
 import { ICursor, IShape, IShapeType } from '../type'
 import { createRectPath2D, drawCircle, setCtxStyleProp } from '../renderer/canvas'
 import { clipRect } from '../utils'
 
-export interface AbstractUiData {
+export interface AbstractUiData extends EventOpt {
   name?: string
   x?: number
   y?: number
@@ -29,9 +29,11 @@ export interface AbstractUiData {
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
 
+  // transform?: number[] // [水平缩放, 垂直倾斜, 水平倾斜, 垂直缩放, 水平移动, 垂直移动]
+
   pointerEvents?: 'none' | 'all' // 是否响应鼠标事件 默认为 true
 
-  extraData?: any
+  extraData?: any // 需要优化
 }
 
 export interface BoundingRect {

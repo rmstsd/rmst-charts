@@ -27,7 +27,15 @@ export class Stage extends AbsEvent {
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
 
+    this.defaultTransform = this.ctx.getTransform()
+
     this.addStageEventListener()
+  }
+
+  defaultTransform: DOMMatrix2DInit
+
+  resetTransform() {
+    this.ctx.setTransform(this.defaultTransform)
   }
 
   type: IShapeType = 'Stage'
@@ -145,6 +153,12 @@ export class Stage extends AbsEvent {
             // 触发舞台(canvas Element)的事件
             const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
             this[eventName](eventParameter)
+          }
+
+          const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
+          if (hovered) {
+            const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+            triggerEventHandlers(hovered, eventName, eventParameter)
           }
         }
       })

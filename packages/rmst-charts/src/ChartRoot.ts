@@ -242,6 +242,7 @@ function handleSeries(series: ICharts.series[]): ICharts.series[] {
       switch (serItem.type) {
         case 'line':
         case 'bar':
+          // @ts-ignore
           if (serItem.stack !== 'sign') {
             return serItem
           }

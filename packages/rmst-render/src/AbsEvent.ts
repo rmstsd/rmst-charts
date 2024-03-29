@@ -3,6 +3,21 @@ import { EventType, Handler, Noop } from './constant'
 import { BoxHidden } from './shape/BoxHidden'
 import { Group } from './shape'
 
+export interface EventOpt {
+  onclick?: Handler
+
+  onmouseenter?: Handler
+  onmousemove?: Handler
+  onmouseleave?: Handler
+
+  onmousedown?: Handler
+  onmouseup?: Handler
+
+  ondragstart?: Handler
+  ondrag?: Handler
+  ondragend?: Handler
+}
+
 abstract class AbsEvent {
   onclick: Handler = Noop
 
