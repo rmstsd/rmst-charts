@@ -166,7 +166,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
         radius: initRadius,
         fillStyle: 'white',
         strokeStyle: this.color,
-        lineWidth: 4,
+        lineWidth: 2,
         cursor: 'pointer',
         opacity: this.opacity,
         zIndex: 3

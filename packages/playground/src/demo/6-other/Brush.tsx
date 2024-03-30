@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import { Rect, Stage } from 'rmst-render'
-import { calcAllControlPoint } from 'rmst-render'
+import { Rect, Stage, calcAllControlPoint } from 'rmst-render'
 
 import { getStroke } from 'perfect-freehand'
 

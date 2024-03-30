@@ -64,9 +64,10 @@ export class SeriesManager {
           const pie = new PieMain(this.cr)
           pie.render(seriesItem)
           pie.onSelected = index => {
-            console.log(index, pie)
-
             this.onSelect(index, pie)
+          }
+          pie.onCancelSelect = index => {
+            this.onCancelSelect(index, pie)
           }
           this.seriesInstances.push(pie)
 
@@ -140,6 +141,7 @@ export class SeriesManager {
   }
 
   onSelect(index: number, pie: PieMain) {}
+  onCancelSelect(index: number, pie: PieMain) {}
 
   getAxisTooltipContent(activeIndex: number) {
     const innerHtmlList = this.seriesInstances.map(item => item.getTooltipContent(activeIndex))

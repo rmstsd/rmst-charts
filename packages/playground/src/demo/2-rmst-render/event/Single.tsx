@@ -51,7 +51,8 @@ const Single = () => {
       height: 70,
       fillStyle: 'pink',
       draggable: true,
-      cursor: 'move'
+      cursor: 'move',
+      rotate: 30
     })
 
     stage.append([r2, rect_1])

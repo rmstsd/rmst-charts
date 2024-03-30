@@ -1,26 +1,11 @@
 import { IShape, Stage } from 'rmst-render'
 
 import { ICoordinateSystemElements, createCoordinateSystemElements } from './coordinateSystem'
-import { Legend, dataZoom, RangeRatioDecimal, hasDataZoom, AssistLine, Tooltip } from './components'
+import { Legend, dataZoom, RangeRatioDecimal, AssistLine, Tooltip, getRangeRatio, rangeRatio2Index } from './components'
 
 import { SeriesManager } from './SeriesMgr'
 
 import { isInnerRect, stClone } from './utils'
-
-const rangeRatio2Index = (rangeRatio: RangeRatioDecimal, startIdx: number, endIdx: number) => {
-  const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
-  const re = Math.ceil(startIdx + (endIdx - startIdx) * rangeRatio.endRatio)
-
-  return { startIndex: rs, endIndex: re }
-}
-
-const getRangeRatio = (option: ICharts.IOption): RangeRatioDecimal => {
-  if (hasDataZoom(option)) {
-    return { startRatio: option.dataZoom[0].start / 100, endRatio: option.dataZoom[0].end / 100 }
-  }
-
-  return { startRatio: 0, endRatio: 100 }
-}
 
 export class ChartRoot {
   constructor(canvasContainer: HTMLElement) {
@@ -41,8 +26,8 @@ export class ChartRoot {
           if (!isInner) {
             isInner = true
 
-            this.assistLine?.onCartesian2dRectMouseenter(evt)
-            this.tooltip?.onCartesian2dRectMouseenter(evt)
+            this.assistLine?.show()
+            this.tooltip?.show()
           }
 
           this.assistLine?.onCartesian2dRectMousemove(evt)
@@ -50,10 +35,16 @@ export class ChartRoot {
         } else if (isInner) {
           isInner = false
 
-          this.assistLine?.onCartesian2dRectMouseleave(evt)
-          this.tooltip?.onCartesian2dRectMouseleave(evt)
+          this.assistLine?.hide()
+          this.tooltip?.hide()
         }
       }
+    }
+
+    this.stage.onmouseleave = () => {
+      isInner = false
+      this.tooltip?.hide()
+      this.assistLine?.setVisible(false)
     }
   }
 
@@ -168,10 +159,12 @@ export class ChartRoot {
       this.seriesManager = new SeriesManager(this)
       this.seriesManager.render(this.finalSeries)
       this.seriesManager.onSelect = (index, pie) => {
-        console.log(index, pie)
-
         this.tooltip.externalShow(pie, index)
       }
+      this.seriesManager.onCancelSelect = (index, pie) => {
+        this.tooltip.hide()
+      }
+
       this.renderedElements.push(...this.seriesManager.elements)
     }
 

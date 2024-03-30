@@ -1,5 +1,5 @@
 import { dpr } from '../constant'
-import { isBoxHidden, isGroup, isLine, isText } from '../utils'
+import { deg2rad, isBoxHidden, isGroup, isLine, isText } from '../utils'
 import { Text, measureText } from '..'
 import { IShape } from '../type'
 
@@ -43,37 +43,36 @@ export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: 
 }
 
 function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offsetX: number, offsetY: number) {
-  ctx.lineWidth = elementItem.data.lineWidth + 5
-
   const hit_x = offsetX * dpr
   const hit_y = offsetY * dpr
 
   if (isText(elementItem)) {
-    return isTextShapeInner(elementItem)
+    return isHitText(elementItem)
   }
 
-  const isInPath = () => {
-    if (!elementItem.path2D) {
-      return false
-    }
-
-    return ctx.isPointInPath(elementItem.path2D, hit_x, hit_y)
+  if (!elementItem.path2D) {
+    return false
   }
-  const isInStroke = () => {
-    if (!elementItem.path2D) {
-      return false
-    }
 
-    return ctx.isPointInStroke(elementItem.path2D, hit_x, hit_y)
-  }
+  ctx.lineWidth = elementItem.data.lineWidth + 5
 
   if (isLine(elementItem) && !elementItem.data.closed) {
     return isInStroke()
   }
 
-  return isInPath() || isInStroke()
+  const isHit = isInPath() || isInStroke()
 
-  function isTextShapeInner(elementItem: Text): boolean {
+  return isHit
+
+  function isInPath() {
+    return ctx.isPointInPath(elementItem.path2D, hit_x, hit_y)
+  }
+
+  function isInStroke() {
+    return ctx.isPointInStroke(elementItem.path2D, hit_x, hit_y)
+  }
+
+  function isHitText(elementItem: Text): boolean {
     const { x, y, content, fontSize, textAlign, textBaseline } = elementItem.data
     const { textWidth, textHeight } = measureText(content, fontSize)
 

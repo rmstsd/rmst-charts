@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 import srcCharts from 'rmst-charts'
-import { Circle } from 'rmst-render'
-import { calcAllControlPoint } from 'rmst-render'
+import { Circle, calcAllControlPoint } from 'rmst-render'
 
 const LinePath = ({ ver }) => {
   const containerRef = useRef()

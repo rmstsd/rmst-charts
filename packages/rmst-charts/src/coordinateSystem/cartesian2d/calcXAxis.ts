@@ -1,5 +1,4 @@
-import { pointToFlatArray } from 'rmst-render'
-import { Stage, Line, Text, measureText, Group } from 'rmst-render'
+import { Stage, Line, Text, measureText, Group, pointToFlatArray } from 'rmst-render'
 
 import {
   canvasPaddingBottom,

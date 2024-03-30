@@ -3,8 +3,9 @@ import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent, { EventOpt } from '../AbsEvent'
 import { schedulerTask } from '../_stage/scheduler'
 import { ICursor, IShape, IShapeType } from '../type'
-import { createRectPath2D, drawCircle, setCtxStyleProp } from '../renderer/canvas'
+import { setCtxStyleProp } from '../renderer/canvas'
 import { clipRect } from '../utils'
+import { createRectPath2D, setCirclePath2D } from '../renderer/canvas/setPath2D'
 
 export interface AbstractUiData extends EventOpt {
   name?: string
@@ -33,6 +34,9 @@ export interface AbstractUiData extends EventOpt {
 
   pointerEvents?: 'none' | 'all' // 是否响应鼠标事件 默认为 true
 
+  scale?: number[] // [x, y]
+  rotate?: number // 角度
+
   extraData?: any // 需要优化
 }
 
@@ -47,7 +51,7 @@ export const defaultAbsData: AbstractUiData = {
   lineWidth: 1,
   opacity: 1,
   shadowBlur: 0,
-  shadowColor: 'orange',
+  shadowColor: 'transparent',
   shadowOffsetX: 0,
   shadowOffsetY: 0,
   lineCap: 'butt',
@@ -156,7 +160,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
       correctSortedShapes.forEach(item => {
         setCtxStyleProp(ctx, item)
-        drawCircle(ctx, item as any)
+        setCirclePath2D(item)
       })
     })
   }

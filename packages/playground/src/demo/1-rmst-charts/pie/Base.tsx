@@ -8,6 +8,7 @@ const option: ICharts.IOption = {
   },
   series: [
     {
+      name: 'Pie-chart',
       type: 'pie',
       data: [
         { value: 1, name: 'pie-1' },
