@@ -57,7 +57,8 @@ export const defaultAbsData: AbstractUiData = {
   lineCap: 'butt',
   lineJoin: 'miter',
   lineDash: [],
-  pointerEvents: 'all'
+  pointerEvents: 'all',
+  zIndex: 0
 }
 
 export const combineDefaultData = (shapeData, defaultShapeData) => {

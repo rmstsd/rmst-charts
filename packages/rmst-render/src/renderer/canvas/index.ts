@@ -17,13 +17,13 @@ import { setCirclePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 // }
 
 export function drawStageShapes(stage: Stage) {
-  sortByZIndex(stage)
-
   const { ctx } = stage
-
   ctx.clearRect(0, 0, stage.canvasElement.width, stage.canvasElement.height)
 
-  drawSs(stage.children)
+  // sortByZIndex(stage)
+  const list = sortChildren(stage.children)
+
+  drawSs(list)
 
   function drawSs(list: IShape[]) {
     list.forEach(elementItem => {
@@ -132,8 +132,8 @@ export function sortByZIndex(root) {
 
 function sortChildren(children: IShape[]) {
   return children.toSorted((a, b) => {
-    const a_zIndex = a.data.zIndex ?? 0
-    const b_zIndex = b.data.zIndex ?? 0
+    const a_zIndex = a.data.zIndex
+    const b_zIndex = b.data.zIndex
 
     return a_zIndex - b_zIndex
   })

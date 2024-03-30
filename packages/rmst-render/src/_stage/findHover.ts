@@ -1,9 +1,7 @@
 import { dpr } from '../constant'
-import { deg2rad, isBoxHidden, isGroup, isLine, isText } from '../utils'
+import { isBoxHidden, isGroup, isLine, isStage, isText } from '../utils'
 import { Text, measureText } from '..'
 import { IShape } from '../type'
-
-// 需要通过 四叉树算法 优化图形的拾取
 
 export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number): IShape {
   const _elements = children.toReversed()
@@ -42,9 +40,115 @@ export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: 
   return null
 }
 
-function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offsetX: number, offsetY: number) {
-  const hit_x = offsetX * dpr
-  const hit_y = offsetY * dpr
+// 需要通过 四叉树算法 优化图形的拾取
+export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number) {
+  const possible: IShape[] = []
+
+  detectHit(children)
+
+  console.log(possible)
+
+  function detectHit(_children) {
+    _children.forEach(elementItem => {
+      if (elementItem.data.pointerEvents === 'none') {
+        return
+      }
+
+      if (isGroup(elementItem) || isBoxHidden(elementItem)) {
+        if (isGroup(elementItem)) {
+          const shape = findShape(elementItem.children)
+          if (shape.length) {
+            possible.push(...shape)
+          }
+        } else {
+          if (isShapeInner(ctx, elementItem, x, y)) {
+            const shape = findShape(elementItem.children)
+            if (shape.length) {
+              possible.push(...shape)
+            } else {
+              possible.push(elementItem)
+            }
+          }
+        }
+      } else {
+        if (isShapeInner(ctx, elementItem, x, y)) {
+          possible.push(elementItem)
+        }
+      }
+    })
+  }
+
+  function findShape(children: any[]) {
+    const ans = []
+    for (const elementItem of children) {
+      if (isShapeInner(ctx, elementItem, x, y)) {
+        ans.push(elementItem)
+      }
+
+      if (elementItem.children) {
+        return findShape(elementItem.children)
+      }
+    }
+
+    return ans
+  }
+
+  let ans: IShape = null
+
+  const stack = []
+  possible.forEach(item => {
+    let parent = item
+
+    while (parent && !isStage(parent.parent)) {
+      parent = parent.parent
+    }
+
+    if (stack.includes(parent)) {
+      return
+    }
+    stack.push(parent)
+  })
+
+  console.log(stack)
+
+  let temp
+
+  for (const item of stack) {
+    if (!temp) {
+      temp = item
+    } else {
+      if (item.data.zIndex >= temp.data.zIndex) {
+        temp = item
+      }
+    }
+
+    if (possible.includes(temp)) {
+      console.log(temp)
+
+      break
+    } else {
+    }
+  }
+
+  possible.forEach(item => {
+    if (!ans) {
+      ans = item
+    } else {
+      if (item.parent === ans) {
+        ans = item
+        return
+      } else if (item.data.zIndex >= ans.data.zIndex) {
+        ans = item
+      }
+    }
+  })
+
+  return ans
+}
+
+function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, x: number, y: number) {
+  const hit_x = x * dpr
+  const hit_y = y * dpr
 
   if (isText(elementItem)) {
     return isHitText(elementItem)
@@ -73,32 +177,32 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, offset
   }
 
   function isHitText(elementItem: Text): boolean {
-    const { x, y, content, fontSize, textAlign, textBaseline } = elementItem.data
-    const { textWidth, textHeight } = measureText(content, fontSize)
+    const { data } = elementItem
+    const { textWidth, textHeight } = measureText(data.content, data.fontSize)
 
     const halfWidth = textWidth / 2
 
     const textRect_x = (() => {
-      if (textAlign === 'left') {
-        return x
+      if (data.textAlign === 'left') {
+        return data.x
       }
-      if (textAlign === 'center') {
-        return x - halfWidth
+      if (data.textAlign === 'center') {
+        return data.x - halfWidth
       }
-      if (textAlign === 'right') {
-        return x - textWidth
+      if (data.textAlign === 'right') {
+        return data.x - textWidth
       }
     })()
 
     const textRect_y = (() => {
-      if (textBaseline === 'middle') {
-        return y - textHeight / 2
+      if (data.textBaseline === 'middle') {
+        return data.y - textHeight / 2
       }
-      return y
+      return data.y
     })()
 
-    const is_x = textRect_x <= offsetX && offsetX <= textRect_x + textWidth
-    const is_y = textRect_y <= offsetY && offsetY <= textRect_y + textHeight
+    const is_x = textRect_x <= x && x <= textRect_x + textWidth
+    const is_y = textRect_y <= y && y <= textRect_y + textHeight
 
     return is_x && is_y
   }

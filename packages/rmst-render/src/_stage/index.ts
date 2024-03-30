@@ -1,10 +1,10 @@
 import colorAlpha from 'color-alpha'
 
 import Draggable from '../Draggable'
-import { EventParameter, Handler, eventStageList } from '../constant'
+import { EventParameter, eventStageList } from '../constant'
 import { findToRoot, initStage, triggerEventHandlers } from './utils'
 import { resetSchedulerCount } from './scheduler'
-import { findHover } from './findHover'
+import { findHover, findHover_v2 } from './findHover'
 import { mountStage } from './renderUi'
 import { ICursor, IShape, IShapeType } from '../type'
 import { drawStageShapes } from '../renderer/canvas'
@@ -152,7 +152,7 @@ export class Stage extends AbsEvent {
           {
             // 触发舞台(canvas Element)的事件
             const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-            this[eventName](eventParameter)
+            triggerEventHandlers(this, eventName, eventParameter)
           }
 
           const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
@@ -174,6 +174,8 @@ export class Stage extends AbsEvent {
   }
 
   private handleHoveredElement(x: number, y: number) {
+    // const hovered = findHover_v2(this.ctx, this.children, x, y)
+
     const hovered = findHover(this.ctx, this.children, x, y)
 
     if (hovered) {

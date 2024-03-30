@@ -11,6 +11,8 @@ import LineDemo from '@/demo/2-rmst-render/base-shape/LineDemo'
 import TrapezoidDemo from '@/demo/2-rmst-render/base-shape/TrapezoidDemo'
 import TextDemo from '@/demo/2-rmst-render/base-shape/TextDemo'
 
+import ZIndex from '@/demo/2-rmst-render/z-index/ZIndex'
+
 import Single from '@/demo/2-rmst-render/event/Single'
 import TwoOverRect from '@/demo/2-rmst-render/event/TwoOverRect'
 import TwoAdjacentRect from '@/demo/2-rmst-render/event/TwoAdjacentRect'
@@ -31,7 +33,7 @@ import Collision from '@/demo/2-rmst-render/funny/Collision'
 import SoundingBox from '@/demo/2-rmst-render/boundingBox'
 import CollisionOOP from '@/demo/2-rmst-render/funny/Collision/CollisionOOP'
 
-import { isProd } from '@/utils'
+import { isDev } from '@/utils'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -56,6 +58,12 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'line', element: <LineDemo />, uiConfig: { title: '线' } },
         { path: 'text', element: <TextDemo />, uiConfig: { title: '文本' } }
       ]
+    },
+    {
+      path: 'zIndex',
+      element: <LayoutOutlet />,
+      uiConfig: { title: '层级', hidden: isDev },
+      children: [{ path: 'z', element: <ZIndex />, uiConfig: { title: '层级' } }]
     },
     {
       path: 'event',

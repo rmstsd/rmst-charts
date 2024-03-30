@@ -1,4 +1,4 @@
-import { Box, Cursor, DragEvent, Leafer, Line, Rect, PointerEvent } from 'leafer-ui'
+import { Box, Cursor, DragEvent, Leafer, Line, Rect, PointerEvent, Group } from 'leafer-ui'
 import { useEffect } from 'react'
 
 const DivChild = () => {
@@ -10,27 +10,14 @@ const DivChild = () => {
       pointer: { hitRadius: 0 }
     })
 
-    const outer_box = new Box({
-      cursor: 'move',
-      draggable: true,
-      x: 100,
-      y: 100,
-      width: 200,
-      height: 200,
-      fill: 'pink'
-    })
-    const inner_rect = new Rect({
-      draggable: true,
-      x: 0,
-      y: 50,
-      width: 50,
-      height: 50,
-      fill: '#32cd79'
-    })
-
+    const outer_box = new Group({ zIndex: 2, cursor: 'move' })
+    const inner_rect = new Rect({ x: 0, y: 50, width: 100, height: 100, fill: '#32cd79' })
     outer_box.add(inner_rect)
 
+    const rect_2 = new Rect({ x: 50, y: 80, width: 100, height: 100, fill: 'red', cursor: 'pointer' })
+
     leafer.add(outer_box)
+    leafer.add(rect_2)
 
     outer_box.on(PointerEvent.ENTER, () => {
       console.log('outer_box enter')

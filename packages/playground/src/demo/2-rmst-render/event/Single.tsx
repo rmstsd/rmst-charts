@@ -44,7 +44,7 @@ const Single = () => {
       setLogs(state => state.concat('rect_1 leave'))
     }
 
-    const r2 = new Rect({
+    const rect_2 = new Rect({
       x: 180,
       y: 180,
       width: 70,
@@ -55,7 +55,17 @@ const Single = () => {
       rotate: 30
     })
 
-    stage.append([r2, rect_1])
+    rect_2.onmouseenter = () => {
+      console.log('rect_2 enter')
+      setLogs(state => state.concat('rect_2 enter'))
+    }
+
+    rect_2.onmouseleave = () => {
+      console.log('rect_2 leave')
+      setLogs(state => state.concat('rect_2 leave'))
+    }
+
+    stage.append(rect_1, rect_2)
   }, [])
 
   const [logs, setLogs] = useState([])
