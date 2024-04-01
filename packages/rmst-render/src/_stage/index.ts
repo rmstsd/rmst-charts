@@ -165,7 +165,8 @@ export class Stage extends AbsEvent {
 
     // 拖拽
     this.canvasElement.addEventListener('mousedown', evt => {
-      const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
+      const hovered = findHover_v2(this.ctx, this.children, evt.offsetX, evt.offsetY)
+
       if (hovered) {
         const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
         this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())
@@ -174,8 +175,6 @@ export class Stage extends AbsEvent {
   }
 
   private handleHoveredElement(x: number, y: number) {
-    // const hovered = findHover_v2(this.ctx, this.children, x, y)
-
     const hovered = findHover(this.ctx, this.children, x, y)
 
     if (hovered) {

@@ -4,41 +4,20 @@ import { Text, measureText } from '..'
 import { IShape } from '../type'
 
 export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number): IShape {
-  const _elements = children.toReversed()
+  // return null
 
-  for (const elementItem of _elements) {
-    if (elementItem.data.pointerEvents === 'none') {
-      continue
-    }
-
-    if (isGroup(elementItem) || isBoxHidden(elementItem)) {
-      if (isBoxHidden(elementItem)) {
-        if (isShapeInner(ctx, elementItem, x, y)) {
-          const hovered = findHover(ctx, elementItem.children, x, y)
-          if (hovered) {
-            return hovered
-          }
-
-          return elementItem
-        } else {
-          continue
-        }
-      }
-
-      const hovered = findHover(ctx, elementItem.children, x, y)
-      if (hovered) {
-        return hovered
-      }
-    } else {
-      const isInner = isShapeInner(ctx, elementItem, x, y)
-      if (isInner) {
-        return elementItem
-      }
-    }
-  }
-
-  return null
+  return findHover_v2(ctx, children, x, y)
 }
+
+/*
+r  a-0  b-0  c-0
+r  a-0  b-0  c-1
+r  a-0  b-2
+r  a-1  b-2
+r  a-1  b-3
+*/
+
+// console.log(arr.sort((a, b) => a.z - b.z))  // 从小到大排序
 
 // 需要通过 四叉树算法 优化图形的拾取
 export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number) {
@@ -46,28 +25,78 @@ export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], 
 
   detectHit(children)
 
-  console.log(possible)
+  if (possible.length === 0) {
+    return null
+  }
 
-  function detectHit(_children) {
+  const stack = possible.map(item => {
+    const arr: IShape[] = []
+    let shape = item
+    while (shape && !isStage(shape)) {
+      arr.unshift(shape)
+      shape = shape.parent as IShape
+    }
+    return arr
+  })
+
+  let ans: IShape = null
+  let level_index = 0
+
+  while (!ans) {
+    const pps = stack.sort((a, b) => {
+      const aItem = a.at(level_index)
+      const bItem = b.at(level_index)
+
+      return aItem.data.zIndex - bItem.data.zIndex
+    })
+
+    const maxZIndexItem = pps.at(-1)[level_index]
+
+    for (let i = 0; i < pps.length; i++) {
+      const item = pps[i][level_index]
+
+      if (maxZIndexItem === item) {
+        continue
+      } else {
+        if (item.data.zIndex <= maxZIndexItem.data.zIndex) {
+          pps.splice(i, 1)
+          i--
+        }
+      }
+    }
+
+    const tempAns = pps
+      .map(item => item[level_index])
+      .toSorted((a, b) => a.data.zIndex - b.data.zIndex)
+      .at(-1)
+
+    if (possible.includes(tempAns)) {
+      ans = tempAns
+    } else {
+      level_index++
+    }
+  }
+
+  // console.log('data.name ->: ', ans.data.name)
+
+  return ans
+
+  function detectHit(_children: any[]) {
     _children.forEach(elementItem => {
-      if (elementItem.data.pointerEvents === 'none') {
+      if (isPointerEventsNone(elementItem)) {
         return
       }
 
-      if (isGroup(elementItem) || isBoxHidden(elementItem)) {
-        if (isGroup(elementItem)) {
-          const shape = findShape(elementItem.children)
-          if (shape.length) {
-            possible.push(...shape)
-          }
-        } else {
-          if (isShapeInner(ctx, elementItem, x, y)) {
-            const shape = findShape(elementItem.children)
-            if (shape.length) {
-              possible.push(...shape)
-            } else {
-              possible.push(elementItem)
-            }
+      if (isGroup(elementItem)) {
+        detectHit(elementItem.children)
+      } else if (isBoxHidden(elementItem)) {
+        if (isShapeInner(ctx, elementItem, x, y)) {
+          const isHit = isHitDescendant((elementItem as any).children)
+
+          if (isHit) {
+            detectHit(elementItem.children)
+          } else {
+            possible.push(elementItem)
           }
         }
       } else {
@@ -78,72 +107,24 @@ export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], 
     })
   }
 
-  function findShape(children: any[]) {
-    const ans = []
+  function isHitDescendant(children: any[]) {
+    let ans = true
     for (const elementItem of children) {
+      if (isPointerEventsNone(elementItem)) {
+        continue
+      }
+
       if (isShapeInner(ctx, elementItem, x, y)) {
-        ans.push(elementItem)
+        return ans
       }
 
       if (elementItem.children) {
-        return findShape(elementItem.children)
+        return isHitDescendant(elementItem.children)
       }
     }
 
-    return ans
+    return false
   }
-
-  let ans: IShape = null
-
-  const stack = []
-  possible.forEach(item => {
-    let parent = item
-
-    while (parent && !isStage(parent.parent)) {
-      parent = parent.parent
-    }
-
-    if (stack.includes(parent)) {
-      return
-    }
-    stack.push(parent)
-  })
-
-  console.log(stack)
-
-  let temp
-
-  for (const item of stack) {
-    if (!temp) {
-      temp = item
-    } else {
-      if (item.data.zIndex >= temp.data.zIndex) {
-        temp = item
-      }
-    }
-
-    if (possible.includes(temp)) {
-      console.log(temp)
-
-      break
-    } else {
-    }
-  }
-
-  possible.forEach(item => {
-    if (!ans) {
-      ans = item
-    } else {
-      if (item.parent === ans) {
-        ans = item
-        return
-      } else if (item.data.zIndex >= ans.data.zIndex) {
-        ans = item
-      }
-    }
-  })
-
-  return ans
 }
 
 function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, x: number, y: number) {
@@ -206,4 +187,46 @@ function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, x: num
 
     return is_x && is_y
   }
+}
+
+// 废弃
+function findHover_v1_legacy(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number) {
+  const _elements = children.toReversed()
+
+  for (const elementItem of _elements) {
+    if (elementItem.data.pointerEvents === 'none') {
+      continue
+    }
+
+    if (isGroup(elementItem) || isBoxHidden(elementItem)) {
+      if (isBoxHidden(elementItem)) {
+        if (isShapeInner(ctx, elementItem, x, y)) {
+          const hovered = findHover(ctx, elementItem.children, x, y)
+          if (hovered) {
+            return hovered
+          }
+
+          return elementItem
+        } else {
+          continue
+        }
+      }
+
+      const hovered = findHover(ctx, elementItem.children, x, y)
+      if (hovered) {
+        return hovered
+      }
+    } else {
+      const isInner = isShapeInner(ctx, elementItem, x, y)
+      if (isInner) {
+        return elementItem
+      }
+    }
+  }
+
+  return null
+}
+
+function isPointerEventsNone(elementItem) {
+  return elementItem.data.pointerEvents === 'none'
 }

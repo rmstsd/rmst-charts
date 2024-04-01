@@ -20,12 +20,11 @@ export function drawStageShapes(stage: Stage) {
   const { ctx } = stage
   ctx.clearRect(0, 0, stage.canvasElement.width, stage.canvasElement.height)
 
-  // sortByZIndex(stage)
-  const list = sortChildren(stage.children)
-
-  drawSs(list)
+  drawSs(stage.children)
 
   function drawSs(list: IShape[]) {
+    list = sortChildren(list)
+
     list.forEach(elementItem => {
       const { data } = elementItem
 

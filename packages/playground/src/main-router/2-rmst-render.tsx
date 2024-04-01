@@ -33,7 +33,7 @@ import Collision from '@/demo/2-rmst-render/funny/Collision'
 import SoundingBox from '@/demo/2-rmst-render/boundingBox'
 import CollisionOOP from '@/demo/2-rmst-render/funny/Collision/CollisionOOP'
 
-import { isDev } from '@/utils'
+import { isProd } from '@/utils'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -62,7 +62,7 @@ const rmstRenderRouteConfig: IRouteObject = {
     {
       path: 'zIndex',
       element: <LayoutOutlet />,
-      uiConfig: { title: '层级', hidden: isDev },
+      uiConfig: { title: '层级', hidden: isProd },
       children: [{ path: 'z', element: <ZIndex />, uiConfig: { title: '层级' } }]
     },
     {
