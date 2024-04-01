@@ -62,7 +62,7 @@ const rmstRenderRouteConfig: IRouteObject = {
     {
       path: 'zIndex',
       element: <LayoutOutlet />,
-      uiConfig: { title: '层级', hidden: isProd },
+      uiConfig: { title: '层级' },
       children: [{ path: 'z', element: <ZIndex />, uiConfig: { title: '层级' } }]
     },
     {
