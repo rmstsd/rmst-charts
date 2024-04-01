@@ -11,6 +11,8 @@ const RectOver = () => {
       style: { fill: 'pink' }
     })
 
+    const g = new zrender.Group({})
+
     // rect_1.onmouseover = () => {
     //   serCursor('move')
     //   console.log('rect_1 over')

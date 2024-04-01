@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Rect, Stage } from 'rmst-render'
+import { Rect, Stage, deg2rad } from 'rmst-render'
 
 const Rotate = () => {
   const stageRef = useRef<Stage>(null)
@@ -11,9 +11,6 @@ const Rotate = () => {
 
     const { ctx } = stage
 
-    // console.log(ctx.getContextAttributes())
-    // console.log(ctx.getTransform())
-
     ctx.translate(100, 100)
 
     const rect = new Rect({
@@ -21,7 +18,8 @@ const Rotate = () => {
       y: 100,
       width: 100,
       height: 100,
-      fillStyle: 'red'
+      fillStyle: 'red',
+      cursor: 'pointer'
     })
 
     rect.onclick = () => {
@@ -29,18 +27,8 @@ const Rotate = () => {
     }
 
     stage.append(rect)
-    ctx.resetTransform()
 
-    // ctx.rotate(deg2rad(30))
-
-    // ctx.strokeRect(-50, -50, 100, 100)
-
-    // // ctx.setTransform(1, 0, 0, 1, 0, 0)
-
-    // ctx.resetTransform()
-
-    // ctx.strokeStyle = 'red'
-    // ctx.strokeRect(0, 0, 100, 100)
+    ctx.rotate(deg2rad(30))
   }, [])
 
   return (

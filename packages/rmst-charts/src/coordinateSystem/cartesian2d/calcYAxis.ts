@@ -1,4 +1,4 @@
-import { Stage, Line, Text, measureText } from 'rmst-render'
+import { Stage, Line, Text, measureText, pointToFlatArray } from 'rmst-render'
 
 import {
   canvasPaddingBottom,
@@ -13,7 +13,6 @@ import {
 
 import { calcPerfectTick } from '../utils'
 import { getCanvasDistanceFromRealNumber } from '../../utils/convert'
-import { pointToFlatArray } from 'rmst-render'
 import { hasDataZoom } from '../../components/dataZoom'
 
 function getYAxis(dataSource: number[], containerWidth, containerHeight: number, innerOption: ICharts.IOption) {

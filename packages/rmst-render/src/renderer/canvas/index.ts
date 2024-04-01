@@ -1,7 +1,9 @@
-import { Circle, Line, Rect, Text, Trapezoid } from '../../shape'
-import { clipRect, createLinePath2D, getPointOnArc, setCtxFontSize } from '../../utils'
+import { Circle, Line, Text, Trapezoid } from '../../shape'
+import { clipRect, createLinePath2D, deg2rad, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
+import { fillOrStroke, hasStroke } from './fillOrStroke'
+import { setCirclePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 
 // {
 //   const svgHtml = `
@@ -15,15 +17,14 @@ import { IShape } from '../../type'
 // }
 
 export function drawStageShapes(stage: Stage) {
-  sortByZIndex(stage)
-
   const { ctx } = stage
-
   ctx.clearRect(0, 0, stage.canvasElement.width, stage.canvasElement.height)
 
   drawSs(stage.children)
 
   function drawSs(list: IShape[]) {
+    list = sortChildren(list)
+
     list.forEach(elementItem => {
       const { data } = elementItem
 
@@ -33,19 +34,13 @@ export function drawStageShapes(stage: Stage) {
 
       switch (elementItem.type) {
         case 'Circle': {
-          drawCircle(ctx, elementItem as Circle)
+          setCirclePath2D(elementItem as Circle)
+          fillOrStroke(ctx, elementItem)
           break
         }
         case 'Trapezoid': {
-          elementItem.path2D = createTrapezoidPath2D(elementItem.data)
-
-          if (data.fillStyle) {
-            ctx.fill(elementItem.path2D)
-          }
-          if (hasStroke(data.lineWidth, data.strokeStyle)) {
-            ctx.stroke(elementItem.path2D)
-          }
-
+          setTrapezoidPath2D(elementItem as Trapezoid)
+          fillOrStroke(ctx, elementItem)
           break
         }
         case 'Line': {
@@ -64,14 +59,22 @@ export function drawStageShapes(stage: Stage) {
           break
         }
         case 'Rect': {
-          elementItem.path2D = createRectPath2D(data)
+          setRectPath2D(elementItem)
+          fillOrStroke(ctx, elementItem)
 
-          if (data.fillStyle) {
-            ctx.fill(elementItem.path2D)
-          }
-          if (hasStroke(data.lineWidth, data.strokeStyle)) {
-            ctx.stroke(elementItem.path2D)
-          }
+          break
+        }
+        case 'Group': {
+          drawSs(elementItem.children)
+          break
+        }
+        case 'BoxHidden': {
+          setRectPath2D(elementItem)
+
+          clipRect(ctx, elementItem.path2D, () => {
+            fillOrStroke(ctx, elementItem)
+            drawSs(elementItem.children)
+          })
 
           break
         }
@@ -85,26 +88,6 @@ export function drawStageShapes(stage: Stage) {
           ctx.fillText(content, x, y)
           break
         }
-        case 'Group': {
-          drawSs(elementItem.children)
-          break
-        }
-        case 'BoxHidden': {
-          elementItem.path2D = createRectPath2D(data)
-
-          clipRect(ctx, elementItem.path2D, () => {
-            if (elementItem.data.fillStyle) {
-              ctx.fill(elementItem.path2D)
-            }
-            if (hasStroke(elementItem.data.lineWidth, elementItem.data.strokeStyle)) {
-              ctx.stroke(elementItem.path2D)
-            }
-
-            drawSs(elementItem.children)
-          })
-
-          break
-        }
 
         default:
           console.log(elementItem.type, '该图形 暂未实现')
@@ -114,24 +97,7 @@ export function drawStageShapes(stage: Stage) {
   }
 }
 
-export function drawCircle(ctx: CanvasRenderingContext2D, elementItem: Circle) {
-  const { x, y, radius, innerRadius, strokeStyle, startAngle, endAngle, offsetAngle } = elementItem.data
-  const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
-
-  const d = innerRadius
-    ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
-    : calcD(radius, startAngle, endAngle, x, y, isWholeArc, offsetAngle)
-
-  elementItem.path2D = new Path2D(d)
-
-  if (strokeStyle) {
-    ctx.stroke(elementItem.path2D)
-  }
-
-  ctx.fill(elementItem.path2D)
-}
-
-export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem) {
+export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem: IShape) {
   const { data } = elementItem
   const { lineWidth, lineCap, lineJoin, strokeStyle, fillStyle, opacity, lineDash } = data
   const { shadowBlur, shadowColor, shadowOffsetX, shadowOffsetY } = data
@@ -165,136 +131,9 @@ export function sortByZIndex(root) {
 
 function sortChildren(children: IShape[]) {
   return children.toSorted((a, b) => {
-    const a_zIndex = a.data.zIndex ?? 0
-    const b_zIndex = b.data.zIndex ?? 0
+    const a_zIndex = a.data.zIndex
+    const b_zIndex = b.data.zIndex
 
     return a_zIndex - b_zIndex
   })
-}
-
-// 圆形/扇形 返回 path 的 d属性 返回的是 圆弧  -起始角度遵循数学上的平面直角坐标系
-const calcD = (
-  radius: number,
-  startAngle: number,
-  endAngle: number,
-  centerX: number,
-  centerY: number,
-  isWholeArc: boolean,
-  offsetAngle: number
-) => {
-  startAngle = startAngle + offsetAngle
-  endAngle = endAngle + offsetAngle
-
-  // 将角度转换为弧度
-  const startAngleRad = (startAngle * Math.PI) / 180
-  const endAngleRad = (endAngle * Math.PI) / 180
-
-  // 计算圆弧的起点和终点坐标
-  const startX = centerX + radius * Math.cos(startAngleRad)
-  const startY = centerY + radius * Math.sin(startAngleRad)
-  const endX = centerX + radius * Math.cos(endAngleRad)
-  const endY = centerY + radius * Math.sin(endAngleRad)
-
-  // 计算扇形所需的路径命令
-  const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1
-  const sweepFlag = 1
-
-  const M_y = centerY - radius
-
-  const d = isWholeArc
-    ? `M${centerX},${M_y} A${radius},${radius} 0 1 1, ${centerX - 0.01},${centerY - radius}Z`
-    : `M${centerX},${centerY} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag},${sweepFlag} ${endX},${endY} Z`
-
-  return d
-}
-
-// 圆环/扇环
-const calcRingD = (
-  outerRadius: number,
-  innerRadius: number,
-  startAngle: number,
-  endAngle: number,
-  centerX: number,
-  centerY: number,
-  isWholeArc: boolean
-) => {
-  return isWholeArc ? calcWholeRingD() : calcRingSectorD()
-
-  function calcWholeRingD() {
-    const outerM_y = centerY - outerRadius
-
-    const outerM = `M ${centerX} ${outerM_y}`
-    const outerA = `A ${outerRadius} ${outerRadius} 0 1 1 ${centerX - 0.01} ${outerM_y}`
-
-    const innerM_y = centerY - innerRadius
-
-    const innerM = `M ${centerX} ${innerM_y}`
-    const innerA = `A ${innerRadius} ${innerRadius} 0 1 0 ${centerX + 0.01} ${innerM_y}`
-
-    return `${outerM} ${outerA} ${innerM} ${innerA} Z`
-  }
-
-  function calcRingSectorD() {
-    const outerStart = getPointOnArc(centerX, centerY, outerRadius, startAngle)
-    const outerEnd = getPointOnArc(centerX, centerY, outerRadius, endAngle)
-
-    const largeArcFlag = endAngle - startAngle >= 180 ? 1 : 0
-
-    const outerM = `M ${outerStart.x} ${outerStart.y}`
-    const outerA = `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}`
-
-    const innerStart = getPointOnArc(centerX, centerY, innerRadius, startAngle)
-    const innerEnd = getPointOnArc(centerX, centerY, innerRadius, endAngle)
-
-    const moveL = `L${innerEnd.x} ${innerEnd.y}`
-
-    const innerA = `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}`
-
-    return `${outerM} ${outerA} ${moveL} ${innerA} Z`
-  }
-}
-
-export function createRectPath2D(data: Rect['data']) {
-  const { x, y, width, height, cornerRadius = 0 } = data
-
-  const path2D = new Path2D()
-  path2D.moveTo(x + cornerRadius, y)
-  path2D.lineTo(x + width - cornerRadius, y)
-  path2D.arc(x + width - cornerRadius, y + cornerRadius, cornerRadius, (Math.PI / 2) * 3, 0)
-  path2D.lineTo(x + width, y + height - cornerRadius)
-  path2D.arc(x + width - cornerRadius, y + height - cornerRadius, cornerRadius, 0, Math.PI / 2)
-  path2D.lineTo(x + cornerRadius, y + height)
-  path2D.arc(x + cornerRadius, y + height - cornerRadius, cornerRadius, Math.PI / 2, Math.PI)
-  path2D.lineTo(x, y + cornerRadius)
-  path2D.arc(x + cornerRadius, y + cornerRadius, cornerRadius, Math.PI, (Math.PI / 2) * 3)
-  path2D.closePath()
-
-  return path2D
-}
-
-function createTrapezoidPath2D(data: Trapezoid['data']) {
-  const { x, y, width, height, shortLength } = data
-
-  const path2D = new Path2D()
-
-  let _shortLength: number
-
-  if (typeof shortLength === 'number') {
-    _shortLength = shortLength
-  } else if (typeof shortLength === 'string') {
-    _shortLength = (parseFloat(shortLength) / 100) * width
-  }
-
-  path2D.moveTo(x + (width / 2 - _shortLength / 2), y)
-  path2D.lineTo(x + (width / 2 - _shortLength / 2) + _shortLength, y)
-  path2D.lineTo(x + width, y + height)
-  path2D.lineTo(x, y + height)
-
-  path2D.closePath()
-
-  return path2D
-}
-
-function hasStroke(lineWidth: number, strokeStyle: CanvasFillStrokeStyles['strokeStyle']) {
-  return lineWidth > 0 && lineWidth !== Infinity && strokeStyle
 }

@@ -277,3 +277,18 @@ function wrapDragRange_x(shape: IShape, min: number, max: number | Function, ond
     ondrag(evt)
   }
 }
+
+export function rangeRatio2Index(rangeRatio: RangeRatioDecimal, startIdx: number, endIdx: number) {
+  const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
+  const re = Math.ceil(startIdx + (endIdx - startIdx) * rangeRatio.endRatio)
+
+  return { startIndex: rs, endIndex: re }
+}
+
+export function getRangeRatio(option: ICharts.IOption): RangeRatioDecimal {
+  if (hasDataZoom(option)) {
+    return { startRatio: option.dataZoom[0].start / 100, endRatio: option.dataZoom[0].end / 100 }
+  }
+
+  return { startRatio: 0, endRatio: 100 }
+}

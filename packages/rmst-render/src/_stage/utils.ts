@@ -47,11 +47,12 @@ export function triggerEventHandlers(
   }
 
   const parent = elementItem.parent
+
   if (parent && !isStage(parent)) {
     if (supportBubblesEventType.includes(eventType)) {
       const _parent = parent as unknown as IShape
 
-      triggerEventHandlers(_parent, eventName, { ...eventParameter, target: _parent })
+      triggerEventHandlers(_parent, eventName, eventParameter)
     }
   }
 }

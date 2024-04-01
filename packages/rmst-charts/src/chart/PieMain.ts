@@ -1,5 +1,4 @@
-import { Circle, Group, Line, Text, Animator } from 'rmst-render'
-import { pointToFlatArray, deg2rad, getPointOnArc, measureText } from 'rmst-render'
+import { Circle, Group, Line, Text, Animator, pointToFlatArray, deg2rad, getPointOnArc, measureText } from 'rmst-render'
 
 import { colorPalette, tickColor } from '../constant'
 import { LegendDataItem } from '../components/legend'
@@ -164,10 +163,14 @@ class PieMain extends _Chart<ICharts.PieSeries> {
 
     group.onmouseenter = () => {
       this.select(undefined, idx)
+
+      this.onSelected(idx)
     }
 
     group.onmouseleave = () => {
       this.cancelSelect(undefined, idx)
+
+      this.onCancelSelect(idx)
     }
 
     group.append([extendLine, labelText])

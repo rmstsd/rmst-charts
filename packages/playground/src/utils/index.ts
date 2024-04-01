@@ -15,6 +15,7 @@ export function randomCircleY(canvasSizeHeight, maxRadius: number) {
 }
 
 export const isProd = import.meta.env.PROD
+export const isDev = import.meta.env.DEV
 
 export function sleep(ms: number) {
   let t = Date.now()

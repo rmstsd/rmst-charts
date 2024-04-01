@@ -27,3 +27,12 @@ export const eventStageList: OnEventType[] = [
 export const dpr = window.devicePixelRatio
 
 export const Noop = function () {}
+
+export const matrixMap = {
+  水平缩放: 'a',
+  垂直倾斜: 'b',
+  水平倾斜: 'c',
+  垂直缩放: 'd',
+  水平移动: 'e',
+  垂直移动: 'f'
+}

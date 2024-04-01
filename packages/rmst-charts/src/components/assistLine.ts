@@ -1,7 +1,7 @@
 import { AnimatorSingle, Line, Rect, Text } from 'rmst-render'
 
 import { ChartRoot } from '../ChartRoot'
-import { getYTickFromOffsetY, isInnerRect, detectNear } from '../utils'
+import { getYTickFromOffsetY, detectNear } from '../utils'
 
 export class AssistLine {
   cr: ChartRoot
@@ -116,11 +116,11 @@ export class AssistLine {
     })
   }
 
-  onCartesian2dRectMouseenter(evt) {
+  show() {
     this.setVisible(true)
   }
 
-  onCartesian2dRectMouseleave(evt) {
+  hide() {
     this.setVisible(false)
   }
 

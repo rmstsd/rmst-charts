@@ -1,6 +1,6 @@
 import { ChartRoot } from '../ChartRoot'
 import PieMain from '../chart/PieMain'
-import { tooltipContainerStyle } from '../style'
+import { style, tooltipContainerStyle } from '../style'
 
 export class Tooltip {
   cr: ChartRoot
@@ -20,6 +20,7 @@ export class Tooltip {
     } else {
       this.cr.stage.on('mousemove', evt => {
         if (this.isShow) {
+          this.onCartesian2dRectMousemove(evt)
         }
       })
     }
@@ -62,29 +63,38 @@ export class Tooltip {
     }
   }
 
-  onCartesian2dRectMouseenter(evt) {
+  hide() {
+    this.isShow = false
+    if (this.tooltipContainer) {
+      this.tooltipContainer.style.display = 'none'
+    }
+  }
+
+  show() {
     this.initContainer()
 
-    this.show()
-  }
-
-  onCartesian2dRectMouseleave(evt) {
-    this.hide()
-  }
-
-  private hide() {
-    this.tooltipContainer.style.display = 'none'
-  }
-
-  private show() {
     this.tooltipContainer.style.display = 'flex'
   }
 
   externalShow(pie: PieMain, index: number) {
     this.initContainer()
 
+    this.isShow = true
+
     this.show()
 
-    console.log(pie.seriesItem.data[index], pie.data[index].color)
+    const item = pie.seriesItem.data[index]
+
+    let innerHtml = pie.seriesItem.name ? `<div style=${tooltipContainerStyle.title}>${pie.seriesItem.name}</div>` : ''
+
+    const tt = `
+    <div style="${style.row}">
+    <div style="${style.tagSign(pie.data[index].color)}"></div> 
+    <div>${item.name}</div>
+    <div style="${style.value}">${item.value}</div>
+  </div>
+  `
+
+    this.tooltipContainer.innerHTML = innerHtml + tt
   }
 }
