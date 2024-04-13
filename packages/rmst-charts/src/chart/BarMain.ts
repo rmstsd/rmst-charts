@@ -93,7 +93,7 @@ function calcPolarMain(center, seriesItem: ICharts.BarSeries, coordinateSystemPo
   return { elements: arcs, afterAppendStage }
 }
 
-const defaultBarSeriesItem = {}
+const defaultBarSeriesItem = { animation: true }
 export default class BarMain extends _Chart<ICharts.BarSeries> {
   data: BarDataItem[] = []
 
@@ -151,9 +151,9 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
     this.mainElements = this.data.map(item => {
       const commonOpt = {
         x: item.x,
-        y: item.y + item.height,
+        y: this.seriesItem.animation ? item.y + item.height : item.y,
         width: item.width,
-        height: 0,
+        height: this.seriesItem.animation ? 0 : item.height,
         fillStyle: this.color,
         cursor: 'pointer' as const
       }
@@ -174,6 +174,9 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
   }
 
   afterAppendStage() {
+    if (!this.seriesItem.animation) {
+      return
+    }
     this.mainElements.forEach((rectItem, index) => {
       const dataItem = this.data[index]
 
