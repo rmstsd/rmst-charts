@@ -27,6 +27,7 @@ function calcLineData(
 
 const defaultLineSeriesItem = {
   animationDuration: 1000,
+  animation: true,
   lineStyle: { width: 2, cap: 'butt', join: 'bevel' },
   symbol: 'circle',
   symbolSize: 3
@@ -74,9 +75,10 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
     const boxHidden = new BoxHidden({
       x: xAxisData.ticks[0].start.x - lineStyle.width,
       y: yAxisData.axis.end.y,
-      width: 0,
+      width: this.seriesItem.animation ? 0 : stage.canvasSize.width,
       height: stage.canvasSize.height,
-      lineWidth: 0
+      lineWidth: 0,
+      pointerEvents: 'none'
     })
     if (areaStyle) {
       const createArea = () => {
@@ -163,7 +165,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
       const arcItem = new Circle({
         x: item.x,
         y: item.y,
-        radius: initRadius,
+        radius: this.seriesItem.animation ? initRadius : this.seriesItem.symbolSize,
         fillStyle: 'white',
         strokeStyle: this.color,
         lineWidth: 2,
@@ -187,6 +189,9 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
   }
 
   afterAppendStage() {
+    if (!this.seriesItem.animation) {
+      return
+    }
     const { stage, coordinateSystem } = this.cr
 
     const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData

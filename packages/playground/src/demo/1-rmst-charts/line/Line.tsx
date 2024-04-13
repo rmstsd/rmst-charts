@@ -9,8 +9,6 @@ const option: ICharts.IOption = {
     {
       type: 'line',
       data: [620, 932, 901, 934, 800, 1001]
-      // data: [0.1, 0.2, 0.3, 0.2, 0.1]
-      // smooth: true
     }
   ]
 }
