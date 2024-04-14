@@ -6,7 +6,7 @@ import rmstChartsRouteConfig from './1-rmst-charts'
 import rmstRenderRouteConfig from './2-rmst-render'
 import zrenderRouteConfig from './3-zrender'
 import leaferRouteConfig from './4-leafer'
-import oldChartsRouteConfig from './5-oldCharts'
+// import oldChartsRouteConfig from './5-oldCharts'
 import otherRouteConfig from './6-other'
 
 export type IRouteObject = {
@@ -26,7 +26,7 @@ export const routes: IRouteObject[] = [
   rmstRenderRouteConfig,
   zrenderRouteConfig,
   leaferRouteConfig,
-  oldChartsRouteConfig,
+  // oldChartsRouteConfig,
   otherRouteConfig,
   {
     path: '*',

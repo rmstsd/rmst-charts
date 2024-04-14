@@ -339,7 +339,7 @@ function handleSeries(series: ICharts.series[]): ICharts.series[] {
               return (
                 dataItem +
                 lineSeries
-                //@ts-ignore
+                  // @ts-ignore
                   .filter(item => item.stack === 'sign')
                   .slice(0, serIndex)
                   .map(item => item.data[dataIndex])
