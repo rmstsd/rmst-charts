@@ -1,4 +1,4 @@
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { AbstractUiData, BoundingRect } from './AbstractUi'
 
 export const defaultRectData = {
   cornerRadius: 0,
@@ -19,6 +19,17 @@ export class Rect extends AbstractUi<RectData> {
   }
 
   declare data: RectData
+
+  getBoundingRect(): BoundingRect {
+    const { data } = this
+
+    return {
+      x: data.x,
+      y: data.y,
+      width: data.x + data.width,
+      height: data.y + data.height
+    }
+  }
 }
 
 export default Rect

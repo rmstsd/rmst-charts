@@ -1,4 +1,4 @@
-import { BoxHidden, Circle, Group, IShape, Rect } from 'rmst-render'
+import { BoxHidden, Circle, Group, IShape, Rect, rad2deg } from 'rmst-render'
 
 import { ChartRoot } from '../ChartRoot'
 import { dataZoomHeight } from '../constant'
@@ -278,11 +278,19 @@ function wrapDragRange_x(shape: IShape, min: number, max: number | Function, ond
   }
 }
 
-export function rangeRatio2Index(rangeRatio: RangeRatioDecimal, startIdx: number, endIdx: number) {
-  const rs = Math.floor(startIdx + (endIdx - startIdx) * rangeRatio.startRatio)
-  const re = Math.ceil(startIdx + (endIdx - startIdx) * rangeRatio.endRatio)
+export function rangeRatio2Index(rangeRatio: RangeRatioDecimal, firstIdx: number, lastIdx: number) {
+  let startIndex = Math.floor(firstIdx + (lastIdx - firstIdx) * rangeRatio.startRatio)
+  let endIndex = Math.ceil(firstIdx + (lastIdx - firstIdx) * rangeRatio.endRatio)
 
-  return { startIndex: rs, endIndex: re }
+  if (startIndex === endIndex) {
+    if (startIndex === firstIdx) {
+      endIndex = firstIdx + 1
+    } else if (startIndex === lastIdx) {
+      startIndex = lastIdx - 1
+    }
+  }
+
+  return { startIndex, endIndex }
 }
 
 export function getRangeRatio(option: ICharts.IOption): RangeRatioDecimal {

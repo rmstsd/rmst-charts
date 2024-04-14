@@ -58,20 +58,6 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
     // 计算出 阶梯折线图 要绘制的额外的点
     const finalCoordPoints = smooth ? pointData : calcPointsByUserPoints(pointData, step)
 
-    const mainLinePoints = pointToFlatArray(finalCoordPoints)
-
-    // 主折线
-    const mainLine = new Line({
-      name: 'mainline',
-      points: mainLinePoints,
-      strokeStyle: this.color,
-      lineWidth: lineStyle.width,
-      lineCap: lineStyle.cap,
-      lineJoin: lineStyle.join,
-      smooth,
-      opacity: this.opacity
-    })
-
     const boxHidden = new BoxHidden({
       x: xAxisData.ticks[0].start.x - lineStyle.width,
       y: yAxisData.axis.end.y,
@@ -80,75 +66,93 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
       lineWidth: 0,
       pointerEvents: 'none'
     })
-    if (areaStyle) {
-      const createArea = () => {
-        const prevSeries = finalSeries[index - 1]
 
-        const prevPointData =
-          index === 0
-            ? [
-                { x: finalCoordPoints.at(0).x, y: xAxisData.axis.start.y },
-                { x: finalCoordPoints.at(-1).x, y: xAxisData.axis.end.y }
-              ]
-            : calcLineData(prevSeries.data as number[], xAxisData, yAxisData)
+    if (finalCoordPoints.length !== 1) {
+      const mainLinePoints = pointToFlatArray(finalCoordPoints)
 
-        const calcAreaFillStyle = () => {
-          // 是数组则认为是渐变
-          if (Array.isArray(areaStyle.color)) {
-            const max_y = Math.max(...pointData.map(item => item.y))
-            const min_y = Math.min(...prevPointData.map(item => item.y))
+      // 主折线
+      const mainLine = new Line({
+        name: 'mainline',
+        points: mainLinePoints,
+        strokeStyle: this.color,
+        lineWidth: lineStyle.width,
+        lineCap: lineStyle.cap,
+        lineJoin: lineStyle.join,
+        smooth,
+        opacity: this.opacity
+      })
 
-            const gradient = stage.ctx.createLinearGradient(0, 0, max_y, min_y)
-            areaStyle.color.forEach(item => {
-              gradient.addColorStop(
-                item.offset,
-                areaStyle.opacity ? colorAlpha(item.color, areaStyle.opacity) : item.color
-              )
-            })
-            return gradient
+      if (areaStyle) {
+        const createArea = () => {
+          const prevSeries = finalSeries[index - 1]
+
+          const prevPointData =
+            index === 0
+              ? [
+                  { x: finalCoordPoints.at(0).x, y: xAxisData.axis.start.y },
+                  { x: finalCoordPoints.at(-1).x, y: xAxisData.axis.end.y }
+                ]
+              : calcLineData(prevSeries.data as number[], xAxisData, yAxisData)
+
+          const calcAreaFillStyle = () => {
+            // 是数组则认为是渐变
+            if (Array.isArray(areaStyle.color)) {
+              const max_y = Math.max(...pointData.map(item => item.y))
+              const min_y = Math.min(...prevPointData.map(item => item.y))
+
+              const gradient = stage.ctx.createLinearGradient(0, 0, max_y, min_y)
+              areaStyle.color.forEach(item => {
+                gradient.addColorStop(
+                  item.offset,
+                  areaStyle.opacity ? colorAlpha(item.color, areaStyle.opacity) : item.color
+                )
+              })
+              return gradient
+            }
+
+            return areaStyle.color || colorAlpha(this.color, 0.6)
           }
 
-          return areaStyle.color || colorAlpha(this.color, 0.6)
+          // 注意点的顺序是 从右向左的
+          const prevLinePoints = pointToFlatArray(prevPointData.reverse())
+
+          const mainLinePath2DCopy = new Path2D(mainLine.path2D)
+          mainLinePath2DCopy.lineTo(prevLinePoints[0], prevLinePoints[1])
+
+          const prevLinePath2D = new Line({
+            points: prevLinePoints,
+            smooth: index === 0 ? false : prevSeries.smooth,
+            lineWidth: 0
+          }).path2D
+
+          prevLinePath2D.lineTo(mainLinePoints[0], mainLinePoints[1])
+          prevLinePath2D.addPath(mainLinePath2DCopy)
+
+          const innerSingleArea = new Line({
+            name: 'innerSingleArea',
+            path2D: prevLinePath2D,
+            fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
+            strokeStyle: 'transparent',
+            closed: true,
+            lineWidth: 0,
+            cursor: 'pointer',
+            opacity: this.opacity
+          })
+
+          innerSingleArea.onmouseenter = () => {
+            innerSingleArea.animateCartoon({ opacity: 0.9 }, { duration: 200 })
+          }
+          innerSingleArea.onmouseleave = () => {
+            innerSingleArea.animateCartoon({ opacity: 1 }, { duration: 200 })
+          }
+
+          return innerSingleArea
         }
-
-        // 注意点的顺序是 从右向左的
-        const prevLinePoints = pointToFlatArray(prevPointData.reverse())
-
-        const mainLinePath2DCopy = new Path2D(mainLine.path2D)
-        mainLinePath2DCopy.lineTo(prevLinePoints[0], prevLinePoints[1])
-
-        const prevLinePath2D = new Line({
-          points: prevLinePoints,
-          smooth: index === 0 ? false : prevSeries.smooth,
-          lineWidth: 0
-        }).path2D
-
-        prevLinePath2D.lineTo(mainLinePoints[0], mainLinePoints[1])
-        prevLinePath2D.addPath(mainLinePath2DCopy)
-
-        const innerSingleArea = new Line({
-          name: 'innerSingleArea',
-          path2D: prevLinePath2D,
-          fillStyle: calcAreaFillStyle() as CanvasFillStrokeStyles['fillStyle'],
-          strokeStyle: 'transparent',
-          closed: true,
-          lineWidth: 0,
-          cursor: 'pointer',
-          opacity: this.opacity
-        })
-
-        innerSingleArea.onmouseenter = () => {
-          innerSingleArea.animateCartoon({ opacity: 0.9 }, { duration: 200 })
-        }
-        innerSingleArea.onmouseleave = () => {
-          innerSingleArea.animateCartoon({ opacity: 1 }, { duration: 200 })
-        }
-
-        return innerSingleArea
+        boxHidden.append(createArea())
       }
-      boxHidden.append(createArea())
+
+      boxHidden.append(mainLine)
     }
-    boxHidden.append(mainLine)
 
     let arcs: Circle[] = []
     if (symbol !== 'none') {
