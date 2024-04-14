@@ -1,7 +1,6 @@
-import { dpr } from '../constant'
-import { isBoxHidden, isGroup, isLine, isStage, isText } from '../utils'
-import { Text, measureText } from '..'
+import { isBoxHidden, isGroup, isStage } from '../utils'
 import { IShape } from '../type'
+import { isHitShape } from './isHitShape'
 
 export function findHover(ctx: CanvasRenderingContext2D, children: IShape[], x: number, y: number): IShape {
   // return null
@@ -90,7 +89,7 @@ export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], 
       if (isGroup(elementItem)) {
         detectHit(elementItem.children)
       } else if (isBoxHidden(elementItem)) {
-        if (isShapeInner(ctx, elementItem, x, y)) {
+        if (isHitShape(ctx, elementItem, x, y)) {
           const isHit = isHitDescendant((elementItem as any).children)
 
           if (isHit) {
@@ -100,7 +99,7 @@ export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], 
           }
         }
       } else {
-        if (isShapeInner(ctx, elementItem, x, y)) {
+        if (isHitShape(ctx, elementItem, x, y)) {
           possible.push(elementItem)
         }
       }
@@ -114,7 +113,7 @@ export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], 
         continue
       }
 
-      if (isShapeInner(ctx, elementItem, x, y)) {
+      if (isHitShape(ctx, elementItem, x, y)) {
         return ans
       }
 
@@ -124,68 +123,6 @@ export function findHover_v2(ctx: CanvasRenderingContext2D, children: IShape[], 
     }
 
     return false
-  }
-}
-
-function isShapeInner(ctx: CanvasRenderingContext2D, elementItem: IShape, x: number, y: number) {
-  const hit_x = x * dpr
-  const hit_y = y * dpr
-
-  if (isText(elementItem)) {
-    return isHitText(elementItem)
-  }
-
-  if (!elementItem.path2D) {
-    return false
-  }
-
-  ctx.lineWidth = elementItem.data.lineWidth + 5
-
-  if (isLine(elementItem) && !elementItem.data.closed) {
-    return isInStroke()
-  }
-
-  const isHit = isInPath() || isInStroke()
-
-  return isHit
-
-  function isInPath() {
-    return ctx.isPointInPath(elementItem.path2D, hit_x, hit_y)
-  }
-
-  function isInStroke() {
-    return ctx.isPointInStroke(elementItem.path2D, hit_x, hit_y)
-  }
-
-  function isHitText(elementItem: Text): boolean {
-    const { data } = elementItem
-    const { textWidth, textHeight } = measureText(data.content, data.fontSize)
-
-    const halfWidth = textWidth / 2
-
-    const textRect_x = (() => {
-      if (data.textAlign === 'left') {
-        return data.x
-      }
-      if (data.textAlign === 'center') {
-        return data.x - halfWidth
-      }
-      if (data.textAlign === 'right') {
-        return data.x - textWidth
-      }
-    })()
-
-    const textRect_y = (() => {
-      if (data.textBaseline === 'middle') {
-        return data.y - textHeight / 2
-      }
-      return data.y
-    })()
-
-    const is_x = textRect_x <= x && x <= textRect_x + textWidth
-    const is_y = textRect_y <= y && y <= textRect_y + textHeight
-
-    return is_x && is_y
   }
 }
 
@@ -200,7 +137,7 @@ function findHover_v1_legacy(ctx: CanvasRenderingContext2D, children: IShape[], 
 
     if (isGroup(elementItem) || isBoxHidden(elementItem)) {
       if (isBoxHidden(elementItem)) {
-        if (isShapeInner(ctx, elementItem, x, y)) {
+        if (isHitShape(ctx, elementItem, x, y)) {
           const hovered = findHover(ctx, elementItem.children, x, y)
           if (hovered) {
             return hovered
@@ -217,7 +154,7 @@ function findHover_v1_legacy(ctx: CanvasRenderingContext2D, children: IShape[], 
         return hovered
       }
     } else {
-      const isInner = isShapeInner(ctx, elementItem, x, y)
+      const isInner = isHitShape(ctx, elementItem, x, y)
       if (isInner) {
         return elementItem
       }

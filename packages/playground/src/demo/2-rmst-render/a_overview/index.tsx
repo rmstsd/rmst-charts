@@ -13,15 +13,15 @@ const Overview = () => {
 
     const rects = [
       new Rect({
-        x: 10,
+        x: 20,
         y: 10,
         width: 80,
         height: 80,
         fillStyle: 'purple',
-        cornerRadius: 20,
         cursor: 'pointer',
         draggable: true,
-        shadowColor
+        shadowColor,
+        rotate: 30
       }),
       new Rect({
         x: 100,
@@ -31,6 +31,7 @@ const Overview = () => {
         fillStyle: '#a18cd1',
         draggable: true,
         cursor: 'move',
+        cornerRadius: 2,
         shadowColor
       })
     ]
@@ -112,7 +113,8 @@ const Overview = () => {
       points: [0, 0, 0, 0, 0, 0, 0, 0],
       strokeStyle: 'orange',
       lineWidth: 10,
-      draggable: true
+      draggable: true,
+      cursor: 'move'
     })
 
     const line4 = new Line({

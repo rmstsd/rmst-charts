@@ -7,7 +7,7 @@ import { resetSchedulerCount } from './scheduler'
 import { findHover, findHover_v2 } from './findHover'
 import { mountStage } from './renderUi'
 import { ICursor, IShape, IShapeType } from '../type'
-import { drawStageShapes } from '../renderer/canvas'
+import { drawStage } from '../renderer/canvas'
 import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
 import { isStage } from '../utils'
@@ -105,7 +105,7 @@ export class Stage extends AbsEvent {
     requestAnimationFrame(() => {
       resetSchedulerCount()
 
-      drawStageShapes(this)
+      drawStage(this)
 
       this.isAsyncRenderTask = false
     })
