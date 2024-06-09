@@ -199,9 +199,8 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
     const { stage, coordinateSystem } = this.cr
 
     const xAxisData = coordinateSystem.cartesian2d.cartesian2dAxisData.xAxisData
-    const ticksXs = xAxisData.ticks.map(item => item.start.x)
 
-    let currentIndex = 0
+    const elapsedIndex = []
     this.lineElements.mainPolyline.animateCartoon(
       { width: stage.canvasSize.width },
       {
@@ -211,15 +210,13 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
           if (this.seriesItem.symbol === 'none') {
             return
           }
+          const currentWidth = xAxisData.axis.start.x + (newState.width as number)
+          const curIndex = Math.floor(currentWidth / xAxisData.axis.xAxisInterval)
 
-          if (xAxisData.axis.start.x + (newState.width as number) >= ticksXs[currentIndex]) {
-            // 数据点的数量可能会比刻度的数量少
-            this.lineElements.arcs[currentIndex]?.animateCartoon(
-              { radius: this.seriesItem.symbolSize },
-              { duration: 300 }
-            )
-
-            currentIndex++
+          const prev = elapsedIndex.at(-1) ?? 0
+          for (let i = prev; i <= curIndex; i++) {
+            elapsedIndex.push(i)
+            this.lineElements.arcs[i]?.animateCartoon({ radius: this.seriesItem.symbolSize }, { duration: 300 })
           }
         }
       }
