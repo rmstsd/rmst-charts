@@ -4,9 +4,9 @@ import { IShape } from '../type'
 import { setCtxMatrix } from '../renderer/canvas'
 
 export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: number) {
-  const { ctx, dpr, scale } = stage
-  const hit_x = x * dpr
-  const hit_y = y * dpr
+  const { ctx, scale } = stage
+  const hit_x = x * stage.dpr
+  const hit_y = y * stage.dpr
 
   // setCtxMatrix(ctx, elementItem)
 
@@ -35,12 +35,13 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
 
   function isHitText(elementItem: Text): boolean {
     const { data } = elementItem
-    let { textWidth, textHeight } = measureText(data.content, data.fontSize)
+    let { textWidth, textHeight } = measureText(data.content, data.fontSize, stage.ctx)
 
-    const data_x = data.x * stage.scale + stage.offsetX
-    const data_y = data.y * stage.scale + stage.offsetX
-    textWidth = textWidth * stage.scale
-    textHeight = textHeight * stage.scale
+    const data_x = data.x
+    const data_y = data.y
+
+    const canvas_coord_x = (x - stage.offsetX) / stage.scale
+    const canvas_coord_y = (y - stage.offsetY) / stage.scale
 
     const halfWidth = textWidth / 2
 
@@ -63,8 +64,8 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
       return data_y
     })()
 
-    const is_x = textRect_x <= x && x <= textRect_x + textWidth
-    const is_y = textRect_y <= y && y <= textRect_y + textHeight
+    const is_x = textRect_x <= canvas_coord_x && canvas_coord_x <= textRect_x + textWidth
+    const is_y = textRect_y <= canvas_coord_y && canvas_coord_y <= textRect_y + textHeight
 
     return is_x && is_y
   }

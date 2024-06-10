@@ -4,11 +4,17 @@ export * from './math'
 export * from './clipRect'
 
 // 测量文本宽高
-let ctx: CanvasRenderingContext2D
-export function measureText(text: string, fontSize: number) {
-  if (!ctx) {
-    ctx = document.createElement('canvas').getContext('2d')
-  }
+let octx: CanvasRenderingContext2D
+export function measureText(text: string, fontSize: number, pctx?: CanvasRenderingContext2D) {
+  const ctx = (() => {
+    if (pctx) {
+      return pctx
+    } else {
+      octx = document.createElement('canvas').getContext('2d')
+
+      return octx
+    }
+  })()
 
   setCtxFontSize(ctx, fontSize)
   const { actualBoundingBoxAscent, actualBoundingBoxDescent, width: textWidth } = ctx.measureText(text)
