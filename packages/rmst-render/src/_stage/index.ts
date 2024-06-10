@@ -2,16 +2,15 @@ import colorAlpha from 'color-alpha'
 
 import Draggable from '../Draggable'
 import { EventParameter, eventStageList } from '../constant'
-import { findToRoot, initStage, triggerEventHandlers } from './utils'
-import { resetSchedulerCount } from './scheduler'
+import { initStage, triggerEventHandlers } from './utils'
 import { findHover_v2 } from './findHover'
 import { mountStage } from './renderUi'
-import { ICursor, IShape, IShapeType } from '../type'
+import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
 import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
-import { isStage } from '../utils'
 import AbsEvent from '../AbsEvent'
+import { handleHoveredElement, setCursor, triggerStageHoveredStackMouseleave } from './hoveredElementHandler'
 
 interface IOption {
   container: HTMLElement
@@ -33,10 +32,11 @@ export class Stage extends AbsEvent {
 
     this.defaultTransform = this.ctx.getTransform()
 
+    this.draggingMgr = new Draggable(this)
     this.addStageEventListener()
   }
 
-  dpr = 1.8 // window.devicePixelRatio
+  dpr = window.devicePixelRatio
 
   mouseDownOffsetX = 0 // 鼠标按下时，鼠标的偏移量
   mouseDownOffsetY = 0
@@ -67,7 +67,7 @@ export class Stage extends AbsEvent {
   parent: null
   children: IShape[] = []
 
-  draggingMgr = new Draggable()
+  draggingMgr: Draggable
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -93,9 +93,7 @@ export class Stage extends AbsEvent {
 
   removeAllShape() {
     this.dispose()
-
     this.children = []
-
     this.renderStage()
   }
 
@@ -104,59 +102,62 @@ export class Stage extends AbsEvent {
   append(...args: IShape[]): void
   append(...args) {
     const elements = args.flat(1)
-
     this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
-
     mountStage(this.children, this)
-
     this.renderStage()
   }
 
   private isAsyncRenderTask = false
 
-  // 调度层 - 收集多次任务指令
   renderStage() {
     if (this.isAsyncRenderTask) {
       return
     }
-
     this.isAsyncRenderTask = true
 
     requestAnimationFrame(() => {
-      resetSchedulerCount()
-
       drawStage(this)
-
       this.isAsyncRenderTask = false
     })
   }
 
-  private hoveredStack: IShape[] = []
+  hoveredStack: IShape[] = []
+
+  isMousedown = false
+  isSpaceKeyDown = false
 
   private addStageEventListener() {
-    this.canvasElement.onmousemove = evt => {
-      {
-        // 触发舞台(canvas Element)的事件
-        const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-        triggerEventHandlers(this, 'onmousemove', eventParameter)
+    this.canvasElement.addEventListener('mousemove', evt => {
+      if (this.isSpaceKeyDown && this.isMousedown) {
+        // 鼠标按下后的移动偏移量 = 当前鼠标的位置 - 鼠标按下的位置
+        // 当前拖动偏移量 = 上一次的偏移量 + 鼠标按下后的移动偏移量
+        this.offsetX = this.preOffsetX + (evt.x - this.mouseDownOffsetX)
+        this.offsetY = this.preOffsetY + (evt.y - this.mouseDownOffsetY)
+
+        this.renderStage()
       }
 
       if (this.draggingMgr.dragging) {
         return
       }
 
-      this.handleHoveredElement(evt.offsetX, evt.offsetY)
-    }
+      if (this.isSpaceKeyDown) {
+        return
+      }
 
-    this.canvasElement.onmouseleave = evt => {
+      handleHoveredElement(this, evt.offsetX, evt.offsetY)
+
+      {
+        // 触发舞台(canvas Element)的事件
+        const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+        triggerEventHandlers(this, 'onmousemove', eventParameter)
+      }
+    })
+
+    this.canvasElement.addEventListener('mouseleave', evt => {
       if (this.hoveredStack.length) {
-        this.hoveredStack.toReversed().forEach(elementItem => {
-          const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-        })
-
-        this.hoveredStack = []
+        triggerStageHoveredStackMouseleave(this, evt.offsetX, evt.offsetY)
       }
 
       {
@@ -164,7 +165,7 @@ export class Stage extends AbsEvent {
         const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
         this.onmouseleave(eventParameter)
       }
-    }
+    })
 
     eventStageList
       .filter(n => !['onmousemove', 'onmouseleave'].includes(n))
@@ -177,28 +178,32 @@ export class Stage extends AbsEvent {
             const eventParameter: EventParameter = { target: null, x, y, nativeEvent: evt }
             triggerEventHandlers(this, eventName, eventParameter)
           }
-
-          const hovered = findHover_v2(this, x, y)
-          if (hovered) {
-            const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
-            triggerEventHandlers(hovered, eventName, eventParameter)
-          }
         }
       })
 
-    // 拖拽
     this.canvasElement.addEventListener('mousedown', evt => {
-      const x = evt.offsetX
-      const y = evt.offsetY
-      const hovered = findHover_v2(this, x, y)
+      if (this.isSpaceKeyDown) {
+        setCursor(this, 'grabbing')
+        this.isMousedown = true
 
-      if (hovered) {
-        const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
-        this.draggingMgr.dragStart(eventParameter, this)
+        // 记录鼠标按下时，鼠标的位置
+        this.mouseDownOffsetX = evt.x
+        this.mouseDownOffsetY = evt.y
       }
     })
 
-    this.canvasElement.onwheel = event => {
+    this.canvasElement.addEventListener('mouseup', evt => {
+      // 记录鼠标抬起时，鼠标的位置
+      this.preOffsetX = this.offsetX
+      this.preOffsetY = this.offsetY
+      this.isMousedown = false
+
+      if (this.isSpaceKeyDown) {
+        setCursor(this, 'grab')
+      }
+    })
+
+    this.canvasElement.addEventListener('wheel', event => {
       this.mouseOffsetX = event.offsetX
       this.mouseOffsetY = event.offsetY
 
@@ -222,74 +227,30 @@ export class Stage extends AbsEvent {
       this.offsetX = this.mouseOffsetX - (this.mouseOffsetX - this.offsetX) * zoomRatio
       this.offsetY = this.mouseOffsetY - (this.mouseOffsetY - this.offsetY) * zoomRatio
 
-      drawStage(this)
+      this.renderStage()
 
       // 将当前的缩放比例保存为 上一次的缩放比例
       this.preScale = this.scale
       // 记录鼠标滚轮停止时，鼠标的位置
       this.preOffsetX = this.offsetX
       this.preOffsetY = this.offsetY
-    }
-  }
+    })
 
-  private handleHoveredElement(x: number, y: number) {
-    const hovered = findHover_v2(this, x, y)
+    document.addEventListener('keydown', evt => {
+      if (evt.code === 'Space') {
+        if (!this.isSpaceKeyDown) {
+          this.isSpaceKeyDown = true
 
-    if (hovered) {
-      this.setHoveredElementCursor(hovered)
-
-      const eventParameter: EventParameter = { target: hovered, x, y }
-      triggerEventHandlers(hovered, 'onmousemove', eventParameter)
-
-      const stack = findToRoot(hovered)
-
-      for (let i = this.hoveredStack.length - 1; i >= 0; i--) {
-        const elementItem = this.hoveredStack[i]
-
-        if (!stack.includes(elementItem)) {
-          const eventParameter: EventParameter = { target: elementItem, x, y }
-          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-
-          this.hoveredStack.splice(i, 1)
+          setCursor(this, 'grab')
         }
       }
-
-      stack.forEach(item => {
-        if (!this.hoveredStack.includes(item)) {
-          const eventParameter: EventParameter = { target: item, x, y }
-          triggerEventHandlers(item, 'onmouseenter', eventParameter)
-
-          this.hoveredStack.push(item)
-        }
-      })
-    } else {
-      this.setCursor('default')
-
-      this.hoveredStack.toReversed().forEach(elementItem => {
-        const eventParameter: EventParameter = { target: elementItem, x, y }
-        triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-      })
-
-      this.hoveredStack = []
-    }
-  }
-
-  private setHoveredElementCursor(hovered: IShape) {
-    let hasCursorTarget = hovered
-    while (hasCursorTarget && !hasCursorTarget.data.cursor) {
-      const parent = hasCursorTarget.parent as unknown as IShape
-      if (isStage(parent)) {
-        break
+    })
+    document.addEventListener('keyup', evt => {
+      if (evt.code === 'Space') {
+        this.isSpaceKeyDown = false
+        setCursor(this, 'default')
       }
-
-      hasCursorTarget = parent
-    }
-    const cursor = hasCursorTarget.data.cursor || 'auto'
-    this.setCursor(cursor)
-  }
-
-  private setCursor(cursor: ICursor) {
-    this.canvasElement.style.setProperty('cursor', cursor)
+    })
   }
 
   dirtyRectUi: Rect

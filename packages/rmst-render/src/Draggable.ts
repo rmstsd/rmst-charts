@@ -3,15 +3,32 @@ import { isGroup, isLine, isStage } from './utils/isShape'
 import { convertToNormalPoints, pointToFlatArray } from './utils'
 import { IShape } from './type'
 import { Stage } from '.'
+import { findHover_v2 } from './_stage/findHover'
 
 export default class Draggable {
+  constructor(stage: Stage) {
+    this.stage = stage
+
+    stage.canvasElement.addEventListener('mousedown', evt => {
+      const x = evt.offsetX
+      const y = evt.offsetY
+      const hovered = findHover_v2(stage, x, y)
+
+      if (hovered) {
+        const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
+        this.dragStart(eventParameter)
+      }
+    })
+  }
   private prevClientX = 0
   private prevClientY = 0
 
+  stage: Stage
+
   dragging = false
 
-  dragStart(eventParameter: EventParameter, stage: Stage) {
-    const canvasElementRect = stage.canvasElement.getBoundingClientRect()
+  dragStart(eventParameter: EventParameter) {
+    const canvasElementRect = this.stage.canvasElement.getBoundingClientRect()
 
     let draggedTarget = eventParameter.target
 
@@ -47,7 +64,7 @@ export default class Draggable {
       this.prevClientX = evt.clientX
       this.prevClientY = evt.clientY
 
-      dndAttr(draggedTarget, dx / stage.scale, dy / stage.scale)
+      dndAttr(draggedTarget, dx / this.stage.scale, dy / this.stage.scale)
 
       draggedTarget.ondrag({ target: draggedTarget, x, y, dx, dy })
     }
