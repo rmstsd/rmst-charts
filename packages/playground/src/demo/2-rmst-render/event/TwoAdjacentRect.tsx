@@ -12,8 +12,16 @@ const TwoAdjacentRect = () => {
     })
     stageRef.current = stage
 
-    const rect_3 = new Rect({ x: 200, y: 50, width: 100, height: 100, fillStyle: 'blue', cursor: 'move' })
-    const rect_4 = new Rect({ x: 200, y: 150, width: 100, height: 100, fillStyle: 'pink', cursor: 'pointer' })
+    const rect_3 = new Rect({ name: '蓝色', x: 200, y: 50, width: 100, height: 100, fillStyle: 'blue', cursor: 'move' })
+    const rect_4 = new Rect({
+      name: '粉色',
+      x: 200,
+      y: 150,
+      width: 100,
+      height: 100,
+      fillStyle: 'pink',
+      cursor: 'pointer'
+    })
 
     rect_3.onmouseenter = () => {
       console.log('rect_3 enter')

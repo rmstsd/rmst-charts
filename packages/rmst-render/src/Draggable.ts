@@ -2,6 +2,7 @@ import { EventParameter } from './constant'
 import { isGroup, isLine, isStage } from './utils/isShape'
 import { convertToNormalPoints, pointToFlatArray } from './utils'
 import { IShape } from './type'
+import { Stage } from '.'
 
 export default class Draggable {
   private prevClientX = 0
@@ -9,7 +10,9 @@ export default class Draggable {
 
   dragging = false
 
-  dragStart(eventParameter: EventParameter, canvasElementRect: DOMRect) {
+  dragStart(eventParameter: EventParameter, stage: Stage) {
+    const canvasElementRect = stage.canvasElement.getBoundingClientRect()
+
     let draggedTarget = eventParameter.target
 
     while (draggedTarget && !draggedTarget.data.draggable) {
@@ -44,7 +47,7 @@ export default class Draggable {
       this.prevClientX = evt.clientX
       this.prevClientY = evt.clientY
 
-      dndAttr(draggedTarget, dx, dy)
+      dndAttr(draggedTarget, dx / stage.scale, dy / stage.scale)
 
       draggedTarget.ondrag({ target: draggedTarget, x, y, dx, dy })
     }

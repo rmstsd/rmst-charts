@@ -11,38 +11,75 @@ const QuickStart = () => {
       pointer: { hitRadius: 0 }
     })
 
-    const rects = Array.from(
-      { length: 1000 },
-      (_, index) =>
-        new Rect({
-          draggable: true,
-          x: 10 + index * 20,
-          y: 10,
-          width: 15,
-          height: 15,
-          fill: '#32cd79',
-          cursor: 'move',
-          zIndex: 10
-        })
-    )
+    const start_x = 5
+    const start_y = 5
+
+    const gap = 5
+
+    const rectSize = 17
+    const width = rectSize
+    const height = rectSize
+
+    let curRow = 0
+    let curColumn = 0
+
+    const rects = Array.from({ length: 10000 }, _ => {
+      let x = calcX()
+
+      if (x + width > leafer.width) {
+        curRow += 1
+        curColumn = 0
+
+        x = calcX()
+      }
+
+      const y = start_y + (height + gap) * curRow
+
+      curColumn += 1
+
+      return new Rect({
+        draggable: true,
+        x,
+        y,
+        width: rectSize,
+        height: rectSize,
+        fill: '#32cd79',
+        cursor: 'move',
+        zIndex: 10
+      })
+
+      function calcX() {
+        return start_x + (width + gap) * curColumn
+      }
+    })
 
     rects.forEach(item => {
       leafer.add(item)
     })
 
+    const paused = []
     rects.forEach(rect => {
-      anime({
+      const ani = anime({
         targets: rect,
-        y: rect.y + 100,
+        width: rectSize - 5,
+        height: rectSize - 5,
         cornerRadius: 0,
-        easing: 'easeInOutQuad'
+        easing: 'easeInOutQuad',
+        direction: 'alternate',
+        loop: true
       })
+
+      paused.push(ani.pause)
     })
+
+    return () => {
+      paused.forEach(item => item())
+    }
   }, [])
 
   return (
     <div>
-      <div className="canvas-container"></div>
+      <div className="canvas-container" style={{ width: 1800, height: 8000 }}></div>
     </div>
   )
 }

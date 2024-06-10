@@ -18,7 +18,7 @@ const TextDemo = () => {
         y: 10,
         content: '君不见黄河之水天上来',
         fillStyle: '#333',
-        cursor: 'pointer',
+        cursor: 'move',
         textAlign: 'center'
       })
       // new Circle({ x: 210, y: 10, radius: 2, fillStyle: 'red' })

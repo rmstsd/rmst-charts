@@ -4,7 +4,7 @@ import Draggable from '../Draggable'
 import { EventParameter, eventStageList } from '../constant'
 import { findToRoot, initStage, triggerEventHandlers } from './utils'
 import { resetSchedulerCount } from './scheduler'
-import { findHover, findHover_v2 } from './findHover'
+import { findHover_v2 } from './findHover'
 import { mountStage } from './renderUi'
 import { ICursor, IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
@@ -22,15 +22,36 @@ export class Stage extends AbsEvent {
     super()
 
     const { container } = option
-    const stage = initStage(container)
+    const stage = initStage(container, this)
 
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
+
+    this.ctx.scale(this.dpr, this.dpr)
+    this.ctx.textBaseline = 'hanging'
+    this.ctx.font = `${14}px 微软雅黑`
 
     this.defaultTransform = this.ctx.getTransform()
 
     this.addStageEventListener()
   }
+
+  dpr = 1.8 // window.devicePixelRatio
+
+  mouseDownOffsetX = 0 // 鼠标按下时，鼠标的偏移量
+  mouseDownOffsetY = 0
+  offsetX = 0 // 当前拖动偏移量
+  offsetY = 0
+  preOffsetX = 0 // 上一次的偏移量
+  preOffsetY = 0
+  mouseOffsetX = 0 // 鼠标滚轮滚动时，鼠标的偏移量
+  mouseOffsetY = 0
+
+  scale = 1
+  preScale = 1 // 上一次的缩放比例
+  scaleStep = 0.1 // 每次缩放的间隔
+  maxScale = 5 // 最大缩放比例
+  minScale = 0.2 // 最小缩放比例
 
   defaultTransform: DOMMatrix2DInit
 
@@ -149,15 +170,17 @@ export class Stage extends AbsEvent {
       .filter(n => !['onmousemove', 'onmouseleave'].includes(n))
       .forEach(eventName => {
         this.canvasElement[eventName] = evt => {
+          const x = evt.offsetX
+          const y = evt.offsetY
           {
             // 触发舞台(canvas Element)的事件
-            const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+            const eventParameter: EventParameter = { target: null, x, y, nativeEvent: evt }
             triggerEventHandlers(this, eventName, eventParameter)
           }
 
-          const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
+          const hovered = findHover_v2(this, x, y)
           if (hovered) {
-            const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+            const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
             triggerEventHandlers(hovered, eventName, eventParameter)
           }
         }
@@ -165,17 +188,52 @@ export class Stage extends AbsEvent {
 
     // 拖拽
     this.canvasElement.addEventListener('mousedown', evt => {
-      const hovered = findHover_v2(this.ctx, this.children, evt.offsetX, evt.offsetY)
+      const x = evt.offsetX
+      const y = evt.offsetY
+      const hovered = findHover_v2(this, x, y)
 
       if (hovered) {
-        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-        this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())
+        const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
+        this.draggingMgr.dragStart(eventParameter, this)
       }
     })
+
+    this.canvasElement.onwheel = event => {
+      this.mouseOffsetX = event.offsetX
+      this.mouseOffsetY = event.offsetY
+
+      if (event.deltaY < 0) {
+        if (this.scale >= this.maxScale) {
+          return
+        }
+        this.scale = parseFloat((this.scale + this.scaleStep).toFixed(2))
+      } else {
+        // 画布缩小
+        if (this.scale <= this.minScale) {
+          return
+        }
+        this.scale = parseFloat((this.scale - this.scaleStep).toFixed(2))
+      }
+
+      // 缩放比
+      const zoomRatio = this.scale / this.preScale
+
+      // 鼠标当前的位置 - 当前拖动偏移量
+      this.offsetX = this.mouseOffsetX - (this.mouseOffsetX - this.offsetX) * zoomRatio
+      this.offsetY = this.mouseOffsetY - (this.mouseOffsetY - this.offsetY) * zoomRatio
+
+      drawStage(this)
+
+      // 将当前的缩放比例保存为 上一次的缩放比例
+      this.preScale = this.scale
+      // 记录鼠标滚轮停止时，鼠标的位置
+      this.preOffsetX = this.offsetX
+      this.preOffsetY = this.offsetY
+    }
   }
 
   private handleHoveredElement(x: number, y: number) {
-    const hovered = findHover(this.ctx, this.children, x, y)
+    const hovered = findHover_v2(this, x, y)
 
     if (hovered) {
       this.setHoveredElementCursor(hovered)

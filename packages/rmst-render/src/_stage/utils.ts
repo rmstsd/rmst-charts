@@ -1,33 +1,23 @@
 import { Stage } from '..'
-import { EventParameter, EventType, OnEventType, dpr, supportBubblesEventType } from '../constant'
+import { EventParameter, EventType, OnEventType, supportBubblesEventType } from '../constant'
 import { IShape } from '../type'
 import { isStage } from '../utils'
 
-function createCanvas(containerWidth: number, containerHeight: number) {
+export function initStage(canvasContainer: HTMLElement, stage: Stage) {
+  const { offsetWidth, offsetHeight } = canvasContainer
+
   const canvasElement = document.createElement('canvas')
-  const canvasWidth = containerWidth * dpr
-  const canvasHeight = containerHeight * dpr
+  const canvasWidth = offsetWidth * stage.dpr
+  const canvasHeight = offsetHeight * stage.dpr
 
   canvasElement.width = canvasWidth
   canvasElement.height = canvasHeight
   canvasElement.style.width = '100%'
   canvasElement.style.height = '100%'
 
-  const ctx = canvasElement.getContext('2d')
-
-  ctx.scale(dpr, dpr)
-  ctx.textBaseline = 'top'
-  ctx.font = `${14}px 微软雅黑`
-
-  return { canvasElement, ctx }
-}
-
-export function initStage(canvasContainer: HTMLElement) {
-  const { offsetWidth, offsetHeight } = canvasContainer
-  const { canvasElement, ctx } = createCanvas(offsetWidth, offsetHeight)
-
   canvasContainer.append(canvasElement)
 
+  const ctx = canvasElement.getContext('2d')
   return { canvasElement, ctx }
 }
 
@@ -66,4 +56,58 @@ export const findToRoot = (elementItem: IShape) => {
   }
 
   return stack
+}
+export function isPointerEventsNone(elementItem) {
+  return elementItem.data.pointerEvents === 'none'
+}
+export function compareZLevel(possible) {
+  const stack = possible.map(item => {
+    const arr: IShape[] = []
+    let shape = item
+    while (shape && !isStage(shape)) {
+      arr.unshift(shape)
+      shape = shape.parent as IShape
+    }
+    return arr
+  })
+
+  let ans: IShape = null
+  let level_index = 0
+
+  while (!ans) {
+    const pps = stack.sort((a, b) => {
+      const aItem = a.at(level_index)
+      const bItem = b.at(level_index)
+
+      return aItem.data.zIndex - bItem.data.zIndex
+    })
+
+    const maxZIndexItem = pps.at(-1)[level_index]
+
+    for (let i = 0; i < pps.length; i++) {
+      const item = pps[i][level_index]
+
+      if (maxZIndexItem === item) {
+        continue
+      } else {
+        if (item.data.zIndex <= maxZIndexItem.data.zIndex) {
+          pps.splice(i, 1)
+          i--
+        }
+      }
+    }
+
+    const tempAns = pps
+      .map(item => item[level_index])
+      .toSorted((a, b) => a.data.zIndex - b.data.zIndex)
+      .at(-1)
+
+    if (possible.includes(tempAns)) {
+      ans = tempAns
+    } else {
+      level_index++
+    }
+  }
+
+  return ans
 }
