@@ -3,7 +3,6 @@ import colorAlpha from 'color-alpha'
 import Draggable from '../Draggable'
 import { EventParameter, eventStageList } from '../constant'
 import { initStage, triggerEventHandlers } from './utils'
-import { findHover_v2 } from './findHover'
 import { mountStage } from './renderUi'
 import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
@@ -33,7 +32,9 @@ export class Stage extends AbsEvent {
     this.defaultTransform = this.ctx.getTransform()
 
     this.draggingMgr = new Draggable(this)
-    this.addStageEventListener()
+
+    this.addStageHitEventListener()
+    this.addStageTransformEventListener()
   }
 
   dpr = window.devicePixelRatio
@@ -68,6 +69,13 @@ export class Stage extends AbsEvent {
   children: IShape[] = []
 
   draggingMgr: Draggable
+
+  private isAsyncRenderTask = false
+
+  hoveredStack: IShape[] = []
+
+  isMousedown = false
+  isSpaceKeyDown = false
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -108,8 +116,6 @@ export class Stage extends AbsEvent {
     this.renderStage()
   }
 
-  private isAsyncRenderTask = false
-
   renderStage() {
     if (this.isAsyncRenderTask) {
       return
@@ -122,22 +128,8 @@ export class Stage extends AbsEvent {
     })
   }
 
-  hoveredStack: IShape[] = []
-
-  isMousedown = false
-  isSpaceKeyDown = false
-
-  private addStageEventListener() {
+  private addStageHitEventListener() {
     this.canvasElement.addEventListener('mousemove', evt => {
-      if (this.isSpaceKeyDown && this.isMousedown) {
-        // 鼠标按下后的移动偏移量 = 当前鼠标的位置 - 鼠标按下的位置
-        // 当前拖动偏移量 = 上一次的偏移量 + 鼠标按下后的移动偏移量
-        this.offsetX = this.preOffsetX + (evt.x - this.mouseDownOffsetX)
-        this.offsetY = this.preOffsetY + (evt.y - this.mouseDownOffsetY)
-
-        this.renderStage()
-      }
-
       if (this.draggingMgr.dragging) {
         return
       }
@@ -180,15 +172,34 @@ export class Stage extends AbsEvent {
           }
         }
       })
+  }
+
+  private addStageTransformEventListener() {
+    this.canvasElement.addEventListener('mousedown', evt => {
+      this.isMousedown = true
+    })
+    this.canvasElement.addEventListener('mouseup', evt => {
+      this.isMousedown = false
+    })
+
+    this.canvasElement.addEventListener('mousemove', evt => {
+      if (this.isSpaceKeyDown && this.isMousedown) {
+        // 鼠标按下后的移动偏移量 = 当前鼠标的位置 - 鼠标按下的位置
+        // 当前拖动偏移量 = 上一次的偏移量 + 鼠标按下后的移动偏移量
+        this.offsetX = this.preOffsetX + (evt.clientX - this.mouseDownOffsetX)
+        this.offsetY = this.preOffsetY + (evt.clientY - this.mouseDownOffsetY)
+
+        this.renderStage()
+      }
+    })
 
     this.canvasElement.addEventListener('mousedown', evt => {
       if (this.isSpaceKeyDown) {
         setCursor(this, 'grabbing')
-        this.isMousedown = true
 
         // 记录鼠标按下时，鼠标的位置
-        this.mouseDownOffsetX = evt.x
-        this.mouseDownOffsetY = evt.y
+        this.mouseDownOffsetX = evt.clientX
+        this.mouseDownOffsetY = evt.clientY
       }
     })
 
@@ -196,10 +207,33 @@ export class Stage extends AbsEvent {
       // 记录鼠标抬起时，鼠标的位置
       this.preOffsetX = this.offsetX
       this.preOffsetY = this.offsetY
-      this.isMousedown = false
 
       if (this.isSpaceKeyDown) {
         setCursor(this, 'grab')
+      }
+    })
+
+    document.addEventListener('keydown', evt => {
+      if (evt.code === 'Space') {
+        if (this.isMousedown) {
+          return
+        }
+        if (!this.isSpaceKeyDown) {
+          this.isSpaceKeyDown = true
+          this.draggingMgr.disabledDragElement = true
+
+          setCursor(this, 'grab')
+        }
+      }
+    })
+    document.addEventListener('keyup', evt => {
+      if (evt.code === 'Space') {
+        if (this.isMousedown) {
+          return
+        }
+        this.isSpaceKeyDown = false
+        this.draggingMgr.disabledDragElement = false
+        setCursor(this, 'default')
       }
     })
 
@@ -213,7 +247,6 @@ export class Stage extends AbsEvent {
         }
         this.scale = parseFloat((this.scale + this.scaleStep).toFixed(2))
       } else {
-        // 画布缩小
         if (this.scale <= this.minScale) {
           return
         }
@@ -234,22 +267,6 @@ export class Stage extends AbsEvent {
       // 记录鼠标滚轮停止时，鼠标的位置
       this.preOffsetX = this.offsetX
       this.preOffsetY = this.offsetY
-    })
-
-    document.addEventListener('keydown', evt => {
-      if (evt.code === 'Space') {
-        if (!this.isSpaceKeyDown) {
-          this.isSpaceKeyDown = true
-
-          setCursor(this, 'grab')
-        }
-      }
-    })
-    document.addEventListener('keyup', evt => {
-      if (evt.code === 'Space') {
-        this.isSpaceKeyDown = false
-        setCursor(this, 'default')
-      }
     })
   }
 

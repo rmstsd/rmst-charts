@@ -10,6 +10,9 @@ export default class Draggable {
     this.stage = stage
 
     stage.canvasElement.addEventListener('mousedown', evt => {
+      if (this.disabledDragElement) {
+        return
+      }
       const x = evt.offsetX
       const y = evt.offsetY
       const hovered = findHover_v2(stage, x, y)
@@ -26,6 +29,8 @@ export default class Draggable {
   stage: Stage
 
   dragging = false
+
+  disabledDragElement = false
 
   dragStart(eventParameter: EventParameter) {
     const canvasElementRect = this.stage.canvasElement.getBoundingClientRect()
