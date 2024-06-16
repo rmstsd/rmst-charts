@@ -39,20 +39,23 @@ export class Stage extends AbsEvent {
 
   dpr = window.devicePixelRatio
 
+  translateX = 0
+  translateY = 0
+
+  prevTranslateX = 0 // 上一次的偏移量
+  prevTranslateY = 0
+
   mouseDownOffsetX = 0 // 鼠标按下时，鼠标的偏移量
   mouseDownOffsetY = 0
-  offsetX = 0 // 当前拖动偏移量
-  offsetY = 0
-  preOffsetX = 0 // 上一次的偏移量
-  preOffsetY = 0
-  mouseOffsetX = 0 // 鼠标滚轮滚动时，鼠标的偏移量
-  mouseOffsetY = 0
+
+  wheelMouseOffsetX = 0 // 鼠标滚轮滚动时，鼠标的偏移量
+  wheelMouseOffsetY = 0
 
   scale = 1
-  preScale = 1 // 上一次的缩放比例
-  scaleStep = 0.1 // 每次缩放的间隔
-  maxScale = 5 // 最大缩放比例
-  minScale = 0.2 // 最小缩放比例
+  preScale = 1
+  scaleStep = 0.1
+  maxScale = 5
+  minScale = 0.2
 
   defaultTransform: DOMMatrix2DInit
 
@@ -186,8 +189,8 @@ export class Stage extends AbsEvent {
       if (this.isSpaceKeyDown && this.isMousedown) {
         // 鼠标按下后的移动偏移量 = 当前鼠标的位置 - 鼠标按下的位置
         // 当前拖动偏移量 = 上一次的偏移量 + 鼠标按下后的移动偏移量
-        this.offsetX = this.preOffsetX + (evt.clientX - this.mouseDownOffsetX)
-        this.offsetY = this.preOffsetY + (evt.clientY - this.mouseDownOffsetY)
+        this.translateX = this.prevTranslateX + (evt.clientX - this.mouseDownOffsetX)
+        this.translateY = this.prevTranslateY + (evt.clientY - this.mouseDownOffsetY)
 
         this.renderStage()
       }
@@ -205,8 +208,8 @@ export class Stage extends AbsEvent {
 
     this.canvasElement.addEventListener('mouseup', evt => {
       // 记录鼠标抬起时，鼠标的位置
-      this.preOffsetX = this.offsetX
-      this.preOffsetY = this.offsetY
+      this.prevTranslateX = this.translateX
+      this.prevTranslateY = this.translateY
 
       if (this.isSpaceKeyDown) {
         setCursor(this, 'grab')
@@ -238,8 +241,8 @@ export class Stage extends AbsEvent {
     })
 
     this.canvasElement.addEventListener('wheel', event => {
-      this.mouseOffsetX = event.offsetX
-      this.mouseOffsetY = event.offsetY
+      this.wheelMouseOffsetX = event.offsetX
+      this.wheelMouseOffsetY = event.offsetY
 
       if (event.deltaY < 0) {
         if (this.scale >= this.maxScale) {
@@ -257,16 +260,16 @@ export class Stage extends AbsEvent {
       const zoomRatio = this.scale / this.preScale
 
       // 鼠标当前的位置 - 当前拖动偏移量
-      this.offsetX = this.mouseOffsetX - (this.mouseOffsetX - this.offsetX) * zoomRatio
-      this.offsetY = this.mouseOffsetY - (this.mouseOffsetY - this.offsetY) * zoomRatio
+      this.translateX = this.wheelMouseOffsetX - (this.wheelMouseOffsetX - this.translateX) * zoomRatio
+      this.translateY = this.wheelMouseOffsetY - (this.wheelMouseOffsetY - this.translateY) * zoomRatio
 
       this.renderStage()
 
       // 将当前的缩放比例保存为 上一次的缩放比例
       this.preScale = this.scale
       // 记录鼠标滚轮停止时，鼠标的位置
-      this.preOffsetX = this.offsetX
-      this.preOffsetY = this.offsetY
+      this.prevTranslateX = this.translateX
+      this.prevTranslateY = this.translateY
     })
   }
 

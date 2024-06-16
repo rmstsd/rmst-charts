@@ -22,7 +22,7 @@ export function findHover_v2(stage: Stage, x, y) {
 
   ctx.save()
 
-  ctx.translate(stage.offsetX, stage.offsetY)
+  ctx.translate(stage.translateX, stage.translateY)
   ctx.scale(stage.scale, stage.scale)
 
   detectHit(stage.children)
