@@ -12,11 +12,8 @@ export function drawStage(stage: Stage) {
 
   ctx.save()
 
-  // ctx.translate(stage.translateX, stage.translateY)
-  // ctx.scale(stage.scale, stage.scale)
-
-  ctx.translate(-stage.testTrans.translateX, -stage.testTrans.translateY)
-  ctx.scale(stage.testTrans.zoom, stage.testTrans.zoom)
+  ctx.translate(stage.translateX, stage.translateY)
+  ctx.scale(stage.scale, stage.scale)
 
   drawChildren(stage.children)
 

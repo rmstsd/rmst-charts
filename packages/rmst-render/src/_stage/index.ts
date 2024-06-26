@@ -12,14 +12,18 @@ import AbsEvent from '../AbsEvent'
 import { handleHoveredElement, setCursor, triggerStageHoveredStackMouseleave } from './hoveredElementHandler'
 
 interface IOption {
-  container: HTMLElement
+  container?: HTMLElement
+  enableSt?: boolean
 }
 
+const defaultOption: IOption = { enableSt: true }
 export class Stage extends AbsEvent {
   constructor(option: IOption) {
     super()
 
-    const { container } = option
+    const { container, enableSt } = { ...defaultOption, ...option }
+    this.enableSt = enableSt
+
     const stage = initStage(container, this)
 
     this.canvasElement = stage.canvasElement
@@ -29,14 +33,13 @@ export class Stage extends AbsEvent {
     this.ctx.textBaseline = 'hanging'
     this.ctx.font = `${14}px 微软雅黑`
 
-    this.defaultTransform = this.ctx.getTransform()
-
     this.draggingMgr = new Draggable(this)
 
     this.addStageHitEventListener()
-    // this.addStageTransformEventListener()
 
-    this.addTestStageTransformEventListener()
+    if (this.enableSt) {
+      this.addStageTransformEventListener()
+    }
   }
 
   testTrans = {
@@ -50,80 +53,11 @@ export class Stage extends AbsEvent {
     zoom: 1
   }
 
-  addTestStageTransformEventListener() {
-    this.canvasElement.addEventListener('mousedown', evt => {
-      // this.testTrans.isMousedown = true
-      // this.testTrans.offsetX = evt.offsetX
-      // this.testTrans.offsetY = evt.offsetY
-    })
-
-    this.canvasElement.addEventListener('mouseup', evt => {
-      this.testTrans.isMousedown = false
-
-      // this.testTrans.prevTranslateX = this.testTrans.translateX
-      // this.testTrans.prevTranslateY = this.testTrans.translateY
-    })
-
-    this.canvasElement.addEventListener('mousemove', evt => {
-      if (!this.testTrans.isMousedown) {
-        return
-      }
-      // this.testTrans.translateX = this.testTrans.prevTranslateX + evt.offsetX - this.testTrans.offsetX
-      // this.testTrans.translateY = this.testTrans.prevTranslateY + evt.offsetY - this.testTrans.offsetY
-
-      // this.renderStage()
-    })
-
-    this.canvasElement.addEventListener('wheel', evt => {
-      let scale
-      if (evt.deltaY > 0) {
-        scale = 0.9
-      } else {
-        scale = 1.1
-      }
-
-      this.testTrans.zoom *= scale
-
-      const P1 = { x: evt.offsetX + this.testTrans.translateX, y: evt.offsetY + this.testTrans.translateY }
-      console.log(P1)
-
-      const P2 = { x: P1.x * (1 / scale), y: P1.y * (1 / scale) }
-
-      P2.x = P2.x - P1.x
-      P2.y = P2.y - P1.y
-
-      this.testTrans.translateX += P2.x
-      this.testTrans.translateY += P2.y
-
-      this.renderStage()
-    })
-  }
-
   dpr = window.devicePixelRatio
 
   translateX = 0
   translateY = 0
-
-  prevTranslateX = 0 // 上一次的偏移量
-  prevTranslateY = 0
-
-  mouseDownOffsetX = 0 // 鼠标按下时，鼠标的偏移量
-  mouseDownOffsetY = 0
-
-  wheelMouseOffsetX = 0 // 鼠标滚轮滚动时，鼠标的偏移量
-  wheelMouseOffsetY = 0
-
   scale = 1
-  preScale = 1
-  scaleStep = 0.1
-  maxScale = 5
-  minScale = 0.2
-
-  defaultTransform: DOMMatrix2DInit
-
-  resetTransform() {
-    this.ctx.setTransform(this.defaultTransform)
-  }
 
   type: IShapeType = 'Stage'
 
@@ -141,6 +75,8 @@ export class Stage extends AbsEvent {
 
   isMousedown = false
   isSpaceKeyDown = false
+
+  enableSt = true // 开启平移 缩放
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -243,17 +179,14 @@ export class Stage extends AbsEvent {
     this.canvasElement.addEventListener('mousedown', evt => {
       this.isMousedown = true
     })
-    this.canvasElement.addEventListener('mouseup', evt => {
+    document.addEventListener('mouseup', evt => {
       this.isMousedown = false
     })
 
-    this.canvasElement.addEventListener('mousemove', evt => {
+    document.addEventListener('mousemove', evt => {
       if (this.isSpaceKeyDown && this.isMousedown) {
-        // 鼠标按下后的移动偏移量 = 当前鼠标的位置 - 鼠标按下的位置
-        // 当前拖动偏移量 = 上一次的偏移量 + 鼠标按下后的移动偏移量
-        this.translateX = this.prevTranslateX + (evt.clientX - this.mouseDownOffsetX)
-        this.translateY = this.prevTranslateY + (evt.clientY - this.mouseDownOffsetY)
-
+        this.translateX += evt.movementX
+        this.translateY += evt.movementY
         this.renderStage()
       }
     })
@@ -261,18 +194,10 @@ export class Stage extends AbsEvent {
     this.canvasElement.addEventListener('mousedown', evt => {
       if (this.isSpaceKeyDown) {
         setCursor(this, 'grabbing')
-
-        // 记录鼠标按下时，鼠标的位置
-        this.mouseDownOffsetX = evt.clientX
-        this.mouseDownOffsetY = evt.clientY
       }
     })
 
-    this.canvasElement.addEventListener('mouseup', evt => {
-      // 记录鼠标抬起时，鼠标的位置
-      this.prevTranslateX = this.translateX
-      this.prevTranslateY = this.translateY
-
+    document.addEventListener('mouseup', evt => {
       if (this.isSpaceKeyDown) {
         setCursor(this, 'grab')
       }
@@ -302,36 +227,26 @@ export class Stage extends AbsEvent {
       }
     })
 
-    this.canvasElement.addEventListener('wheel', event => {
-      this.wheelMouseOffsetX = event.offsetX
-      this.wheelMouseOffsetY = event.offsetY
+    this.canvasElement.addEventListener('wheel', evt => {
+      evt.preventDefault()
 
-      if (event.deltaY < 0) {
-        if (this.scale >= this.maxScale) {
-          return
-        }
-        this.scale = parseFloat((this.scale + this.scaleStep).toFixed(2))
+      const prevScale = this.scale
+
+      if (evt.deltaY < 0) {
+        this.scale *= 1.1
       } else {
-        if (this.scale <= this.minScale) {
-          return
-        }
-        this.scale = parseFloat((this.scale - this.scaleStep).toFixed(2))
+        this.scale *= 0.9
       }
 
-      // 缩放比
-      const zoomRatio = this.scale / this.preScale
+      const p2 = {
+        x: ((evt.offsetX - this.translateX) / prevScale) * (this.scale - prevScale),
+        y: ((evt.offsetY - this.translateY) / prevScale) * (this.scale - prevScale)
+      }
 
-      // 鼠标当前的位置 - 当前拖动偏移量
-      this.translateX = this.wheelMouseOffsetX - (this.wheelMouseOffsetX - this.translateX) * zoomRatio
-      this.translateY = this.wheelMouseOffsetY - (this.wheelMouseOffsetY - this.translateY) * zoomRatio
+      this.translateX -= p2.x
+      this.translateY -= p2.y
 
       this.renderStage()
-
-      // 将当前的缩放比例保存为 上一次的缩放比例
-      this.preScale = this.scale
-      // 记录鼠标滚轮停止时，鼠标的位置
-      this.prevTranslateX = this.translateX
-      this.prevTranslateY = this.translateY
     })
   }
 
