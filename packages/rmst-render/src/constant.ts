@@ -24,8 +24,6 @@ export const eventStageList: OnEventType[] = [
   'onclick'
 ]
 
-export const dpr = window.devicePixelRatio
-
 export const Noop = function () {}
 
 export const matrixMap = {

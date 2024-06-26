@@ -137,7 +137,7 @@ const ZIndex = () => {
         点击图形查看拾取情况, 拾取到了: <span className="font-bold">{name}</span>
       </span>
 
-      <div className="canvas-container" ref={canvasRef}></div>
+      <div className="canvas-container" ref={canvasRef} style={{ width: 1000, height: 700 }}></div>
     </div>
   )
 }

@@ -21,5 +21,7 @@ export type ICursor =
   | 'text'
   | 'wait'
   | 'help'
+  | 'grab'
+  | 'grabbing'
 
 export type ICoord = { x: number; y: number }

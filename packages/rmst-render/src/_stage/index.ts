@@ -2,41 +2,62 @@ import colorAlpha from 'color-alpha'
 
 import Draggable from '../Draggable'
 import { EventParameter, eventStageList } from '../constant'
-import { findToRoot, initStage, triggerEventHandlers } from './utils'
-import { resetSchedulerCount } from './scheduler'
-import { findHover, findHover_v2 } from './findHover'
+import { initStage, triggerEventHandlers } from './utils'
 import { mountStage } from './renderUi'
-import { ICursor, IShape, IShapeType } from '../type'
+import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
 import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
-import { isStage } from '../utils'
 import AbsEvent from '../AbsEvent'
+import { handleHoveredElement, setCursor, triggerStageHoveredStackMouseleave } from './hoveredElementHandler'
 
 interface IOption {
-  container: HTMLElement
+  container?: HTMLElement
+  enableSt?: boolean
 }
 
+const defaultOption: IOption = { enableSt: true }
 export class Stage extends AbsEvent {
   constructor(option: IOption) {
     super()
 
-    const { container } = option
-    const stage = initStage(container)
+    const { container, enableSt } = { ...defaultOption, ...option }
+    this.enableSt = enableSt
+
+    const stage = initStage(container, this)
 
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
 
-    this.defaultTransform = this.ctx.getTransform()
+    this.ctx.scale(this.dpr, this.dpr)
+    this.ctx.textBaseline = 'hanging'
+    this.ctx.font = `${14}px 微软雅黑`
 
-    this.addStageEventListener()
+    this.draggingMgr = new Draggable(this)
+
+    this.addStageHitEventListener()
+
+    if (this.enableSt) {
+      this.addStageTransformEventListener()
+    }
   }
 
-  defaultTransform: DOMMatrix2DInit
-
-  resetTransform() {
-    this.ctx.setTransform(this.defaultTransform)
+  testTrans = {
+    isMousedown: false,
+    offsetX: 0,
+    offsetY: 0,
+    translateX: 0,
+    translateY: 0,
+    prevTranslateX: 0,
+    prevTranslateY: 0,
+    zoom: 1
   }
+
+  dpr = window.devicePixelRatio
+
+  translateX = 0
+  translateY = 0
+  scale = 1
 
   type: IShapeType = 'Stage'
 
@@ -46,7 +67,16 @@ export class Stage extends AbsEvent {
   parent: null
   children: IShape[] = []
 
-  draggingMgr = new Draggable()
+  draggingMgr: Draggable
+
+  private isAsyncRenderTask = false
+
+  hoveredStack: IShape[] = []
+
+  isMousedown = false
+  isSpaceKeyDown = false
+
+  enableSt = true // 开启平移 缩放
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -72,9 +102,7 @@ export class Stage extends AbsEvent {
 
   removeAllShape() {
     this.dispose()
-
     this.children = []
-
     this.renderStage()
   }
 
@@ -83,59 +111,46 @@ export class Stage extends AbsEvent {
   append(...args: IShape[]): void
   append(...args) {
     const elements = args.flat(1)
-
     this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
-
     mountStage(this.children, this)
-
     this.renderStage()
   }
 
-  private isAsyncRenderTask = false
-
-  // 调度层 - 收集多次任务指令
   renderStage() {
     if (this.isAsyncRenderTask) {
       return
     }
-
     this.isAsyncRenderTask = true
 
     requestAnimationFrame(() => {
-      resetSchedulerCount()
-
       drawStage(this)
-
       this.isAsyncRenderTask = false
     })
   }
 
-  private hoveredStack: IShape[] = []
+  private addStageHitEventListener() {
+    this.canvasElement.addEventListener('mousemove', evt => {
+      if (this.draggingMgr.dragging) {
+        return
+      }
 
-  private addStageEventListener() {
-    this.canvasElement.onmousemove = evt => {
+      if (this.isSpaceKeyDown) {
+        return
+      }
+
+      handleHoveredElement(this, evt.offsetX, evt.offsetY)
+
       {
         // 触发舞台(canvas Element)的事件
         const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
         triggerEventHandlers(this, 'onmousemove', eventParameter)
       }
+    })
 
-      if (this.draggingMgr.dragging) {
-        return
-      }
-
-      this.handleHoveredElement(evt.offsetX, evt.offsetY)
-    }
-
-    this.canvasElement.onmouseleave = evt => {
+    this.canvasElement.addEventListener('mouseleave', evt => {
       if (this.hoveredStack.length) {
-        this.hoveredStack.toReversed().forEach(elementItem => {
-          const eventParameter: EventParameter = { target: elementItem, x: evt.offsetX, y: evt.offsetY }
-          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-        })
-
-        this.hoveredStack = []
+        triggerStageHoveredStackMouseleave(this, evt.offsetX, evt.offsetY)
       }
 
       {
@@ -143,95 +158,96 @@ export class Stage extends AbsEvent {
         const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
         this.onmouseleave(eventParameter)
       }
-    }
+    })
 
     eventStageList
       .filter(n => !['onmousemove', 'onmouseleave'].includes(n))
       .forEach(eventName => {
         this.canvasElement[eventName] = evt => {
+          const x = evt.offsetX
+          const y = evt.offsetY
           {
             // 触发舞台(canvas Element)的事件
-            const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
+            const eventParameter: EventParameter = { target: null, x, y, nativeEvent: evt }
             triggerEventHandlers(this, eventName, eventParameter)
           }
-
-          const hovered = findHover(this.ctx, this.children, evt.offsetX, evt.offsetY)
-          if (hovered) {
-            const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-            triggerEventHandlers(hovered, eventName, eventParameter)
-          }
         }
       })
+  }
 
-    // 拖拽
+  private addStageTransformEventListener() {
     this.canvasElement.addEventListener('mousedown', evt => {
-      const hovered = findHover_v2(this.ctx, this.children, evt.offsetX, evt.offsetY)
+      this.isMousedown = true
+    })
+    document.addEventListener('mouseup', evt => {
+      this.isMousedown = false
+    })
 
-      if (hovered) {
-        const eventParameter: EventParameter = { target: hovered, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-        this.draggingMgr.dragStart(eventParameter, this.canvasElement.getBoundingClientRect())
+    document.addEventListener('mousemove', evt => {
+      if (this.isSpaceKeyDown && this.isMousedown) {
+        this.translateX += evt.movementX
+        this.translateY += evt.movementY
+        this.renderStage()
       }
     })
-  }
 
-  private handleHoveredElement(x: number, y: number) {
-    const hovered = findHover(this.ctx, this.children, x, y)
+    this.canvasElement.addEventListener('mousedown', evt => {
+      if (this.isSpaceKeyDown) {
+        setCursor(this, 'grabbing')
+      }
+    })
 
-    if (hovered) {
-      this.setHoveredElementCursor(hovered)
+    document.addEventListener('mouseup', evt => {
+      if (this.isSpaceKeyDown) {
+        setCursor(this, 'grab')
+      }
+    })
 
-      const eventParameter: EventParameter = { target: hovered, x, y }
-      triggerEventHandlers(hovered, 'onmousemove', eventParameter)
+    document.addEventListener('keydown', evt => {
+      if (evt.code === 'Space') {
+        if (this.isMousedown) {
+          return
+        }
+        if (!this.isSpaceKeyDown) {
+          this.isSpaceKeyDown = true
+          this.draggingMgr.disabledDragElement = true
 
-      const stack = findToRoot(hovered)
-
-      for (let i = this.hoveredStack.length - 1; i >= 0; i--) {
-        const elementItem = this.hoveredStack[i]
-
-        if (!stack.includes(elementItem)) {
-          const eventParameter: EventParameter = { target: elementItem, x, y }
-          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-
-          this.hoveredStack.splice(i, 1)
+          setCursor(this, 'grab')
         }
       }
-
-      stack.forEach(item => {
-        if (!this.hoveredStack.includes(item)) {
-          const eventParameter: EventParameter = { target: item, x, y }
-          triggerEventHandlers(item, 'onmouseenter', eventParameter)
-
-          this.hoveredStack.push(item)
+    })
+    document.addEventListener('keyup', evt => {
+      if (evt.code === 'Space') {
+        if (this.isMousedown) {
+          return
         }
-      })
-    } else {
-      this.setCursor('default')
+        this.isSpaceKeyDown = false
+        this.draggingMgr.disabledDragElement = false
+        setCursor(this, 'default')
+      }
+    })
 
-      this.hoveredStack.toReversed().forEach(elementItem => {
-        const eventParameter: EventParameter = { target: elementItem, x, y }
-        triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-      })
+    this.canvasElement.addEventListener('wheel', evt => {
+      evt.preventDefault()
 
-      this.hoveredStack = []
-    }
-  }
+      const prevScale = this.scale
 
-  private setHoveredElementCursor(hovered: IShape) {
-    let hasCursorTarget = hovered
-    while (hasCursorTarget && !hasCursorTarget.data.cursor) {
-      const parent = hasCursorTarget.parent as unknown as IShape
-      if (isStage(parent)) {
-        break
+      if (evt.deltaY < 0) {
+        this.scale *= 1.1
+      } else {
+        this.scale *= 0.9
       }
 
-      hasCursorTarget = parent
-    }
-    const cursor = hasCursorTarget.data.cursor || 'auto'
-    this.setCursor(cursor)
-  }
+      const p2 = {
+        x: ((evt.offsetX - this.translateX) / prevScale) * (this.scale - prevScale),
+        y: ((evt.offsetY - this.translateY) / prevScale) * (this.scale - prevScale)
+      }
 
-  private setCursor(cursor: ICursor) {
-    this.canvasElement.style.setProperty('cursor', cursor)
+      this.translateX -= p2.x
+      this.translateY -= p2.y
+
+      this.renderStage()
+    })
   }
 
   dirtyRectUi: Rect

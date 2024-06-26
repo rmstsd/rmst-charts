@@ -25,7 +25,7 @@ export class ChartRoot {
 
     canvasContainer.appendChild(div)
 
-    this.stage = new Stage({ container: div })
+    this.stage = new Stage({ container: div, enableSt: false })
     this.wrapperContainer = div
 
     let isInner = false

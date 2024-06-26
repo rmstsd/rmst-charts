@@ -8,9 +8,16 @@ import { sortChildren } from './util'
 
 export function drawStage(stage: Stage) {
   const { ctx } = stage
-  ctx.clearRect(0, 0, stage.canvasElement.width, stage.canvasElement.height)
+  ctx.clearRect(0, 0, stage.canvasSize.width * stage.dpr, stage.canvasSize.height * stage.dpr)
+
+  ctx.save()
+
+  ctx.translate(stage.translateX, stage.translateY)
+  ctx.scale(stage.scale, stage.scale)
 
   drawChildren(stage.children)
+
+  ctx.restore()
 
   function drawChildren(list: IShape[]) {
     sortChildren(list).forEach(elementItem => {
@@ -21,7 +28,7 @@ export function drawStage(stage: Stage) {
       ctx.save()
 
       setCtxStyleProp(ctx, elementItem)
-      setCtxMatrix(ctx, elementItem)
+      // setCtxMatrix(ctx, elementItem)
 
       switch (elementItem.type) {
         case 'Circle': {

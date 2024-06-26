@@ -146,8 +146,20 @@ const Overview = () => {
 
     line4.animateCartoon({ percent: 1 }, { duration: 5000 })
 
+    const rectrt = new Rect({
+      x: stage.canvasSize.width - 100,
+      y: stage.canvasSize.height - 100,
+      width: 100,
+      height: 100,
+      fillStyle: 'orange'
+    })
+
+    stage.append(rectrt)
+
     setTimeout(() => {
       rects[0].animateCartoon({ fillStyle: 'red' })
+
+      rectrt.animateCartoon({ x: stage.canvasSize.width - 140, y: stage.canvasSize.height - 140, fillStyle: 'pink' })
     }, 1000)
   }, [])
 

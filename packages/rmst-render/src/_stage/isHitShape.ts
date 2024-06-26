@@ -1,38 +1,28 @@
-import { dpr } from '../constant'
-import { isBoxHidden, isGroup, isLine, isStage, isText } from '../utils'
-import { Text, measureText } from '..'
+import { isLine, isText } from '../utils'
+import { Stage, Text, measureText } from '..'
 import { IShape } from '../type'
 import { setCtxMatrix } from '../renderer/canvas'
 
-export function isHitShape(ctx: CanvasRenderingContext2D, elementItem: IShape, x: number, y: number) {
-  const hit_x = x * dpr
-  const hit_y = y * dpr
+export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: number) {
+  const { ctx, scale } = stage
+  const hit_x = x * stage.dpr
+  const hit_y = y * stage.dpr
 
-  ctx.save()
-
-  setCtxMatrix(ctx, elementItem)
-
-  if (isText(elementItem)) {
-    const isHit = isHitText(elementItem)
-    ctx.restore()
-    return isHit
-  }
-
-  if (!elementItem.path2D) {
-    ctx.restore()
-    return false
-  }
+  // setCtxMatrix(ctx, elementItem)
 
   ctx.lineWidth = elementItem.data.lineWidth + 5
 
-  if (isLine(elementItem) && !elementItem.data.closed) {
-    const isHit = isInStroke()
-    ctx.restore()
-    return isHit
+  let isHit = false
+  if (isText(elementItem)) {
+    isHit = isHitText(elementItem)
+  } else if (!elementItem.path2D) {
+    //
+  } else if (isLine(elementItem) && !elementItem.data.closed) {
+    isHit = isInStroke()
+  } else {
+    isHit = isInPath() || isInStroke()
   }
 
-  const isHit = isInPath() || isInStroke()
-  ctx.restore()
   return isHit
 
   function isInPath() {
@@ -45,31 +35,37 @@ export function isHitShape(ctx: CanvasRenderingContext2D, elementItem: IShape, x
 
   function isHitText(elementItem: Text): boolean {
     const { data } = elementItem
-    const { textWidth, textHeight } = measureText(data.content, data.fontSize)
+    let { textWidth, textHeight } = measureText(data.content, data.fontSize, stage.ctx)
+
+    const data_x = data.x
+    const data_y = data.y
+
+    const canvas_coord_x = (x - stage.translateX) / stage.scale
+    const canvas_coord_y = (y - stage.translateY) / stage.scale
 
     const halfWidth = textWidth / 2
 
     const textRect_x = (() => {
       if (data.textAlign === 'left') {
-        return data.x
+        return data_x
       }
       if (data.textAlign === 'center') {
-        return data.x - halfWidth
+        return data_x - halfWidth
       }
       if (data.textAlign === 'right') {
-        return data.x - textWidth
+        return data_x - textWidth
       }
     })()
 
     const textRect_y = (() => {
       if (data.textBaseline === 'middle') {
-        return data.y - textHeight / 2
+        return data_y - textHeight / 2
       }
-      return data.y
+      return data_y
     })()
 
-    const is_x = textRect_x <= x && x <= textRect_x + textWidth
-    const is_y = textRect_y <= y && y <= textRect_y + textHeight
+    const is_x = textRect_x <= canvas_coord_x && canvas_coord_x <= textRect_x + textWidth
+    const is_y = textRect_y <= canvas_coord_y && canvas_coord_y <= textRect_y + textHeight
 
     return is_x && is_y
   }

@@ -38,6 +38,7 @@ export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem: ISha
 }
 
 export function setCtxMatrix(ctx: CanvasRenderingContext2D, elementItem: AbstractUi) {
+  return
   const sb = elementItem.getBoundingRect()
 
   if (sb) {
