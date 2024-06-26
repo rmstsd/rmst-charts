@@ -221,7 +221,7 @@ class Matrix3 {
     return this
   }
 
-  scale(sx: number, sy: number) {
+  scale(sx: number, sy: number = sx) {
     this.premultiply(_m3.makeScale(sx, sy))
 
     return this

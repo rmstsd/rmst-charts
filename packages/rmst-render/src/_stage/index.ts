@@ -34,7 +34,69 @@ export class Stage extends AbsEvent {
     this.draggingMgr = new Draggable(this)
 
     this.addStageHitEventListener()
-    this.addStageTransformEventListener()
+    // this.addStageTransformEventListener()
+
+    this.addTestStageTransformEventListener()
+  }
+
+  testTrans = {
+    isMousedown: false,
+    offsetX: 0,
+    offsetY: 0,
+    translateX: 0,
+    translateY: 0,
+    prevTranslateX: 0,
+    prevTranslateY: 0,
+    zoom: 1
+  }
+
+  addTestStageTransformEventListener() {
+    this.canvasElement.addEventListener('mousedown', evt => {
+      // this.testTrans.isMousedown = true
+      // this.testTrans.offsetX = evt.offsetX
+      // this.testTrans.offsetY = evt.offsetY
+    })
+
+    this.canvasElement.addEventListener('mouseup', evt => {
+      this.testTrans.isMousedown = false
+
+      // this.testTrans.prevTranslateX = this.testTrans.translateX
+      // this.testTrans.prevTranslateY = this.testTrans.translateY
+    })
+
+    this.canvasElement.addEventListener('mousemove', evt => {
+      if (!this.testTrans.isMousedown) {
+        return
+      }
+      // this.testTrans.translateX = this.testTrans.prevTranslateX + evt.offsetX - this.testTrans.offsetX
+      // this.testTrans.translateY = this.testTrans.prevTranslateY + evt.offsetY - this.testTrans.offsetY
+
+      // this.renderStage()
+    })
+
+    this.canvasElement.addEventListener('wheel', evt => {
+      let scale
+      if (evt.deltaY > 0) {
+        scale = 0.9
+      } else {
+        scale = 1.1
+      }
+
+      this.testTrans.zoom *= scale
+
+      const P1 = { x: evt.offsetX + this.testTrans.translateX, y: evt.offsetY + this.testTrans.translateY }
+      console.log(P1)
+
+      const P2 = { x: P1.x * (1 / scale), y: P1.y * (1 / scale) }
+
+      P2.x = P2.x - P1.x
+      P2.y = P2.y - P1.y
+
+      this.testTrans.translateX += P2.x
+      this.testTrans.translateY += P2.y
+
+      this.renderStage()
+    })
   }
 
   dpr = window.devicePixelRatio

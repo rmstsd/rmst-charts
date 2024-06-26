@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Vector2 } from './core/Vector2'
 import { Matrix3 } from './core/Matrix3'
+import { Camera } from './core/Camera'
 
 const Mt = () => {
   useEffect(() => {
@@ -55,7 +56,7 @@ const Mt = () => {
     const rotate = 0.4
     const scale = new Vector2(1, 2)
 
-    matrixTest(ctx)
+    // matrixTest(ctx)
 
     function matrixTest(ctx: CanvasRenderingContext2D) {
       /* translate(),rotate(),scale()测试 */
@@ -94,6 +95,19 @@ const Mt = () => {
         worldVertives.push(x, y)
       }
       return worldVertives
+    }
+
+    const camera = new Camera(-200, -200, 2)
+
+    cameraTest()
+    function cameraTest() {
+      ctx.save()
+
+      camera.transformInvert(ctx)
+
+      ctx.fillRect(0, 0, 200, 100)
+
+      ctx.restore()
     }
 
     //
