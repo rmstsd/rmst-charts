@@ -42,17 +42,6 @@ export class Stage extends AbsEvent {
     }
   }
 
-  testTrans = {
-    isMousedown: false,
-    offsetX: 0,
-    offsetY: 0,
-    translateX: 0,
-    translateY: 0,
-    prevTranslateX: 0,
-    prevTranslateY: 0,
-    zoom: 1
-  }
-
   dpr = window.devicePixelRatio
 
   translateX = 0
@@ -69,7 +58,7 @@ export class Stage extends AbsEvent {
 
   draggingMgr: Draggable
 
-  private isAsyncRenderTask = false
+  private isDispatchedAsyncRenderTask = false
 
   hoveredStack: IShape[] = []
 
@@ -118,14 +107,14 @@ export class Stage extends AbsEvent {
   }
 
   renderStage() {
-    if (this.isAsyncRenderTask) {
+    if (this.isDispatchedAsyncRenderTask) {
       return
     }
-    this.isAsyncRenderTask = true
+    this.isDispatchedAsyncRenderTask = true
 
     requestAnimationFrame(() => {
       drawStage(this)
-      this.isAsyncRenderTask = false
+      this.isDispatchedAsyncRenderTask = false
     })
   }
 
@@ -176,17 +165,29 @@ export class Stage extends AbsEvent {
   }
 
   private addStageTransformEventListener() {
+    let prev = { x: 0, y: 0 }
     this.canvasElement.addEventListener('mousedown', evt => {
+      prev.x = evt.offsetX
+      prev.y = evt.offsetY
       this.isMousedown = true
     })
     document.addEventListener('mouseup', evt => {
       this.isMousedown = false
+      if (this.isSpaceKeyDown) {
+        setCursor(this, 'grab')
+      }
     })
 
     document.addEventListener('mousemove', evt => {
       if (this.isSpaceKeyDown && this.isMousedown) {
-        this.translateX += evt.movementX
-        this.translateY += evt.movementY
+        const dx = evt.offsetX - prev.x
+        const dy = evt.offsetY - prev.y
+
+        prev.x = evt.offsetX
+        prev.y = evt.offsetY
+
+        this.translateX += dx
+        this.translateY += dy
         this.renderStage()
       }
     })
@@ -194,12 +195,6 @@ export class Stage extends AbsEvent {
     this.canvasElement.addEventListener('mousedown', evt => {
       if (this.isSpaceKeyDown) {
         setCursor(this, 'grabbing')
-      }
-    })
-
-    document.addEventListener('mouseup', evt => {
-      if (this.isSpaceKeyDown) {
-        setCursor(this, 'grab')
       }
     })
 
@@ -218,9 +213,6 @@ export class Stage extends AbsEvent {
     })
     document.addEventListener('keyup', evt => {
       if (evt.code === 'Space') {
-        if (this.isMousedown) {
-          return
-        }
         this.isSpaceKeyDown = false
         this.draggingMgr.disabledDragElement = false
         setCursor(this, 'default')
@@ -231,6 +223,12 @@ export class Stage extends AbsEvent {
       evt.preventDefault()
 
       const prevScale = this.scale
+      const { x: canvasCoordX, y: canvasCoordY } = offsetToCanvas(evt.offsetX, evt.offsetY, {
+        tx: this.translateX,
+        ty: this.translateY,
+        scaleX: prevScale,
+        scaleY: prevScale
+      })
 
       if (evt.deltaY < 0) {
         this.scale *= 1.1
@@ -238,13 +236,11 @@ export class Stage extends AbsEvent {
         this.scale *= 0.9
       }
 
-      const p2 = {
-        x: ((evt.offsetX - this.translateX) / prevScale) * (this.scale - prevScale),
-        y: ((evt.offsetY - this.translateY) / prevScale) * (this.scale - prevScale)
-      }
+      const dx = -canvasCoordX * (this.scale - prevScale)
+      const dy = -canvasCoordY * (this.scale - prevScale)
 
-      this.translateX -= p2.x
-      this.translateY -= p2.y
+      this.translateX += dx
+      this.translateY += dy
 
       this.renderStage()
     })
@@ -273,4 +269,12 @@ export class Stage extends AbsEvent {
       this.dirtyRectUi.animateCartoon({ opacity: 0 }, { duration: 300 })
     }, 800)
   }
+}
+
+type Matrix = { tx: number; ty: number; scaleX: number; scaleY: number }
+function offsetToCanvas(ox: number, oy: number, matrix: Matrix) {
+  const x = (ox - matrix.tx) / matrix.scaleX
+  const y = (oy - matrix.ty) / matrix.scaleY
+
+  return { x, y }
 }
