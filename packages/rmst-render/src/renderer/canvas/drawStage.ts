@@ -11,7 +11,6 @@ export function drawStage(stage: Stage) {
   ctx.clearRect(0, 0, stage.canvasSize.width * stage.dpr, stage.canvasSize.height * stage.dpr)
 
   ctx.save()
-
   ctx.translate(stage.translateX, stage.translateY)
   ctx.scale(stage.scale, stage.scale)
 

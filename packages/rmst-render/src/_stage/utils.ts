@@ -4,11 +4,11 @@ import { IShape } from '../type'
 import { isStage } from '../utils'
 
 export function initStage(canvasContainer: HTMLElement, stage: Stage) {
-  const { offsetWidth, offsetHeight } = canvasContainer
+  const { clientWidth, clientHeight } = canvasContainer
 
   const canvasElement = document.createElement('canvas')
-  const canvasWidth = offsetWidth * stage.dpr
-  const canvasHeight = offsetHeight * stage.dpr
+  const canvasWidth = clientWidth * stage.dpr
+  const canvasHeight = clientHeight * stage.dpr
 
   canvasElement.width = canvasWidth
   canvasElement.height = canvasHeight
