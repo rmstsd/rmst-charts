@@ -9,7 +9,7 @@ export default function buildTime(): Plugin {
         dateStyle: 'short',
         timeStyle: 'short'
       })
-      const updatedCode = code.replace('__Build_Time__', JSON.stringify(dynamicValue))
+      const updatedCode = code.replace('__Build_Time__', JSON.stringify(dynamicValue.replace(/\//g, '-')))
 
       return {
         code: updatedCode,
