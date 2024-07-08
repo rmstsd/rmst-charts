@@ -1,7 +1,7 @@
 import colorAlpha from 'color-alpha'
 
 import Draggable from '../Draggable'
-import { EventParameter, eventStageList } from '../constant'
+import { EventParameter, eventStageList, OnEventType } from '../constant'
 import { initStage, triggerEventHandlers } from './utils'
 import { mountStage } from './renderUi'
 import { IShape, IShapeType } from '../type'
@@ -10,6 +10,7 @@ import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
 import AbsEvent from '../AbsEvent'
 import { handleHoveredElement, setCursor, triggerStageHoveredStackMouseleave } from './hoveredElementHandler'
+import { findHover_v2 } from './findHover'
 
 interface IOption {
   container?: HTMLElement
@@ -149,19 +150,55 @@ export class Stage extends AbsEvent {
       }
     })
 
-    eventStageList
-      .filter(n => !['onmousemove', 'onmouseleave'].includes(n))
-      .forEach(eventName => {
-        this.canvasElement[eventName] = evt => {
-          const x = evt.offsetX
-          const y = evt.offsetY
-          {
-            // 触发舞台(canvas Element)的事件
-            const eventParameter: EventParameter = { target: null, x, y, nativeEvent: evt }
-            triggerEventHandlers(this, eventName, eventParameter)
-          }
+    let mousedownObject = null
+    let mouseupObject = null
+
+    this.canvasElement.onclick = evt => {
+      const x = evt.offsetX
+      const y = evt.offsetY
+
+      const hovered = findHover_v2(this, x, y)
+      const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
+
+      if (hovered) {
+        if (mousedownObject === mouseupObject) {
+          triggerEventHandlers(hovered, 'onclick', eventParameter)
         }
-      })
+      }
+
+      // 触发舞台(canvas Element)的事件
+      triggerEventHandlers(this, 'onclick', eventParameter)
+    }
+
+    this.canvasElement.onmousedown = evt => {
+      const x = evt.offsetX
+      const y = evt.offsetY
+
+      const hovered = findHover_v2(this, x, y)
+      const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
+
+      if (hovered) {
+        mousedownObject = hovered
+        triggerEventHandlers(hovered, 'onmousedown', eventParameter)
+      }
+      // 触发舞台(canvas Element)的事件
+      triggerEventHandlers(this, 'onmousedown', eventParameter)
+    }
+
+    this.canvasElement.onmouseup = evt => {
+      const x = evt.offsetX
+      const y = evt.offsetY
+
+      const hovered = findHover_v2(this, x, y)
+      const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
+
+      if (hovered) {
+        mouseupObject = hovered
+        triggerEventHandlers(hovered, 'onmouseup', eventParameter)
+      }
+      // 触发舞台(canvas Element)的事件
+      triggerEventHandlers(this, 'onmouseup', eventParameter)
+    }
   }
 
   private addStageTransformEventListener() {
