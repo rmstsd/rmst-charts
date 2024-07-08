@@ -1,33 +1,40 @@
 import { Modal } from 'antd'
+import { isDev } from '.'
 
 const buildTimeMeta = document.querySelector('meta[name="buildTime"]')
 
-cu()
-const timer = setInterval(cu, 3000)
+;(() => {
+  if (isDev) {
+    return
+  }
 
-function cu() {
-  fetch('/', { cache: 'no-cache' }).then(res => {
-    res.text().then(t => {
-      const hostTime = buildTimeMeta.getAttribute('content')
+  cu()
+  const timer = setInterval(cu, 3000)
 
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(t, 'text/html')
-      const remoteTime = doc.querySelector('meta[name="buildTime"]').getAttribute('content')
+  function cu() {
+    fetch('/', { cache: 'no-cache' }).then(res => {
+      res.text().then(t => {
+        const hostTime = buildTimeMeta.getAttribute('content')
 
-      const hasUpdated = hostTime !== remoteTime
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(t, 'text/html')
+        const remoteTime = doc.querySelector('meta[name="buildTime"]').getAttribute('content')
 
-      if (hasUpdated) {
-        clearInterval(timer)
+        const hasUpdated = hostTime !== remoteTime
 
-        Modal.confirm({
-          title: '有更新, 是否刷新后体验最新版?',
-          okText: '刷新',
-          cancelText: '取消',
-          onOk() {
-            window.location.reload()
-          }
-        })
-      }
+        if (hasUpdated) {
+          clearInterval(timer)
+
+          Modal.confirm({
+            title: '有更新, 是否刷新后体验最新版?',
+            okText: '刷新',
+            cancelText: '取消',
+            onOk() {
+              window.location.reload()
+            }
+          })
+        }
+      })
     })
-  })
-}
+  }
+})()
