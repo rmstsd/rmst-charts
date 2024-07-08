@@ -4,6 +4,7 @@ import legacy from '@vitejs/plugin-legacy'
 import path from 'path'
 
 import buildTime from './vite-plugins/vite-plugin-build-time'
+import htmlMetaBuildTime from './vite-plugins/html-meta-build-time'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -24,6 +25,7 @@ export default defineConfig({
     legacy({
       targets: ['defaults', 'not IE 11']
     }),
-    buildTime()
+    buildTime(),
+    htmlMetaBuildTime()
   ]
 })
