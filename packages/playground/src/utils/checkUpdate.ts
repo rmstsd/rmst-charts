@@ -9,7 +9,7 @@ const buildTimeMeta = document.querySelector('meta[name="buildTime"]')
   }
 
   cu()
-  const timer = setInterval(cu, 3000)
+  const timer = setInterval(cu, 30000)
 
   function cu() {
     fetch('/', { cache: 'no-cache' }).then(res => {
