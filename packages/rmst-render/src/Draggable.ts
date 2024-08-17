@@ -69,7 +69,7 @@ export default class Draggable {
       this.prevClientX = evt.clientX
       this.prevClientY = evt.clientY
 
-      dndAttr(draggedTarget, dx / this.stage.scale, dy / this.stage.scale)
+      dndAttr(draggedTarget, dx / this.stage.camera.scale, dy / this.stage.camera.scale)
 
       draggedTarget.ondrag({ target: draggedTarget, x, y, dx, dy })
     }

@@ -18,12 +18,12 @@ r  a-1  b-3
 export function findHover_v2(stage: Stage, x, y) {
   const possible: IShape[] = []
 
-  const { ctx } = stage
+  const { ctx, camera } = stage
 
   ctx.save()
 
-  ctx.translate(stage.translateX, stage.translateY)
-  ctx.scale(stage.scale, stage.scale)
+  ctx.translate(camera.tx, camera.ty)
+  ctx.scale(camera.scale, camera.scale)
 
   detectHit(stage.children)
   ctx.restore()
