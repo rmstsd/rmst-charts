@@ -4,7 +4,7 @@ import { IShape } from '../type'
 import { setCtxMatrix } from '../renderer/canvas'
 
 export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: number) {
-  const { ctx, scale } = stage
+  const { ctx, camera } = stage
   const hit_x = x * stage.dpr
   const hit_y = y * stage.dpr
 
@@ -40,8 +40,8 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
     const data_x = data.x
     const data_y = data.y
 
-    const canvas_coord_x = (x - stage.translateX) / stage.scale
-    const canvas_coord_y = (y - stage.translateY) / stage.scale
+    const canvas_coord_x = (x - camera.tx) / camera.scale
+    const canvas_coord_y = (y - camera.ty) / camera.scale
 
     const halfWidth = textWidth / 2
 

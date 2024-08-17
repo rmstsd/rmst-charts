@@ -11,8 +11,9 @@ export function drawStage(stage: Stage) {
   ctx.clearRect(0, 0, stage.canvasSize.width * stage.dpr, stage.canvasSize.height * stage.dpr)
 
   ctx.save()
-  ctx.translate(stage.translateX, stage.translateY)
-  ctx.scale(stage.scale, stage.scale)
+  const { camera } = stage
+  ctx.translate(camera.tx, camera.ty)
+  ctx.scale(camera.scale, camera.scale)
 
   drawChildren(stage.children)
 

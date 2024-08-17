@@ -1,7 +1,7 @@
 import colorAlpha from 'color-alpha'
 
 import Draggable from '../Draggable'
-import { EventParameter, eventStageList, OnEventType } from '../constant'
+import { EventParameter } from '../constant'
 import { initStage, triggerEventHandlers } from './utils'
 import { mountStage } from './renderUi'
 import { IShape, IShapeType } from '../type'
@@ -9,8 +9,11 @@ import { drawStage } from '../renderer/canvas'
 import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
 import AbsEvent from '../AbsEvent'
-import { handleHoveredElement, setCursor, triggerStageHoveredStackMouseleave } from './hoveredElementHandler'
+import { handleHoveredElement, triggerStageHoveredStackMouseleave } from './hoveredElementHandler'
 import { findHover_v2 } from './findHover'
+import Camera from './camera'
+import { createLinePath2D } from '../utils'
+import drawRuler from './ruler'
 
 interface IOption {
   container?: HTMLElement
@@ -38,16 +41,16 @@ export class Stage extends AbsEvent {
 
     this.addStageHitEventListener()
 
+    this.camera = new Camera(this)
+
     if (this.enableSt) {
-      this.addStageTransformEventListener()
+      this.camera.addStageTransformEventListener()
     }
   }
 
-  dpr = window.devicePixelRatio
+  camera: Camera
 
-  translateX = 0
-  translateY = 0
-  scale = 1
+  dpr = window.devicePixelRatio
 
   type: IShapeType = 'Stage'
 
@@ -62,9 +65,6 @@ export class Stage extends AbsEvent {
   private isDispatchedAsyncRenderTask = false
 
   hoveredStack: IShape[] = []
-
-  isMousedown = false
-  isSpaceKeyDown = false
 
   enableSt = true // 开启平移 缩放
 
@@ -115,6 +115,11 @@ export class Stage extends AbsEvent {
 
     requestAnimationFrame(() => {
       drawStage(this)
+
+      if (this.enableSt) {
+        drawRuler(this)
+      }
+
       this.isDispatchedAsyncRenderTask = false
     })
   }
@@ -125,7 +130,7 @@ export class Stage extends AbsEvent {
         return
       }
 
-      if (this.isSpaceKeyDown) {
+      if (this.camera.isSpaceKeyDown) {
         return
       }
 
@@ -201,88 +206,6 @@ export class Stage extends AbsEvent {
     }
   }
 
-  private addStageTransformEventListener() {
-    let prev = { x: 0, y: 0 }
-    this.canvasElement.addEventListener('mousedown', evt => {
-      prev.x = evt.offsetX
-      prev.y = evt.offsetY
-      this.isMousedown = true
-    })
-    document.addEventListener('mouseup', evt => {
-      this.isMousedown = false
-      if (this.isSpaceKeyDown) {
-        setCursor(this, 'grab')
-      }
-    })
-
-    document.addEventListener('mousemove', evt => {
-      if (this.isSpaceKeyDown && this.isMousedown) {
-        const dx = evt.offsetX - prev.x
-        const dy = evt.offsetY - prev.y
-
-        prev.x = evt.offsetX
-        prev.y = evt.offsetY
-
-        this.translateX += dx
-        this.translateY += dy
-        this.renderStage()
-      }
-    })
-
-    this.canvasElement.addEventListener('mousedown', evt => {
-      if (this.isSpaceKeyDown) {
-        setCursor(this, 'grabbing')
-      }
-    })
-
-    document.addEventListener('keydown', evt => {
-      if (evt.code === 'Space') {
-        if (this.isMousedown) {
-          return
-        }
-        if (!this.isSpaceKeyDown) {
-          this.isSpaceKeyDown = true
-          this.draggingMgr.disabledDragElement = true
-
-          setCursor(this, 'grab')
-        }
-      }
-    })
-    document.addEventListener('keyup', evt => {
-      if (evt.code === 'Space') {
-        this.isSpaceKeyDown = false
-        this.draggingMgr.disabledDragElement = false
-        setCursor(this, 'default')
-      }
-    })
-
-    this.canvasElement.addEventListener('wheel', evt => {
-      evt.preventDefault()
-
-      const prevScale = this.scale
-      const { x: canvasCoordX, y: canvasCoordY } = offsetToCanvas(evt.offsetX, evt.offsetY, {
-        tx: this.translateX,
-        ty: this.translateY,
-        scaleX: prevScale,
-        scaleY: prevScale
-      })
-
-      if (evt.deltaY < 0) {
-        this.scale *= 1.1
-      } else {
-        this.scale *= 0.9
-      }
-
-      const dx = -canvasCoordX * (this.scale - prevScale)
-      const dy = -canvasCoordY * (this.scale - prevScale)
-
-      this.translateX += dx
-      this.translateY += dy
-
-      this.renderStage()
-    })
-  }
-
   dirtyRectUi: Rect
   timer
   renderDirtyRectUi(sb: BoundingRect) {
@@ -306,12 +229,4 @@ export class Stage extends AbsEvent {
       this.dirtyRectUi.animateCartoon({ opacity: 0 }, { duration: 300 })
     }, 800)
   }
-}
-
-type Matrix = { tx: number; ty: number; scaleX: number; scaleY: number }
-function offsetToCanvas(ox: number, oy: number, matrix: Matrix) {
-  const x = (ox - matrix.tx) / matrix.scaleX
-  const y = (oy - matrix.ty) / matrix.scaleY
-
-  return { x, y }
 }
