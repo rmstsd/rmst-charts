@@ -15,15 +15,6 @@ export type EventParameter = {
 }
 export type Handler = (parameter: EventParameter) => void
 
-export const eventStageList: OnEventType[] = [
-  'onmouseleave',
-  'onmouseenter',
-  'onmousemove',
-  'onmousedown',
-  'onmouseup',
-  'onclick'
-]
-
 export const Noop = function () {}
 
 export const matrixMap = {

@@ -7,11 +7,10 @@ import { setCirclePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 import { sortChildren } from './util'
 
 export function drawStage(stage: Stage) {
-  const { ctx } = stage
+  const { ctx, camera } = stage
   ctx.clearRect(0, 0, stage.canvasSize.width * stage.dpr, stage.canvasSize.height * stage.dpr)
 
   ctx.save()
-  const { camera } = stage
   ctx.translate(camera.tx, camera.ty)
   ctx.scale(camera.scale, camera.scale)
 

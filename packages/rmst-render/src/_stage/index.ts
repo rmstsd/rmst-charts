@@ -1,19 +1,17 @@
 import colorAlpha from 'color-alpha'
 
-import Draggable from '../Draggable'
-import { EventParameter } from '../constant'
-import { initStage, triggerEventHandlers } from './utils'
+import Draggable from './controller/Draggable'
+import { initStage } from './utils'
 import { mountStage } from './renderUi'
 import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
 import Rect from '../shape/Rect'
 import { BoundingRect } from '../shape/AbstractUi'
 import AbsEvent from '../AbsEvent'
-import { handleHoveredElement, triggerStageHoveredStackMouseleave } from './hoveredElementHandler'
-import { findHover_v2 } from './findHover'
-import Camera from './camera'
-import { createLinePath2D } from '../utils'
+import Camera from './controller/Camera'
 import drawRuler from './ruler'
+import EventDispatcher from './controller/EventDispatcher'
+import { findHover_v2 } from './findHover'
 
 interface IOption {
   container?: HTMLElement
@@ -26,9 +24,8 @@ export class Stage extends AbsEvent {
     super()
 
     const { container, enableSt } = { ...defaultOption, ...option }
-    this.enableSt = enableSt
 
-    const stage = initStage(container, this)
+    const stage = initStage(container, this.dpr)
 
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
@@ -38,17 +35,15 @@ export class Stage extends AbsEvent {
     this.ctx.font = `${14}px 微软雅黑`
 
     this.draggingMgr = new Draggable(this)
+    this.camera = new Camera(this, enableSt)
+    this.eventDispatcher = new EventDispatcher(this)
 
-    this.addStageHitEventListener()
-
-    this.camera = new Camera(this)
-
-    if (this.enableSt) {
-      this.camera.addStageTransformEventListener()
-    }
+    this.removeStageListener = this.addStageListener()
   }
 
   camera: Camera
+  draggingMgr: Draggable
+  eventDispatcher: EventDispatcher
 
   dpr = window.devicePixelRatio
 
@@ -60,13 +55,8 @@ export class Stage extends AbsEvent {
   parent: null
   children: IShape[] = []
 
-  draggingMgr: Draggable
-
   private isDispatchedAsyncRenderTask = false
-
-  hoveredStack: IShape[] = []
-
-  enableSt = true // 开启平移 缩放
+  removeStageListener: Function
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -112,102 +102,79 @@ export class Stage extends AbsEvent {
       return
     }
     this.isDispatchedAsyncRenderTask = true
-
     requestAnimationFrame(() => {
       drawStage(this)
-
-      if (this.enableSt) {
+      if (this.camera.enable) {
         drawRuler(this)
       }
-
       this.isDispatchedAsyncRenderTask = false
     })
   }
 
-  private addStageHitEventListener() {
-    this.canvasElement.addEventListener('mousemove', evt => {
-      if (this.draggingMgr.dragging) {
-        return
-      }
+  private addStageListener() {
+    const { camera, draggingMgr, eventDispatcher } = this
 
-      if (this.camera.isSpaceKeyDown) {
-        return
-      }
+    const canvasMousedown = (evt: MouseEvent) => {
+      const hovered = findHover_v2(this, evt.offsetX, evt.offsetY)
 
-      handleHoveredElement(this, evt.offsetX, evt.offsetY)
-
-      {
-        // 触发舞台(canvas Element)的事件
-        const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-        triggerEventHandlers(this, 'onmousemove', eventParameter)
-      }
-    })
-
-    this.canvasElement.addEventListener('mouseleave', evt => {
-      if (this.hoveredStack.length) {
-        triggerStageHoveredStackMouseleave(this, evt.offsetX, evt.offsetY)
-      }
-
-      {
-        // 触发舞台(canvas Element)的事件
-        const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-        this.onmouseleave(eventParameter)
-      }
-    })
-
-    let mousedownObject = null
-    let mouseupObject = null
-
-    this.canvasElement.onclick = evt => {
-      const x = evt.offsetX
-      const y = evt.offsetY
-
-      const hovered = findHover_v2(this, x, y)
-      const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
-
-      if (hovered) {
-        if (mousedownObject === mouseupObject) {
-          triggerEventHandlers(hovered, 'onclick', eventParameter)
-        }
-      }
-
-      // 触发舞台(canvas Element)的事件
-      triggerEventHandlers(this, 'onclick', eventParameter)
+      camera.mousedown(evt)
+      draggingMgr.mousedown(evt, hovered)
+      eventDispatcher.mousedown(evt, hovered)
+    }
+    const canvasMouseleave = evt => {
+      eventDispatcher.mouseleave(evt)
     }
 
-    this.canvasElement.onmousedown = evt => {
-      const x = evt.offsetX
-      const y = evt.offsetY
-
-      const hovered = findHover_v2(this, x, y)
-      const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
-
-      if (hovered) {
-        mousedownObject = hovered
-        triggerEventHandlers(hovered, 'onmousedown', eventParameter)
-      }
-      // 触发舞台(canvas Element)的事件
-      triggerEventHandlers(this, 'onmousedown', eventParameter)
+    const canvasWheel = evt => {
+      camera.wheel(evt)
     }
 
-    this.canvasElement.onmouseup = evt => {
-      const x = evt.offsetX
-      const y = evt.offsetY
+    const documentMouseup = evt => {
+      camera.mouseup(evt)
 
-      const hovered = findHover_v2(this, x, y)
-      const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
-
-      if (hovered) {
-        mouseupObject = hovered
-        triggerEventHandlers(hovered, 'onmouseup', eventParameter)
+      if (evt.target === this.canvasElement) {
+        eventDispatcher.mouseup(evt)
       }
-      // 触发舞台(canvas Element)的事件
-      triggerEventHandlers(this, 'onmouseup', eventParameter)
+    }
+
+    const documentMousemove = evt => {
+      camera.mousemove(evt)
+
+      if (evt.target === this.canvasElement) {
+        eventDispatcher.mousemove(evt)
+      }
+    }
+
+    const documentKeydown = evt => {
+      camera.keydown(evt)
+    }
+    const documentKeyup = evt => {
+      camera.keyup(evt)
+    }
+
+    this.canvasElement.addEventListener('mousedown', canvasMousedown)
+    this.canvasElement.addEventListener('mouseleave', canvasMouseleave)
+    this.canvasElement.addEventListener('wheel', canvasWheel)
+
+    document.addEventListener('mouseup', documentMouseup)
+    document.addEventListener('mousemove', documentMousemove)
+    document.addEventListener('keydown', documentKeydown)
+    document.addEventListener('keyup', documentKeyup)
+
+    return () => {
+      this.canvasElement.removeEventListener('mousedown', canvasMousedown)
+      this.canvasElement.removeEventListener('mouseleave', canvasMouseleave)
+      this.canvasElement.removeEventListener('wheel', canvasWheel)
+
+      document.removeEventListener('mouseup', documentMouseup)
+      document.removeEventListener('mousemove', documentMousemove)
+      document.removeEventListener('keydown', documentKeydown)
+      document.removeEventListener('keyup', documentKeyup)
     }
   }
 
-  dirtyRectUi: Rect
-  timer
+  private dirtyRectUi: Rect
+  private timer
   renderDirtyRectUi(sb: BoundingRect) {
     if (!this.dirtyRectUi) {
       this.dirtyRectUi = new Rect({

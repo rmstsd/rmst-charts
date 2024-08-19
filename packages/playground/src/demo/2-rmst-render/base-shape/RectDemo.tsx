@@ -92,6 +92,19 @@ const RectDemo = () => {
     inn_cir.onmouseleave = () => {
       console.log('inn_cir leave')
     }
+
+    rects[1].onclick = () => {
+      console.log('click')
+    }
+    rects[1].onmousedown = () => {
+      console.log('onmousedown')
+    }
+    rects[1].onmouseup = () => {
+      console.log('onmouseup')
+    }
+    rects[1].onmousemove = () => {
+      // console.log('onmousemove')
+    }
   }, [])
 
   return (
