@@ -1,36 +1,31 @@
-import { EventParameter } from './constant'
-import { isGroup, isLine, isStage } from './utils/isShape'
-import { convertToNormalPoints, pointToFlatArray } from './utils'
-import { IShape } from './type'
-import { Stage } from '.'
-import { findHover_v2 } from './_stage/findHover'
+import { EventParameter } from '../../constant'
+import { isGroup, isLine, isStage } from '../../utils/isShape'
+import { convertToNormalPoints, pointToFlatArray } from '../../utils'
+import { IShape } from '../../type'
+import { Stage } from '../..'
 
 export default class Draggable {
-  constructor(stage: Stage) {
-    this.stage = stage
+  constructor(private stage: Stage) {}
 
-    stage.canvasElement.addEventListener('mousedown', evt => {
-      if (this.disabledDragElement) {
-        return
-      }
-      const x = evt.offsetX
-      const y = evt.offsetY
-      const hovered = findHover_v2(stage, x, y)
-
-      if (hovered) {
-        const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
-        this.dragStart(eventParameter)
-      }
-    })
-  }
   private prevClientX = 0
   private prevClientY = 0
-
-  stage: Stage
 
   dragging = false
 
   disabledDragElement = false
+
+  mousedown(evt, hovered: IShape) {
+    if (this.disabledDragElement) {
+      return
+    }
+    const x = evt.offsetX
+    const y = evt.offsetY
+
+    if (hovered) {
+      const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
+      this.dragStart(eventParameter)
+    }
+  }
 
   dragStart(eventParameter: EventParameter) {
     const canvasElementRect = this.stage.canvasElement.getBoundingClientRect()

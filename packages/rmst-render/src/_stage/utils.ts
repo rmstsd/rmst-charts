@@ -3,12 +3,12 @@ import { EventParameter, EventType, OnEventType, supportBubblesEventType } from 
 import { IShape } from '../type'
 import { isStage } from '../utils'
 
-export function initStage(canvasContainer: HTMLElement, stage: Stage) {
+export function initStage(canvasContainer: HTMLElement, dpr: number) {
   const { clientWidth, clientHeight } = canvasContainer
 
   const canvasElement = document.createElement('canvas')
-  const canvasWidth = clientWidth * stage.dpr
-  const canvasHeight = clientHeight * stage.dpr
+  const canvasWidth = clientWidth * dpr
+  const canvasHeight = clientHeight * dpr
 
   canvasElement.width = canvasWidth
   canvasElement.height = canvasHeight
