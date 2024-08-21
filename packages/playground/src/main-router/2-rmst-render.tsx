@@ -4,6 +4,7 @@ import DogHead from '@/components/DogHead'
 import { IRouteObject } from './router'
 
 import Overview from '@/demo/2-rmst-render/a_overview'
+import Debug from '@/demo/2-rmst-render/a_overview/debug'
 
 import RectDemo from '@/demo/2-rmst-render/base-shape/RectDemo'
 import Circle from '@/demo/2-rmst-render/base-shape/CircleDemo'
@@ -45,7 +46,10 @@ const rmstRenderRouteConfig: IRouteObject = {
       path: 'overview',
       element: <LayoutOutlet />,
       uiConfig: { title: 'overview' },
-      children: [{ path: 'index', element: <Overview />, uiConfig: { title: 'overview' } }]
+      children: [
+        { path: 'index', element: <Overview />, uiConfig: { title: 'overview' } },
+        { path: 'debug', element: <Debug /> }
+      ]
     },
     {
       path: 'base',
