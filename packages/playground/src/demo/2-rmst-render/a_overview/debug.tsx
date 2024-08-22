@@ -17,8 +17,8 @@ const Debug = () => {
 
     /* 矩形的模型矩阵数据 */
     const position = new Vector2(150, 150)
-    const rotate = deg2rad(30)
-    const scale = new Vector2(1, 1)
+    const rotate = deg2rad(45)
+    const scale = new Vector2(2, 2)
 
     // 创建一个正方形
     const vertices = [100, 100, 200, 100, 200, 200, 100, 200]
