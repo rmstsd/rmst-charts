@@ -24,7 +24,7 @@
     "color-rgba": "^2.4.0",
     "core-js": "^3.34.0",
     "gl-matrix": "^3.4.3",
-    "leafer-ui": "1.0.0-rc.22",
+    "leafer-ui": "1.0.2",
     "mathjs": "^13.0.3",
     "perfect-freehand": "^1.2.0",
     "react": "^18.2.0",

@@ -49,7 +49,7 @@ const LayoutView = () => {
   return (
     <Layout style={{ height: '100%', backgroundColor: 'white' }}>
       <Layout.Header
-        className="flex h-[50px] leading-[50px] shadow relative z-10"
+        className="flex h-[50px] leading-[50px] shadow relative z-10 overflow-auto"
         style={{ backgroundColor: 'transparent', padding: 0 }}
       >
         <div className="text-center shrink-0" style={{ width: 220, fontSize: 24 }}>
