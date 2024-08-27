@@ -53,3 +53,10 @@ body,
     left: 100px;
   }
 }
+
+/* 移动端媒体查询样式 */
+@media screen and (max-width: 768px) {
+  aside {
+    display: none;
+  }
+}

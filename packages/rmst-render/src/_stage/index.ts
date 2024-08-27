@@ -16,6 +16,7 @@ import { findHover_v2 } from './findHover'
 interface IOption {
   container?: HTMLElement
   enableSt?: boolean
+  dpr?: number
 }
 
 const defaultOption: IOption = { enableSt: true }
@@ -23,7 +24,9 @@ export class Stage extends AbsEvent {
   constructor(option: IOption) {
     super()
 
-    const { container, enableSt } = { ...defaultOption, ...option }
+    const { container, enableSt, dpr } = { ...defaultOption, ...option }
+
+    this.dpr = dpr ?? window.devicePixelRatio
 
     const stage = initStage(container, this.dpr)
 
@@ -45,7 +48,7 @@ export class Stage extends AbsEvent {
   draggingMgr: Draggable
   eventDispatcher: EventDispatcher
 
-  dpr = window.devicePixelRatio
+  dpr = 1
 
   type: IShapeType = 'Stage'
 
