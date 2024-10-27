@@ -1,14 +1,19 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Stage, Rect, Circle, Line } from 'rmst-render'
 
 const Overview = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
+  const [stage, setStage] = useState<Stage>()
 
   useEffect(() => {
     const stage = new Stage({
-      container: canvasRef.current
+      container: canvasRef.current,
+      enableRuler: true
     })
+
+    setStage(stage)
+
     const shadowColor = '#aaa'
 
     const rects = [
@@ -165,6 +170,21 @@ const Overview = () => {
 
   return (
     <div>
+      <header className="flex gap-4">
+        <button onClick={() => stage.camera.zoomIn()}>放大</button>
+        <button onClick={() => stage.camera.zoomOut()}>缩小</button>
+        <button
+          onClick={() => {
+            stage.enableRuler = !stage.enableRuler
+            stage.render()
+          }}
+        >
+          显示/隐藏 标尺
+        </button>
+      </header>
+
+      <hr />
+
       <div className="canvas-container" ref={canvasRef}></div>
     </div>
   )

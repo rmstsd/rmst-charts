@@ -1,30 +1,35 @@
-import colorAlpha from 'color-alpha'
-
 import Draggable from './controller/Draggable'
 import { initStage } from './utils'
 import { mountStage } from './renderUi'
 import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
-import Rect from '../shape/Rect'
-import { BoundingRect } from '../shape/AbstractUi'
 import AbsEvent from '../AbsEvent'
 import Camera from './controller/Camera'
-import drawRuler from './ruler'
 import EventDispatcher from './controller/EventDispatcher'
 import { findHover_v2 } from './findHover'
+import Ruler from './controller/Ruler'
+import DirtyRect from './controller/DirtyRect'
 
 interface IOption {
   container?: HTMLElement
-  enableSt?: boolean
   dpr?: number
+
+  enableCamera?: boolean
+  enableRuler?: boolean
 }
 
-const defaultOption: IOption = { enableSt: true }
+const defaultOption: IOption = {
+  enableCamera: true,
+  enableRuler: false
+}
+
 export class Stage extends AbsEvent {
   constructor(option: IOption) {
     super()
 
-    const { container, enableSt, dpr } = { ...defaultOption, ...option }
+    const mergedOptions = { ...defaultOption, ...option }
+    const { container, dpr, enableCamera, enableRuler } = mergedOptions
+    this.enableRuler = enableRuler
 
     this.dpr = dpr ?? window.devicePixelRatio
 
@@ -38,15 +43,23 @@ export class Stage extends AbsEvent {
     this.ctx.font = `${14}px 微软雅黑`
 
     this.draggingMgr = new Draggable(this)
-    this.camera = new Camera(this, enableSt)
+    this.camera = new Camera(this, enableCamera)
+    this.ruler = new Ruler(this)
     this.eventDispatcher = new EventDispatcher(this)
+
+    this.dirtyRect = new DirtyRect(this)
 
     this.removeStageListener = this.addStageListener()
   }
 
   camera: Camera
+  ruler: Ruler
   draggingMgr: Draggable
   eventDispatcher: EventDispatcher
+
+  dirtyRect: DirtyRect
+
+  enableRuler: boolean
 
   dpr = 1
 
@@ -69,7 +82,7 @@ export class Stage extends AbsEvent {
     return { width: this.canvasElement.offsetWidth, height: this.canvasElement.offsetHeight }
   }
 
-  dispose() {
+  public dispose() {
     const disposeAll = (children: IShape[]) => {
       children.forEach(item => {
         item.dispose()
@@ -83,32 +96,32 @@ export class Stage extends AbsEvent {
     disposeAll(this.children)
   }
 
-  removeAllShape() {
+  public removeAllShape() {
     this.dispose()
     this.children = []
-    this.renderStage()
+    this.render()
   }
 
-  append(p: IShape[]): void
-  append(p: IShape): void
-  append(...args: IShape[]): void
-  append(...args) {
+  public append(p: IShape[]): void
+  public append(p: IShape): void
+  public append(...args: IShape[]): void
+  public append(...args) {
     const elements = args.flat(1)
     this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
     mountStage(this.children, this)
-    this.renderStage()
+    this.render()
   }
 
-  renderStage() {
+  public render() {
     if (this.isDispatchedAsyncRenderTask) {
       return
     }
     this.isDispatchedAsyncRenderTask = true
     requestAnimationFrame(() => {
       drawStage(this)
-      if (this.camera.enable) {
-        drawRuler(this)
+      if (this.enableRuler) {
+        this.ruler.drawRuler()
       }
       this.isDispatchedAsyncRenderTask = false
     })
@@ -174,29 +187,5 @@ export class Stage extends AbsEvent {
       document.removeEventListener('keydown', documentKeydown)
       document.removeEventListener('keyup', documentKeyup)
     }
-  }
-
-  private dirtyRectUi: Rect
-  private timer
-  renderDirtyRectUi(sb: BoundingRect) {
-    if (!this.dirtyRectUi) {
-      this.dirtyRectUi = new Rect({
-        ...sb,
-        fillStyle: colorAlpha('red', 0.2),
-        strokeStyle: 'red',
-        opacity: 0,
-        pointerEvents: 'none'
-      })
-      this.append(this.dirtyRectUi)
-    }
-
-    clearTimeout(this.timer)
-
-    this.dirtyRectUi.attr(sb)
-    this.dirtyRectUi.animateCartoon({ opacity: 1 }, { duration: 300 })
-
-    this.timer = setTimeout(() => {
-      this.dirtyRectUi.animateCartoon({ opacity: 0 }, { duration: 300 })
-    }, 800)
   }
 }

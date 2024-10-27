@@ -28,7 +28,7 @@ export class Group extends AbstractUi<any> {
 
     mountStage(this.children, this.stage)
 
-    this.stage?.renderStage()
+    this.stage?.render()
   }
 }
 

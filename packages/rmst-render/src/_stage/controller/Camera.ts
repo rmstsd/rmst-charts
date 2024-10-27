@@ -1,11 +1,11 @@
-import { Stage } from '../..'
+import { ICoord, Stage } from '../..'
 import { setCursor } from '../hoveredElementHandler'
 
 const minScale = 0.1
 const maxScale = 5
 
 export default class Camera {
-  constructor(private stage: Stage, public enable: boolean) {}
+  constructor(private stage: Stage, private enable: boolean) {}
 
   tx = 0
   ty = 0
@@ -42,7 +42,7 @@ export default class Camera {
       this.tx += dx
       this.ty += dy
 
-      this.stage.renderStage()
+      this.stage.render()
     }
   }
 
@@ -86,27 +86,47 @@ export default class Camera {
 
     evt.preventDefault()
 
+    const center = { x: evt.offsetX, y: evt.offsetY }
+    if (evt.deltaY < 0) {
+      this.zoomIn(center)
+    } else {
+      this.zoomOut(center)
+    }
+  }
+
+  public setZoom(scale: number, center?: ICoord) {
     const prevScale = this.scale
-    const { x: canvasCoordX, y: canvasCoordY } = offsetToCanvas(evt.offsetX, evt.offsetY, {
+
+    if (!center) {
+      center = this.stage.center
+    }
+
+    const { x: canvas_x, y: canvas_y } = offsetToCanvas(center.x, center.y, {
       tx: this.tx,
       ty: this.ty,
       scaleX: prevScale,
       scaleY: prevScale
     })
 
-    if (evt.deltaY < 0) {
-      this.scale = Math.min(this.scale * 1.1, maxScale)
-    } else {
-      this.scale = Math.max(this.scale * 0.9, minScale)
-    }
+    this.scale = scale
 
-    const dx = -canvasCoordX * (this.scale - prevScale)
-    const dy = -canvasCoordY * (this.scale - prevScale)
+    const dx = -canvas_x * (this.scale - prevScale)
+    const dy = -canvas_y * (this.scale - prevScale)
 
     this.tx += dx
     this.ty += dy
 
-    this.stage.renderStage()
+    this.stage.render()
+  }
+
+  public zoomIn(center?: ICoord) {
+    const nv = Math.min(this.scale * 1.1, maxScale)
+    this.setZoom(nv, center)
+  }
+
+  public zoomOut(center?: ICoord) {
+    const nv = Math.max(this.scale * 0.9, minScale)
+    this.setZoom(nv, center)
   }
 }
 
