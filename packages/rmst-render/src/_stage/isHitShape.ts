@@ -40,8 +40,8 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
     const data_x = data.x
     const data_y = data.y
 
-    const canvas_coord_x = (x - camera.tx) / camera.scale
-    const canvas_coord_y = (y - camera.ty) / camera.scale
+    const canvas_coord_x = (x - camera.tx) / camera.zoom
+    const canvas_coord_y = (y - camera.ty) / camera.zoom
 
     const halfWidth = textWidth / 2
 

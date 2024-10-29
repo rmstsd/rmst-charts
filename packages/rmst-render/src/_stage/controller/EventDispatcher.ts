@@ -31,7 +31,7 @@ export default class EventDispatcher {
     if (draggingMgr.dragging) {
       return
     }
-    if (camera.isSpaceKeyDown) {
+    if (camera.isSpacePressing) {
       return
     }
 

@@ -141,10 +141,6 @@ export class Stage extends AbsEvent {
       eventDispatcher.mouseleave(evt)
     }
 
-    const canvasWheel = evt => {
-      camera.wheel(evt)
-    }
-
     const documentMouseup = evt => {
       camera.mouseup(evt)
 
@@ -161,31 +157,18 @@ export class Stage extends AbsEvent {
       }
     }
 
-    const documentKeydown = evt => {
-      camera.keydown(evt)
-    }
-    const documentKeyup = evt => {
-      camera.keyup(evt)
-    }
-
     this.canvasElement.addEventListener('mousedown', canvasMousedown)
     this.canvasElement.addEventListener('mouseleave', canvasMouseleave)
-    this.canvasElement.addEventListener('wheel', canvasWheel)
 
     document.addEventListener('mouseup', documentMouseup)
     document.addEventListener('mousemove', documentMousemove)
-    document.addEventListener('keydown', documentKeydown)
-    document.addEventListener('keyup', documentKeyup)
 
     return () => {
       this.canvasElement.removeEventListener('mousedown', canvasMousedown)
       this.canvasElement.removeEventListener('mouseleave', canvasMouseleave)
-      this.canvasElement.removeEventListener('wheel', canvasWheel)
 
       document.removeEventListener('mouseup', documentMouseup)
       document.removeEventListener('mousemove', documentMousemove)
-      document.removeEventListener('keydown', documentKeydown)
-      document.removeEventListener('keyup', documentKeyup)
     }
   }
 }

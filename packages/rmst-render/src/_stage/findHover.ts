@@ -23,7 +23,7 @@ export function findHover_v2(stage: Stage, x, y) {
   ctx.save()
 
   ctx.translate(camera.tx, camera.ty)
-  ctx.scale(camera.scale, camera.scale)
+  ctx.scale(camera.zoom, camera.zoom)
 
   detectHit(stage.children)
   ctx.restore()

@@ -6,9 +6,9 @@ class Ruler {
   drawRuler() {
     const { ctx, camera, canvasSize } = this.stage
 
-    const gap = getGap(camera.scale)
-    const xTicksData = calcTicks(canvasSize.width, camera.tx, camera.scale, gap)
-    const yTicksData = calcTicks(canvasSize.height, camera.ty, camera.scale, gap)
+    const gap = getGap(camera.zoom)
+    const xTicksData = calcTicks(canvasSize.width, camera.tx, camera.zoom, gap)
+    const yTicksData = calcTicks(canvasSize.height, camera.ty, camera.zoom, gap)
 
     for (const item of xTicksData) {
       const path2d = createLinePath2D({ points: [item.coord, 0, item.coord, tickSize], percent: 1 })
