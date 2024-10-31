@@ -6,7 +6,6 @@ import { drawStage } from '../renderer/canvas'
 import AbsEvent from '../AbsEvent'
 import Camera from './controller/Camera'
 import EventDispatcher from './controller/EventDispatcher'
-import { findHover_v2 } from './findHover'
 import Ruler from './controller/Ruler'
 import DirtyRect from './controller/DirtyRect'
 
@@ -131,7 +130,7 @@ export class Stage extends AbsEvent {
     const { camera, draggingMgr, eventDispatcher } = this
 
     const canvasMousedown = (evt: MouseEvent) => {
-      const hovered = findHover_v2(this, evt.offsetX, evt.offsetY)
+      const hovered = this.eventDispatcher.hovered
 
       camera.mousedown(evt)
       draggingMgr.mousedown(evt, hovered)

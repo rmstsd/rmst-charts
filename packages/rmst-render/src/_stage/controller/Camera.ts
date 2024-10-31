@@ -72,7 +72,7 @@ export default class Camera {
 
     this.stage.draggingMgr.disabledDragElement = this.isSpacePressing ? true : false
 
-    setCursor(this.stage, this.isSpacePressing ? 'grabbing' : 'default')
+    setCursor(this.stage, this.isSpacePressing ? 'grab' : 'default')
   }
 
   public tx = 0

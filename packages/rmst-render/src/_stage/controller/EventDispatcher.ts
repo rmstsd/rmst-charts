@@ -12,6 +12,10 @@ export default class EventDispatcher {
 
   hoveredStack: IShape[] = []
 
+  get hovered() {
+    return this.hoveredStack.at(-1) || null
+  }
+
   mousedown(evt, hovered: IShape) {
     const x = evt.offsetX
     const y = evt.offsetY
@@ -26,6 +30,10 @@ export default class EventDispatcher {
     triggerEventHandlers(this.stage, 'onmousedown', eventParameter)
   }
 
+  pervHoverd: IShape | null = null
+
+  selected: IShape[] = []
+
   mousemove(evt) {
     const { draggingMgr, camera } = this.stage
     if (draggingMgr.dragging) {
@@ -37,6 +45,19 @@ export default class EventDispatcher {
 
     const hovered = findHover_v2(this.stage, evt.offsetX, evt.offsetY)
     handleHoveredElement(this.stage, hovered, evt.offsetX, evt.offsetY)
+
+  
+
+    if(!this.selected.includes(hovered)) {}
+    this.selected
+    if (this.pervHoverd !== hovered) {
+      if (this.pervHoverd) {
+        this.pervHoverd.attr({ strokeStyle: 'red', lineWidth: 2 })
+      }
+      if (hovered) hovered.attr({ strokeStyle: 'orange', lineWidth: 2 })
+    }
+
+    this.pervHoverd = hovered
 
     {
       // 触发舞台(canvas Element)的事件

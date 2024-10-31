@@ -82,6 +82,10 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
   stage: Stage
 
+  clone() {
+    
+  }
+
   pinTop() {
     if (!this.parent) {
       console.warn('还没有被 append')
