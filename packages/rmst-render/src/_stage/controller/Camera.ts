@@ -42,11 +42,13 @@ export class Camera {
 
       evt.preventDefault()
 
-      const center = { x: evt.offsetX, y: evt.offsetY }
-      if (evt.deltaY < 0) {
-        this.zoomIn(center)
-      } else {
-        this.zoomOut(center)
+      if (this.isCtrlPressing) {
+        const center = { x: evt.offsetX, y: evt.offsetY }
+        if (evt.deltaY < 0) {
+          this.zoomIn(center)
+        } else {
+          this.zoomOut(center)
+        }
       }
     }
     this.stage.canvasElement.addEventListener('wheel', canvasWheel)
@@ -59,27 +61,42 @@ export class Camera {
   private isCtrlPressing = false
   private isAltPressing = false
 
-  onCtrlToggle() {
+  // 画布平移中
+  public isDragging = false
+
+  private onCtrlToggle() {
     console.log('ctrl toggle', this.isCtrlPressing)
   }
 
-  onAltToggle() {
+  private onAltToggle() {
     console.log('Alt toggle', this.isAltPressing)
   }
 
-  onSpaceToggle() {
+  private onSpaceToggle() {
     console.log('space toggle', this.isSpacePressing)
+    if (!this.enable) {
+      return
+    }
+
+    if (this.isDragging) {
+      return
+    }
 
     this.stage.draggingMgr.disabledDragElement = this.isSpacePressing ? true : false
+    const hovered = this.stage.eventDispatcher.hovered
 
-    setCursor(this.stage, this.isSpacePressing ? 'grab' : 'default')
+    if (this.isSpacePressing) {
+      this.stage.selectedMgr.onElementLeave(hovered)
+      setCursor(this.stage, 'grab')
+    } else {
+      this.stage.selectedMgr.onElementEnter(hovered)
+      this.stage.eventDispatcher.setHoveredCursor()
+    }
   }
 
   public tx = 0
   public ty = 0
   public zoom = 1
-
-  isMousedown = false
 
   private prevClient = { x: 0, y: 0 }
 
@@ -88,18 +105,18 @@ export class Camera {
       return
     }
 
-    if (!this.isSpacePressing) {
-      return
-    }
+    if (this.isSpacePressing) {
+      this.isDragging = true
+      setCursor(this.stage, 'grabbing')
 
-    evt.preventDefault()
-    this.prevClient.x = evt.clientX
-    this.prevClient.y = evt.clientY
-    this.isMousedown = true
+      evt.preventDefault()
+      this.prevClient.x = evt.clientX
+      this.prevClient.y = evt.clientY
+    }
   }
 
   mousemove(evt) {
-    if (this.isSpacePressing && this.isMousedown) {
+    if (this.isDragging) {
       const dx = evt.clientX - this.prevClient.x
       const dy = evt.clientY - this.prevClient.y
 
@@ -111,8 +128,9 @@ export class Camera {
   }
 
   mouseup(evt) {
-    this.isMousedown = false
+    this.isDragging = false
     if (this.isSpacePressing) {
+      setCursor(this.stage, 'grab')
     }
   }
 

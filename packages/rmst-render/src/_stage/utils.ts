@@ -112,20 +112,6 @@ export function compareZLevel(possible) {
   return ans
 }
 
-export const setHoveredCursor = (stage: Stage, hovered: IShape) => {
-  let hasCursorTarget = hovered
-  while (hasCursorTarget && !hasCursorTarget.data.cursor) {
-    const parent = hasCursorTarget.parent as unknown as IShape
-    if (isStage(parent)) {
-      break
-    }
-
-    hasCursorTarget = parent
-  }
-  const cursor = hasCursorTarget.data.cursor || 'auto'
-  setCursor(stage, cursor)
-}
-
 export const setCursor = (stage: Stage, cursor: ICursor) => {
   stage.canvasElement.style.setProperty('cursor', cursor)
 }

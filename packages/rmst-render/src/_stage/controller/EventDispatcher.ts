@@ -1,8 +1,9 @@
-import { IShape, Stage } from '../..'
+import { IShape, isStage, Stage } from '../..'
 import { EventParameter } from '../../constant'
 import { findHover_v2 } from '../findHover'
-import { setCursor, setHoveredCursor, findToRoot, triggerEventHandlers } from '../utils'
+import { setCursor, findToRoot, triggerEventHandlers } from '../utils'
 
+// 事件分发器 包含父子关系的事件分发
 export class EventDispatcher {
   constructor(private stage: Stage) {}
 
@@ -11,9 +12,9 @@ export class EventDispatcher {
 
   private hoveredStack: IShape[] = []
 
-  get hovered() {
-    return this.hoveredStack.at(-1) || null
-  }
+  public hovered: IShape = null
+  
+  private prevHovered: IShape = null
 
   mousedown(evt, hovered: IShape) {
     const x = evt.offsetX
@@ -31,15 +32,20 @@ export class EventDispatcher {
 
   mousemove(evt) {
     const { draggingMgr, camera } = this.stage
+
+    this.hovered = findHover_v2(this.stage, evt.offsetX, evt.offsetY)
+
     if (draggingMgr.dragging) {
       return
     }
-    if (camera.isSpacePressing) {
+
+    if (camera.isSpacePressing || camera.isDragging) {
       return
     }
 
-    const hovered = findHover_v2(this.stage, evt.offsetX, evt.offsetY)
-    this.handleHoveredElement(this.stage, hovered, evt.offsetX, evt.offsetY)
+    this.stage.selectedMgr.onHoveredChange(this.hovered)
+
+    this.handleHoveredStack(evt.offsetX, evt.offsetY)
 
     {
       // 触发舞台(canvas Element)的事件
@@ -83,53 +89,66 @@ export class EventDispatcher {
     triggerEventHandlers(this.stage, 'onclick', eventParameter)
   }
 
-  private handleHoveredElement = (stage: Stage, hovered: IShape, x: number, y: number) => {
-    const eventDispatcher = this
+  private handleHoveredStack(x: number, y: number) {
+    const { hovered } = this
+
+    this.setHoveredCursor()
 
     if (hovered) {
-      setHoveredCursor(stage, hovered)
-
       const eventParameter: EventParameter = { target: hovered, x, y }
       triggerEventHandlers(hovered, 'onmousemove', eventParameter)
 
       const stack = findToRoot(hovered)
 
-      for (let i = eventDispatcher.hoveredStack.length - 1; i >= 0; i--) {
-        const elementItem = eventDispatcher.hoveredStack[i]
+      for (let i = this.hoveredStack.length - 1; i >= 0; i--) {
+        const elementItem = this.hoveredStack[i]
 
         if (!stack.includes(elementItem)) {
           const eventParameter: EventParameter = { target: elementItem, x, y }
           triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
 
-          stage.selectedMgr.onElementLeave(elementItem)
-
-          eventDispatcher.hoveredStack.splice(i, 1)
+          this.hoveredStack.splice(i, 1)
         }
       }
 
       stack.forEach(elementItem => {
-        if (!eventDispatcher.hoveredStack.includes(elementItem)) {
+        if (!this.hoveredStack.includes(elementItem)) {
           const eventParameter: EventParameter = { target: elementItem, x, y }
           triggerEventHandlers(elementItem, 'onmouseenter', eventParameter)
 
-          eventDispatcher.hoveredStack.push(elementItem)
-
-          stage.selectedMgr.onElementEnter(elementItem)
+          this.hoveredStack.push(elementItem)
         }
       })
     } else {
-      setCursor(stage, 'default')
-
       this.triggerHoveredStackMouseleave(x, y)
     }
+  }
+
+  setHoveredCursor() {
+    const { stage, hovered } = this
+
+    if (!hovered) {
+      setCursor(stage, 'default')
+      return
+    }
+
+    let hasCursorTarget = hovered
+    while (hasCursorTarget && !hasCursorTarget.data.cursor) {
+      const parent = hasCursorTarget.parent as unknown as IShape
+      if (isStage(parent)) {
+        break
+      }
+
+      hasCursorTarget = parent
+    }
+    const cursor = hasCursorTarget.data.cursor || 'auto'
+    setCursor(stage, cursor)
   }
 
   private triggerHoveredStackMouseleave(x, y) {
     this.hoveredStack.toReversed().forEach(elementItem => {
       const eventParameter: EventParameter = { target: elementItem, x, y }
       triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-
-      this.stage.selectedMgr.onElementLeave(elementItem)
     })
 
     this.hoveredStack = []

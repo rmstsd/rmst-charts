@@ -13,9 +13,23 @@ export class SelectedMgr {
 
   private hovered = new Set<IShape>()
 
+  private prevHovered = null
+
   constructor(private stage: Stage) {}
 
+  public onHoveredChange(hovered) {
+    if(hovered) {
+      if (this.hovered === this.prevHovered) {
+          
+      }
+    }
+  }
+
   public onElementEnter(target: IShape) {
+    if (!target) {
+      return
+    }
+
     const cloned: IShape = target.clone()
 
     this.wm.set(target, cloned)
@@ -28,8 +42,11 @@ export class SelectedMgr {
 
   public onElementLeave(target) {
     const sel = this.wm.get(target)
-    this.hovered.delete(sel)
-    sel.remove()
+    if (sel) {
+      this.wm.delete(target)
+      this.hovered.delete(sel)
+      sel.remove()
+    }
   }
 
   public updateFlo(target) {

@@ -170,7 +170,7 @@ const Overview = () => {
 
   return (
     <div>
-      <header className="flex gap-4">
+      <header className="flex items-center gap-4">
         <button onClick={() => stage.camera.zoomIn()}>放大</button>
         <button onClick={() => stage.camera.zoomOut()}>缩小</button>
         <button
@@ -181,6 +181,8 @@ const Overview = () => {
         >
           显示/隐藏 标尺
         </button>
+        <span className="border p-1 border-gray-400">空格 + 左键 平移</span>
+        <span className="border p-1 border-gray-400">ctrl + 滚轮 缩放</span>
       </header>
 
       <hr />
