@@ -3,7 +3,7 @@ import { BoundingRect, clipRect, Rect, Stage } from '../..'
 import { createRectPath2D, setCirclePath2D, setCtxStyleProp } from '../../renderer/canvas'
 
 // 未完全实现
-class DirtyRect {
+export class DirtyRect {
   constructor(private stage: Stage) {}
 
   private dirtyRectUi: Rect
@@ -32,8 +32,6 @@ class DirtyRect {
     }, 800)
   }
 }
-
-export default DirtyRect
 
 // 左上角 和 右下角 的坐标
 function isRectCollision(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {

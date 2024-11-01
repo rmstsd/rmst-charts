@@ -1,13 +1,10 @@
-import Draggable from './controller/Draggable'
+import { Draggable, Camera, Ruler, DirtyRect, SelectedMgr, EventDispatcher } from './controller'
+
 import { initStage } from './utils'
 import { mountStage } from './renderUi'
 import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
 import AbsEvent from '../AbsEvent'
-import Camera from './controller/Camera'
-import EventDispatcher from './controller/EventDispatcher'
-import Ruler from './controller/Ruler'
-import DirtyRect from './controller/DirtyRect'
 
 interface IOption {
   container?: HTMLElement
@@ -45,6 +42,7 @@ export class Stage extends AbsEvent {
     this.camera = new Camera(this, enableCamera)
     this.ruler = new Ruler(this)
     this.eventDispatcher = new EventDispatcher(this)
+    this.selectedMgr = new SelectedMgr(this)
 
     this.dirtyRect = new DirtyRect(this)
 
@@ -55,6 +53,7 @@ export class Stage extends AbsEvent {
   ruler: Ruler
   draggingMgr: Draggable
   eventDispatcher: EventDispatcher
+  selectedMgr: SelectedMgr
 
   dirtyRect: DirtyRect
 

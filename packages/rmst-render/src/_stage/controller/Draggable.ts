@@ -4,7 +4,7 @@ import { convertToNormalPoints, pointToFlatArray } from '../../utils'
 import { IShape } from '../../type'
 import { Stage } from '../..'
 
-export default class Draggable {
+export class Draggable {
   constructor(private stage: Stage) {}
 
   private prevClientX = 0

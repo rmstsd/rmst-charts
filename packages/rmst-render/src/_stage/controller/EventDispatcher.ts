@@ -1,16 +1,15 @@
 import { IShape, Stage } from '../..'
 import { EventParameter } from '../../constant'
 import { findHover_v2 } from '../findHover'
-import { handleHoveredElement, triggerHoveredStackMouseleave } from '../hoveredElementHandler'
-import { triggerEventHandlers } from '../utils'
+import { setCursor, setHoveredCursor, findToRoot, triggerEventHandlers } from '../utils'
 
-export default class EventDispatcher {
+export class EventDispatcher {
   constructor(private stage: Stage) {}
 
   private mousedownObject: IShape | null = null
   private mouseupObject: IShape | null = null
 
-  hoveredStack: IShape[] = []
+  private hoveredStack: IShape[] = []
 
   get hovered() {
     return this.hoveredStack.at(-1) || null
@@ -30,10 +29,6 @@ export default class EventDispatcher {
     triggerEventHandlers(this.stage, 'onmousedown', eventParameter)
   }
 
-  pervHoverd: IShape | null = null
-
-  selected: IShape[] = []
-
   mousemove(evt) {
     const { draggingMgr, camera } = this.stage
     if (draggingMgr.dragging) {
@@ -44,20 +39,7 @@ export default class EventDispatcher {
     }
 
     const hovered = findHover_v2(this.stage, evt.offsetX, evt.offsetY)
-    handleHoveredElement(this.stage, hovered, evt.offsetX, evt.offsetY)
-
-  
-
-    if(!this.selected.includes(hovered)) {}
-    this.selected
-    if (this.pervHoverd !== hovered) {
-      if (this.pervHoverd) {
-        this.pervHoverd.attr({ strokeStyle: 'red', lineWidth: 2 })
-      }
-      if (hovered) hovered.attr({ strokeStyle: 'orange', lineWidth: 2 })
-    }
-
-    this.pervHoverd = hovered
+    this.handleHoveredElement(this.stage, hovered, evt.offsetX, evt.offsetY)
 
     {
       // 触发舞台(canvas Element)的事件
@@ -69,7 +51,7 @@ export default class EventDispatcher {
   mouseleave(evt) {
     const { stage } = this
     if (this.hoveredStack.length) {
-      triggerHoveredStackMouseleave(this, evt.offsetX, evt.offsetY)
+      this.triggerHoveredStackMouseleave(evt.offsetX, evt.offsetY)
     }
 
     {
@@ -99,5 +81,57 @@ export default class EventDispatcher {
     }
 
     triggerEventHandlers(this.stage, 'onclick', eventParameter)
+  }
+
+  private handleHoveredElement = (stage: Stage, hovered: IShape, x: number, y: number) => {
+    const eventDispatcher = this
+
+    if (hovered) {
+      setHoveredCursor(stage, hovered)
+
+      const eventParameter: EventParameter = { target: hovered, x, y }
+      triggerEventHandlers(hovered, 'onmousemove', eventParameter)
+
+      const stack = findToRoot(hovered)
+
+      for (let i = eventDispatcher.hoveredStack.length - 1; i >= 0; i--) {
+        const elementItem = eventDispatcher.hoveredStack[i]
+
+        if (!stack.includes(elementItem)) {
+          const eventParameter: EventParameter = { target: elementItem, x, y }
+          triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
+
+          stage.selectedMgr.onElementLeave(elementItem)
+
+          eventDispatcher.hoveredStack.splice(i, 1)
+        }
+      }
+
+      stack.forEach(elementItem => {
+        if (!eventDispatcher.hoveredStack.includes(elementItem)) {
+          const eventParameter: EventParameter = { target: elementItem, x, y }
+          triggerEventHandlers(elementItem, 'onmouseenter', eventParameter)
+
+          eventDispatcher.hoveredStack.push(elementItem)
+
+          stage.selectedMgr.onElementEnter(elementItem)
+        }
+      })
+    } else {
+      setCursor(stage, 'default')
+
+      this.triggerHoveredStackMouseleave(x, y)
+    }
+  }
+
+  private triggerHoveredStackMouseleave(x, y) {
+    this.hoveredStack.toReversed().forEach(elementItem => {
+      const eventParameter: EventParameter = { target: elementItem, x, y }
+      triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
+
+      this.stage.selectedMgr.onElementLeave(elementItem)
+    })
+
+    this.hoveredStack = []
   }
 }

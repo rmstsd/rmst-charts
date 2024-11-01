@@ -83,7 +83,8 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
   stage: Stage
 
   clone() {
-    
+    const Class = this.constructor as new (...args) => AbstractUi<T>
+    return new Class(structuredClone(this.data))
   }
 
   pinTop() {
@@ -118,6 +119,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
         break
     }
 
+    this.stage?.selectedMgr.updateFlo(this)
     this.stage?.render()
   }
 

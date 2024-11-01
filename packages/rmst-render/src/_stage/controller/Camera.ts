@@ -1,10 +1,10 @@
 import { ICoord, Stage } from '../..'
-import { setCursor } from '../hoveredElementHandler'
+import { setCursor } from '../utils'
 
 const minScale = 0.1
 const maxScale = 5
 
-export default class Camera {
+export class Camera {
   constructor(private stage: Stage, private enable: boolean) {
     const documentKeydown = (evt: KeyboardEvent) => {
       const prevIsCtrlPressing = this.isCtrlPressing

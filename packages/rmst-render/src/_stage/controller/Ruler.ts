@@ -1,6 +1,6 @@
 import { createLinePath2D, Stage } from '../..'
 
-class Ruler {
+export class Ruler {
   constructor(private stage: Stage) {}
 
   drawRuler() {
@@ -37,8 +37,6 @@ class Ruler {
     }
   }
 }
-
-export default Ruler
 
 const tickSize = 12
 const tickColor = '#444'
