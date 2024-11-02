@@ -1,10 +1,10 @@
 import { EventParameter } from '../../constant'
-import { isGroup, isLine, isStage } from '../../utils/isShape'
+import { isBoxHidden, isGroup, isLine, isStage } from '../../utils/isShape'
 import { convertToNormalPoints, pointToFlatArray } from '../../utils'
 import { IShape } from '../../type'
 import { Stage } from '../..'
 
-export default class Draggable {
+export class Draggable {
   constructor(private stage: Stage) {}
 
   private prevClientX = 0
@@ -64,7 +64,7 @@ export default class Draggable {
       this.prevClientX = evt.clientX
       this.prevClientY = evt.clientY
 
-      dndAttr(draggedTarget, dx / this.stage.camera.scale, dy / this.stage.camera.scale)
+      dndAttr(draggedTarget, dx / this.stage.camera.zoom, dy / this.stage.camera.zoom)
 
       draggedTarget.ondrag({ target: draggedTarget, x, y, dx, dy })
     }
@@ -98,11 +98,22 @@ function dndAttr(draggedTarget: IShape, dx: number, dy: number) {
 }
 
 function setShapeCoord(target: IShape, dx: number, dy: number) {
-  if (isGroup(target)) {
+  const isGroupEl = isGroup(target)
+  const isBox = isBoxHidden(target)
+
+  if (isGroupEl || isBox) {
+    if (isBox) {
+      updateCoord(target)
+    }
+
     target.children.forEach(item => {
       setShapeCoord(item, dx, dy)
     })
   } else {
+    updateCoord(target)
+  }
+
+  function updateCoord(target) {
     if (isLine(target)) {
       const c = convertToNormalPoints(target.data.points)
       c.forEach(item => {

@@ -19,13 +19,14 @@ import { isInnerRect, stClone } from './utils'
 export class ChartRoot {
   constructor(canvasContainer: HTMLElement) {
     const div = document.createElement('div')
+    div.classList.add('chart-root')
     div.style.setProperty('position', 'relative')
     div.style.setProperty('width', '100%')
     div.style.setProperty('height', '100%')
 
     canvasContainer.appendChild(div)
 
-    this.stage = new Stage({ container: div, enableSt: false })
+    this.stage = new Stage({ container: div, enableCamera: false })
     this.wrapperContainer = div
 
     let isInner = false

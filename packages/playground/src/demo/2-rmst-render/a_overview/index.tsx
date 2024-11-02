@@ -1,20 +1,25 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { Stage, Rect, Circle, Line } from 'rmst-render'
+import { Stage, Rect, Circle, Line, BoxHidden } from 'rmst-render'
 
 const Overview = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
+  const [stage, setStage] = useState<Stage>()
 
   useEffect(() => {
     const stage = new Stage({
-      container: canvasRef.current
+      container: canvasRef.current,
+      enableRuler: true
     })
+
+    setStage(stage)
+
     const shadowColor = '#aaa'
 
     const rects = [
       new Rect({
         x: 20,
-        y: 10,
+        y: 20,
         width: 80,
         height: 80,
         fillStyle: 'purple',
@@ -24,8 +29,8 @@ const Overview = () => {
         rotate: 30
       }),
       new Rect({
-        x: 100,
-        y: 10,
+        x: 120,
+        y: 20,
         width: 0,
         height: 80,
         fillStyle: '#a18cd1',
@@ -39,7 +44,7 @@ const Overview = () => {
     const arcs = [
       new Circle({
         x: 300,
-        y: 60,
+        y: 70,
         radius: 50,
         endAngle: 0,
         fillStyle: 'antiquewhite',
@@ -49,7 +54,7 @@ const Overview = () => {
       }),
       new Circle({
         x: 420,
-        y: 60,
+        y: 70,
         radius: 50,
         innerRadius: 30,
         fillStyle: 'white',
@@ -156,6 +161,12 @@ const Overview = () => {
 
     stage.append(rectrt)
 
+    const box = new BoxHidden({ x: 32, y: 345, width: 200, height: 180, draggable: true, fillStyle: 'orange' })
+    box.append(new Circle({ draggable: true, x: 202, y: 464, radius: 40, fillStyle: 'slateblue' }))
+    box.append(new Circle({ draggable: true, x: 68, y: 353, radius: 30, fillStyle: 'paleturquoise' }))
+
+    stage.append(box)
+
     setTimeout(() => {
       rects[0].animateCartoon({ fillStyle: 'red' })
 
@@ -164,8 +175,25 @@ const Overview = () => {
   }, [])
 
   return (
-    <div>
-      <div className="canvas-container" ref={canvasRef}></div>
+    <div className="flex flex-col h-full ">
+      <header className="flex items-center gap-4">
+        <button onClick={() => stage.camera.zoomIn()}>放大</button>
+        <button onClick={() => stage.camera.zoomOut()}>缩小</button>
+        <button
+          onClick={() => {
+            stage.enableRuler = !stage.enableRuler
+            stage.render()
+          }}
+        >
+          显示/隐藏 标尺
+        </button>
+        <span className="border p-1 border-gray-400">空格 + 左键 平移</span>
+        <span className="border p-1 border-gray-400">ctrl + 滚轮 缩放</span>
+      </header>
+
+      <hr />
+
+      <div className="canvas-container !w-full flex-auto" ref={canvasRef}></div>
     </div>
   )
 }

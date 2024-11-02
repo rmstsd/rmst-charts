@@ -12,7 +12,7 @@ export function drawStage(stage: Stage) {
 
   ctx.save()
   ctx.translate(camera.tx, camera.ty)
-  ctx.scale(camera.scale, camera.scale)
+  ctx.scale(camera.zoom, camera.zoom)
 
   drawChildren(stage.children)
 

@@ -23,7 +23,7 @@ export class BoxHidden extends AbstractUi<RectData> {
 
     mountStage(this.children, this.stage)
 
-    this.stage?.renderStage()
+    this.stage?.render()
   }
 }
 

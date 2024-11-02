@@ -1,112 +1,200 @@
-import { Stage } from '../..'
-import { setCursor } from '../hoveredElementHandler'
+import { ICoord, Stage } from '../..'
+import { Pointer_Button } from '../../constant'
+import { setCursor } from '../utils'
 
 const minScale = 0.1
 const maxScale = 5
 
-export default class Camera {
-  constructor(private stage: Stage, public enable: boolean) {}
+export class Camera {
+  constructor(private stage: Stage, private enable: boolean) {
+    const documentKeydown = (evt: KeyboardEvent) => {
+      const prevIsCtrlPressing = this.isCtrlPressing
+      const prevIsAltPressing = this.isAltPressing
 
-  tx = 0
-  ty = 0
-  scale = 1
+      const prevIsSpacePressing = this.isSpacePressing
 
-  isMousedown = false
-  isSpaceKeyDown = false
+      this.isCtrlPressing = evt.ctrlKey
+      this.isAltPressing = evt.altKey
 
-  prev = { x: 0, y: 0 }
+      if (evt.code === 'Space') {
+        this.isSpacePressing = evt.type === 'keydown'
+      }
 
-  mousedown(evt) {
-    if (!this.enable) {
-      return
+      if (this.isCtrlPressing !== prevIsCtrlPressing) {
+        this.onCtrlToggle()
+      }
+
+      if (this.isAltPressing !== prevIsAltPressing) {
+        this.onAltToggle()
+      }
+
+      if (this.isSpacePressing !== prevIsSpacePressing) {
+        this.onSpaceToggle()
+      }
     }
-    if (!this.isSpaceKeyDown) {
-      return
-    }
 
-    evt.preventDefault()
-    this.prev.x = evt.clientX
-    this.prev.y = evt.clientY
-    this.isMousedown = true
-    setCursor(this.stage, 'grabbing')
-  }
+    document.addEventListener('keydown', documentKeydown)
+    document.addEventListener('keyup', documentKeydown)
 
-  mousemove(evt) {
-    if (this.isSpaceKeyDown && this.isMousedown) {
-      const dx = evt.clientX - this.prev.x
-      const dy = evt.clientY - this.prev.y
-
-      this.prev.x = evt.clientX
-      this.prev.y = evt.clientY
-
-      this.tx += dx
-      this.ty += dy
-
-      this.stage.renderStage()
-    }
-  }
-
-  mouseup(evt) {
-    this.isMousedown = false
-    if (this.isSpaceKeyDown) {
-      setCursor(this.stage, 'grab')
-    }
-  }
-
-  keydown(evt) {
-    if (!this.enable) {
-      return
-    }
-    if (this.stage.draggingMgr.dragging) {
-      return
-    }
-    if (evt.code === 'Space') {
-      if (this.isMousedown) {
+    const canvasWheel = (evt: WheelEvent) => {
+      if (!this.enable) {
         return
       }
-      if (!this.isSpaceKeyDown) {
-        this.isSpaceKeyDown = true
-        this.stage.draggingMgr.disabledDragElement = true
 
-        setCursor(this.stage, 'grab')
+      evt.preventDefault()
+
+      if (this.isCtrlPressing) {
+        const center = { x: evt.offsetX, y: evt.offsetY }
+        if (evt.deltaY < 0) {
+          this.zoomIn(center)
+        } else {
+          this.zoomOut(center)
+        }
       }
     }
+    this.stage.canvasElement.addEventListener('wheel', canvasWheel)
+
+    // document.removeEventListener('keydown', documentKeydown)
+    // document.removeEventListener('keyup', documentKeydown)
   }
-  keyup(evt) {
-    if (evt.code === 'Space') {
-      this.isSpaceKeyDown = false
-      this.stage.draggingMgr.disabledDragElement = false
-      setCursor(this.stage, 'default')
-    }
+
+  public isSpacePressing = false
+  private isCtrlPressing = false
+  private isAltPressing = false
+
+  private isLeftPointerPressing = false
+
+  // 画布是否处于拖动平移状态
+  public isDragging = false
+
+  private onCtrlToggle() {
+    console.log('ctrl toggle', this.isCtrlPressing)
   }
-  wheel(evt) {
+
+  private onAltToggle() {
+    console.log('Alt toggle', this.isAltPressing)
+  }
+
+  private onSpaceToggle() {
+    console.log('space toggle', this.isSpacePressing)
     if (!this.enable) {
       return
     }
 
-    evt.preventDefault()
+    if (this.isDragging) {
+      return
+    }
 
-    const prevScale = this.scale
-    const { x: canvasCoordX, y: canvasCoordY } = offsetToCanvas(evt.offsetX, evt.offsetY, {
+    this.stage.draggingMgr.disabledDragElement = this.isSpacePressing ? true : false
+
+    if (this.isSpacePressing) {
+      setCursor(this.stage, 'grab')
+      this.stage.selectedMgr.setHoveredVisible(false)
+    } else {
+      this.stage.selectedMgr.setHoveredVisible(true)
+      this.stage.eventDispatcher.setHoveredCursor()
+    }
+  }
+
+  private onLeftPointerToggle(evt: MouseEvent) {
+    if (this.isLeftPointerPressing) {
+      if (this.isSpacePressing) {
+        this.isDragging = true
+        setCursor(this.stage, 'grabbing')
+
+        evt.preventDefault()
+        this.prevClient.x = evt.clientX
+        this.prevClient.y = evt.clientY
+      }
+    } else {
+      if (this.isSpacePressing) {
+        setCursor(this.stage, 'grab')
+      } else if (this.isDragging) {
+        this.stage.selectedMgr.setHoveredVisible(true)
+        this.stage.eventDispatcher.setHoveredCursor()
+      }
+      this.isDragging = false
+    }
+  }
+
+  public tx = 0
+  public ty = 0
+  public zoom = 1
+
+  private prevClient = { x: 0, y: 0 }
+
+  public mousedown(evt) {
+    if (!this.enable) {
+      return
+    }
+
+    if (evt.button === Pointer_Button.Left) {
+      this.isLeftPointerPressing = true
+      this.onLeftPointerToggle(evt)
+    }
+  }
+
+  public mouseEvent: MouseEvent | null = null
+
+  public mousemove(evt: MouseEvent) {
+    this.mouseEvent = evt
+    if (this.isDragging) {
+      const dx = evt.clientX - this.prevClient.x
+      const dy = evt.clientY - this.prevClient.y
+
+      this.prevClient.x = evt.clientX
+      this.prevClient.y = evt.clientY
+
+      this.setTranslate({ x: this.tx + dx, y: this.ty + dy })
+    }
+  }
+
+  public mouseup(evt) {
+    if (evt.button === Pointer_Button.Left) {
+      this.isLeftPointerPressing = false
+      this.onLeftPointerToggle(evt)
+    }
+  }
+
+  public setTranslate({ x, y }: ICoord) {
+    this.tx = x
+    this.ty = y
+    this.stage.render()
+  }
+
+  public setZoom(scale: number, center?: ICoord) {
+    const prevScale = this.zoom
+
+    if (!center) {
+      center = this.stage.center
+    }
+
+    const { x: canvas_x, y: canvas_y } = offsetToCanvas(center.x, center.y, {
       tx: this.tx,
       ty: this.ty,
       scaleX: prevScale,
       scaleY: prevScale
     })
 
-    if (evt.deltaY < 0) {
-      this.scale = Math.min(this.scale * 1.1, maxScale)
-    } else {
-      this.scale = Math.max(this.scale * 0.9, minScale)
-    }
+    this.zoom = scale
 
-    const dx = -canvasCoordX * (this.scale - prevScale)
-    const dy = -canvasCoordY * (this.scale - prevScale)
+    const dx = -canvas_x * (this.zoom - prevScale)
+    const dy = -canvas_y * (this.zoom - prevScale)
 
     this.tx += dx
     this.ty += dy
 
-    this.stage.renderStage()
+    this.stage.render()
+  }
+
+  public zoomIn(center?: ICoord) {
+    const nv = Math.min(this.zoom * 1.1, maxScale)
+    this.setZoom(nv, center)
+  }
+
+  public zoomOut(center?: ICoord) {
+    const nv = Math.max(this.zoom * 0.9, minScale)
+    this.setZoom(nv, center)
   }
 }
 

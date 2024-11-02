@@ -3,9 +3,7 @@ import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent, { EventOpt } from '../AbsEvent'
 import { schedulerTask } from '../_stage/scheduler'
 import { ICursor, IShape, IShapeType } from '../type'
-import { setCtxStyleProp } from '../renderer/canvas'
-import { clipRect } from '../utils'
-import { createRectPath2D, setCirclePath2D } from '../renderer/canvas/setPath2D'
+import { attrDirty } from '../_stage/controller/DirtyRect'
 
 export interface AbstractUiData extends EventOpt {
   name?: string
@@ -84,6 +82,11 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
   stage: Stage
 
+  clone() {
+    const Class = this.constructor as new (...args) => AbstractUi<T>
+    return new Class(structuredClone(this.data))
+  }
+
   pinTop() {
     if (!this.parent) {
       console.warn('还没有被 append')
@@ -116,7 +119,8 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
         break
     }
 
-    this.stage?.renderStage()
+    this.stage?.selectedMgr.updateFlo(this)
+    this.stage?.render()
   }
 
   // 应用层方法; 1000次 -> 渲染 1 次
@@ -125,45 +129,12 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
       this.data = { ...this.data, ...data }
     })
 
-    this.stage?.renderStage()
+    this.stage?.render()
   }
 
+  // 未完全实现
   attrDirty(data: Partial<T>) {
-    const oldSb = this.getBoundingRect()
-
-    this.data = { ...this.data, ...data }
-
-    const nSb = this.getBoundingRect()
-
-    const x = Math.min(oldSb.x, nSb.x)
-    const y = Math.min(oldSb.y, nSb.y)
-    const sb: BoundingRect = {
-      x,
-      y,
-      width: Math.max(oldSb.x + oldSb.width, nSb.x + nSb.width) - x,
-      height: Math.max(oldSb.y + oldSb.height, nSb.y + nSb.height) - y
-    }
-
-    this.stage.renderDirtyRectUi(sb)
-
-    const { ctx } = this.stage
-
-    ctx.clearRect(sb.x, sb.y, sb.width, sb.height)
-
-    const overlapShapes = this.stage.children
-      .filter(item => item.type === 'Circle')
-      .filter(item => item !== this)
-      .filter(item => isRectShapeCollision(sb, item.getBoundingRect()))
-
-    clipRect(ctx, createRectPath2D(sb), () => {
-      const neededUpdatedShapes = overlapShapes.concat(this)
-      const correctSortedShapes = this.stage.children.filter(item => neededUpdatedShapes.includes(item))
-
-      correctSortedShapes.forEach(item => {
-        setCtxStyleProp(ctx, item)
-        setCirclePath2D(item)
-      })
-    })
+    attrDirty(this, data)
   }
 
   getBoundingRect(): BoundingRect {
@@ -172,9 +143,12 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
   remove() {
     const parentChildren = this.parent.children as IShape[]
-    parentChildren.splice(parentChildren.indexOf(this), 1)
+    const index = parentChildren.indexOf(this)
 
-    this.stage.renderStage()
+    if (index !== -1) {
+      parentChildren.splice(index, 1)
+      this.stage.render()
+    }
   }
 
   animators: Animator[] = []
@@ -209,25 +183,3 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 }
 
 export default AbstractUi
-
-// 左上角 和 右下角 的坐标
-function isRectCollision(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {
-  const overlapWidth = Math.min(ax2, bx2) - Math.max(ax1, bx1)
-  const overlapHeight = Math.min(ay2, by2) - Math.max(ay1, by1)
-
-  return overlapWidth > 0 && overlapHeight > 0
-}
-
-export function isRectShapeCollision(rect_1: BoundingRect, rect_2: BoundingRect) {
-  return isRectCollision(
-    rect_1.x,
-    rect_1.y,
-    rect_1.x + rect_1.width,
-    rect_1.y + rect_1.height,
-
-    rect_2.x,
-    rect_2.y,
-    rect_2.x + rect_2.width,
-    rect_2.y + rect_2.height
-  )
-}

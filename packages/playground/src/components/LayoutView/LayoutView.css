@@ -10,18 +10,19 @@
   background-color: transparent !important;
 }
 
-aside::-webkit-scrollbar {
-  width: var(--scrollbar-width);
-  background-color: transparent;
-}
-
-aside::-webkit-scrollbar-thumb {
-  background-clip: padding-box;
-  border: 3px solid transparent;
-}
-
-aside:hover::-webkit-scrollbar-thumb {
-  background-color: #c3c0c0;
+:is(.ant-layout-header, aside) {
+  &::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-width);
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    border: 3px solid transparent;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: #c3c0c0;
+  }
 }
 
 aside {
