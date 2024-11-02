@@ -29,14 +29,10 @@ export class Stage extends AbsEvent {
 
     this.dpr = dpr ?? window.devicePixelRatio
 
-    const stage = initStage(container, this.dpr)
+    const stage = initStage(container, this.dpr, () => this.syncRender())
 
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
-
-    this.ctx.scale(this.dpr, this.dpr)
-    this.ctx.textBaseline = 'hanging'
-    this.ctx.font = `${14}px 微软雅黑`
 
     this.draggingMgr = new Draggable(this)
     this.camera = new Camera(this, enableCamera)
@@ -77,7 +73,7 @@ export class Stage extends AbsEvent {
   }
 
   get canvasSize() {
-    return { width: this.canvasElement.offsetWidth, height: this.canvasElement.offsetHeight }
+    return { width: this.canvasElement.clientWidth, height: this.canvasElement.clientHeight }
   }
 
   public dispose() {
@@ -117,12 +113,16 @@ export class Stage extends AbsEvent {
     }
     this.isDispatchedAsyncRenderTask = true
     requestAnimationFrame(() => {
-      drawStage(this)
-      if (this.enableRuler) {
-        this.ruler.drawRuler()
-      }
+      this.syncRender()
       this.isDispatchedAsyncRenderTask = false
     })
+  }
+
+  private syncRender() {
+    drawStage(this)
+    if (this.enableRuler) {
+      this.ruler.drawRuler()
+    }
   }
 
   private addStageListener() {

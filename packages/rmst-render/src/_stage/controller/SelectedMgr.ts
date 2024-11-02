@@ -9,51 +9,44 @@ const floOption: AbstractUiData = Object.assign({}, defaultAbsData, {
 })
 
 export class SelectedMgr {
-  private wm = new WeakMap()
-
-  private hovered = new Set<IShape>()
-
-  private prevHovered = null
+  private hovered: IShape = null
+  private cloned: IShape = null
 
   constructor(private stage: Stage) {}
 
-  public onHoveredChange(hovered) {
-    if(hovered) {
-      if (this.hovered === this.prevHovered) {
-          
+  public onHoveredChange(hovered: IShape) {
+    if (hovered) {
+      if (hovered !== this.hovered) {
+        this.hovered = hovered
+        this.cloned?.remove()
+
+        this.cloned = hovered.clone()
+        this.stage.append(this.cloned)
+
+        // @ts-ignore
+        this.cloned.attr(floOption)
       }
+    } else {
+      this.hovered = null
+      this.cloned?.remove()
+      this.cloned = null
     }
   }
 
-  public onElementEnter(target: IShape) {
-    if (!target) {
-      return
-    }
-
-    const cloned: IShape = target.clone()
-
-    this.wm.set(target, cloned)
-    this.hovered.add(cloned)
-    this.stage.append(cloned)
-
-    // @ts-ignore
-    cloned.attr(floOption)
-  }
-
-  public onElementLeave(target) {
-    const sel = this.wm.get(target)
-    if (sel) {
-      this.wm.delete(target)
-      this.hovered.delete(sel)
-      sel.remove()
+  public setHoveredVisible(visible: boolean) {
+    if (visible) {
+      this.onHoveredChange(this.stage.eventDispatcher.hovered)
+    } else {
+      this.hovered = null
+      this.cloned?.remove()
+      this.cloned = null
     }
   }
 
   public updateFlo(target) {
-    const sel = this.wm.get(target)
-
-    if (sel) {
-      sel.attr({ ...structuredClone(target.data), ...floOption })
+    if (this.hovered && this.hovered === target) {
+      // @ts-ignore
+      this.cloned.attr({ ...structuredClone(target.data), ...floOption })
     }
   }
 }

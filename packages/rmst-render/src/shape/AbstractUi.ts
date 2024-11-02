@@ -143,9 +143,12 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
   remove() {
     const parentChildren = this.parent.children as IShape[]
-    parentChildren.splice(parentChildren.indexOf(this), 1)
+    const index = parentChildren.indexOf(this)
 
-    this.stage.render()
+    if (index !== -1) {
+      parentChildren.splice(index, 1)
+      this.stage.render()
+    }
   }
 
   animators: Animator[] = []

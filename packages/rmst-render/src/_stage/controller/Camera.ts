@@ -1,4 +1,5 @@
 import { ICoord, Stage } from '../..'
+import { Pointer_Button } from '../../constant'
 import { setCursor } from '../utils'
 
 const minScale = 0.1
@@ -61,7 +62,9 @@ export class Camera {
   private isCtrlPressing = false
   private isAltPressing = false
 
-  // 画布平移中
+  private isLeftPointerPressing = false
+
+  // 画布是否处于拖动平移状态
   public isDragging = false
 
   private onCtrlToggle() {
@@ -83,14 +86,34 @@ export class Camera {
     }
 
     this.stage.draggingMgr.disabledDragElement = this.isSpacePressing ? true : false
-    const hovered = this.stage.eventDispatcher.hovered
 
     if (this.isSpacePressing) {
-      this.stage.selectedMgr.onElementLeave(hovered)
       setCursor(this.stage, 'grab')
+      this.stage.selectedMgr.setHoveredVisible(false)
     } else {
-      this.stage.selectedMgr.onElementEnter(hovered)
+      this.stage.selectedMgr.setHoveredVisible(true)
       this.stage.eventDispatcher.setHoveredCursor()
+    }
+  }
+
+  private onLeftPointerToggle(evt: MouseEvent) {
+    if (this.isLeftPointerPressing) {
+      if (this.isSpacePressing) {
+        this.isDragging = true
+        setCursor(this.stage, 'grabbing')
+
+        evt.preventDefault()
+        this.prevClient.x = evt.clientX
+        this.prevClient.y = evt.clientY
+      }
+    } else {
+      if (this.isSpacePressing) {
+        setCursor(this.stage, 'grab')
+      } else if (this.isDragging) {
+        this.stage.selectedMgr.setHoveredVisible(true)
+        this.stage.eventDispatcher.setHoveredCursor()
+      }
+      this.isDragging = false
     }
   }
 
@@ -100,22 +123,21 @@ export class Camera {
 
   private prevClient = { x: 0, y: 0 }
 
-  mousedown(evt) {
+  public mousedown(evt) {
     if (!this.enable) {
       return
     }
 
-    if (this.isSpacePressing) {
-      this.isDragging = true
-      setCursor(this.stage, 'grabbing')
-
-      evt.preventDefault()
-      this.prevClient.x = evt.clientX
-      this.prevClient.y = evt.clientY
+    if (evt.button === Pointer_Button.Left) {
+      this.isLeftPointerPressing = true
+      this.onLeftPointerToggle(evt)
     }
   }
 
-  mousemove(evt) {
+  public mouseEvent: MouseEvent | null = null
+
+  public mousemove(evt: MouseEvent) {
+    this.mouseEvent = evt
     if (this.isDragging) {
       const dx = evt.clientX - this.prevClient.x
       const dy = evt.clientY - this.prevClient.y
@@ -127,10 +149,10 @@ export class Camera {
     }
   }
 
-  mouseup(evt) {
-    this.isDragging = false
-    if (this.isSpacePressing) {
-      setCursor(this.stage, 'grab')
+  public mouseup(evt) {
+    if (evt.button === Pointer_Button.Left) {
+      this.isLeftPointerPressing = false
+      this.onLeftPointerToggle(evt)
     }
   }
 

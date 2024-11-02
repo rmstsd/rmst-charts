@@ -25,3 +25,9 @@ export const matrixMap = {
   水平移动: 'e',
   垂直移动: 'f'
 }
+
+export enum Pointer_Button {
+  Left,
+  Middle,
+  Right
+}

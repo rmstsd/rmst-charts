@@ -3,21 +3,40 @@ import { EventParameter, EventType, OnEventType, supportBubblesEventType } from 
 import { IShape } from '../type'
 import { isStage } from '../utils'
 
-export function initStage(canvasContainer: HTMLElement, dpr: number) {
-  const { clientWidth, clientHeight } = canvasContainer
+export function initStage(canvasContainer: HTMLElement, dpr: number, render?: () => void) {
+  canvasContainer.style.position = 'relative'
 
   const canvasElement = document.createElement('canvas')
-  const canvasWidth = clientWidth * dpr
-  const canvasHeight = clientHeight * dpr
+  const ctx = canvasElement.getContext('2d')
 
-  canvasElement.width = canvasWidth
-  canvasElement.height = canvasHeight
-  canvasElement.style.width = '100%'
-  canvasElement.style.height = '100%'
+  const setCanvasStyle = () => {
+    const { clientWidth, clientHeight } = canvasContainer
+
+    const canvasWidth = clientWidth * dpr
+    const canvasHeight = clientHeight * dpr
+
+    canvasElement.width = canvasWidth
+    canvasElement.height = canvasHeight
+
+    canvasElement.style.position = 'absolute'
+    canvasElement.style.inset = '0'
+    canvasElement.style.width = `${clientWidth}px`
+    canvasElement.style.height = `${clientHeight}px`
+
+    ctx.scale(dpr, dpr)
+    ctx.textBaseline = 'hanging'
+    ctx.font = `${14}px 微软雅黑`
+  }
+
+  setCanvasStyle()
+  const ob = new ResizeObserver(() => {
+    setCanvasStyle()
+    render && render()
+  })
+  ob.observe(canvasContainer)
 
   canvasContainer.append(canvasElement)
 
-  const ctx = canvasElement.getContext('2d')
   return { canvasElement, ctx }
 }
 

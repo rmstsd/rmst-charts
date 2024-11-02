@@ -8,13 +8,10 @@ export class EventDispatcher {
   constructor(private stage: Stage) {}
 
   private mousedownObject: IShape | null = null
-  private mouseupObject: IShape | null = null
 
   private hoveredStack: IShape[] = []
 
   public hovered: IShape = null
-  
-  private prevHovered: IShape = null
 
   mousedown(evt, hovered: IShape) {
     const x = evt.offsetX
@@ -56,6 +53,10 @@ export class EventDispatcher {
 
   mouseleave(evt) {
     const { stage } = this
+
+    this.hovered = null
+    this.stage.selectedMgr.onHoveredChange(this.hovered)
+
     if (this.hoveredStack.length) {
       this.triggerHoveredStackMouseleave(evt.offsetX, evt.offsetY)
     }
@@ -71,21 +72,17 @@ export class EventDispatcher {
     const x = evt.offsetX
     const y = evt.offsetY
 
-    const hovered = findHover_v2(this.stage, x, y)
-    const eventParameter: EventParameter = { target: hovered, x, y, nativeEvent: evt }
+    const mouseupHovered = findHover_v2(this.stage, x, y)
+    const eventParameter: EventParameter = { target: mouseupHovered, x, y, nativeEvent: evt }
 
-    if (hovered) {
-      this.mouseupObject = hovered
-      triggerEventHandlers(hovered, 'onmouseup', eventParameter)
+    if (mouseupHovered) {
+      triggerEventHandlers(mouseupHovered, 'onmouseup', eventParameter)
     }
     triggerEventHandlers(this.stage, 'onmouseup', eventParameter)
 
-    if (hovered) {
-      if (this.mousedownObject === this.mouseupObject) {
-        triggerEventHandlers(hovered, 'onclick', eventParameter)
-      }
+    if (mouseupHovered && this.mousedownObject === mouseupHovered) {
+      triggerEventHandlers(mouseupHovered, 'onclick', eventParameter)
     }
-
     triggerEventHandlers(this.stage, 'onclick', eventParameter)
   }
 
