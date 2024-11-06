@@ -1,9 +1,14 @@
 import { ICoord, Stage } from '../..'
 import { Pointer_Button } from '../../constant'
+import EventEmitter from '../../event_emitter'
 import { setCursor } from '../utils'
 
 const minScale = 0.1
 const maxScale = 5
+
+interface Events {
+  zoomChange(zoom: number, prevZoom: number): void
+}
 
 export class Camera {
   constructor(private stage: Stage, private enable: boolean) {
@@ -57,6 +62,8 @@ export class Camera {
     // document.removeEventListener('keydown', documentKeydown)
     // document.removeEventListener('keyup', documentKeydown)
   }
+
+  eventEmitter = new EventEmitter<Events>()
 
   public isSpacePressing = false
   private isCtrlPressing = false
@@ -177,6 +184,8 @@ export class Camera {
     })
 
     this.zoom = scale
+
+    this.eventEmitter.emit('zoomChange', this.zoom, prevScale)
 
     const dx = -canvas_x * (this.zoom - prevScale)
     const dy = -canvas_y * (this.zoom - prevScale)

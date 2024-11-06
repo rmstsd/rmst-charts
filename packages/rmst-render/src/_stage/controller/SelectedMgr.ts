@@ -1,18 +1,30 @@
-import { AbstractUiData, defaultAbsData, IShape, Stage } from '../..'
+import { AbstractUiData, defaultAbsData, isBoxHidden, IShape, Rect, Stage } from '../..'
 
-const floOption: AbstractUiData = Object.assign({}, defaultAbsData, {
+const floOption: AbstractUiData = {
+  ...defaultAbsData,
   draggable: false,
   pointerEvents: 'none',
-  fillStyle: undefined,
-  lineWidth: 2,
-  strokeStyle: '#0d99ff'
-})
+  fillStyle: 'transparent',
+  strokeStyle: '#0d99ff',
+  zIndex: 9999
+}
 
 export class SelectedMgr {
   private hovered: IShape = null
   private cloned: IShape = null
 
-  constructor(private stage: Stage) {}
+  private lineWidth = 2
+
+  constructor(private stage: Stage) {
+    this.stage.camera.eventEmitter.on('zoomChange', zoom => {
+      this.lineWidth = 2 / zoom
+
+      if (this.cloned) {
+        // @ts-ignore
+        this.cloned.attr({ lineWidth: this.lineWidth })
+      }
+    })
+  }
 
   public onHoveredChange(hovered: IShape) {
     if (hovered) {
@@ -20,11 +32,11 @@ export class SelectedMgr {
         this.hovered = hovered
         this.cloned?.remove()
 
-        this.cloned = hovered.clone()
+        this.cloned = getCloned(hovered)
         this.stage.append(this.cloned)
 
         // @ts-ignore
-        this.cloned.attr(floOption)
+        this.cloned.attr({ ...floOption, lineWidth: this.lineWidth })
       }
     } else {
       this.hovered = null
@@ -46,7 +58,14 @@ export class SelectedMgr {
   public updateFlo(target) {
     if (this.hovered && this.hovered === target) {
       // @ts-ignore
-      this.cloned.attr({ ...structuredClone(target.data), ...floOption })
+      this.cloned.attr({ ...structuredClone(target.data), ...floOption, lineWidth: this.lineWidth })
     }
   }
+}
+
+const getCloned = (shape: IShape) => {
+  if (isBoxHidden(shape)) {
+    return new Rect({ ...shape.data })
+  }
+  return shape.clone()
 }
