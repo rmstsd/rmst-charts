@@ -9,6 +9,9 @@
 .ant-menu-sub {
   background-color: transparent !important;
 }
+.ant-menu-item {
+  height: 96%;
+}
 
 :is(.ant-layout-header, aside) {
   &::-webkit-scrollbar {
