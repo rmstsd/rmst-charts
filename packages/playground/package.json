@@ -16,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "@antv/util": "^3.3.7",
+    "@leafer-in/animate": "^1.0.9",
     "@react-spring/web": "^9.7.3",
     "@types/animejs": "^3.1.12",
     "animejs": "^3.2.2",
@@ -23,8 +24,9 @@
     "color-alpha": "^1.1.3",
     "color-rgba": "^2.4.0",
     "core-js": "^3.34.0",
+    "es-toolkit": "^1.27.0",
     "gl-matrix": "^3.4.3",
-    "leafer-ui": "1.0.2",
+    "leafer-ui": "1.0.9",
     "mathjs": "^13.0.3",
     "perfect-freehand": "^1.2.0",
     "react": "^18.2.0",

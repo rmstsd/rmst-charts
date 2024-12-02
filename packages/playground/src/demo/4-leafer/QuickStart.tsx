@@ -1,6 +1,9 @@
 import { Box, Cursor, DragEvent, Leafer, Line, Rect } from 'leafer-ui'
+import { Animate } from '@leafer-in/animate'
 import { useEffect } from 'react'
 import anime from 'animejs'
+import { random } from 'es-toolkit'
+import { randomColor } from '@/utils'
 
 const QuickStart = () => {
   useEffect(() => {
@@ -11,45 +14,33 @@ const QuickStart = () => {
       pointer: { hitRadius: 0 }
     })
 
-    const start_x = 5
-    const start_y = 5
-
-    const gap = 5
-
-    const rectSize = 17
-    const width = rectSize
-    const height = rectSize
-
-    let curRow = 0
-    let curColumn = 0
-
-    const rects = Array.from({ length: 4000 }, _ => {
-      let x = calcX()
-
-      if (x + width > leafer.width) {
-        curRow += 1
-        curColumn = 0
-
-        x = calcX()
-      }
-
-      const y = start_y + (height + gap) * curRow
-
-      curColumn += 1
-
-      return new Rect({ x, y, width: rectSize, height: rectSize, fill: '#32cd79', cursor: 'move', zIndex: 10 })
-
-      function calcX() {
-        return start_x + (width + gap) * curColumn
-      }
+    const rects = Array.from({ length: 5000 }, (_, i) => {
+      return new Rect({
+        draggable: true,
+        x: random(10, leafer.width - 20),
+        y: random(10, leafer.height- 20),
+        width: random(2, 10),
+        height: random(2, 10),
+        fill: randomColor(),
+        cursor: 'move'
+      })
     })
 
     rects.forEach(item => {
       leafer.add(item)
+
+      // new Animate(
+      //   item,
+      //   { x: 500, cornerRadius: 0, fill: '#ffcd00' }, // style keyframe
+      //   {
+      //     duration: 1,
+      //     swing: true // 摇摆循环播放
+      //   } // options
+      // )
     })
   }, [])
 
-  return <div className="canvas-container" style={{ width: '100%', height: 1000 }}></div>
+  return <div className="canvas-container" style={{ width: '100%', height: 600 }}></div>
 }
 
 export default QuickStart
