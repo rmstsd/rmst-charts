@@ -1,7 +1,7 @@
-import { AbstractUiData, defaultAbsData, isBoxHidden, IShape, Rect, Stage } from '../..'
+import { AbstractUiData, getDefaultAbsData, isBoxHidden, IShape, Rect, Stage } from '../..'
 
 const floOption: AbstractUiData = {
-  ...defaultAbsData,
+  ...getDefaultAbsData(),
   draggable: false,
   pointerEvents: 'none',
   fillStyle: 'transparent',
@@ -27,12 +27,14 @@ export class SelectedMgr {
   }
 
   public onHoveredChange(hovered: IShape) {
+    return
     if (hovered) {
       if (hovered !== this.hovered) {
         this.hovered = hovered
         this.cloned?.remove()
 
         this.cloned = getCloned(hovered)
+        console.log(this.cloned)
         this.stage.append(this.cloned)
 
         // @ts-ignore
@@ -46,6 +48,7 @@ export class SelectedMgr {
   }
 
   public setHoveredVisible(visible: boolean) {
+    return
     if (visible) {
       this.onHoveredChange(this.stage.eventDispatcher.hovered)
     } else {
@@ -56,6 +59,7 @@ export class SelectedMgr {
   }
 
   public updateFlo(target) {
+    return
     if (this.hovered && this.hovered === target) {
       // @ts-ignore
       this.cloned.attr({ ...structuredClone(target.data), ...floOption, lineWidth: this.lineWidth })

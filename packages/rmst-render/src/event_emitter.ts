@@ -6,7 +6,10 @@ export class EventEmitter<T extends Record<string | symbol, any>> {
       this.eventMap[eventName] = []
     }
     this.eventMap[eventName].push(listener)
-    return this
+
+    return () => {
+      this.off(eventName, listener)
+    }
   }
 
   emit<K extends keyof T>(eventName: K, ...args: Parameters<T[K]>) {

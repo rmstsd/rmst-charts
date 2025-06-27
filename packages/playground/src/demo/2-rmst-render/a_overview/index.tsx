@@ -172,6 +172,10 @@ const Overview = () => {
 
       rectrt.animateCartoon({ x: stage.canvasSize.width - 140, y: stage.canvasSize.height - 140, fillStyle: 'pink' })
     }, 1000)
+
+    return () => {
+      stage.dispose()
+    }
   }, [])
 
   return (

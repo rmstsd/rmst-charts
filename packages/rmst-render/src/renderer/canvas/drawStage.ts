@@ -1,9 +1,11 @@
-import { BoxHidden, Circle, Group, Line, Text, Trapezoid } from '../../shape'
+import { scale, rotate, translate, compose, applyToPoint, transform } from 'transformation-matrix'
+
+import { BoxHidden, Circle, Ellipse, Group, Line, Path, Text, Trapezoid } from '../../shape'
 import { clipRect, createLinePath2D, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
-import { fillOrStroke, hasStroke, setCtxMatrix, setCtxStyleProp } from './fillOrStroke'
-import { setCirclePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
+import { fillOrStroke, hasStroke, setCtxStyleProp } from './fillOrStroke'
+import { setCirclePath2D, setEllipsePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 import { sortChildren } from './util'
 
 export function drawStage(stage: Stage) {
@@ -11,8 +13,12 @@ export function drawStage(stage: Stage) {
   ctx.clearRect(0, 0, stage.canvasSize.width * stage.dpr, stage.canvasSize.height * stage.dpr)
 
   ctx.save()
-  ctx.translate(camera.tx, camera.ty)
-  ctx.scale(camera.zoom, camera.zoom)
+
+  const matrix = compose(translate(camera.tx, camera.ty), scale(camera.zoom, camera.zoom))
+  ctx.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f)
+
+  // ctx.translate(camera.tx, camera.ty)
+  // ctx.scale(camera.zoom, camera.zoom)
 
   drawChildren(stage.children)
 
@@ -22,16 +28,31 @@ export function drawStage(stage: Stage) {
     sortChildren(list).forEach(elementItem => {
       const { data } = elementItem
 
+      if (!data.visible) {
+        return
+      }
+
       ctx.beginPath()
 
       ctx.save()
 
       setCtxStyleProp(ctx, elementItem)
-      // setCtxMatrix(ctx, elementItem)
+      const mt = data.mt
+      ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
 
       switch (elementItem.type) {
         case 'Circle': {
           setCirclePath2D(elementItem as Circle)
+          fillOrStroke(ctx, elementItem)
+          break
+        }
+        case 'Ellipse': {
+          setEllipsePath2D(elementItem as Ellipse)
+          fillOrStroke(ctx, elementItem)
+          break
+        }
+        case 'Path': {
+          elementItem.path2D = new Path2D((elementItem as Path).data.d)
           fillOrStroke(ctx, elementItem)
           break
         }
@@ -75,7 +96,10 @@ export function drawStage(stage: Stage) {
           break
         }
         case 'Text': {
-          const { x, y, content, fontSize, textAlign = 'left', textBaseline } = data as Text['data']
+          let { x, y, content, fontSize, textAlign = 'left', textBaseline } = data as Text['data']
+
+          x = 0
+          y = 0
 
           setCtxFontSize(ctx, fontSize)
 

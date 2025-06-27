@@ -13,7 +13,7 @@
   height: 96%;
 }
 
-:is(.ant-layout-header, aside) {
+:is(.ant-layout-header, .menu-aside) {
   &::-webkit-scrollbar {
     width: var(--scrollbar-width);
     height: var(--scrollbar-width);
@@ -28,7 +28,7 @@
   }
 }
 
-aside {
+.menu-aside {
   flex-shrink: 0;
   padding-bottom: 20px;
   width: 220px;

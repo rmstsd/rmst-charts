@@ -20,7 +20,7 @@ export default defineConfig({
   plugins: [
     react({
       // 取消HMR
-      exclude: '**/*.tsx'
+      // exclude: '**/*.tsx'
     }),
     legacy({
       targets: ['defaults', 'not IE 11']

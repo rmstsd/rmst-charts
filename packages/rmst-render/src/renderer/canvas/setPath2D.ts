@@ -1,8 +1,10 @@
-import { Circle, Rect, Trapezoid } from '../../shape'
+import { Circle, Ellipse, Rect, Trapezoid } from '../../shape'
 import { getPointOnArc } from '../../utils'
 
 export function setTrapezoidPath2D(elementItem: Trapezoid) {
-  const { x, y, width, height, shortLength } = elementItem.data
+  let { x, y, width, height, shortLength } = elementItem.data
+  x = 0
+  y = 0
 
   const path2D = new Path2D()
 
@@ -29,7 +31,10 @@ export function setRectPath2D(elementItem: Rect) {
 }
 
 export function createRectPath2D(data) {
-  const { x, y, width, height, cornerRadius = 0 } = data
+  let { x, y, width, height, cornerRadius = 0 } = data
+
+  x = 0
+  y = 0
 
   const path2D = new Path2D()
   path2D.moveTo(x + cornerRadius, y)
@@ -47,8 +52,11 @@ export function createRectPath2D(data) {
 }
 
 export function setCirclePath2D(elementItem: Circle) {
-  const { x, y, radius, innerRadius, startAngle, endAngle, offsetAngle } = elementItem.data
+  let { x, y, radius, innerRadius, startAngle, endAngle, offsetAngle } = elementItem.data
   const isWholeArc = startAngle === 0 && endAngle === 360 // 是否是整圆
+
+  x = 0
+  y = 0
 
   const d = innerRadius
     ? calcRingD(radius, innerRadius, startAngle, endAngle, x, y, isWholeArc)
@@ -137,4 +145,24 @@ const calcRingD = (
 
     return `${outerM} ${outerA} ${moveL} ${innerA} Z`
   }
+}
+
+export function setEllipsePath2D(elementItem: Ellipse) {
+  function drawEllipse(cx: number, cy: number, rx: number, ry: number) {
+    return `M ${cx - rx},${cy} 
+          A ${rx},${ry} 0 1,0 ${cx + rx},${cy} 
+          A ${rx},${ry} 0 1,0 ${cx - rx},${cy} 
+          Z`
+  }
+
+  const { width, height } = elementItem.data
+
+  const cx = width / 2
+  const cy = height / 2
+  const rx = width / 2
+  const ry = height / 2
+
+  const d = drawEllipse(cx, cy, rx, ry)
+
+  elementItem.path2D = new Path2D(d)
 }

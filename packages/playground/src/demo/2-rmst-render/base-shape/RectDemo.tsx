@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 import { Stage, Rect, Circle, BoxHidden } from 'rmst-render'
+import { compose, rotate, rotateDEG, skew } from 'transformation-matrix'
 
 const RectDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -11,9 +12,28 @@ const RectDemo = () => {
     })
 
     const rects = [
-      new Rect({ x: 120, y: 10, width: 80, height: 80, fillStyle: 'purple', cornerRadius: 20 }),
-      new Rect({ x: 210, y: 10, width: 120, height: 80, fillStyle: '#a18cd1' })
+      // new Rect({ x: 120, y: 10, width: 80, height: 80, fillStyle: 'purple', cornerRadius: 20 }),
+      new Rect({
+        x: 100,
+        y: 100,
+        width: 120,
+        height: 80,
+        fillStyle: '#a18cd1',
+        mt: compose(rotateDEG(45, 120, 0), skew(1, 1)),
+        cursor: 'pointer'
+      }),
+      new Circle({
+        x: 100,
+        y: 100,
+        radius: 16,
+        fillStyle: 'purple',
+        cursor: 'pointer'
+      })
     ]
+
+    setTimeout(() => {
+      stage.render()
+    }, 1000)
 
     const box = new BoxHidden({
       name: 'outer_box',
@@ -58,7 +78,7 @@ const RectDemo = () => {
     box.append(box_2)
 
     stage.append(rects)
-    stage.append(box)
+    // stage.append(box)
 
     box.onmouseenter = () => {
       console.log('box enter')
@@ -93,17 +113,8 @@ const RectDemo = () => {
       console.log('inn_cir leave')
     }
 
-    rects[1].onclick = () => {
-      console.log('click')
-    }
-    rects[1].onmousedown = () => {
-      console.log('onmousedown')
-    }
-    rects[1].onmouseup = () => {
-      console.log('onmouseup')
-    }
-    rects[1].onmousemove = () => {
-      // console.log('onmousemove')
+    return () => {
+      stage.dispose()
     }
   }, [])
 

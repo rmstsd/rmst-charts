@@ -17,14 +17,13 @@
   "dependencies": {
     "@antv/util": "^3.3.7",
     "@react-spring/web": "^9.7.3",
-    "@types/animejs": "^3.1.12",
-    "animejs": "^3.2.2",
     "antd": "^5.2.2",
     "color-alpha": "^1.1.3",
     "color-rgba": "^2.4.0",
     "core-js": "^3.34.0",
+    "es-toolkit": "^1.39.4",
     "gl-matrix": "^3.4.3",
-    "leafer-ui": "1.0.2",
+    "konva": "^9.3.18",
     "mathjs": "^13.0.3",
     "perfect-freehand": "^1.2.0",
     "react": "^18.2.0",
@@ -32,8 +31,7 @@
     "react-router-dom": "^6.8.1",
     "rmst-charts": "workspace:*",
     "rmst-render": "workspace:*",
-    "throttle-debounce": "^5.0.0",
-    "zrender": "^5.4.4"
+    "throttle-debounce": "^5.0.0"
   },
   "devDependencies": {
     "@types/color-rgba": "^2.1.0",

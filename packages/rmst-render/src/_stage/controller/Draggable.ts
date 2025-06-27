@@ -47,16 +47,16 @@ export class Draggable {
     draggedTarget.ondragstart({ target: draggedTarget, x: eventParameter.x, y: eventParameter.y })
 
     const onDocumentMousemove = (evt: MouseEvent) => {
+      if (!draggedTarget.data.draggable) {
+        return
+      }
+
       evt.preventDefault()
 
       this.dragging = true
 
       const x = evt.clientX - canvasElementRect.left
       const y = evt.clientY - canvasElementRect.top
-
-      if (!draggedTarget.data.draggable) {
-        return
-      }
 
       const dx = evt.clientX - this.prevClientX
       const dy = evt.clientY - this.prevClientY

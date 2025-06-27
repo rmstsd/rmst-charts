@@ -1,7 +1,9 @@
 import { randomColor } from '@/utils'
+import { useEffectStage } from '@/utils/hooks'
 import { useEffect, useRef } from 'react'
 
 import { Stage, Group, Rect, Circle, Text, Line } from 'rmst-render'
+import { rotate, rotateDEG } from 'transformation-matrix'
 
 const GroupDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -9,11 +11,7 @@ const GroupDemo = () => {
   const outerGroupRef = useRef<Group>()
   const innerGroupRef = useRef<Group>()
 
-  useEffect(() => {
-    const stage = new Stage({
-      container: canvasRef.current
-    })
-
+  useEffectStage(canvasRef, stage => {
     const outerGroup = new Group({
       name: 'outer group',
       draggable: true
@@ -65,7 +63,7 @@ const GroupDemo = () => {
     stage.append([outerGroup])
 
     console.log(stage.children)
-  }, [])
+  })
 
   const addToOuterGroup = () => {
     outerGroupRef.current.append(

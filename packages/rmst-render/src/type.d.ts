@@ -1,7 +1,17 @@
-import { BoxHidden, Circle, Group, Line, Rect, Text } from './shape'
+import { BoxHidden, Circle, Ellipse, Group, Line, Path, Rect, Text } from './shape'
 
-export type IShape = Group | BoxHidden | Circle | Rect | Line | Text
-export type IShapeType = 'Line' | 'Rect' | 'Trapezoid' | 'Circle' | 'Text' | 'Group' | 'BoxHidden' | 'Stage'
+export type IShape = Group | BoxHidden | Circle | Rect | Line | Text | Ellipse | Path
+export type IShapeType =
+  | 'Line'
+  | 'Rect'
+  | 'Ellipse'
+  | 'Trapezoid'
+  | 'Circle'
+  | 'Text'
+  | 'Group'
+  | 'BoxHidden'
+  | 'Stage'
+  | 'Path'
 
 export type ICursor =
   | 'url'

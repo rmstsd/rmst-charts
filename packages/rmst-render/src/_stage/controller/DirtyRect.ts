@@ -1,5 +1,5 @@
 import colorAlpha from 'color-alpha'
-import { BoundingRect, clipRect, Rect, Stage } from '../..'
+import { IRect, clipRect, Rect, Stage } from '../..'
 import { createRectPath2D, setCirclePath2D, setCtxStyleProp } from '../../renderer/canvas'
 
 // 未完全实现
@@ -9,7 +9,7 @@ export class DirtyRect {
   private dirtyRectUi: Rect
   private timer
 
-  renderDirtyRectUi(sb: BoundingRect) {
+  renderDirtyRectUi(sb: IRect) {
     const { stage } = this
     if (!this.dirtyRectUi) {
       this.dirtyRectUi = new Rect({
@@ -41,7 +41,7 @@ function isRectCollision(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {
   return overlapWidth > 0 && overlapHeight > 0
 }
 
-function isRectShapeCollision(rect_1: BoundingRect, rect_2: BoundingRect) {
+function isRectShapeCollision(rect_1: IRect, rect_2: IRect) {
   return isRectCollision(
     rect_1.x,
     rect_1.y,
@@ -61,7 +61,7 @@ export function attrDirty(shape, data) {
   const nSb = shape.getBoundingRect()
   const x = Math.min(oldSb.x, nSb.x)
   const y = Math.min(oldSb.y, nSb.y)
-  const sb: BoundingRect = {
+  const sb: IRect = {
     x,
     y,
     width: Math.max(oldSb.x + oldSb.width, nSb.x + nSb.width) - x,

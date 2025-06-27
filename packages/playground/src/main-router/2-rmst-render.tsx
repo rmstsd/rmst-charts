@@ -4,7 +4,6 @@ import DogHead from '@/components/DogHead'
 import { IRouteObject } from './router'
 
 import Overview from '@/demo/2-rmst-render/a_overview'
-import Debug from '@/demo/2-rmst-render/a_overview/debug'
 
 import RectDemo from '@/demo/2-rmst-render/base-shape/RectDemo'
 import Circle from '@/demo/2-rmst-render/base-shape/CircleDemo'
@@ -35,6 +34,8 @@ import SoundingBox from '@/demo/2-rmst-render/boundingBox'
 import CollisionOOP from '@/demo/2-rmst-render/funny/Collision/CollisionOOP'
 
 import { isProd } from '@/utils'
+import EllipseDemo from '@/demo/2-rmst-render/base-shape/EllipseDemo'
+import PathDemo from '@/demo/2-rmst-render/base-shape/PathDemo'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -46,10 +47,7 @@ const rmstRenderRouteConfig: IRouteObject = {
       path: 'overview',
       element: <LayoutOutlet />,
       uiConfig: { title: 'overview' },
-      children: [
-        { path: 'index', element: <Overview />, uiConfig: { title: 'overview' } },
-        { path: 'debug', element: <Debug /> }
-      ]
+      children: [{ path: 'index', element: <Overview />, uiConfig: { title: 'overview' } }]
     },
     {
       path: 'base',
@@ -59,7 +57,9 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'rect', element: <RectDemo />, uiConfig: { title: '矩形' } },
         { path: 'trapezoid', element: <TrapezoidDemo />, uiConfig: { title: '梯形' } },
         { path: 'circle', element: <Circle />, uiConfig: { title: '圆, 环, 扇, 扇环' } },
+        { path: 'ellipse', element: <EllipseDemo />, uiConfig: { title: '椭圆' } },
         { path: 'line', element: <LineDemo />, uiConfig: { title: '线' } },
+        { path: 'path', element: <PathDemo />, uiConfig: { title: '路径' } },
         { path: 'text', element: <TextDemo />, uiConfig: { title: '文本' } }
       ]
     },

@@ -16,6 +16,10 @@
   }
 }
 
+.shadow-border {
+  box-shadow: 0 0 0 1px #dcdcdc;
+}
+
 html,
 body,
 #root {
@@ -56,7 +60,7 @@ body,
 
 /* 移动端媒体查询样式 */
 @media screen and (max-width: 768px) {
-  aside {
+  .menu-aside {
     display: none;
   }
 }

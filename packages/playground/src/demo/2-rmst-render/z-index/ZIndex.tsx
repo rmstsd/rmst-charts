@@ -1,3 +1,4 @@
+import { useEffectStage } from '@/utils/hooks'
 import colorAlpha from 'color-alpha'
 import { useEffect, useRef, useState } from 'react'
 
@@ -36,9 +37,7 @@ const ZIndex = () => {
     })
   )
 
-  useEffect(() => {
-    const stage = new Stage({ container: canvasRef.current })
-
+  useEffectStage(canvasRef, stage => {
     const group = new Group({ zIndex: 4 })
     const circle_1 = new Circle({ name: '蓝色', x: 170, y: 100, radius: 40, fillStyle: 'blue', cursor: 's-resize' })
     const circle_2 = new Circle({
@@ -124,7 +123,9 @@ const ZIndex = () => {
     }
 
     stage.append(cor, groupRoot)
-  }, [])
+
+    console.log(stage)
+  })
 
   const [name, setName] = useState('无')
 
