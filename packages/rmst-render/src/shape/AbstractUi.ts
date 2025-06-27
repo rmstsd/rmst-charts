@@ -4,8 +4,10 @@ import AbsEvent, { EventOpt } from '../AbsEvent'
 import { schedulerTask } from '../_stage/scheduler'
 import { ICursor, IShape, IShapeType } from '../type'
 import { attrDirty } from '../_stage/controller/DirtyRect'
+import { compose, identity, Matrix, translate } from 'transformation-matrix'
 
 export interface AbstractUiData extends EventOpt {
+  id?: string
   name?: string
   x?: number
   y?: number
@@ -16,6 +18,8 @@ export interface AbstractUiData extends EventOpt {
   lineWidth?: number
   opacity?: number
   zIndex?: number
+
+  d?: string
 
   fillStyle?: CanvasFillStrokeStyles['fillStyle']
   strokeStyle?: CanvasFillStrokeStyles['strokeStyle']
@@ -28,24 +32,27 @@ export interface AbstractUiData extends EventOpt {
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
 
-  // transform?: number[] // [水平缩放, 垂直倾斜, 水平倾斜, 垂直缩放, 水平移动, 垂直移动]
+  visible?: boolean
 
   pointerEvents?: 'none' | 'all' // 是否响应鼠标事件 默认为 true
 
-  scale?: number[] // [x, y]
   rotate?: number // 角度
 
-  extraData?: any // 需要优化
+  extraData?: any
+
+  mt?: Matrix
 }
 
-export interface BoundingRect {
+export interface IRect {
   x: number
   y: number
   width: number
   height: number
 }
 
-export const defaultAbsData: AbstractUiData = {
+export const getDefaultAbsData = (): AbstractUiData => ({
+  x: 0,
+  y: 0,
   lineWidth: 1,
   opacity: 1,
   shadowBlur: 0,
@@ -56,11 +63,12 @@ export const defaultAbsData: AbstractUiData = {
   lineJoin: 'miter',
   lineDash: [],
   pointerEvents: 'all',
-  zIndex: 0
-}
-
+  zIndex: 0,
+  visible: true,
+  mt: identity()
+})
 export const combineDefaultData = (shapeData, defaultShapeData) => {
-  return { ...defaultAbsData, ...defaultShapeData, ...shapeData }
+  return { ...getDefaultAbsData(), ...defaultShapeData, ...shapeData }
 }
 
 export abstract class AbstractUi<T = {}> extends AbsEvent {
@@ -70,6 +78,8 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     this.type = type
 
     this.data = combineDefaultData(shapeData, defaultShapeData)
+
+    this.data.mt = compose(translate(this.data.x ?? 0, this.data.y ?? 0), this.data.mt)
   }
 
   readonly type: IShapeType
@@ -106,11 +116,25 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
       case 1: {
         const [data] = args
         this.data = { ...this.data, ...data }
+
+        if (Reflect.has(data, 'x')) {
+          this.data.mt.e = data.x
+        }
+        if (Reflect.has(data, 'y')) {
+          this.data.mt.f = data.y
+        }
+
         break
       }
       case 2: {
         const [key, value] = args
         this.data[key] = value
+
+        if (key === 'x') {
+          this.data.mt.e = value
+        } else if (key === 'y') {
+          this.data.mt.f = value
+        }
         break
       }
 
@@ -137,8 +161,12 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     attrDirty(this, data)
   }
 
-  getBoundingRect(): BoundingRect {
-    return
+  getBoundingRect(): IRect {
+    return { x: 0, y: 0, width: 0, height: 0 }
+  }
+
+  getBBox(): IRect {
+    return { x: 0, y: 0, width: 0, height: 0 }
   }
 
   remove() {
@@ -159,6 +187,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     }
 
     const startProp = Object.keys(targetProp).reduce((acc, k) => Object.assign(acc, { [k]: this.data[k] }), {})
+
     const animator = new Animator(startProp, targetProp, cfg)
     this.animators.push(animator)
 

@@ -1,14 +1,15 @@
 import { isLine, isText } from '../utils'
 import { Stage, Text, measureText } from '..'
 import { IShape } from '../type'
-import { setCtxMatrix } from '../renderer/canvas'
+import { applyToPoint, compose, inverse, scale, transform, translate } from 'transformation-matrix'
 
 export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: number) {
   const { ctx, camera } = stage
-  const hit_x = x * stage.dpr
-  const hit_y = y * stage.dpr
 
-  // setCtxMatrix(ctx, elementItem)
+  ctx.save()
+
+  const mt = elementItem.data.mt
+  ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
 
   ctx.lineWidth = elementItem.data.lineWidth + 5
 
@@ -23,14 +24,16 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
     isHit = isInPath() || isInStroke()
   }
 
+  ctx.restore()
+
   return isHit
 
   function isInPath() {
-    return ctx.isPointInPath(elementItem.path2D, hit_x, hit_y)
+    return ctx.isPointInPath(elementItem.path2D, x, y)
   }
 
   function isInStroke() {
-    return ctx.isPointInStroke(elementItem.path2D, hit_x, hit_y)
+    return ctx.isPointInStroke(elementItem.path2D, x, y)
   }
 
   function isHitText(elementItem: Text): boolean {
@@ -40,12 +43,15 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
     const data_x = data.x
     const data_y = data.y
 
-    const canvas_coord_x = (x - camera.tx) / camera.zoom
-    const canvas_coord_y = (y - camera.ty) / camera.zoom
+    const stageMt = compose(translate(camera.tx, camera.ty), scale(camera.zoom, camera.zoom))
+
+    const canvas_coord = applyToPoint(inverse(stageMt), { x, y })
+    const local_coord = applyToPoint(inverse(elementItem.data.mt), canvas_coord)
 
     const halfWidth = textWidth / 2
 
     const textRect_x = (() => {
+      return 0
       if (data.textAlign === 'left') {
         return data_x
       }
@@ -58,14 +64,15 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
     })()
 
     const textRect_y = (() => {
+      return 0
       if (data.textBaseline === 'middle') {
         return data_y - textHeight / 2
       }
       return data_y
     })()
 
-    const is_x = textRect_x <= canvas_coord_x && canvas_coord_x <= textRect_x + textWidth
-    const is_y = textRect_y <= canvas_coord_y && canvas_coord_y <= textRect_y + textHeight
+    const is_x = textRect_x <= local_coord.x && local_coord.x <= textRect_x + textWidth
+    const is_y = textRect_y <= local_coord.y && local_coord.y <= textRect_y + textHeight
 
     return is_x && is_y
   }

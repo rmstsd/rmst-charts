@@ -12,6 +12,9 @@ interface Events {
 
 export class Camera {
   constructor(private stage: Stage, private enable: boolean) {
+    if (!enable) {
+      return
+    }
     const documentKeydown = (evt: KeyboardEvent) => {
       const prevIsCtrlPressing = this.isCtrlPressing
       const prevIsAltPressing = this.isAltPressing
@@ -75,18 +78,24 @@ export class Camera {
   public isDragging = false
 
   private onCtrlToggle() {
+    if (!this.enable) {
+      return
+    }
     console.log('ctrl toggle', this.isCtrlPressing)
   }
 
   private onAltToggle() {
+    if (!this.enable) {
+      return
+    }
     console.log('Alt toggle', this.isAltPressing)
   }
 
   private onSpaceToggle() {
-    console.log('space toggle', this.isSpacePressing)
     if (!this.enable) {
       return
     }
+    console.log('space toggle', this.isSpacePressing)
 
     if (this.isDragging) {
       return

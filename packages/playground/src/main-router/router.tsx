@@ -4,10 +4,10 @@ import { RouteObject, Navigate } from 'react-router-dom'
 
 import rmstChartsRouteConfig from './1-rmst-charts'
 import rmstRenderRouteConfig from './2-rmst-render'
-import zrenderRouteConfig from './3-zrender'
-import leaferRouteConfig from './4-leafer'
+import konvaRouteConfig from './3-konva'
 // import oldChartsRouteConfig from './5-oldCharts'
 import otherRouteConfig from './6-other'
+import whiteboardRouteConfig from './7-whiteboard'
 
 export type IRouteObject = {
   path: RouteObject['path']
@@ -24,10 +24,10 @@ export const routes: IRouteObject[] = [
   },
   rmstChartsRouteConfig,
   rmstRenderRouteConfig,
-  zrenderRouteConfig,
-  leaferRouteConfig,
+  konvaRouteConfig,
   // oldChartsRouteConfig,
   otherRouteConfig,
+  whiteboardRouteConfig,
   {
     path: '*',
     element: <Navigate to="/" replace={true} />,

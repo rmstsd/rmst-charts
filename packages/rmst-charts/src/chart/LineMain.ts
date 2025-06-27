@@ -59,8 +59,8 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
     const finalCoordPoints = smooth ? pointData : calcPointsByUserPoints(pointData, step)
 
     const boxHidden = new BoxHidden({
-      x: xAxisData.ticks[0].start.x - lineStyle.width,
-      y: yAxisData.axis.end.y,
+      x: 0,
+      y: 0,
       width: this.seriesItem.animation ? 0 : stage.canvasSize.width,
       height: stage.canvasSize.height,
       lineWidth: 0,

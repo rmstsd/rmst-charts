@@ -77,6 +77,11 @@ export class Stage extends AbsEvent {
   }
 
   public dispose() {
+    this.canvasElement?.remove()
+    this.removeAllShape()
+  }
+
+  public removeAllShape() {
     const disposeAll = (children: IShape[]) => {
       children.forEach(item => {
         item.dispose()
@@ -86,12 +91,8 @@ export class Stage extends AbsEvent {
         }
       })
     }
-
     disposeAll(this.children)
-  }
 
-  public removeAllShape() {
-    this.dispose()
     this.children = []
     this.render()
   }

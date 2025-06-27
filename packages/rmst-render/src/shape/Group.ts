@@ -30,6 +30,12 @@ export class Group extends AbstractUi<any> {
 
     this.stage?.render()
   }
+
+  removeAllChildren() {
+    this.dispose()
+    this.children = []
+    this.stage?.render()
+  }
 }
 
 export default Group

@@ -93,3 +93,11 @@ export function calcStraightPath2D(points: number[], percent) {
 
   return path2D
 }
+
+// 计算两个点 中点的坐标
+export function calcMidPoint(p1: ICoord, p2: ICoord) {
+  return {
+    x: (p1.x + p2.x) / 2,
+    y: (p1.y + p2.y) / 2
+  }
+}

@@ -36,17 +36,3 @@ export function setCtxStyleProp(ctx: CanvasRenderingContext2D, elementItem: ISha
   ctx.shadowColor = shadowColor
   ctx.shadowBlur = shadowBlur
 }
-
-export function setCtxMatrix(ctx: CanvasRenderingContext2D, elementItem: AbstractUi) {
-  return
-  const sb = elementItem.getBoundingRect()
-
-  if (sb) {
-    const { data } = elementItem
-    if (data.rotate != null) {
-      ctx.translate(sb.x, sb.y)
-      ctx.rotate(deg2rad(data.rotate))
-      ctx.translate(-sb.x, -sb.y)
-    }
-  }
-}

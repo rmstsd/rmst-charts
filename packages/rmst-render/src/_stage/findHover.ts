@@ -16,6 +16,9 @@ r  a-1  b-3
 
 // 需要通过 四叉树算法 优化图形的拾取
 export function findHover_v2(stage: Stage, x, y) {
+  x = x * stage.dpr
+  y = y * stage.dpr
+
   const possible: IShape[] = []
 
   const { ctx, camera } = stage
@@ -38,16 +41,27 @@ export function findHover_v2(stage: Stage, x, y) {
 
   return ans
 
-  function detectHit(_children: any[]) {
+  function detectHit(_children: IShape[]) {
     _children.forEach(elementItem => {
       if (isPointerEventsNone(elementItem)) {
         return
       }
+      if (!elementItem.data.visible) {
+        return
+      }
 
       if (isGroup(elementItem)) {
+        ctx.save()
+
+        const mt = elementItem.data.mt
+        ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
         detectHit(elementItem.children)
+
+        ctx.restore()
       } else if (isBoxHidden(elementItem)) {
         if (isHitShape(stage, elementItem, x, y)) {
+          const mt = elementItem.data.mt
+          ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
           const isHit = isHitDescendant((elementItem as any).children)
 
           if (isHit) {
@@ -55,6 +69,7 @@ export function findHover_v2(stage: Stage, x, y) {
           } else {
             possible.push(elementItem)
           }
+          ctx.restore()
         }
       } else {
         if (isHitShape(stage, elementItem, x, y)) {
