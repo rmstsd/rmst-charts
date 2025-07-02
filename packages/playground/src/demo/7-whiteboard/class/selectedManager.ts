@@ -83,7 +83,15 @@ export default class selectedManager {
         bl: applyToPoint(graData.mt, bl)
       }
 
-      return { selfCoordSys, graphLayerCoordSys }
+      return {
+        selfCoordSys,
+        graphLayerCoordSys,
+        downRect: {
+          width: sel.graphShape.data.width,
+          height: sel.graphShape.data.height,
+          mt: cloneDeep(sel.graphShape.data.mt)
+        }
+      }
     }
   }
 
@@ -149,7 +157,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      extraData: { transformOrigin: TransformOrigin.tl }
+      extraData: { transformOrigin: TransformOrigin.br }
     })
     const trRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -160,7 +168,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      extraData: { transformOrigin: TransformOrigin.tr }
+      extraData: { transformOrigin: TransformOrigin.bl }
     })
     const brRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -171,7 +179,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      extraData: { transformOrigin: TransformOrigin.br }
+      extraData: { transformOrigin: TransformOrigin.tl }
     })
     const blRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -182,7 +190,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      extraData: { transformOrigin: TransformOrigin.bl }
+      extraData: { transformOrigin: TransformOrigin.tr }
     })
 
     const rotateCircle = new Circle({

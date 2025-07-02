@@ -9,6 +9,7 @@ import InfoRightPanel from './InfoRightPanel'
 import './style.less'
 import { observer } from 'mobx-react-lite'
 import { createPortal } from 'react-dom'
+import { isDev, isProd } from '@/utils'
 
 const Whiteboard = observer(function Whiteboard() {
   const domRef = useRef()
@@ -29,10 +30,10 @@ const Whiteboard = observer(function Whiteboard() {
 
   const wbEditorContextValue = { wbEditor }
 
-  return createPortal(
+  const wbApp = (
     <WbEditorContext.Provider value={wbEditorContextValue}>
-      <div className="whiteboard-app">
-        <div className="tools-bar flex gap-2 absolute z-50 shadow-lg p-2 left-0 right-0 mx-auto w-fit rounded-lg bg-white">
+      <div className={clsx('whiteboard-app', isProd && 'prod')}>
+        <div className="tools-bar flex gap-2 absolute z-50 shadow-lg p-2 left-0 top-2 border right-0 mx-auto w-fit rounded-lg bg-white">
           {ToolEnum.items.map(item => (
             <button
               key={item.key}
@@ -54,9 +55,14 @@ const Whiteboard = observer(function Whiteboard() {
           <InfoRightPanel />
         </main>
       </div>
-    </WbEditorContext.Provider>,
-    document.body
+    </WbEditorContext.Provider>
   )
+
+  if (isDev) {
+    return wbApp
+  }
+
+  return createPortal(wbApp, document.body)
 })
 
 export default Whiteboard

@@ -6,9 +6,36 @@ import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
 
+type StrategyOp = {
+  getOrigin: (downRect) => ICoord
+  getNewSize: (origin: ICoord, movePos: ICoord) => { width: number; height: number }
+}
+
+type Strategy = Record<TransformOrigin, StrategyOp>
+
+const strategy: Strategy = {
+  [TransformOrigin.tl]: {
+    getOrigin: downRect => ({ x: 0, y: 0 }),
+    getNewSize: (origin: ICoord, movePos: ICoord) => ({ width: movePos.x - origin.x, height: movePos.y - origin.y })
+  },
+  [TransformOrigin.tr]: {
+    getOrigin: downRect => ({ x: downRect.width, y: 0 }),
+    getNewSize: (origin: ICoord, movePos: ICoord) => ({ width: origin.x - movePos.x, height: movePos.y - origin.y })
+  },
+  [TransformOrigin.br]: {
+    getOrigin: downRect => ({ x: downRect.width, y: downRect.height }),
+    getNewSize: (origin: ICoord, movePos: ICoord) => ({ width: origin.x - movePos.x, height: origin.y - movePos.y })
+  },
+  [TransformOrigin.bl]: {
+    getOrigin: downRect => ({ x: 0, y: downRect.height }),
+    getNewSize: (origin: ICoord, movePos: ICoord) => ({ width: movePos.x - origin.x, height: origin.y - movePos.y })
+  }
+}
+
 export default class ToolScale implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin) {
     console.log(transformOrigin)
+
     if (!transformOrigin) {
       throw new Error('transformOrigin is required')
     }
@@ -18,17 +45,22 @@ export default class ToolScale implements ITool {
   startRad: number
   downSnap
 
+  downRect
+
+  strategy: StrategyOp
+
   onDragStart(downEvt: PointerEvent) {
     console.log('ToolScale onDragStart')
 
-    const { graphLayerCoordSys } = this.wbEditor.selectManager.transformDownRect
+    const { graphLayerCoordSys, downRect } = this.wbEditor.selectManager.transformDownRect
 
-    const downPos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(downEvt))
-    this.origin = {
-      x: (graphLayerCoordSys.tl.x + graphLayerCoordSys.br.x) / 2,
-      y: (graphLayerCoordSys.tl.y + graphLayerCoordSys.br.y) / 2
-    }
-    this.startRad = Math.atan2(downPos.y - this.origin.y, downPos.x - this.origin.x)
+    this.downRect = downRect
+
+    const mt = compose(this.wbEditor.graphLayer.data.mt, downRect.mt)
+    const downPos = applyToPoint(inverse(mt), this.wbEditor.client2Stage(downEvt))
+
+    this.strategy = strategy[this.transformOrigin]
+    this.origin = this.strategy.getOrigin(downRect)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
       id: item.id,
@@ -41,14 +73,28 @@ export default class ToolScale implements ITool {
   onDragMove(moveEvt: PointerEvent) {
     console.log('ToolScale onDragMove')
 
-    const movePos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(moveEvt))
-    const currRad = Math.atan2(movePos.y - this.origin.y, movePos.x - this.origin.x)
-    const diffRad = currRad - this.startRad
+    const mt = compose(this.wbEditor.graphLayer.data.mt, this.downRect.mt)
+    const movePos = applyToPoint(inverse(mt), this.wbEditor.client2Stage(moveEvt))
+
+    const newSize = this.strategy.getNewSize(this.origin, movePos)
+
+    const newOrigin = this.strategy.getOrigin(newSize)
+
+    const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
+    const newGlobalPos = applyToPoint(this.downRect.mt, newOrigin)
+
+    const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+
+    const fixPos = translate(-diffPos.x, -diffPos.y)
 
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = this.downSnap[item.id].graphShapeRect
 
-      item.graphShape.attr('mt', compose(rotate(diffRad, this.origin.x, this.origin.y), dSnap.mt))
+      item.graphShape.attr({
+        width: newSize.width,
+        height: newSize.height,
+        mt: compose(fixPos, dSnap.mt)
+      })
     })
 
     this.wbEditor.triggerRender()
