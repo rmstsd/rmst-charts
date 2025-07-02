@@ -2,6 +2,8 @@ import * as React from 'react'
 import { getStroke, getStrokePoints } from 'perfect-freehand'
 import fitCurve from 'fit-curve'
 
+import oc from 'open-color'
+
 export default function Example() {
   const [points, setPoints] = React.useState<number[][]>([])
 
@@ -44,7 +46,6 @@ export default function Example() {
     <svg
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
-      style={{ touchAction: 'none' }}
       className="border"
       width={700}
       height={600}
@@ -57,7 +58,7 @@ export default function Example() {
         <circle key={index} cx={item[0]} cy={item[1]} r={2} />
       ))} */}
 
-      <path d={dd} fill="none" stroke="red" strokeWidth={2} />
+      {/* <path d={dd} fill="none" stroke="red" strokeWidth={2} /> */}
       {/* {points && <path fill="pink" d={getSvgPathFromStroke(stroke)} />} */}
     </svg>
   )

@@ -1,8 +1,8 @@
 import colorAlpha from 'color-alpha'
+import oc from 'open-color' // https://yeun.github.io/open-color/
 
-export const primaryColor = '#364fc7'
+export const primaryColor = oc.indigo[9]
 export const primaryAlphaColor = colorAlpha(primaryColor, 0.1)
 
-// https://yeun.github.io/open-color/
-export const defaultGraphFillColor = '#e9ecef'
-export const defaultGraphPencilColor = '#adb5bd'
+export const defaultGraphFillColor = oc.gray[2]
+export const defaultGraphPencilColor = oc.gray[5]
