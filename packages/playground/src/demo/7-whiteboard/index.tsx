@@ -8,6 +8,7 @@ import InfoRightPanel from './InfoRightPanel'
 
 import './style.less'
 import { observer } from 'mobx-react-lite'
+import { createPortal } from 'react-dom'
 
 const Whiteboard = observer(function Whiteboard() {
   const domRef = useRef()
@@ -28,7 +29,7 @@ const Whiteboard = observer(function Whiteboard() {
 
   const wbEditorContextValue = { wbEditor }
 
-  return (
+  return createPortal(
     <WbEditorContext.Provider value={wbEditorContextValue}>
       <div className="whiteboard-app">
         <div className="tools-bar flex gap-2 absolute z-50 shadow-lg p-2 left-0 right-0 mx-auto w-fit rounded-lg bg-white">
@@ -53,7 +54,8 @@ const Whiteboard = observer(function Whiteboard() {
           <InfoRightPanel />
         </main>
       </div>
-    </WbEditorContext.Provider>
+    </WbEditorContext.Provider>,
+    document.body
   )
 })
 
