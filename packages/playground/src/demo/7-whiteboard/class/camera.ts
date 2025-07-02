@@ -20,7 +20,7 @@ export default class Camera {
   zoom = 1
 
   bindEvent() {
-    const { container, graphLayer: graphGroup, selectManager } = this.wbEditor
+    const { container, graphLayer: graphGroup } = this.wbEditor
     container.onwheel = evt => {
       evt.preventDefault()
 
@@ -38,7 +38,6 @@ export default class Camera {
         mt = compose(tt, scale(this.zoom, this.zoom, nvOrigin.x, nvOrigin.y))
 
         graphGroup.attr('mt', mt)
-        selectManager.renderSelected()
       } else {
         if (evt.shiftKey) {
           const tmt = evt.deltaY > 0 ? translate(-speed, 0) : translate(speed, 0)
@@ -49,7 +48,6 @@ export default class Camera {
         }
 
         graphGroup.attr('mt', mt)
-        selectManager.renderSelected()
       }
 
       this.triggerCameraChange()

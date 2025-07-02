@@ -1,4 +1,4 @@
-import { getBBox, ICoord, IRect, Path } from 'rmst-render'
+import { ICoord, IRect, Path } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
 import { uuid } from '@/utils'
@@ -48,6 +48,8 @@ export default abstract class ToolDrawByRect implements ITool {
       id: this.graphItem.id,
       name: graphData.name,
       d: graphData.d,
+      width,
+      height,
       mt: translate(tl.x, tl.y),
       fillStyle: defaultGraphFillColor,
       lineWidth: 1,
@@ -56,14 +58,14 @@ export default abstract class ToolDrawByRect implements ITool {
       }
     })
 
-    wbEditor.selectManager.renderSelected()
+    wbEditor.triggerRender()
   }
 
   onDragEnd(upEvt: PointerEvent) {
-    this.graphItem.graphShape.attr({
-      width: this.graphItem.graphShape.getBBox().width,
-      height: this.graphItem.graphShape.getBBox().height
-    })
+    // this.graphItem.graphShape.attr({
+    //   width: this.graphItem.graphShape.getBBox().width,
+    //   height: this.graphItem.graphShape.getBBox().height
+    // })
   }
 
   protected abstract getGraphPathD(rect: IRect): { d: string; name: string; wbType: ToolEnumKey }

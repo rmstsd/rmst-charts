@@ -1,4 +1,3 @@
-import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, Matrix, rotate, translate } from 'transformation-matrix'
@@ -56,7 +55,9 @@ export default class selectedManager {
 
       const rotCoord = applyToPoint(mt, rot)
 
-      return { tlCoord, trCoord, brCoord, blCoord, rotCoord }
+      const rt = calculatePerpendicularPoint(tlCoord, trCoord, -20)
+
+      return { tlCoord, trCoord, brCoord, blCoord, rotCoord: rt }
     }
   }
 
@@ -93,6 +94,11 @@ export default class selectedManager {
       this.renderSelected()
       this.renderHovered()
     })
+
+    wbEditor.eventEmitter.on('render', () => {
+      this.renderSelected()
+      this.renderHovered()
+    })
   }
 
   select(id: string) {
@@ -103,20 +109,13 @@ export default class selectedManager {
     } else {
       this.selectedIds.push(id)
     }
-
-    this.renderSelected()
-  }
-
-  triggerSelectedChange() {
-    this.eventEmitter.emit('selectedChange', this.selectedGraphs)
   }
 
   clearSelect() {
     this.selectedIds = []
-    this.renderSelected()
   }
 
-  renderSelected() {
+  private renderSelected() {
     const sel = this.selectedGraphs[0]
 
     if (!sel) {
@@ -272,4 +271,32 @@ const calcRotateRad = (mt: Matrix) => {
   const rad = Math.atan2(tp.y, tp.x)
 
   return rad
+}
+
+// 来自豆包: https://www.doubao.com/thread/w70e0790decf21329
+function calculatePerpendicularPoint(pointA, pointB, fixedDistance) {
+  // 计算中点C的坐标
+  const midpointC = { x: (pointA.x + pointB.x) / 2, y: (pointA.y + pointB.y) / 2 }
+
+  // 计算AB的向量
+  const vectorAB = { x: pointB.x - pointA.x, y: pointB.y - pointA.y }
+
+  // 计算垂线的方向向量（旋转90度）
+  const perpendicularVector = { x: -vectorAB.y, y: vectorAB.x }
+
+  // 计算垂线方向向量的长度
+  const length = Math.sqrt(
+    perpendicularVector.x * perpendicularVector.x + perpendicularVector.y * perpendicularVector.y
+  )
+
+  // 归一化垂线方向向量
+  const normalizedVector = { x: perpendicularVector.x / length, y: perpendicularVector.y / length }
+
+  // 计算点D的坐标（有两个可能的点，这里取其中一个）
+  const pointD = {
+    x: midpointC.x + normalizedVector.x * fixedDistance,
+    y: midpointC.y + normalizedVector.y * fixedDistance
+  }
+
+  return pointD
 }

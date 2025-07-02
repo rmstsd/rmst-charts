@@ -5,12 +5,15 @@ import { schedulerTask } from '../_stage/scheduler'
 import { ICursor, IShape, IShapeType } from '../type'
 import { attrDirty } from '../_stage/controller/DirtyRect'
 import { compose, identity, Matrix, translate } from 'transformation-matrix'
+import { normalizedAttrs } from '../utils/attr'
 
 export interface AbstractUiData extends EventOpt {
   id?: string
   name?: string
   x?: number
   y?: number
+  width?: number
+  height?: number
   shadowColor?: string
   shadowBlur?: number
   shadowOffsetX?: number
@@ -112,35 +115,14 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
   public attr<K extends keyof T>(key: K, value: T[K]): void
 
   public attr(...args) {
-    switch (args.length) {
-      case 1: {
-        const [data] = args
-        this.data = { ...this.data, ...data }
+    const attrs = normalizedAttrs(args)
+    this.data = { ...this.data, ...attrs }
 
-        if (Reflect.has(data, 'x')) {
-          this.data.mt.e = data.x
-        }
-        if (Reflect.has(data, 'y')) {
-          this.data.mt.f = data.y
-        }
-
-        break
-      }
-      case 2: {
-        const [key, value] = args
-        this.data[key] = value
-
-        if (key === 'x') {
-          this.data.mt.e = value
-        } else if (key === 'y') {
-          this.data.mt.f = value
-        }
-        break
-      }
-
-      default:
-        console.log('未实现的参数数量')
-        break
+    if (Reflect.has(attrs, 'x')) {
+      this.data.mt.e = attrs.x
+    }
+    if (Reflect.has(attrs, 'y')) {
+      this.data.mt.f = attrs.y
     }
 
     this.stage?.selectedMgr.updateFlo(this)

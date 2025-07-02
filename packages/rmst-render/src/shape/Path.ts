@@ -1,3 +1,5 @@
+import svgPath from 'svgpath'
+import { normalizedAttrs } from '../utils/attr'
 import AbstractUi, { AbstractUiData, IRect } from './AbstractUi'
 import { svgPathBbox } from 'svg-path-bbox'
 
@@ -20,6 +22,28 @@ export class Path extends AbstractUi<PathData> {
 
   getBBox() {
     return getBBox(this.data.d)
+  }
+
+  override attr(...args: any[]): void {
+    const attrs = normalizedAttrs(args)
+
+    if (Reflect.has(attrs, 'width') || Reflect.has(attrs, 'height')) {
+      let oldWidth = this.data.width
+      let oldHeight = this.data.height
+
+      const newWidth = attrs.width ?? oldWidth
+      const newHeight = attrs.height ?? oldHeight
+
+      if (oldWidth && oldHeight) {
+        const nd = svgPath(this.data.d)
+          .scale(newWidth / oldWidth, newHeight / oldHeight)
+          .toString()
+
+        this.data.d = nd
+      }
+    }
+
+    super.attr(attrs)
   }
 }
 

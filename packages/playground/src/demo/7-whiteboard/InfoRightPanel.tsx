@@ -8,8 +8,8 @@ export default function InfoRightPanel() {
   const [selectedItems, setSelectedItems] = useState<IGraph[]>([])
 
   useEffect(() => {
-    const off = wbEditor.selectManager.eventEmitter.on('selectedChange', data => {
-      console.log(data[0].graphShape.data.mt.e)
+    const off = wbEditor.eventEmitter.on('render', () => {
+      const data = wbEditor.selectManager.selectedGraphs
 
       setSelectedItems(data)
     })
@@ -27,7 +27,7 @@ export default function InfoRightPanel() {
           <div key={item.id}>
             <div className="flex gap-2 items-center">
               <span>x</span>
-              <WbInput
+              <WbInputNumber
                 value={data.mt.e}
                 onChange={val => {
                   console.log(val)
@@ -36,7 +36,7 @@ export default function InfoRightPanel() {
             </div>
             <div className="flex gap-2 items-center">
               <span>y</span>
-              <WbInput
+              <WbInputNumber
                 value={data.mt.f}
                 onChange={val => {
                   console.log(val)
@@ -45,19 +45,25 @@ export default function InfoRightPanel() {
             </div>
             <div className="flex gap-2 items-center">
               <span>width</span>
-              <WbInput
+              <WbInputNumber
                 value={data.width}
                 onChange={val => {
                   console.log(val)
+
+                  graphShape.attr({ width: val })
+
+                  wbEditor.triggerRender()
                 }}
               />
             </div>
             <div className="flex gap-2 items-center">
               <span>height</span>
-              <WbInput
+              <WbInputNumber
                 value={data.height}
                 onChange={val => {
                   console.log(val)
+                  graphShape.attr({ height: val })
+                  wbEditor.triggerRender()
                 }}
               />
             </div>
@@ -68,7 +74,7 @@ export default function InfoRightPanel() {
   )
 }
 
-const WbInput = props => {
+const WbInputNumber = props => {
   const { value, onChange } = props
 
   const inputRet = useRef<HTMLInputElement>()
@@ -83,7 +89,12 @@ const WbInput = props => {
       style={{ width: '100%' }}
       ref={inputRet}
       onBlur={evt => {
-        onChange?.(evt.target.value)
+        let num = parseFloat(evt.target.value)
+        if (Number.isNaN(num)) {
+          num = 0
+        }
+
+        onChange?.(num)
       }}
     />
   )
