@@ -25,7 +25,7 @@ export default function Mt() {
 
     const ctx = canvas.getContext('2d')
 
-    const dpr = 3 // window.devicePixelRatio
+    const dpr = 1 // window.devicePixelRatio
     const rect = canvas.getBoundingClientRect()
     canvas.width = rect.width * dpr
     canvas.height = rect.height * dpr
@@ -180,8 +180,15 @@ export default function Mt() {
     }
 
     zoomT1.onclick = () => {
-      const newMt = scale(1, 1, center.x, center.y)
-      mt = newMt
+      const center = { x: canvasCoordSize.x / 2, y: canvasCoordSize.y / 2 }
+      const nvOrigin = applyToPoint(inverse(mt), center)
+
+      const newMt = scale(zoom, zoom, nvOrigin.x, nvOrigin.y)
+      const tt = compose(mt, inverse(newMt))
+
+      zoom = 1
+      mt = compose(tt, scale(zoom, zoom, nvOrigin.x, nvOrigin.y))
+
       drawStage()
     }
 

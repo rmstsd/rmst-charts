@@ -1,9 +1,9 @@
-import { ICoord, IRect, Path } from 'rmst-render'
+import { getBBox, ICoord, IRect, Path } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
 import { uuid } from '@/utils'
 import { applyToPoint, compose, inverse, translate } from 'transformation-matrix'
-import { Graph } from '../../../type'
+import { IGraph } from '../../../type'
 import { ToolEnumKey } from './../constant'
 
 export default abstract class ToolDrawByRect implements ITool {
@@ -11,7 +11,7 @@ export default abstract class ToolDrawByRect implements ITool {
 
   downPos: ICoord
 
-  graphItem = {} as Graph
+  graphItem = {} as IGraph
 
   onDragStart(downEvt: PointerEvent) {
     this.downPos = this.wbEditor.client2Stage(downEvt)
@@ -58,7 +58,12 @@ export default abstract class ToolDrawByRect implements ITool {
     wbEditor.selectManager.renderSelected()
   }
 
-  onDragEnd(upEvt: PointerEvent) {}
+  onDragEnd(upEvt: PointerEvent) {
+    this.graphItem.graphShape.attr({
+      width: this.graphItem.graphShape.getBBox().width,
+      height: this.graphItem.graphShape.getBBox().height
+    })
+  }
 
   protected abstract getGraphPathD(rect: IRect): { d: string; name: string; wbType: ToolEnumKey }
 }

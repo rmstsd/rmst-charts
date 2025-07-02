@@ -9,3 +9,17 @@ export const ToolEnum = Enum({
 })
 
 export type ToolEnumKey = (typeof ToolEnum.keys)[number]
+
+export enum TransformOrigin {
+  tl = 'tl',
+  tr = 'tr',
+  br = 'br',
+  bl = 'bl',
+
+  Top = 'top',
+  Right = 'right',
+  Bottom = 'bottom',
+  Left = 'left',
+
+  Center = 'center'
+}

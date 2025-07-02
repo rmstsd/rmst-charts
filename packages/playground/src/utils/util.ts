@@ -1,7 +1,7 @@
 interface DragOptions {
   start?: (downEvt: React.PointerEvent | PointerEvent) => void
   onMove?: (moveEvt: PointerEvent) => void
-  end?: (upEvt: PointerEvent) => void
+  onUp?: (upEvt: PointerEvent) => void
 }
 
 let disableClick = false
@@ -16,13 +16,16 @@ document.addEventListener(
 )
 
 export const startDrag = (downEvt: React.PointerEvent | PointerEvent, options: DragOptions) => {
-  const { start, onMove, end: onUp } = options
+  const { start, onMove, onUp } = options
 
   const abCt = new AbortController()
 
+  const target = downEvt.target as HTMLElement
+  target.setPointerCapture(downEvt.pointerId)
+
   let isMoved = false
 
-  document.addEventListener(
+  target.addEventListener(
     'pointermove',
     moveEvt => {
       const dis = Math.hypot(moveEvt.clientX - downEvt.clientX, moveEvt.clientY - downEvt.clientY)
@@ -43,21 +46,20 @@ export const startDrag = (downEvt: React.PointerEvent | PointerEvent, options: D
     { signal: abCt.signal }
   )
 
-  document.addEventListener(
-    'pointerup',
-    evt => {
-      setTimeout(() => {
-        disableClick = false
-      })
+  const cancel = (evt: PointerEvent) => {
+    setTimeout(() => {
+      disableClick = false
+    })
 
-      abCt.abort()
+    abCt.abort()
 
-      if (isMoved) {
-        onUp?.(evt)
-      }
-    },
-    { signal: abCt.signal }
-  )
+    if (isMoved) {
+      onUp?.(evt)
+    }
+  }
+
+  target.addEventListener('pointerup', cancel, { signal: abCt.signal })
+  target.addEventListener('pointercancel', cancel, { signal: abCt.signal })
 }
 
 export function clearWebSelection() {

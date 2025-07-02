@@ -3,8 +3,8 @@ import WhiteboardEditor from '../whiteboardEditor'
 import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
 
-const zoomSpeed = 1.1
-const speed = 50
+const zoomSpeed = 1.2
+const speed = 100
 
 interface Events {
   cameraChange: () => void

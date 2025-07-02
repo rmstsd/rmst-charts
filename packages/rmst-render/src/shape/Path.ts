@@ -7,6 +7,8 @@ const defaultData = {
 
 interface PathData extends AbstractUiData {
   d?: string
+  width?: number
+  height?: number
 }
 
 export class Path extends AbstractUi<PathData> {
@@ -17,11 +19,15 @@ export class Path extends AbstractUi<PathData> {
   declare data: PathData
 
   getBBox() {
-    const [x1, y1, x2, y2] = svgPathBbox(this.data.d)
-
-    const rect = { x: x1, y: y1, width: x2 - x1, height: y2 - y1 }
-    return rect
+    return getBBox(this.data.d)
   }
 }
 
 export default Path
+
+export const getBBox = (d: string) => {
+  const [x1, y1, x2, y2] = svgPathBbox(d)
+
+  const rect = { x: x1, y: y1, width: x2 - x1, height: y2 - y1 }
+  return rect
+}

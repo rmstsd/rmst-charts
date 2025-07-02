@@ -12,7 +12,6 @@ export default class ToolTranslate implements ITool {
 
   onDragStart(downEvt: PointerEvent) {
     console.log('ToolTranslate onDragStart')
-    this.wbEditor.selectManager.disableHover()
 
     this.downPos = this.wbEditor.client2Stage(downEvt)
 
@@ -39,10 +38,10 @@ export default class ToolTranslate implements ITool {
     })
 
     this.wbEditor.selectManager.renderSelected()
+    this.wbEditor.selectManager.triggerSelectedChange()
   }
 
   onDragEnd(upEvt: PointerEvent) {
     console.log('ToolTranslate onDragEnd')
-    this.wbEditor.selectManager.enableHover()
   }
 }

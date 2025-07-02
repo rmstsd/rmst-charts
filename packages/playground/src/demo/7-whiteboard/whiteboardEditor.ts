@@ -4,7 +4,7 @@ import { ToolEnum, ToolEnumKey } from './class/ToolManager/constant'
 
 import selectedManager from './class/selectedManager'
 import ToolManager from './class/ToolManager/ToolManager'
-import { Graph } from './type'
+import { IGraph } from './type'
 import Camera from './class/camera'
 import { Graph_Id } from './constant'
 
@@ -22,7 +22,7 @@ class WhiteboardEditor {
     selectToolGroup: new Group({ name: 'ctrl 层' })
   }
 
-  graphs: Graph[] = []
+  graphs: IGraph[] = []
 
   selectManager = new selectedManager(this)
   toolManager = new ToolManager(this)
