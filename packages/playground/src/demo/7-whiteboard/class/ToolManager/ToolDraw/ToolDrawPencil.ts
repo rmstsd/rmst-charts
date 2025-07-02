@@ -9,6 +9,7 @@ import { uuid } from '@/utils'
 import { svgPathBbox } from 'svg-path-bbox'
 import svgPath from 'svgpath'
 import fitCurve from 'fit-curve'
+import { defaultGraphPencilColor } from '@/demo/7-whiteboard/color'
 
 export default class ToolDrawPencil implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -65,7 +66,8 @@ export default class ToolDrawPencil implements ITool {
       name: ToolEnum.label(ToolEnum.Pencil),
       d: tempD,
       // mt: translate(x1, y1),
-      strokeStyle: 'red',
+      strokeStyle: defaultGraphPencilColor,
+      lineWidth: 3,
       extraData: {
         wbType: ToolEnum.Pencil
       }

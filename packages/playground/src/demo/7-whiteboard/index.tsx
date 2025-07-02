@@ -36,7 +36,7 @@ const Whiteboard = observer(function Whiteboard() {
           {ToolEnum.items.map(item => (
             <button
               key={item.key}
-              className={clsx(wbEditor.toolManager.currentTool === item.key && 'bg-red-200')}
+              className={clsx('tool-btn', wbEditor.toolManager.currentTool === item.key && 'selected')}
               onClick={() => wbEditor.toolManager.switchTool(item.key)}
             >
               {item.label}

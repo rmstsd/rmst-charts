@@ -5,6 +5,7 @@ import { uuid } from '@/utils'
 import { applyToPoint, compose, inverse, translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
 import { ToolEnumKey } from './../constant'
+import { defaultGraphFillColor } from '@/demo/7-whiteboard/color'
 
 export default abstract class ToolDrawByRect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -48,7 +49,7 @@ export default abstract class ToolDrawByRect implements ITool {
       name: graphData.name,
       d: graphData.d,
       mt: translate(tl.x, tl.y),
-      fillStyle: 'pink',
+      fillStyle: defaultGraphFillColor,
       lineWidth: 1,
       extraData: {
         wbType: graphData.wbType
