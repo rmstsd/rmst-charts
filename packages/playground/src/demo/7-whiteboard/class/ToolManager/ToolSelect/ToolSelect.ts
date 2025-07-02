@@ -6,11 +6,13 @@ import { Graph_Id } from '@/demo/7-whiteboard/constant'
 
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
+import ToolRotate from './ToolRotate'
+import ToolScale from './ToolScale'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
-  currentStrategy: ITool // 平移 | 选装 | 缩放 | 框选
+  currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选
 
   downPos: ICoord
 
@@ -44,6 +46,7 @@ export default class ToolSelect implements ITool {
   onDeActive() {
     const { wbEditor } = this
     wbEditor.selectManager.disableHover()
+
     const stage_eventDispatcher = wbEditor.stage.eventDispatcher
     stage_eventDispatcher.onPointerEnter = null
     stage_eventDispatcher.onPointerLeave = null
@@ -67,17 +70,28 @@ export default class ToolSelect implements ITool {
     }
 
     if (isWbGraphShape(shape)) {
-      wbEditor.selectManager.select(shape.data.id)
       wbEditor.selectManager.onHover(shape.data.id, false)
+      wbEditor.selectManager.select(shape.data.id)
+
       this.currentStrategy = new ToolTranslate(wbEditor)
     } else if (shape.data.id === Graph_Id.graph_ctrl_translate) {
       console.log('平移操作')
 
       this.currentStrategy = new ToolTranslate(wbEditor)
+    } else if (shape.data.id === Graph_Id.graph_ctrl_rotate) {
+      console.log('旋转操作')
+
+      this.currentStrategy = new ToolRotate(wbEditor)
+    } else if (shape.data.id === Graph_Id.graph_ctrl_scale) {
+      console.log('缩放操作')
+
+      this.currentStrategy = new ToolScale(wbEditor, shape.data.extraData?.transformOrigin)
     }
   }
 
   onDragStart(downEvt: PointerEvent) {
+    this.wbEditor.selectManager.disableHover()
+
     this.currentStrategy.onDragStart(downEvt)
   }
 
@@ -87,10 +101,12 @@ export default class ToolSelect implements ITool {
 
   onDragEnd(upEvt: PointerEvent) {
     this.currentStrategy.onDragEnd(upEvt)
+
+    this.wbEditor.selectManager.enableHover()
   }
 }
 
-// 是绘制出来的图形
+// 是用户绘制出来的图形
 const isWbGraphShape = (shape: IShape) => {
   return ToolEnum.has(shape.data.extraData?.wbType)
 }

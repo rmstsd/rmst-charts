@@ -47,7 +47,7 @@ export default class ToolManager {
         onMove: moveEvt => {
           this.currentToolClass.onDragMove(moveEvt)
         },
-        end: upEvt => {
+        onUp: upEvt => {
           this.currentToolClass.onDragEnd(upEvt)
           this.switchTool(ToolEnum.Select)
         }

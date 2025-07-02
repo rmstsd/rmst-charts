@@ -2,6 +2,7 @@ import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint, inverse } from 'transformation-matrix'
 import { ICoord, Rect } from 'rmst-render'
+import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
@@ -15,8 +16,8 @@ export default class ToolBoxSelection implements ITool {
     y: 0,
     width: 0,
     height: 0,
-    fillStyle: 'rgba(175, 167, 255, 0.13)',
-    strokeStyle: '#616BDC',
+    fillStyle: primaryAlphaColor,
+    strokeStyle: primaryColor,
     lineWidth: 2
   })
 

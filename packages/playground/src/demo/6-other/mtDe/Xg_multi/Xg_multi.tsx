@@ -339,7 +339,7 @@ const Xg_multi = observer(function TranslationCom() {
 
           rect.mt = compose(mdf, nmt)
         },
-        end(upEvt) {
+        onUp(upEvt) {
           console.log(cloneDeep(selectedRects))
         }
       })
@@ -376,7 +376,7 @@ const Xg_multi = observer(function TranslationCom() {
             Object.assign(item, d)
           })
         },
-        end(upEvt) {
+        onUp(upEvt) {
           console.log(cloneDeep(selectedRects))
         }
       })

@@ -8,17 +8,8 @@
     "build:rmst-charts": "pnpm run -C packages/rmst-charts build"
   },
   "dependencies": {
-    "@leafer-in/editor": "^1.7.0",
-    "clsx": "^2.1.1",
     "enum-plus": "^2.3.3",
     "fit-curve": "^0.2.0",
-    "gl-matrix": "^3.4.3",
-    "helux": "^5.4.3",
-    "leafer-ui": "^1.7.0",
-    "less": "^4.3.0",
-    "mobx": "^6.13.6",
-    "mobx-react-lite": "^4.1.0",
-    "playground": "^0.7.0",
     "svg-path-bbox": "^2.1.0",
     "svgpath": "^2.6.0",
     "transformation-matrix": "^3.0.0"

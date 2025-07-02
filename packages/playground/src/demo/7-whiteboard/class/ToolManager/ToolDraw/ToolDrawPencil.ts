@@ -1,10 +1,10 @@
-import { ICoord, Path } from 'rmst-render'
+import { getBBox, ICoord, Path } from 'rmst-render'
 import { getStroke } from 'perfect-freehand'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
 import { ToolEnum } from './../constant'
 import { applyToPoint, compose, inverse, translate } from 'transformation-matrix'
-import { Graph } from '../../../type'
+import { IGraph } from '../../../type'
 import { uuid } from '@/utils'
 import { svgPathBbox } from 'svg-path-bbox'
 import svgPath from 'svgpath'
@@ -14,7 +14,7 @@ export default class ToolDrawPencil implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
   downPos: ICoord
-  graphItem = {} as Graph
+  graphItem = {} as IGraph
 
   private points: [number, number, number][] = []
 
@@ -75,11 +75,9 @@ export default class ToolDrawPencil implements ITool {
   onDragEnd(upEvt: PointerEvent) {
     let curveD = fitCurveD(this.points)
 
-    const bbox = svgPathBbox(curveD)
-    const [x1, y1] = bbox
-    curveD = svgPath(curveD).translate(-x1, -y1).toString()
-
-    this.graphItem.graphShape.attr({ d: curveD, mt: translate(x1, y1) })
+    const bbox = getBBox(curveD)
+    curveD = svgPath(curveD).translate(-bbox.x, -bbox.y).toString()
+    this.graphItem.graphShape.attr({ d: curveD, width: bbox.width, height: bbox.height, mt: translate(bbox.x, bbox.y) })
   }
 }
 
