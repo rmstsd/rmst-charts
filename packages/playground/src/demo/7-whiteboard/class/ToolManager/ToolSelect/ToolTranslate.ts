@@ -37,8 +37,7 @@ export default class ToolTranslate implements ITool {
       item.graphShape.attr('mt', compose(tmt, dSnap.downMt))
     })
 
-    this.wbEditor.selectManager.renderSelected()
-    this.wbEditor.selectManager.triggerSelectedChange()
+    this.wbEditor.triggerRender()
   }
 
   onDragEnd(upEvt: PointerEvent) {

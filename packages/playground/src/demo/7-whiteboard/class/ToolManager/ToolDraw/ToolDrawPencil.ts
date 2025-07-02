@@ -19,6 +19,12 @@ export default class ToolDrawPencil implements ITool {
 
   private points: [number, number, number][] = []
 
+  onActive() {
+    this.wbEditor.selectManager.clearSelect()
+
+    this.wbEditor.triggerRender()
+  }
+
   onPointerDown(downEvt: PointerEvent) {}
 
   onDragStart(downEvt: PointerEvent) {

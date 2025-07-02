@@ -45,7 +45,7 @@ export default class ToolRotate implements ITool {
       item.graphShape.attr('mt', compose(rotate(diffRad, this.origin.x, this.origin.y), dSnap.mt))
     })
 
-    this.wbEditor.selectManager.renderSelected()
+    this.wbEditor.triggerRender()
   }
 
   onDragEnd(upEvt: PointerEvent) {

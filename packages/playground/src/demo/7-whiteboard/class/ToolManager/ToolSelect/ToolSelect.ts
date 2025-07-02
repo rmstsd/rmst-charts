@@ -66,6 +66,7 @@ export default class ToolSelect implements ITool {
       wbEditor.selectManager.clearSelect()
       this.currentStrategy = new ToolBoxSelection(wbEditor)
 
+      wbEditor.triggerRender()
       return
     }
 
@@ -74,6 +75,8 @@ export default class ToolSelect implements ITool {
       wbEditor.selectManager.select(shape.data.id)
 
       this.currentStrategy = new ToolTranslate(wbEditor)
+
+      wbEditor.triggerRender()
     } else if (shape.data.id === Graph_Id.graph_ctrl_translate) {
       console.log('平移操作')
 
