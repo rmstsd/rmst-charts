@@ -10,7 +10,7 @@ import { TransformOrigin } from './ToolManager/constant'
 import EventEmitter from 'rmst-render/event_emitter'
 
 const ctrlSize = 12
-
+const rotateSize = ctrlSize * 2
 interface Events {
   selectedChange: (selectedGraphs: IGraph[]) => void // 选中变化事件, 以及选中的元素的数据变化
 }
@@ -232,17 +232,21 @@ export default class selectedManager {
 
     const cloned = this.clonedGraphToGraphLayer(sel, { lineWidth: 1 })
 
+    const rotateHandleMt = compose(
+      translate(-rotateSize / 2, -rotateSize / 2),
+      rotate(rad, rotateSize / 2, rotateSize / 2)
+    )
     const rcs = Object.keys(outerBboxCoordSys).map(item => {
       const val = outerBboxCoordSys[item]
       const rotateCircle = new Rect({
         id: Graph_Id.graph_ctrl_rotate,
         x: val.x,
         y: val.y,
-        width: ctrlSize,
-        height: ctrlSize,
+        width: rotateSize,
+        height: rotateSize,
         fillStyle: 'white',
         strokeStyle: primaryColor,
-        mt: scaleHandleMt
+        mt: rotateHandleMt
       })
 
       return rotateCircle

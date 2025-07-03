@@ -5,7 +5,8 @@ export const ToolEnum = Enum({
   Rect: { label: '矩形' },
   Ellipse: { label: '椭圆' },
   Rhombus: { label: '菱形' },
-  Pencil: { label: '铅笔' }
+  Pencil: { label: '铅笔' },
+  Image: { label: '图片' }
 })
 
 export type ToolEnumKey = (typeof ToolEnum.keys)[number]
