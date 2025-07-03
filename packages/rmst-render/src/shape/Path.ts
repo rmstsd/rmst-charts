@@ -28,6 +28,13 @@ export class Path extends AbstractUi<PathData> {
     const attrs = normalizedAttrs(args)
 
     if (Reflect.has(attrs, 'width') || Reflect.has(attrs, 'height')) {
+      if (attrs.width === 0) {
+        attrs.width = 0.01
+      }
+      if (attrs.height === 0) {
+        attrs.height = 0.01
+      }
+
       let oldWidth = this.data.width
       let oldHeight = this.data.height
 

@@ -1,7 +1,7 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, Matrix, rotate, translate } from 'transformation-matrix'
-import { Circle, Group, Line, Rect } from 'rmst-render'
+import { Circle, Group, Line, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
 import { Graph_Id } from '../constant'
@@ -53,11 +53,22 @@ export default class selectedManager {
       const brCoord = applyToPoint(mt, br)
       const blCoord = applyToPoint(mt, bl)
 
-      const rotCoord = applyToPoint(mt, rot)
+      const padding = 20
+      const outerBbox = {
+        x: bbox.x - padding,
+        y: bbox.y - padding,
+        width: bbox.width + padding * 2,
+        height: bbox.height + padding * 2
+      }
 
-      const rt = calculatePerpendicularPoint(tlCoord, trCoord, -20)
+      const outerBboxCoordSys = {
+        tl: applyToPoint(graData.mt, { x: outerBbox.x, y: outerBbox.y }),
+        tr: applyToPoint(graData.mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y }),
+        br: applyToPoint(graData.mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y + outerBbox.height }),
+        bl: applyToPoint(graData.mt, { x: outerBbox.x, y: outerBbox.y + outerBbox.height })
+      }
 
-      return { tlCoord, trCoord, brCoord, blCoord, rotCoord: rt }
+      return { tlCoord, trCoord, brCoord, blCoord, outerBboxCoordSys }
     }
   }
 
@@ -131,7 +142,7 @@ export default class selectedManager {
       return
     }
 
-    const { tlCoord, trCoord, brCoord, blCoord, rotCoord } = this.selectBox
+    const { tlCoord, trCoord, brCoord, blCoord, outerBboxCoordSys } = this.selectBox
 
     const selFrame = new Line({
       id: Graph_Id.graph_ctrl_translate,
@@ -159,6 +170,13 @@ export default class selectedManager {
       mt: scaleHandleMt,
       extraData: { transformOrigin: TransformOrigin.br }
     })
+    const tlText = new Text({
+      x: tlCoord.x,
+      y: tlCoord.y,
+      content: '1',
+      pointerEvents: 'none',
+      mt: scaleHandleMt
+    })
     const trRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
       x: trCoord.x,
@@ -169,6 +187,13 @@ export default class selectedManager {
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
       extraData: { transformOrigin: TransformOrigin.bl }
+    })
+    const trText = new Text({
+      x: trCoord.x,
+      y: trCoord.y,
+      content: '2',
+      pointerEvents: 'none',
+      mt: scaleHandleMt
     })
     const brRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -181,6 +206,13 @@ export default class selectedManager {
       mt: scaleHandleMt,
       extraData: { transformOrigin: TransformOrigin.tl }
     })
+    const brText = new Text({
+      x: brCoord.x,
+      y: brCoord.y,
+      content: '3',
+      pointerEvents: 'none',
+      mt: scaleHandleMt
+    })
     const blRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
       x: blCoord.x,
@@ -192,20 +224,48 @@ export default class selectedManager {
       mt: scaleHandleMt,
       extraData: { transformOrigin: TransformOrigin.tr }
     })
-
-    const rotateCircle = new Circle({
-      id: Graph_Id.graph_ctrl_rotate,
-      x: rotCoord.x,
-      y: rotCoord.y,
-      radius: ctrlSize / 2,
-      fillStyle: 'white',
-      strokeStyle: primaryColor
+    const blText = new Text({
+      x: blCoord.x,
+      y: blCoord.y,
+      content: '4',
+      pointerEvents: 'none',
+      mt: scaleHandleMt
     })
 
     const cloned = this.clonedGraphToGraphLayer(sel, { lineWidth: 1 })
 
+    const rcs = Object.keys(outerBboxCoordSys).map(item => {
+      const val = outerBboxCoordSys[item]
+      const rotateCircle = new Rect({
+        id: Graph_Id.graph_ctrl_rotate,
+        x: val.x,
+        y: val.y,
+        width: ctrlSize,
+        height: ctrlSize,
+        fillStyle: 'white',
+        strokeStyle: primaryColor,
+        mt: scaleHandleMt
+      })
+
+      return rotateCircle
+    })
+
+    const outerCenter = {
+      x: (outerBboxCoordSys.tl.x + outerBboxCoordSys.tr.x) / 2,
+      y: (outerBboxCoordSys.tl.y + outerBboxCoordSys.tr.y) / 2
+    }
+
+    const rotateCircle = new Circle({
+      id: Graph_Id.graph_ctrl_rotate,
+      x: outerCenter.x,
+      y: outerCenter.y,
+      radius: ctrlSize,
+      fillStyle: 'white',
+      strokeStyle: primaryColor
+    })
+
     const g = new Group({ name: 'ctrl-box' })
-    g.append([cloned, selFrame, tlRect, trRect, brRect, blRect, rotateCircle])
+    g.append([cloned, selFrame, tlRect, trRect, brRect, blRect, tlText, trText, brText, blText, ...rcs, rotateCircle])
 
     this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
     this.wbEditor.selectLayer.selectToolGroup.append(g)

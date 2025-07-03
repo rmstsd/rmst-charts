@@ -1,7 +1,7 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 
-import { applyToPoint, compose, inverse, rotate, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, rotate, scale, translate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
@@ -56,9 +56,6 @@ export default class ToolScale implements ITool {
 
     this.downRect = downRect
 
-    const mt = compose(this.wbEditor.graphLayer.data.mt, downRect.mt)
-    const downPos = applyToPoint(inverse(mt), this.wbEditor.client2Stage(downEvt))
-
     this.strategy = strategy[this.transformOrigin]
     this.origin = this.strategy.getOrigin(downRect)
 
@@ -78,22 +75,31 @@ export default class ToolScale implements ITool {
 
     const newSize = this.strategy.getNewSize(this.origin, movePos)
 
+    const scaleX = Math.sign(newSize.width) || 1 // 如果是 0 取 1
+    const scaleY = Math.sign(newSize.height) || 1
+    const scaleMt = scale(scaleX, scaleY)
+
+    newSize.width = Math.abs(newSize.width)
+    newSize.height = Math.abs(newSize.height)
+
     const newOrigin = this.strategy.getOrigin(newSize)
-
-    const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
-    const newGlobalPos = applyToPoint(this.downRect.mt, newOrigin)
-
-    const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
-
-    const fixPos = translate(-diffPos.x, -diffPos.y)
 
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = this.downSnap[item.id].graphShapeRect
 
+      const newMt = compose(dSnap.mt, scaleMt)
+
+      const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
+      const newGlobalPos = applyToPoint(newMt, newOrigin)
+
+      const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+
+      const fixPos = translate(-diffPos.x, -diffPos.y)
+
       item.graphShape.attr({
         width: newSize.width,
         height: newSize.height,
-        mt: compose(fixPos, dSnap.mt)
+        mt: compose(fixPos, newMt)
       })
     })
 
