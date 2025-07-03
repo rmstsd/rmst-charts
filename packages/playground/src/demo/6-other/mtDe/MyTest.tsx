@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { getStroke, getStrokePoints } from 'perfect-freehand'
 import fitCurve from 'fit-curve'
+import dogPng from '@/assets/zy.jpg'
 
 import oc from 'open-color'
 
@@ -41,6 +42,28 @@ export default function Example() {
 
     dd += `M ${f1[0]},${f1[1]} C ${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${s2[0]},${s2[1]}`
   })
+
+  React.useEffect(() => {}, [])
+
+  const onLoad = () => {
+    const canvas = document.querySelector('canvas')
+    const ctx = canvas.getContext('2d')
+
+    var img = document.getElementById('lamp') as HTMLImageElement
+    var pat = ctx.createPattern(img, 'no-repeat')
+    ctx.rect(0, 0, 350, 300)
+    ctx.fillStyle = pat
+    ctx.stroke()
+    ctx.fill()
+  }
+
+  return (
+    <div>
+      <canvas className="border" width={600} height={600}></canvas>
+
+      <img id="lamp" src={dogPng} onLoad={onLoad} />
+    </div>
+  )
 
   return (
     <svg
