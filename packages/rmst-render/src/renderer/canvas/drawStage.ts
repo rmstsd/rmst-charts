@@ -1,6 +1,6 @@
 import { scale, rotate, translate, compose, applyToPoint, transform } from 'transformation-matrix'
 
-import { BoxHidden, Circle, Ellipse, Group, Line, Path, Text, Trapezoid } from '../../shape'
+import { BoxHidden, Circle, Ellipse, Group, Image as RrImage, Line, Path, Text, Trapezoid } from '../../shape'
 import { clipRect, createLinePath2D, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
@@ -24,21 +24,21 @@ export function drawStage(stage: Stage) {
 
   ctx.restore()
 
-  function drawChildren(list: IShape[]) {
-    sortChildren(list).forEach(elementItem => {
+  async function drawChildren(list: IShape[]) {
+    for (const elementItem of sortChildren(list)) {
       const { data } = elementItem
 
       if (!data.visible) {
-        return
+        continue
       }
 
       ctx.beginPath()
 
       ctx.save()
 
-      setCtxStyleProp(ctx, elementItem)
       const mt = data.mt
       ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
+      setCtxStyleProp(ctx, elementItem)
 
       switch (elementItem.type) {
         case 'Circle': {
@@ -108,6 +108,20 @@ export function drawStage(stage: Stage) {
           ctx.fillText(content, x, y)
           break
         }
+        case 'Image': {
+          let { width, height, src } = data as RrImage['data']
+
+          const image = new Image()
+
+          image.src = src
+
+          await new Promise(resolve => {
+            image.onload = resolve
+          })
+          ctx.drawImage(image, 0, 0, width, height)
+
+          break
+        }
 
         default:
           console.log(elementItem.type, '该图形 暂未实现')
@@ -115,6 +129,6 @@ export function drawStage(stage: Stage) {
       }
 
       ctx.restore()
-    })
+    }
   }
 }

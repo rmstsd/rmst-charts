@@ -36,6 +36,7 @@ import CollisionOOP from '@/demo/2-rmst-render/funny/Collision/CollisionOOP'
 import { isProd } from '@/utils'
 import EllipseDemo from '@/demo/2-rmst-render/base-shape/EllipseDemo'
 import PathDemo from '@/demo/2-rmst-render/base-shape/PathDemo'
+import ImageDemo from '@/demo/2-rmst-render/base-shape/ImageDemo'
 
 const rmstRenderRouteConfig: IRouteObject = {
   path: '/rmst-render',
@@ -60,6 +61,7 @@ const rmstRenderRouteConfig: IRouteObject = {
         { path: 'ellipse', element: <EllipseDemo />, uiConfig: { title: '椭圆' } },
         { path: 'line', element: <LineDemo />, uiConfig: { title: '线' } },
         { path: 'path', element: <PathDemo />, uiConfig: { title: '路径' } },
+        { path: 'image', element: <ImageDemo />, uiConfig: { title: '图片' } },
         { path: 'text', element: <TextDemo />, uiConfig: { title: '文本' } }
       ]
     },
