@@ -9,6 +9,8 @@ import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import EventEmitter from 'rmst-render/event_emitter'
 
+const ctrlSize = 12
+
 interface Events {
   selectedChange: (selectedGraphs: IGraph[]) => void // 选中变化事件, 以及选中的元素的数据变化
 }
@@ -44,8 +46,6 @@ export default class selectedManager {
       const br = { x: bbox.width, y: bbox.height }
       const bl = { x: 0, y: bbox.height }
 
-      const rot = { x: bbox.width / 2, y: -20 }
-
       const mt = compose(this.wbEditor.graphLayer.data.mt, graData.mt)
 
       const tlCoord = applyToPoint(mt, tl)
@@ -53,7 +53,7 @@ export default class selectedManager {
       const brCoord = applyToPoint(mt, br)
       const blCoord = applyToPoint(mt, bl)
 
-      const padding = 20
+      const padding = 20 / this.wbEditor.camera.zoom
       const outerBbox = {
         x: bbox.x - padding,
         y: bbox.y - padding,
@@ -62,10 +62,10 @@ export default class selectedManager {
       }
 
       const outerBboxCoordSys = {
-        tl: applyToPoint(graData.mt, { x: outerBbox.x, y: outerBbox.y }),
-        tr: applyToPoint(graData.mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y }),
-        br: applyToPoint(graData.mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y + outerBbox.height }),
-        bl: applyToPoint(graData.mt, { x: outerBbox.x, y: outerBbox.y + outerBbox.height })
+        tl: applyToPoint(mt, { x: outerBbox.x, y: outerBbox.y }),
+        tr: applyToPoint(mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y }),
+        br: applyToPoint(mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y + outerBbox.height }),
+        bl: applyToPoint(mt, { x: outerBbox.x, y: outerBbox.y + outerBbox.height })
       }
 
       return { tlCoord, trCoord, brCoord, blCoord, outerBboxCoordSys }
@@ -152,8 +152,6 @@ export default class selectedManager {
       strokeStyle: primaryColor,
       lineWidth: 2
     })
-
-    const ctrlSize = 12
 
     const rad = calcRotateRad(sel.graphShape.data.mt)
 
