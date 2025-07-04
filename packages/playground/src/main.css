@@ -30,6 +30,8 @@ body,
   width: 750px;
   height: 500px;
   border: 1px solid #aaa;
+  resize: both;
+  overflow: hidden;
 }
 
 .uu {

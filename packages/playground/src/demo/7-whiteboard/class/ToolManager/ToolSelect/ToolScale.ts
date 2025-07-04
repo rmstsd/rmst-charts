@@ -71,7 +71,7 @@ export default class ToolScale implements ITool {
     console.log('ToolScale onDragMove')
 
     const mt = compose(this.wbEditor.graphLayer.data.mt, this.downRect.mt)
-    const movePos = applyToPoint(inverse(mt), this.wbEditor.client2Stage(moveEvt))
+    const movePos = applyToPoint(inverse(mt), this.wbEditor.client2World(moveEvt))
 
     const newSize = this.strategy.getNewSize(this.origin, movePos)
 

@@ -43,25 +43,39 @@ export default function Example() {
     dd += `M ${f1[0]},${f1[1]} C ${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${s2[0]},${s2[1]}`
   })
 
-  React.useEffect(() => {}, [])
-
-  const onLoad = () => {
+  React.useEffect(() => {
     const canvas = document.querySelector('canvas')
     const ctx = canvas.getContext('2d')
 
-    var img = document.getElementById('lamp') as HTMLImageElement
-    var pat = ctx.createPattern(img, 'no-repeat')
-    ctx.rect(0, 0, 350, 300)
-    ctx.fillStyle = pat
-    ctx.stroke()
+    ctx.clearRect(0, 0, 600, 600)
+
+    ctx.save()
+    ctx.beginPath()
+
+    const rect2d = new Path2D()
+
+    rect2d.rect(100, 100, 100, 100)
+
+    ctx.clip(rect2d)
+
+    ctx.beginPath()
+    ctx.arc(100, 100, 50, 0, Math.PI * 2, true)
+    ctx.fillStyle = 'red'
     ctx.fill()
-  }
+
+    ctx.restore()
+
+    ctx.fillStyle = 'pink'
+    ctx.strokeStyle = 'orange'
+    ctx.lineWidth = 4
+    ctx.stroke(rect2d)
+  }, [])
+
+  const onLoad = () => {}
 
   return (
     <div>
       <canvas className="border" width={600} height={600}></canvas>
-
-      <img id="lamp" src={dogPng} onLoad={onLoad} />
     </div>
   )
 

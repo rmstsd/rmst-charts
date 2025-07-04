@@ -5,6 +5,7 @@ import { mountStage } from './renderUi'
 import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
 import AbsEvent from '../AbsEvent'
+import { ResizeMng } from './controller/resizeMng'
 
 interface IOption {
   container?: HTMLElement
@@ -28,8 +29,8 @@ export class Stage extends AbsEvent {
     this.enableRuler = enableRuler
 
     this.dpr = dpr ?? window.devicePixelRatio
-
-    const stage = initStage(container, this.dpr, () => this.syncRender())
+    this.container = container
+    const stage = initStage(container, this.dpr)
 
     this.canvasElement = stage.canvasElement
     this.ctx = stage.ctx
@@ -41,6 +42,7 @@ export class Stage extends AbsEvent {
     this.selectedMgr = new SelectedMgr(this)
 
     this.dirtyRect = new DirtyRect(this)
+    this.resizeMng = new ResizeMng(this)
 
     this.removeStageListener = this.addStageListener()
   }
@@ -50,6 +52,7 @@ export class Stage extends AbsEvent {
   draggingMgr: Draggable
   eventDispatcher: EventDispatcher
   selectedMgr: SelectedMgr
+  resizeMng: ResizeMng
 
   dirtyRect: DirtyRect
 
@@ -59,6 +62,7 @@ export class Stage extends AbsEvent {
 
   type: IShapeType = 'Stage'
 
+  container: HTMLElement
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
 
@@ -105,9 +109,13 @@ export class Stage extends AbsEvent {
     this.children = this.children.concat(elements)
     this.children = this.children.map(item => Object.assign(item, { parent: this }))
     mountStage(this.children, this)
+
     this.render()
+
+    // this.syncRender()
   }
 
+  // 异步绘制
   public render() {
     if (this.isDispatchedAsyncRenderTask) {
       return
@@ -119,6 +127,7 @@ export class Stage extends AbsEvent {
     })
   }
 
+  // 同步绘制
   private syncRender() {
     drawStage(this)
     if (this.enableRuler) {

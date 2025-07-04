@@ -1,6 +1,6 @@
-import { AbstractUiData } from '../shape'
+import { UiData } from '../shape'
 
-export const normalizedAttrs = (args): AbstractUiData => {
+export const normalizedAttrs = (args): UiData => {
   let attrs = {}
 
   switch (args.length) {

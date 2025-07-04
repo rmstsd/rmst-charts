@@ -1,8 +1,8 @@
 // 等腰梯形, 上面是短边
 
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { UiData } from './AbstractUi'
 
-export interface TrapezoidData extends AbstractUiData {
+export interface TrapezoidData extends UiData {
   x?: number
   y?: number
   width?: number

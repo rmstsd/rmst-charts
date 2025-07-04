@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { Stage, Rect, Circle, Line, BoxHidden } from 'rmst-render'
+import { Stage, Rect, Circle, Line, Box } from 'rmst-render'
 
 const Overview = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -161,7 +161,7 @@ const Overview = () => {
 
     stage.append(rectrt)
 
-    const box = new BoxHidden({ x: 32, y: 345, width: 200, height: 180, draggable: true, fillStyle: 'orange' })
+    const box = new Box({ x: 32, y: 345, width: 200, height: 180, draggable: true, fillStyle: 'orange' })
     box.append(new Circle({ draggable: true, x: 202, y: 464, radius: 40, fillStyle: 'slateblue' }))
     box.append(new Circle({ draggable: true, x: 68, y: 353, radius: 30, fillStyle: 'paleturquoise' }))
 

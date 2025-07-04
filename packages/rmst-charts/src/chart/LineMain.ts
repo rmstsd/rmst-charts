@@ -1,5 +1,5 @@
 import colorAlpha from 'color-alpha'
-import { Circle, Line, BoxHidden, pointToFlatArray } from 'rmst-render'
+import { Circle, Line, Box, pointToFlatArray } from 'rmst-render'
 
 import { colorPalette } from '../constant'
 import { getCanvasPxFromRealNumber } from '../utils/convert'
@@ -36,7 +36,7 @@ const defaultLineSeriesItem = {
 const activeDuration = 200
 
 export default class LineMain extends _Chart<ICharts.LineSeries> {
-  lineElements: { mainPolyline: BoxHidden; arcs: Circle[] }
+  lineElements: { mainPolyline: Box; arcs: Circle[] }
 
   color: string
 
@@ -58,7 +58,7 @@ export default class LineMain extends _Chart<ICharts.LineSeries> {
     // 计算出 阶梯折线图 要绘制的额外的点
     const finalCoordPoints = smooth ? pointData : calcPointsByUserPoints(pointData, step)
 
-    const boxHidden = new BoxHidden({
+    const boxHidden = new Box({
       x: 0,
       y: 0,
       width: this.seriesItem.animation ? 0 : stage.canvasSize.width,

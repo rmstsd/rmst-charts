@@ -1,6 +1,6 @@
-import { BoxHidden, Circle, Ellipse, Group, Image, Line, Path, Rect, Text } from './shape'
+import { Box, Circle, Ellipse, Group, RmstImage, Line, Path, Rect, Text } from './shape'
 
-export type IShape = Group | BoxHidden | Circle | Rect | Line | Text | Ellipse | Path | Image
+export type IShape = Group | Box | Circle | Rect | Line | Text | Ellipse | Path | RmstImage
 export type IShapeType =
   | 'Line'
   | 'Rect'

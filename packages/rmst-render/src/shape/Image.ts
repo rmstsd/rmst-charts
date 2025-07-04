@@ -1,15 +1,17 @@
-import AbstractUi, { AbstractUiData, IRect } from './AbstractUi'
+import AbstractUi, { UiData, IRect } from './AbstractUi'
 
 const defaultData: ImageData = {}
 
-interface ImageData extends AbstractUiData {
+interface ImageData extends UiData {
   src?: string
 }
 
-export class Image extends AbstractUi<ImageData> {
+export class RmstImage extends AbstractUi {
   constructor(data: ImageData) {
     super('Image', data, defaultData)
   }
+
+  nativeImage: HTMLImageElement
 
   declare data: ImageData
 
@@ -18,4 +20,4 @@ export class Image extends AbstractUi<ImageData> {
   }
 }
 
-export default Image
+export default RmstImage

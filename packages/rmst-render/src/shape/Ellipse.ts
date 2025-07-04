@@ -1,11 +1,11 @@
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { UiData } from './AbstractUi'
 
 const defaultData = {
   width: 200,
   height: 100
 }
 
-interface EllipseData extends AbstractUiData {
+interface EllipseData extends UiData {
   width?: number
   height?: number
 }

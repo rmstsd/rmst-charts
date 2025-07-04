@@ -1,4 +1,4 @@
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { UiData } from './AbstractUi'
 
 const defaultData: TextData = {
   fillStyle: '#333',
@@ -7,7 +7,7 @@ const defaultData: TextData = {
   textBaseline: 'top'
 }
 
-interface TextData extends AbstractUiData {
+interface TextData extends UiData {
   x?: number
   y?: number
   content?: string

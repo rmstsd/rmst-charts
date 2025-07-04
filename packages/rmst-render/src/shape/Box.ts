@@ -3,9 +3,17 @@ import AbstractUi from './AbstractUi'
 import { RectData, defaultRectData } from './Rect'
 import { IShape } from '../type'
 
-export class BoxHidden extends AbstractUi<RectData> {
-  constructor(data: RectData) {
+interface BoxData extends RectData {
+  children?: IShape[]
+}
+
+export class Box extends AbstractUi<BoxData> {
+  constructor(data: BoxData) {
     super('BoxHidden', data, defaultRectData)
+
+    if (data.children) {
+      this.children = data.children
+    }
   }
 
   declare data: RectData
@@ -27,4 +35,4 @@ export class BoxHidden extends AbstractUi<RectData> {
   }
 }
 
-export default BoxHidden
+export default Box

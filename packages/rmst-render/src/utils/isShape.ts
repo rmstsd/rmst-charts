@@ -1,4 +1,4 @@
-import { Group, Line, Text, BoxHidden } from './../shape'
+import { Group, Line, Text, Box } from './../shape'
 
 import { Stage } from '../_stage'
 
@@ -6,7 +6,7 @@ export function isGroup(shape): shape is Group {
   return shape.type === 'Group'
 }
 
-export function isBoxHidden(shape): shape is BoxHidden {
+export function isBox(shape): shape is Box {
   return shape.type === 'BoxHidden'
 }
 

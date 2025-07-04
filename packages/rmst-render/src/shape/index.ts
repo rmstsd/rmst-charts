@@ -10,4 +10,4 @@ export * from './Path'
 export * from './Image'
 
 export * from './Group'
-export * from './BoxHidden'
+export * from './Box'

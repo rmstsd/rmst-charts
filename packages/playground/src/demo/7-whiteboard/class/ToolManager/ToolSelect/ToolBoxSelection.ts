@@ -24,14 +24,14 @@ export default class ToolBoxSelection implements ITool {
   onDragStart(downEvt: PointerEvent) {
     const { wbEditor } = this
 
-    this.downPos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(downEvt))
+    this.downPos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2World(downEvt))
     // this.boxSelectionRect.attr({ visible: true })
   }
 
   onDragMove(moveEvt: PointerEvent) {
     const { wbEditor } = this
 
-    const movePos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(moveEvt))
+    const movePos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2World(moveEvt))
 
     let tl = { x: Math.min(this.downPos.x, movePos.x), y: Math.min(this.downPos.y, movePos.y) }
     let br = { x: Math.max(this.downPos.x, movePos.x), y: Math.max(this.downPos.y, movePos.y) }

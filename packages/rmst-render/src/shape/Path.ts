@@ -1,13 +1,13 @@
 import svgPath from 'svgpath'
 import { normalizedAttrs } from '../utils/attr'
-import AbstractUi, { AbstractUiData, IRect } from './AbstractUi'
+import AbstractUi, { UiData, IRect } from './AbstractUi'
 import { svgPathBbox } from 'svg-path-bbox'
 
 const defaultData = {
   d: ''
 }
 
-interface PathData extends AbstractUiData {
+interface PathData extends UiData {
   d?: string
   width?: number
   height?: number

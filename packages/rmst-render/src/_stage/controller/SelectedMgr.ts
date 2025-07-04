@@ -1,6 +1,6 @@
-import { AbstractUiData, getDefaultAbsData, isBoxHidden, IShape, Rect, Stage } from '../..'
+import { UiData, getDefaultAbsData, isBox, IShape, Rect, Stage } from '../..'
 
-const floOption: AbstractUiData = {
+const floOption: UiData = {
   ...getDefaultAbsData(),
   draggable: false,
   pointerEvents: 'none',
@@ -68,7 +68,7 @@ export class SelectedMgr {
 }
 
 const getCloned = (shape: IShape) => {
-  if (isBoxHidden(shape)) {
+  if (isBox(shape)) {
     return new Rect({ ...shape.data })
   }
   return shape.clone()

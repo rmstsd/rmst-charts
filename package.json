@@ -14,5 +14,8 @@
     "svg-path-bbox": "^2.1.0",
     "svgpath": "^2.6.0",
     "transformation-matrix": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
   }
 }

@@ -7,7 +7,7 @@ import { attrDirty } from '../_stage/controller/DirtyRect'
 import { compose, identity, Matrix, translate } from 'transformation-matrix'
 import { normalizedAttrs } from '../utils/attr'
 
-export interface AbstractUiData extends EventOpt {
+export interface UiData extends EventOpt {
   id?: string
   name?: string
   x?: number
@@ -53,7 +53,7 @@ export interface IRect {
   height: number
 }
 
-export const getDefaultAbsData = (): AbstractUiData => ({
+export const getDefaultAbsData = (): UiData => ({
   x: 0,
   y: 0,
   lineWidth: 1,
@@ -89,7 +89,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
   extraData
 
-  declare data: AbstractUiData
+  declare data: UiData
 
   declare path2D: Path2D
 
@@ -135,7 +135,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
       this.data = { ...this.data, ...data }
     })
 
-    this.stage?.render()
+    // this.stage?.render()
   }
 
   // 未完全实现
