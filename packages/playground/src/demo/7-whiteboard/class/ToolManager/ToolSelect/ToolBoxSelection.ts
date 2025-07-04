@@ -6,7 +6,9 @@ import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
-    wbEditor.selectLayer.selectToolGroup.append(this.boxSelectionRect)
+    wbEditor.stage.append(this.boxSelectionRect)
+
+    console.log('ToolBoxSelection')
   }
 
   downPos: ICoord
@@ -21,11 +23,12 @@ export default class ToolBoxSelection implements ITool {
     lineWidth: 2
   })
 
+  onActive() {}
+
   onDragStart(downEvt: PointerEvent) {
     const { wbEditor } = this
 
     this.downPos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2World(downEvt))
-    // this.boxSelectionRect.attr({ visible: true })
   }
 
   onDragMove(moveEvt: PointerEvent) {
@@ -39,10 +42,10 @@ export default class ToolBoxSelection implements ITool {
     tl = applyToPoint(wbEditor.graphLayer.data.mt, tl)
     br = applyToPoint(wbEditor.graphLayer.data.mt, br)
 
-    this.boxSelectionRect.attr({ visible: true, x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
+    this.boxSelectionRect.attr({ x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
   }
 
   onDragEnd(upEvt: PointerEvent) {
-    this.boxSelectionRect.attr({ visible: false })
+    this.boxSelectionRect.remove()
   }
 }

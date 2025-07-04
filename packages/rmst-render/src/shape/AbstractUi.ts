@@ -100,6 +100,11 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
     return new Class(structuredClone(this.data))
   }
 
+  getOutLineShape() {
+    const Class = this.constructor as new (...args) => AbstractUi<T>
+    return new Class(structuredClone(this.data))
+  }
+
   pinTop() {
     if (!this.parent) {
       console.warn('还没有被 append')
@@ -125,7 +130,6 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
       this.data.mt.f = attrs.y
     }
 
-    this.stage?.selectedMgr.updateFlo(this)
     this.stage?.render()
   }
 

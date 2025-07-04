@@ -40,8 +40,6 @@ export class EventDispatcher {
       return
     }
 
-    this.stage.selectedMgr.onHoveredChange(this.hovered)
-
     this.handleHoveredStack(evt.offsetX, evt.offsetY)
 
     {
@@ -55,7 +53,6 @@ export class EventDispatcher {
     const { stage } = this
 
     this.hovered = null
-    this.stage.selectedMgr.onHoveredChange(this.hovered)
 
     if (this.hoveredStack.length) {
       this.triggerHoveredStackMouseleave(evt.offsetX, evt.offsetY)

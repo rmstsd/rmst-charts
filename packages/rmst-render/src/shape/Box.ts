@@ -1,7 +1,9 @@
 import { mountStage } from '../_stage/renderUi'
-import AbstractUi from './AbstractUi'
-import { RectData, defaultRectData } from './Rect'
+import AbstractUi, { IRect } from './AbstractUi'
+import Rect, { RectData, defaultRectData } from './Rect'
 import { IShape } from '../type'
+import { omit } from 'es-toolkit'
+import Path from './Path'
 
 interface BoxData extends RectData {
   children?: IShape[]
@@ -16,7 +18,7 @@ export class Box extends AbstractUi<BoxData> {
     }
   }
 
-  declare data: RectData
+  declare data: BoxData
 
   children: IShape[] = []
 
@@ -32,6 +34,20 @@ export class Box extends AbstractUi<BoxData> {
     mountStage(this.children, this.stage)
 
     this.stage?.render()
+  }
+
+  override getOutLineShape(): AbstractUi<RectData> {
+    let newData = omit(this.data, ['children'])
+
+    newData = structuredClone(newData)
+    const d = `M${newData.x},${newData.y}h${newData.width}v${newData.height}h-${newData.width}z`
+    newData.d = d
+
+    return new Path(newData)
+  }
+
+  override getBBox(): IRect {
+    return { x: 0, y: 0, width: this.data.width, height: this.data.height }
   }
 }
 

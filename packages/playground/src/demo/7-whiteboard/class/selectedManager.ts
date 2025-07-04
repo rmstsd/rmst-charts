@@ -314,7 +314,8 @@ export default class selectedManager {
   private clonedGraphToGraphLayer(graph: IGraph, attrs = {}) {
     const { wbEditor } = this
 
-    const cloned = graph.graphShape.clone()
+    const cloned = graph.graphShape.getOutLineShape()
+
     const mt = compose(wbEditor.graphLayer.data.mt, cloned.data.mt)
     const nd = svgPath(cloned.data.d).matrix([mt.a, mt.b, mt.c, mt.d, mt.e, mt.f]).toString()
 

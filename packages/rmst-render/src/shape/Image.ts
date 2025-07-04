@@ -1,4 +1,5 @@
 import AbstractUi, { UiData, IRect } from './AbstractUi'
+import Rect from './Rect'
 
 const defaultData: ImageData = {}
 

@@ -1,7 +1,7 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 
-import { applyToPoint, compose, inverse, rotate, scale, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
@@ -52,7 +52,7 @@ export default class ToolScale implements ITool {
   onDragStart(downEvt: PointerEvent) {
     console.log('ToolScale onDragStart')
 
-    const { graphLayerCoordSys, downRect } = this.wbEditor.selectManager.transformDownRect
+    const { downRect } = this.wbEditor.selectManager.transformDownRect
 
     this.downRect = downRect
 
@@ -67,11 +67,10 @@ export default class ToolScale implements ITool {
     this.downSnap = keyBy(sel, item => item.id)
   }
 
-  onDragMove(moveEvt: PointerEvent) {
+  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolScale onDragMove')
 
-    const mt = compose(this.wbEditor.graphLayer.data.mt, this.downRect.mt)
-    const movePos = applyToPoint(inverse(mt), this.wbEditor.client2World(moveEvt))
+    const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
 
     const newSize = this.strategy.getNewSize(this.origin, movePos)
 

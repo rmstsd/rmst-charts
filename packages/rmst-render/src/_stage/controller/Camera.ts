@@ -105,9 +105,7 @@ export class Camera {
 
     if (this.isSpacePressing) {
       setCursor(this.stage, 'grab')
-      this.stage.selectedMgr.setHoveredVisible(false)
     } else {
-      this.stage.selectedMgr.setHoveredVisible(true)
       this.stage.eventDispatcher.setHoveredCursor()
     }
   }
@@ -126,7 +124,6 @@ export class Camera {
       if (this.isSpacePressing) {
         setCursor(this.stage, 'grab')
       } else if (this.isDragging) {
-        this.stage.selectedMgr.setHoveredVisible(true)
         this.stage.eventDispatcher.setHoveredCursor()
       }
       this.isDragging = false

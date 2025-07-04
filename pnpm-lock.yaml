@@ -11,6 +11,9 @@ importers:
       enum-plus:
         specifier: ^2.3.3
         version: 2.3.3
+      es-toolkit:
+        specifier: ^1.39.4
+        version: 1.39.4
       fit-curve:
         specifier: ^0.2.0
         version: 0.2.0
@@ -24,9 +27,6 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
     devDependencies:
-      '@types/web':
-        specifier: ^0.0.245
-        version: 0.0.245
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1628,9 +1628,6 @@ packages:
 
   '@types/throttle-debounce@5.0.2':
     resolution: {integrity: sha512-pDzSNulqooSKvSNcksnV72nk8p7gRqN8As71Sp28nov1IgmPKWbOEIwAWvBME5pPTtaXJAvG3O4oc76HlQ4kqQ==}
-
-  '@types/web@0.0.245':
-    resolution: {integrity: sha512-5s22F3vYKEWohx9WypNZdxsriryFcEDklOkf1X6WFyYw2TufXMOGzpEwE0Norox/BnCfA7NC/k7XuwdIhZpj3A==}
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
@@ -4688,8 +4685,6 @@ snapshots:
   '@types/resolve@1.20.2': {}
 
   '@types/throttle-debounce@5.0.2': {}
-
-  '@types/web@0.0.245': {}
 
   '@ungap/structured-clone@1.2.0': {}
 

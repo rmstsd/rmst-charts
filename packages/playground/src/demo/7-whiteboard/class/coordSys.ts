@@ -18,4 +18,8 @@ export class CoordSys {
   world2Scene(coord: ICoord) {
     return applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), coord)
   }
+
+  client2Scene(evt: PointerEvent) {
+    return this.world2Scene(this.client2World(evt))
+  }
 }

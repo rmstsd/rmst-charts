@@ -1,4 +1,4 @@
-import { Draggable, Camera, Ruler, DirtyRect, SelectedMgr, EventDispatcher } from './controller'
+import { Draggable, Camera, Ruler, DirtyRect, EventDispatcher } from './controller'
 
 import { initStage } from './utils'
 import { mountStage } from './renderUi'
@@ -39,7 +39,6 @@ export class Stage extends AbsEvent {
     this.camera = new Camera(this, enableCamera)
     this.ruler = new Ruler(this)
     this.eventDispatcher = new EventDispatcher(this)
-    this.selectedMgr = new SelectedMgr(this)
 
     this.dirtyRect = new DirtyRect(this)
     this.resizeMng = new ResizeMng(this)
@@ -51,7 +50,7 @@ export class Stage extends AbsEvent {
   ruler: Ruler
   draggingMgr: Draggable
   eventDispatcher: EventDispatcher
-  selectedMgr: SelectedMgr
+
   resizeMng: ResizeMng
 
   dirtyRect: DirtyRect
@@ -83,6 +82,8 @@ export class Stage extends AbsEvent {
   public dispose() {
     this.canvasElement?.remove()
     this.removeAllShape()
+
+    this.resizeMng.dispose()
   }
 
   public removeAllShape() {

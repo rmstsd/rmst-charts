@@ -6,20 +6,31 @@ export class ResizeMng {
     let mqString = `(resolution: ${window.devicePixelRatio}dppx)`
 
     const updatePixelRatio = () => {
-      // 未完成
+      console.log('dpr change', window.devicePixelRatio)
+
       // stage.render()
     }
 
     updatePixelRatio()
 
-    matchMedia(mqString).addEventListener('change', updatePixelRatio)
+    const abCt = new AbortController()
+    matchMedia(mqString).addEventListener('change', updatePixelRatio, { signal: abCt.signal })
 
     const ob = new ResizeObserver(() => {
       stage.render()
     })
 
     ob.observe(container)
+
+    this.cancel = () => {
+      ob.disconnect()
+      abCt.abort()
+    }
   }
 
-  dispose() {}
+  private cancel
+
+  dispose() {
+    this.cancel()
+  }
 }
