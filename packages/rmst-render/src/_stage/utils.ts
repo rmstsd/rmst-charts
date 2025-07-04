@@ -3,7 +3,7 @@ import { EventParameter, EventType, OnEventType, supportBubblesEventType } from 
 import { IShape } from '../type'
 import { isStage } from '../utils'
 
-export function initStage(canvasContainer: HTMLElement, dpr: number, render?: () => void) {
+export function initStage(canvasContainer: HTMLElement, dpr) {
   canvasContainer.style.position = 'relative'
 
   const canvasElement = document.createElement('canvas')
@@ -29,11 +29,6 @@ export function initStage(canvasContainer: HTMLElement, dpr: number, render?: ()
   }
 
   setCanvasStyle()
-  const ob = new ResizeObserver(() => {
-    setCanvasStyle()
-    render && render()
-  })
-  ob.observe(canvasContainer)
 
   canvasContainer.append(canvasElement)
 

@@ -1,4 +1,4 @@
-import { BoxHidden, Circle, Group, IShape, Rect, rad2deg } from 'rmst-render'
+import { Box, Circle, Group, IShape, Rect, rad2deg } from 'rmst-render'
 
 import { ChartRoot } from '../ChartRoot'
 import { dataZoomHeight } from '../constant'
@@ -99,7 +99,7 @@ export class dataZoom {
       height: moveHandleHeight
     })
 
-    const moveHandle = new BoxHidden({
+    const moveHandle = new Box({
       ...calcMoveHandle(),
       fillStyle: 'rgb(210,219,238)',
       opacity: 0.7,

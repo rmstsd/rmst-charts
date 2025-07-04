@@ -1,7 +1,7 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 
-import { applyToPoint, compose, inverse, rotate, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, rotate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 
@@ -17,7 +17,7 @@ export default class ToolRotate implements ITool {
 
     const { graphLayerCoordSys } = this.wbEditor.selectManager.transformDownRect
 
-    const downPos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(downEvt))
+    const downPos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2World(downEvt))
     this.origin = {
       x: (graphLayerCoordSys.tl.x + graphLayerCoordSys.br.x) / 2,
       y: (graphLayerCoordSys.tl.y + graphLayerCoordSys.br.y) / 2
@@ -35,7 +35,7 @@ export default class ToolRotate implements ITool {
   onDragMove(moveEvt: PointerEvent) {
     console.log('ToolRotate onDragMove')
 
-    const movePos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(moveEvt))
+    const movePos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2World(moveEvt))
     const currRad = Math.atan2(movePos.y - this.origin.y, movePos.x - this.origin.x)
     const diffRad = currRad - this.startRad
 

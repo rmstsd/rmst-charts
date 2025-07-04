@@ -7,7 +7,6 @@ const PathDemo = () => {
 
   // 示例用法
   const starPath = drawStar(100, 100, 50)
-  console.log(starPath)
 
   useEffectStage(canvasRef, stage => {
     const p1 = new Path({

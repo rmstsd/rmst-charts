@@ -1,13 +1,13 @@
 import svgPath from 'svgpath'
 import { normalizedAttrs } from '../utils/attr'
-import AbstractUi, { AbstractUiData, IRect } from './AbstractUi'
+import AbstractUi, { UiData, IRect } from './AbstractUi'
 import { svgPathBbox } from 'svg-path-bbox'
 
 const defaultData = {
   d: ''
 }
 
-interface PathData extends AbstractUiData {
+interface PathData extends UiData {
   d?: string
   width?: number
   height?: number
@@ -28,6 +28,13 @@ export class Path extends AbstractUi<PathData> {
     const attrs = normalizedAttrs(args)
 
     if (Reflect.has(attrs, 'width') || Reflect.has(attrs, 'height')) {
+      if (attrs.width <= 0) {
+        attrs.width = 0.01
+      }
+      if (attrs.height <= 0) {
+        attrs.height = 0.01
+      }
+
       let oldWidth = this.data.width
       let oldHeight = this.data.height
 

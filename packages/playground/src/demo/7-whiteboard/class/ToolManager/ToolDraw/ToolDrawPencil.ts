@@ -28,7 +28,7 @@ export default class ToolDrawPencil implements ITool {
   onPointerDown(downEvt: PointerEvent) {}
 
   onDragStart(downEvt: PointerEvent) {
-    this.downPos = this.wbEditor.client2Stage(downEvt)
+    this.downPos = this.wbEditor.client2World(downEvt)
 
     const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
     this.downPos = applyToPoint(mt, this.downPos)
@@ -43,7 +43,7 @@ export default class ToolDrawPencil implements ITool {
   }
 
   onDragMove(moveEvt: PointerEvent) {
-    let movePos = this.wbEditor.client2Stage(moveEvt)
+    let movePos = this.wbEditor.client2World(moveEvt)
 
     const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
     movePos = applyToPoint(mt, movePos)

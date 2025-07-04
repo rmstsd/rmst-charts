@@ -11,13 +11,15 @@ import ToolDrawRect from './ToolDraw/ToolDrawRect'
 import ToolDrawEllipse from './ToolDraw/ToolDrawEllipse'
 import ToolDrawRhombus from './ToolDraw/ToolDrawRhombus'
 import ToolDrawPencil from './ToolDraw/ToolDrawPencil'
+import ToolDrawImage from './ToolDraw/ToolDrawImage'
 
 const ToolClassMap = {
   [ToolEnum.Select]: ToolSelect,
   [ToolEnum.Rect]: ToolDrawRect,
   [ToolEnum.Ellipse]: ToolDrawEllipse,
   [ToolEnum.Rhombus]: ToolDrawRhombus,
-  [ToolEnum.Pencil]: ToolDrawPencil
+  [ToolEnum.Pencil]: ToolDrawPencil,
+  [ToolEnum.Image]: ToolDrawImage
 }
 
 export default class ToolManager {
@@ -38,24 +40,24 @@ export default class ToolManager {
         return
       }
 
-      this.currentToolClass.onPointerDown?.(downEvt)
+      this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
 
       startDrag(downEvt, {
         start: () => {
-          this.currentToolClass.onDragStart(downEvt)
+          this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
         },
         onMove: moveEvt => {
-          this.currentToolClass.onDragMove(moveEvt)
+          this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
         },
         onUp: upEvt => {
-          this.currentToolClass.onDragEnd(upEvt)
+          this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
           this.switchTool(ToolEnum.Select)
         }
       })
     }
   }
 
-  switchTool(tool: ToolEnumKey) {
+  async switchTool(tool: ToolEnumKey) {
     const prevToolClass = this.currentToolClass
     if (prevToolClass) {
       prevToolClass.onDeActive?.()

@@ -1,15 +1,38 @@
 import { scale, rotate, translate, compose, applyToPoint, transform } from 'transformation-matrix'
 
-import { BoxHidden, Circle, Ellipse, Group, Line, Path, Text, Trapezoid } from '../../shape'
+import { Box, Circle, Ellipse, Group, RmstImage as RrImage, Line, Path, Text, Trapezoid } from '../../shape'
 import { clipRect, createLinePath2D, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
-import { fillOrStroke, hasStroke, setCtxStyleProp } from './fillOrStroke'
+import { fill, fillOrStroke, hasStroke, setCtxStyleProp, stroke } from './fillOrStroke'
 import { setCirclePath2D, setEllipsePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 import { sortChildren } from './util'
 
 export function drawStage(stage: Stage) {
-  const { ctx, camera } = stage
+  console.log('--> drawStage')
+
+  const { ctx, camera, dpr, container, canvasElement } = stage
+  const setCanvasStyle = () => {
+    const { clientWidth, clientHeight } = container
+
+    const canvasWidth = clientWidth * dpr
+    const canvasHeight = clientHeight * dpr
+
+    canvasElement.width = canvasWidth
+    canvasElement.height = canvasHeight
+
+    canvasElement.style.position = 'absolute'
+    canvasElement.style.inset = '0'
+    canvasElement.style.width = `${clientWidth}px`
+    canvasElement.style.height = `${clientHeight}px`
+
+    ctx.scale(dpr, dpr)
+    ctx.textBaseline = 'hanging'
+    ctx.font = `${14}px 微软雅黑`
+  }
+
+  setCanvasStyle()
+
   ctx.clearRect(0, 0, stage.canvasSize.width * stage.dpr, stage.canvasSize.height * stage.dpr)
 
   ctx.save()
@@ -25,20 +48,20 @@ export function drawStage(stage: Stage) {
   ctx.restore()
 
   function drawChildren(list: IShape[]) {
-    sortChildren(list).forEach(elementItem => {
+    for (const elementItem of sortChildren(list)) {
       const { data } = elementItem
 
       if (!data.visible) {
-        return
+        continue
       }
 
       ctx.beginPath()
 
       ctx.save()
 
-      setCtxStyleProp(ctx, elementItem)
       const mt = data.mt
       ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
+      setCtxStyleProp(ctx, elementItem)
 
       switch (elementItem.type) {
         case 'Circle': {
@@ -86,12 +109,14 @@ export function drawStage(stage: Stage) {
           break
         }
         case 'BoxHidden': {
+          // 在有描边的情况下, 必须先 fill, 再 stoke, 否则会出现内容覆盖描边的问题
           setRectPath2D(elementItem)
+          fill(ctx, elementItem)
 
           clipRect(ctx, elementItem.path2D, () => {
-            fillOrStroke(ctx, elementItem)
-            drawChildren((elementItem as BoxHidden).children)
+            drawChildren((elementItem as Box).children)
           })
+          stroke(ctx, elementItem)
 
           break
         }
@@ -108,6 +133,29 @@ export function drawStage(stage: Stage) {
           ctx.fillText(content, x, y)
           break
         }
+        case 'Image': {
+          const rrImageElementItem = elementItem as RrImage
+
+          let { width, height, src } = data as RrImage['data']
+
+          const drawImage = (image: HTMLImageElement) => {
+            ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, width, height)
+          }
+
+          if (rrImageElementItem.nativeImage) {
+            drawImage(rrImageElementItem.nativeImage)
+          } else {
+            const image = new Image()
+            image.src = src
+
+            image.onload = () => {
+              rrImageElementItem.nativeImage = image
+              drawStage(stage)
+            }
+          }
+
+          break
+        }
 
         default:
           console.log(elementItem.type, '该图形 暂未实现')
@@ -115,6 +163,6 @@ export function drawStage(stage: Stage) {
       }
 
       ctx.restore()
-    })
+    }
   }
 }

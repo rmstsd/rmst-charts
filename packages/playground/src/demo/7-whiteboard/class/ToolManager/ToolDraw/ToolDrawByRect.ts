@@ -15,7 +15,7 @@ export default abstract class ToolDrawByRect implements ITool {
   graphItem = {} as IGraph
 
   onDragStart(downEvt: PointerEvent) {
-    this.downPos = this.wbEditor.client2Stage(downEvt)
+    this.downPos = this.wbEditor.client2World(downEvt)
 
     const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
     this.downPos = applyToPoint(mt, this.downPos)
@@ -33,7 +33,7 @@ export default abstract class ToolDrawByRect implements ITool {
   onDragMove(moveEvt: PointerEvent) {
     const { wbEditor, downPos } = this
 
-    let movePos = wbEditor.client2Stage(moveEvt)
+    let movePos = wbEditor.client2World(moveEvt)
     const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
     movePos = applyToPoint(mt, movePos)
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Group, Circle, BoxHidden } from 'rmst-render'
+import { Stage, Rect, Group, Circle, Box } from 'rmst-render'
 
 const GroupClipAnimate = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -10,7 +10,7 @@ const GroupClipAnimate = () => {
       container: canvasRef.current
     })
 
-    const box = new BoxHidden({
+    const box = new Box({
       x: 10,
       y: 10,
       width: 100,
@@ -32,7 +32,7 @@ const GroupClipAnimate = () => {
 
     //
 
-    const group = new BoxHidden({
+    const group = new Box({
       x: 200,
       y: 10,
       width: 200,

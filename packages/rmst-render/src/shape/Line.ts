@@ -1,5 +1,5 @@
 import { createLinePath2D } from '../utils'
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { UiData } from './AbstractUi'
 
 const defaultData: LineData = {
   lineWidth: 1,
@@ -8,7 +8,7 @@ const defaultData: LineData = {
   percent: 1
 }
 
-interface LineData extends AbstractUiData {
+interface LineData extends UiData {
   path2D?: Path2D
   points?: number[]
   closed?: boolean

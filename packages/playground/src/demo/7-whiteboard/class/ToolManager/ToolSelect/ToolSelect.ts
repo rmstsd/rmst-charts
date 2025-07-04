@@ -92,18 +92,18 @@ export default class ToolSelect implements ITool {
     }
   }
 
-  onDragStart(downEvt: PointerEvent) {
+  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.wbEditor.selectManager.disableHover()
 
-    this.currentStrategy.onDragStart(downEvt)
+    this.currentStrategy.onDragStart(downEvt, sceneCoord)
   }
 
-  onDragMove(moveEvt: PointerEvent) {
-    this.currentStrategy.onDragMove(moveEvt)
+  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
+    this.currentStrategy.onDragMove(moveEvt, sceneCoord)
   }
 
-  onDragEnd(upEvt: PointerEvent) {
-    this.currentStrategy.onDragEnd(upEvt)
+  onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
+    this.currentStrategy.onDragEnd(upEvt, sceneCoord)
 
     this.wbEditor.selectManager.enableHover()
   }

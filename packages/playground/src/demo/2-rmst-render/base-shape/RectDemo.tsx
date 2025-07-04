@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-import { Stage, Rect, Circle, BoxHidden } from 'rmst-render'
+import { Stage, Rect, Circle, Box } from 'rmst-render'
 import { compose, rotate, rotateDEG, skew } from 'transformation-matrix'
 
 const RectDemo = () => {
@@ -35,7 +35,7 @@ const RectDemo = () => {
       stage.render()
     }, 1000)
 
-    const box = new BoxHidden({
+    const box = new Box({
       name: 'outer_box',
       x: 100,
       y: 100,
@@ -56,7 +56,7 @@ const RectDemo = () => {
 
     box.append(inn_rect)
 
-    const box_2 = new BoxHidden({
+    const box_2 = new Box({
       name: 'box_2',
       x: 200,
       y: 150,

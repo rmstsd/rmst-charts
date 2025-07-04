@@ -6,7 +6,9 @@ import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
-    wbEditor.selectLayer.selectToolGroup.append(this.boxSelectionRect)
+    wbEditor.stage.append(this.boxSelectionRect)
+
+    console.log('ToolBoxSelection')
   }
 
   downPos: ICoord
@@ -21,17 +23,18 @@ export default class ToolBoxSelection implements ITool {
     lineWidth: 2
   })
 
+  onActive() {}
+
   onDragStart(downEvt: PointerEvent) {
     const { wbEditor } = this
 
-    this.downPos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(downEvt))
-    // this.boxSelectionRect.attr({ visible: true })
+    this.downPos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2World(downEvt))
   }
 
   onDragMove(moveEvt: PointerEvent) {
     const { wbEditor } = this
 
-    const movePos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2Stage(moveEvt))
+    const movePos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2World(moveEvt))
 
     let tl = { x: Math.min(this.downPos.x, movePos.x), y: Math.min(this.downPos.y, movePos.y) }
     let br = { x: Math.max(this.downPos.x, movePos.x), y: Math.max(this.downPos.y, movePos.y) }
@@ -39,10 +42,10 @@ export default class ToolBoxSelection implements ITool {
     tl = applyToPoint(wbEditor.graphLayer.data.mt, tl)
     br = applyToPoint(wbEditor.graphLayer.data.mt, br)
 
-    this.boxSelectionRect.attr({ visible: true, x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
+    this.boxSelectionRect.attr({ x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
   }
 
   onDragEnd(upEvt: PointerEvent) {
-    this.boxSelectionRect.attr({ visible: false })
+    this.boxSelectionRect.remove()
   }
 }

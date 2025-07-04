@@ -1,8 +1,8 @@
 import { mountStage } from '../_stage/renderUi'
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { UiData } from './AbstractUi'
 import { IShape } from '../type'
 
-interface GroupData extends AbstractUiData {
+interface GroupData extends UiData {
   children?: IShape[]
 }
 

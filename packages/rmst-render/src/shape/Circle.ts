@@ -1,4 +1,4 @@
-import AbstractUi, { AbstractUiData } from './AbstractUi'
+import AbstractUi, { UiData } from './AbstractUi'
 
 const defaultData = {
   lineWidth: 1,
@@ -7,7 +7,7 @@ const defaultData = {
   offsetAngle: 0
 }
 
-interface CircleData extends AbstractUiData {
+interface CircleData extends UiData {
   x?: number
   y?: number
 

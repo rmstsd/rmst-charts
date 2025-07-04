@@ -1,4 +1,4 @@
-import { isBoxHidden, isGroup } from '../utils'
+import { isBox, isGroup } from '../utils'
 import { IShape } from '../type'
 import { isHitShape } from './isHitShape'
 import { Stage } from '..'
@@ -58,7 +58,7 @@ export function findHover_v2(stage: Stage, x, y) {
         detectHit(elementItem.children)
 
         ctx.restore()
-      } else if (isBoxHidden(elementItem)) {
+      } else if (isBox(elementItem)) {
         if (isHitShape(stage, elementItem, x, y)) {
           const mt = elementItem.data.mt
           ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)

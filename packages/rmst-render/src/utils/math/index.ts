@@ -1,3 +1,5 @@
+export * from './rect'
+
 // 获取圆弧上的点 圆心 半径 角度: 60°
 export function getPointOnArc(x0: number, y0: number, r: number, deg: number) {
   const alpha = deg2rad(deg)

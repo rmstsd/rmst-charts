@@ -1,11 +1,11 @@
-import AbstractUi, { AbstractUiData, IRect } from './AbstractUi'
+import AbstractUi, { UiData, IRect } from './AbstractUi'
 
 export const defaultRectData = {
   cornerRadius: 0,
   lineWidth: 1
 }
 
-export interface RectData extends AbstractUiData {
+export interface RectData extends UiData {
   x?: number
   y?: number
   width?: number

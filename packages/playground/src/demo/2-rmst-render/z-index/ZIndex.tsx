@@ -2,7 +2,7 @@ import { useEffectStage } from '@/utils/hooks'
 import colorAlpha from 'color-alpha'
 import { useEffect, useRef, useState } from 'react'
 
-import { Stage, Rect, Circle, BoxHidden, Group, Text, Line } from 'rmst-render'
+import { Stage, Rect, Circle, Box, Group, Text, Line } from 'rmst-render'
 
 const useRefState = <T,>(t: T) => {
   const ref = useRef<T>(t)
@@ -63,7 +63,7 @@ const ZIndex = () => {
 
     group.append(circle_1, circle_2, text, group_2)
 
-    const bh = new BoxHidden({
+    const bh = new Box({
       name: '橘色',
       x: 210,
       y: 120,

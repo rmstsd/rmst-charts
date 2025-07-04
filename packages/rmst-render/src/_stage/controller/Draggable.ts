@@ -1,5 +1,5 @@
 import { EventParameter } from '../../constant'
-import { isBoxHidden, isGroup, isLine, isStage } from '../../utils/isShape'
+import { isBox, isGroup, isLine, isStage } from '../../utils/isShape'
 import { convertToNormalPoints, pointToFlatArray } from '../../utils'
 import { IShape } from '../../type'
 import { Stage } from '../..'
@@ -99,13 +99,8 @@ function dndAttr(draggedTarget: IShape, dx: number, dy: number) {
 
 function setShapeCoord(target: IShape, dx: number, dy: number) {
   const isGroupEl = isGroup(target)
-  const isBox = isBoxHidden(target)
 
-  if (isGroupEl || isBox) {
-    if (isBox) {
-      updateCoord(target)
-    }
-
+  if (isGroupEl) {
     target.children.forEach(item => {
       setShapeCoord(item, dx, dy)
     })

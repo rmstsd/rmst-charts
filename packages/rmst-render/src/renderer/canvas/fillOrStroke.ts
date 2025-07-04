@@ -1,11 +1,17 @@
-import { AbstractUi } from '../../shape'
 import { IShape } from '../../type'
-import { deg2rad } from '../../utils'
 
 export function fillOrStroke(ctx: CanvasRenderingContext2D, elementItem) {
+  fill(ctx, elementItem)
+  stroke(ctx, elementItem)
+}
+
+export const fill = (ctx: CanvasRenderingContext2D, elementItem) => {
   if (elementItem.data.fillStyle) {
     ctx.fill(elementItem.path2D)
   }
+}
+
+export const stroke = (ctx: CanvasRenderingContext2D, elementItem) => {
   if (hasStroke(elementItem.data.lineWidth, elementItem.data.strokeStyle)) {
     ctx.stroke(elementItem.path2D)
   }

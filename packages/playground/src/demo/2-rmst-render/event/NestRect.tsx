@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { Stage, Rect, Circle, BoxHidden } from 'rmst-render'
+import { Stage, Rect, Circle, Box } from 'rmst-render'
 
 const NestRect = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
@@ -10,11 +10,11 @@ const NestRect = () => {
       container: canvasRef.current
     })
 
-    const box_pink = new BoxHidden({ x: 100, y: 100, width: 180, height: 150, fillStyle: 'pink', cursor: 'move' })
+    const box_pink = new Box({ x: 100, y: 100, width: 180, height: 150, fillStyle: 'pink', cursor: 'move' })
     const inn_rect = new Rect({ x: 100, y: 120, width: 80, height: 80, fillStyle: 'green', cursor: 'pointer' })
     box_pink.append(inn_rect)
 
-    const box_2 = new BoxHidden({ x: 200, y: 150, width: 60, height: 60, fillStyle: 'antiquewhite' })
+    const box_2 = new Box({ x: 200, y: 150, width: 60, height: 60, fillStyle: 'antiquewhite' })
     const inn_cir = new Circle({ x: 220, y: 170, radius: 16, fillStyle: 'blue' })
     box_2.append(inn_cir)
 

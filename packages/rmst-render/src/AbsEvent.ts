@@ -1,6 +1,6 @@
 import { Stage } from './_stage'
 import { EventType, Handler, Noop } from './constant'
-import { BoxHidden } from './shape/BoxHidden'
+import { Box } from './shape/Box'
 import { Group } from './shape'
 
 export interface EventOpt {
@@ -32,7 +32,7 @@ abstract class AbsEvent {
   ondrag: Handler = Noop
   ondragend: Handler = Noop
 
-  parent: Stage | Group | BoxHidden = null
+  parent: Stage | Group | Box = null
 
   data = null
   path2D: Path2D = null
