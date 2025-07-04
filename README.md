@@ -6,8 +6,6 @@
 
 ## 以下是 rmst-render 使用文档
 
-> rmst-charts 撰写中...
-
 ---
 
 在线示例：[https://c.rmst.fun/#/rmst-render/overview/index](https://c.rmst.fun/#/rmst-render/overview/index)
