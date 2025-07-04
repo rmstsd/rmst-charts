@@ -144,18 +144,18 @@ group.append(rect)
 stage.append(group)
 ```
 
-## BoxHidden 盒子（渲染实际图形，参数与 Rect 一致）
+## Box 盒子（渲染实际图形，参数与 Rect 一致）
 
 只会在其内部显示
 
 ```javascript
-import { Stage, BoxHidden, Rect } from 'rmst-render'
+import { Stage, Box, Rect } from 'rmst-render'
 
 const stage = new Stage({
   container: document.querySelector('.container')
 })
 
-const bh = new BoxHidden({
+const bh = new Box({
   x: 10,
   y: 10,
   width: 50,
@@ -230,7 +230,7 @@ const rect = new Rect({
 })
 ```
 
-对于 `Group` 或者 `BoxHidden` 这种有后代的元素，会找到拾取的图形的最近的 设置了 `draggable` 属性的图形作为拖拽目标，如果有后代元素，则后代元素跟着一起动。[在线示例](https://c.rmst.fun/#/rmst-render/drag/group)
+对于 `Group` 或者 `Box` 这种有后代的元素，会找到拾取的图形的最近的 设置了 `draggable` 属性的图形作为拖拽目标，如果有后代元素，则后代元素跟着一起动。[在线示例](https://c.rmst.fun/#/rmst-render/drag/group)
 
 # 事件
 
