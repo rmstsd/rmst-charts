@@ -54,9 +54,6 @@ importers:
       core-js:
         specifier: ^3.34.0
         version: 3.39.0
-      es-toolkit:
-        specifier: ^1.39.4
-        version: 1.39.4
       konva:
         specifier: ^9.3.18
         version: 9.3.18
