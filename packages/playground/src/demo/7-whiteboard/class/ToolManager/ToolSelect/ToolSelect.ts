@@ -54,13 +54,13 @@ export default class ToolSelect implements ITool {
 
   onPointerDown(downEvt: PointerEvent) {
     const { wbEditor } = this
-    const stage_eventDispatcher = wbEditor.stage.eventDispatcher
-
-    const shape = stage_eventDispatcher.hovered
 
     this.currentStrategy = null
 
-    if (!shape) {
+    const stage_eventDispatcher = wbEditor.stage.eventDispatcher
+    const hoveredShape = stage_eventDispatcher.hovered
+
+    if (!hoveredShape) {
       console.log('按在 空白处')
 
       wbEditor.selectManager.clearSelect()
@@ -70,25 +70,25 @@ export default class ToolSelect implements ITool {
       return
     }
 
-    if (isWbGraphShape(shape)) {
-      wbEditor.selectManager.onHover(shape.data.id, false)
-      wbEditor.selectManager.select(shape.data.id)
+    if (isWbGraphShape(hoveredShape)) {
+      wbEditor.selectManager.onHover(hoveredShape.data.id, false)
+      wbEditor.selectManager.select(hoveredShape.data.id)
 
       this.currentStrategy = new ToolTranslate(wbEditor)
 
       wbEditor.triggerRender()
-    } else if (shape.data.id === Graph_Id.graph_ctrl_translate) {
+    } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_translate) {
       console.log('平移操作')
 
       this.currentStrategy = new ToolTranslate(wbEditor)
-    } else if (shape.data.id === Graph_Id.graph_ctrl_rotate) {
+    } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_rotate) {
       console.log('旋转操作')
 
       this.currentStrategy = new ToolRotate(wbEditor)
-    } else if (shape.data.id === Graph_Id.graph_ctrl_scale) {
+    } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_scale) {
       console.log('缩放操作')
 
-      this.currentStrategy = new ToolScale(wbEditor, shape.data.extraData?.transformOrigin)
+      this.currentStrategy = new ToolScale(wbEditor, hoveredShape.data.extraData?.transformOrigin)
     }
   }
 

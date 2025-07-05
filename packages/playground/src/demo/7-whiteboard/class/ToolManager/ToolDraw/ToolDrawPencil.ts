@@ -3,7 +3,7 @@ import { getStroke } from 'perfect-freehand'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
 import { ToolEnum } from './../constant'
-import { applyToPoint, compose, inverse, translate } from 'transformation-matrix'
+import { translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
 import { uuid } from '@/utils'
 import { svgPathBbox } from 'svg-path-bbox'
@@ -14,7 +14,6 @@ import { defaultGraphPencilColor } from '@/demo/7-whiteboard/color'
 export default class ToolDrawPencil implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
-  downPos: ICoord
   graphItem = {} as IGraph
 
   private points: [number, number, number][] = []
@@ -27,13 +26,8 @@ export default class ToolDrawPencil implements ITool {
 
   onPointerDown(downEvt: PointerEvent) {}
 
-  onDragStart(downEvt: PointerEvent) {
-    this.downPos = this.wbEditor.client2World(downEvt)
-
-    const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
-    this.downPos = applyToPoint(mt, this.downPos)
-
-    this.points.push([this.downPos.x, this.downPos.y, downEvt.pressure])
+  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.points.push([sceneCoord.x, sceneCoord.y, downEvt.pressure])
 
     this.graphItem.id = uuid()
     this.graphItem.graphShape = new Path({})
@@ -42,13 +36,8 @@ export default class ToolDrawPencil implements ITool {
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
   }
 
-  onDragMove(moveEvt: PointerEvent) {
-    let movePos = this.wbEditor.client2World(moveEvt)
-
-    const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
-    movePos = applyToPoint(mt, movePos)
-
-    this.points.push([movePos.x, movePos.y, moveEvt.pressure])
+  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
+    this.points.push([sceneCoord.x, sceneCoord.y, moveEvt.pressure])
 
     const stroke = getStroke(this.points, {
       size: 2,

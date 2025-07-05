@@ -35,7 +35,7 @@ export interface UiData extends EventOpt {
   draggable?: boolean | 'horizontal' | 'vertical'
   cursor?: ICursor
 
-  visible?: boolean
+  visible?: boolean // 不渲染, 也不拾取图形
 
   pointerEvents?: 'none' | 'all' // 是否响应鼠标事件 默认为 true
 

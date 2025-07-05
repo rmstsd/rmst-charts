@@ -57,15 +57,6 @@ class WhiteboardEditor {
     this.selectManager.bindEvent()
   }
 
-  /**
-   * @deprecated
-   */
-  client2World(evt: PointerEvent) {
-    const rect = this.container.getBoundingClientRect()
-
-    return { x: evt.clientX - rect.left, y: evt.clientY - rect.top }
-  }
-
   triggerRender() {
     this.eventEmitter.emit('render')
   }

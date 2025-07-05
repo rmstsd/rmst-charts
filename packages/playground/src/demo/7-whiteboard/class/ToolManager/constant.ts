@@ -15,12 +15,12 @@ export enum TransformOrigin {
   tl = 'tl',
   tr = 'tr',
   br = 'br',
-  bl = 'bl'
+  bl = 'bl',
 
-  // Top = 'top',
-  // Right = 'right',
-  // Bottom = 'bottom',
-  // Left = 'left',
+  Top = 'top',
+  Right = 'right',
+  Bottom = 'bottom',
+  Left = 'left'
 
   // Center = 'center'
 }

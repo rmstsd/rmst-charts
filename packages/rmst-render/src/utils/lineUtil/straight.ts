@@ -27,7 +27,7 @@ export function calcTotalLineLength(points: ICoord[]) {
   const lineLengths = []
 
   const totalLineLength = lines.reduce((acc, item) => {
-    const lengthItem = calcLineLength(item.start, item.end)
+    const lengthItem = distanceTowPoint(item.start, item.end)
 
     lineLengths.push(lengthItem)
 
@@ -37,7 +37,7 @@ export function calcTotalLineLength(points: ICoord[]) {
   return { totalLineLength, lines, lineLengths }
 }
 
-export function calcLineLength(p1: ICoord, p2: ICoord) {
+export function distanceTowPoint(p1: ICoord, p2: ICoord) {
   return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2)
 }
 

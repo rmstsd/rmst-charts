@@ -3,6 +3,7 @@ import { ITool } from '../type'
 
 import { applyToPoint, compose, inverse, translate } from 'transformation-matrix'
 import { cloneDeep } from 'es-toolkit'
+import { ICoord } from 'rmst-render'
 
 export default class ToolTranslate implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -10,27 +11,25 @@ export default class ToolTranslate implements ITool {
   downPos
   downSnap
 
-  onDragStart(downEvt: PointerEvent) {
+  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolTranslate onDragStart')
 
-    this.downPos = this.wbEditor.client2World(downEvt)
+    this.downPos = sceneCoord
 
     this.downSnap = this.wbEditor.selectManager.selectedGraphs.map(item => ({
-      downMt: cloneDeep(item.graphShape.data.mt),
-      downLocalPos: applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.downPos)
+      downMt: cloneDeep(item.graphShape.data.mt)
     }))
   }
 
-  onDragMove(moveEvt: PointerEvent) {
+  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolTranslate onDragMove')
-    const movePos = this.wbEditor.client2World(moveEvt)
 
     this.wbEditor.selectManager.selectedGraphs.forEach((item, index) => {
       const dSnap = this.downSnap[index]
-      const moveLocalPos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), movePos)
+      const moveLocalPos = sceneCoord
 
-      const dx = moveLocalPos.x - dSnap.downLocalPos.x
-      const dy = moveLocalPos.y - dSnap.downLocalPos.y
+      const dx = moveLocalPos.x - this.downPos.x
+      const dy = moveLocalPos.y - this.downPos.y
 
       const tmt = translate(dx, dy)
 

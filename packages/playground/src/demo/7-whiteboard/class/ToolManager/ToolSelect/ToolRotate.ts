@@ -12,17 +12,16 @@ export default class ToolRotate implements ITool {
   startRad: number
   downSnap
 
-  onDragStart(downEvt: PointerEvent) {
+  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolRotate onDragStart')
 
     const { graphLayerCoordSys } = this.wbEditor.selectManager.transformDownRect
 
-    const downPos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2World(downEvt))
     this.origin = {
       x: (graphLayerCoordSys.tl.x + graphLayerCoordSys.br.x) / 2,
       y: (graphLayerCoordSys.tl.y + graphLayerCoordSys.br.y) / 2
     }
-    this.startRad = Math.atan2(downPos.y - this.origin.y, downPos.x - this.origin.x)
+    this.startRad = Math.atan2(sceneCoord.y - this.origin.y, sceneCoord.x - this.origin.x)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
       id: item.id,
@@ -32,11 +31,10 @@ export default class ToolRotate implements ITool {
     this.downSnap = keyBy(sel, item => item.id)
   }
 
-  onDragMove(moveEvt: PointerEvent) {
+  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolRotate onDragMove')
 
-    const movePos = applyToPoint(inverse(this.wbEditor.graphLayer.data.mt), this.wbEditor.client2World(moveEvt))
-    const currRad = Math.atan2(movePos.y - this.origin.y, movePos.x - this.origin.x)
+    const currRad = Math.atan2(sceneCoord.y - this.origin.y, sceneCoord.x - this.origin.x)
     const diffRad = currRad - this.startRad
 
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {

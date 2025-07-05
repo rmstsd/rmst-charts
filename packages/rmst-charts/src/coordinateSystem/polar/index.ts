@@ -6,7 +6,7 @@ import {
   measureText,
   IShape,
   calcB,
-  calcLineLength,
+  distanceTowPoint,
   calcK,
   pointToFlatArray,
   getPointOnArc
@@ -48,7 +48,7 @@ const getDataForDraw = (
       end: { x: lineAxisEnd.x, y: lineAxisEnd.y }
     }
 
-    const tickInterval = calcLineLength(lineAxis.end, lineAxis.start) / innerOption.radiusAxis.data.length
+    const tickInterval = distanceTowPoint(lineAxis.end, lineAxis.start) / innerOption.radiusAxis.data.length
 
     const distance = 4
 
@@ -71,7 +71,7 @@ const getDataForDraw = (
       const px = -b / tickSlope
       const py = 0
 
-      const know = calcLineLength({ x, y }, { x: px, y: py })
+      const know = distanceTowPoint({ x, y }, { x: px, y: py })
       // distance / know = (y - uy) / y
 
       const uy = y - (distance / know) * y
@@ -93,7 +93,7 @@ const getDataForDraw = (
       const t_px = -t_b / tickSlope
       const t_py = 0
 
-      const t_know = calcLineLength({ x: t_x, y: t_y }, { x: t_px, y: t_py })
+      const t_know = distanceTowPoint({ x: t_x, y: t_y }, { x: t_px, y: t_py })
       // distance / know = (y - uy) / y
 
       const t_uy = t_y - (20 / t_know) * t_y

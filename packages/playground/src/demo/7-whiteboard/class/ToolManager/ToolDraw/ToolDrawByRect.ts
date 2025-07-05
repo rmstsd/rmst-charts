@@ -2,7 +2,7 @@ import { ICoord, IRect, Path } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
 import { uuid } from '@/utils'
-import { applyToPoint, compose, inverse, translate } from 'transformation-matrix'
+import { translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
 import { ToolEnumKey } from './../constant'
 import { defaultGraphFillColor } from '@/demo/7-whiteboard/color'
@@ -14,11 +14,8 @@ export default abstract class ToolDrawByRect implements ITool {
 
   graphItem = {} as IGraph
 
-  onDragStart(downEvt: PointerEvent) {
-    this.downPos = this.wbEditor.client2World(downEvt)
-
-    const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
-    this.downPos = applyToPoint(mt, this.downPos)
+  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.downPos = sceneCoord
 
     this.graphItem.id = uuid()
     this.graphItem.graphShape = new Path({})
@@ -30,15 +27,11 @@ export default abstract class ToolDrawByRect implements ITool {
     this.wbEditor.selectManager.selectedIds.push(this.graphItem.id)
   }
 
-  onDragMove(moveEvt: PointerEvent) {
+  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     const { wbEditor, downPos } = this
 
-    let movePos = wbEditor.client2World(moveEvt)
-    const mt = compose(inverse(this.wbEditor.graphLayer.data.mt))
-    movePos = applyToPoint(mt, movePos)
-
-    const tl = { x: Math.min(movePos.x, downPos.x), y: Math.min(movePos.y, downPos.y) }
-    const br = { x: Math.max(movePos.x, downPos.x), y: Math.max(movePos.y, downPos.y) }
+    const tl = { x: Math.min(sceneCoord.x, downPos.x), y: Math.min(sceneCoord.y, downPos.y) }
+    const br = { x: Math.max(sceneCoord.x, downPos.x), y: Math.max(sceneCoord.y, downPos.y) }
 
     const width = br.x - tl.x
     const height = br.y - tl.y
@@ -61,12 +54,7 @@ export default abstract class ToolDrawByRect implements ITool {
     wbEditor.triggerRender()
   }
 
-  onDragEnd(upEvt: PointerEvent) {
-    // this.graphItem.graphShape.attr({
-    //   width: this.graphItem.graphShape.getBBox().width,
-    //   height: this.graphItem.graphShape.getBBox().height
-    // })
-  }
+  onDragEnd(upEvt: PointerEvent) {}
 
   protected abstract getGraphPathD(rect: IRect): { d: string; name: string; wbType: ToolEnumKey }
 }

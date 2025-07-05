@@ -20,8 +20,13 @@ export default class ToolDrawImage implements ITool {
     const [file] = await showOpenFilePicker({
       types: [{ description: 'Images', accept: { 'image/*': ['.png', '.jpeg', '.jpg'] } }],
       multiple: false
+    }).catch(err => {
+      this.wbEditor.toolManager.switchTool(ToolEnum.Select)
+      return Promise.reject(err)
     })
+
     if (!file) {
+      this.wbEditor.toolManager.switchTool(ToolEnum.Select)
       return
     }
 

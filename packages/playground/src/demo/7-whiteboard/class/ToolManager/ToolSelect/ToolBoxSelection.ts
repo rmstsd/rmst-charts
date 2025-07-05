@@ -1,8 +1,9 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-import { applyToPoint, inverse } from 'transformation-matrix'
+import { applyToPoint } from 'transformation-matrix'
 import { ICoord, Rect } from 'rmst-render'
 import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
+import { noop } from 'es-toolkit'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
@@ -12,6 +13,11 @@ export default class ToolBoxSelection implements ITool {
   }
 
   downPos: ICoord
+
+  tl: ICoord
+  br: ICoord
+
+  unBind = noop
 
   boxSelectionRect = new Rect({
     x: 0,
@@ -23,24 +29,31 @@ export default class ToolBoxSelection implements ITool {
     lineWidth: 2
   })
 
-  onActive() {}
-
-  onDragStart(downEvt: PointerEvent) {
-    const { wbEditor } = this
-
-    this.downPos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2World(downEvt))
+  onActive() {
+    this.unBind = this.wbEditor.camera.eventEmitter.on('cameraChange', () => {
+      this.updateBoxSelectionRect()
+    })
   }
 
-  onDragMove(moveEvt: PointerEvent) {
-    const { wbEditor } = this
+  onDeActive() {
+    this.unBind()
+  }
 
-    const movePos = applyToPoint(inverse(wbEditor.graphLayer.data.mt), this.wbEditor.client2World(moveEvt))
+  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.downPos = sceneCoord
+  }
 
-    let tl = { x: Math.min(this.downPos.x, movePos.x), y: Math.min(this.downPos.y, movePos.y) }
-    let br = { x: Math.max(this.downPos.x, movePos.x), y: Math.max(this.downPos.y, movePos.y) }
+  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
+    this.tl = { x: Math.min(this.downPos.x, sceneCoord.x), y: Math.min(this.downPos.y, sceneCoord.y) }
+    this.br = { x: Math.max(this.downPos.x, sceneCoord.x), y: Math.max(this.downPos.y, sceneCoord.y) }
 
-    tl = applyToPoint(wbEditor.graphLayer.data.mt, tl)
-    br = applyToPoint(wbEditor.graphLayer.data.mt, br)
+    this.updateBoxSelectionRect()
+  }
+
+  private updateBoxSelectionRect() {
+    // 场景坐标转世界坐标
+    const tl = applyToPoint(this.wbEditor.graphLayer.data.mt, this.tl)
+    const br = applyToPoint(this.wbEditor.graphLayer.data.mt, this.br)
 
     this.boxSelectionRect.attr({ x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
   }

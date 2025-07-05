@@ -48,8 +48,12 @@ const Whiteboard = observer(function Whiteboard() {
         <main className="flex h-full">
           <div className="whiteboard-canvas flex-grow h-full relative border" ref={domRef}></div>
 
-          <div className="absolute bg-white shadow-xl rounded-lg p-2 bottom-0 left-0 border">
-            zoom: {round(wbEditor.camera.zoom, 2)}
+          <div className="absolute bg-white shadow-xl rounded-lg p-2 bottom-0 left-0 border flex gap-1 items-center">
+            <button onClick={() => wbEditor.camera.zoomOut()}>缩小</button>
+            <span>zoom: {round(wbEditor.camera.zoom * 100, 2)}%</span>
+            <button onClick={() => wbEditor.camera.zoomIn()}>放大</button>
+            <button onClick={() => wbEditor.camera.zoomToValue(1)}>100%</button>
+            <button onClick={() => wbEditor.camera.zoomToFit()}>适应画布</button>
           </div>
 
           <InfoRightPanel />
