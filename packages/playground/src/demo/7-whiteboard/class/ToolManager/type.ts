@@ -7,7 +7,7 @@ export interface ITool {
   onDeActive?: () => void
 
   onPointerDown?: (downEvt: PointerEvent, sceneCoord: ICoord) => void
-  onPointerUp?: (downEvt: PointerEvent, sceneCoord: ICoord) => void
+  // onPointerUp?: (downEvt: PointerEvent, sceneCoord: ICoord) => void
 
   onDragStart: (downEvt: PointerEvent, sceneCoord: ICoord) => void
   onDragMove: (moveEvt: PointerEvent, sceneCoord: ICoord) => void

@@ -27,7 +27,7 @@ export default class ToolManager {
     makeAutoObservable(this)
   }
 
-  currentTool: ToolEnumKey = ToolEnum.Select
+  currentTool: ToolEnumKey
   currentToolClass: ITool
 
   bindEvent() {
@@ -61,6 +61,10 @@ export default class ToolManager {
   }
 
   async switchTool(tool: ToolEnumKey) {
+    if (tool === this.currentTool) {
+      return
+    }
+
     const prevToolClass = this.currentToolClass
     if (prevToolClass) {
       prevToolClass.onDeActive?.()

@@ -7,8 +7,6 @@ import { noop } from 'es-toolkit'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
-    wbEditor.stage.append(this.boxSelectionRect)
-
     console.log('ToolBoxSelection')
   }
 
@@ -29,14 +27,21 @@ export default class ToolBoxSelection implements ITool {
     lineWidth: 2
   })
 
-  onActive() {}
-
-  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
-    this.downPos = sceneCoord
+  onActive() {
+    this.wbEditor.stage.append(this.boxSelectionRect)
 
     this.unBind = this.wbEditor.camera.eventEmitter.on('cameraChange', () => {
       this.updateBoxSelectionRect()
     })
+  }
+
+  onDeActive() {
+    console.log('ToolBoxSelection onDeActive')
+    this.unBind?.()
+  }
+
+  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.downPos = sceneCoord
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
@@ -56,7 +61,5 @@ export default class ToolBoxSelection implements ITool {
 
   onDragEnd(upEvt: PointerEvent) {
     this.boxSelectionRect.remove()
-
-    this.unBind?.()
   }
 }

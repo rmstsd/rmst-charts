@@ -8,13 +8,13 @@ import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
+import { isFunction } from 'es-toolkit'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
   currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选
-
-  downPos: ICoord
+  currentStrategyDispose
 
   onActive() {
     const { wbEditor } = this
@@ -88,7 +88,9 @@ export default class ToolSelect implements ITool {
       }
     }
 
-    this.currentStrategy.onActive?.()
+    let vv = this.currentStrategy.onActive?.()
+
+    this.currentStrategyDispose = vv
   }
 
   onPointerUp() {
@@ -97,6 +99,11 @@ export default class ToolSelect implements ITool {
     if (prev) {
       prev.onDeActive?.()
     }
+
+    // console.log(this.currentStrategyDispose)
+    // if (isFunction(this.currentStrategyDispose)) {
+    //   this.currentStrategyDispose()
+    // }
 
     this.currentStrategy = null
   }
