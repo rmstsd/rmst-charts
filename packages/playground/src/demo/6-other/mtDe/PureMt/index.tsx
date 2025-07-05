@@ -100,7 +100,7 @@ export default observer(function PureMt() {
     const downSnap = cloneDeep(keyBy(selectedRects, item => item.id))
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
 
         selectedRects.forEach(item => {
@@ -130,7 +130,7 @@ export default observer(function PureMt() {
     state.testCoord = origin
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
 
         const currRad = Math.atan2(movePos.y - origin.y, movePos.x - origin.x)
@@ -172,7 +172,7 @@ export default observer(function PureMt() {
       startRad = d_90 - startRad
 
       startDrag(downEvt, {
-        onMove: moveEvt => {
+        onDragMove: moveEvt => {
           const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
           const moveLocal = applyToPoint(inverse(downRect.mt), movePos)
 
@@ -194,7 +194,7 @@ export default observer(function PureMt() {
     }
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
         const moveLocal = applyToPoint(inverse(downRect.mt), movePos)
 

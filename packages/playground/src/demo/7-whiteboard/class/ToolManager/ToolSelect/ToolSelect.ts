@@ -55,8 +55,6 @@ export default class ToolSelect implements ITool {
   onPointerDown(downEvt: PointerEvent) {
     const { wbEditor } = this
 
-    this.currentStrategy = null
-
     const stage_eventDispatcher = wbEditor.stage.eventDispatcher
     const hoveredShape = stage_eventDispatcher.hovered
 
@@ -67,29 +65,40 @@ export default class ToolSelect implements ITool {
       this.currentStrategy = new ToolBoxSelection(wbEditor)
 
       wbEditor.triggerRender()
-      return
+    } else {
+      if (isWbGraphShape(hoveredShape)) {
+        wbEditor.selectManager.onHover(hoveredShape.data.id, false)
+        wbEditor.selectManager.select(hoveredShape.data.id)
+
+        this.currentStrategy = new ToolTranslate(wbEditor)
+
+        wbEditor.triggerRender()
+      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_translate) {
+        console.log('平移操作')
+
+        this.currentStrategy = new ToolTranslate(wbEditor)
+      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_rotate) {
+        console.log('旋转操作')
+
+        this.currentStrategy = new ToolRotate(wbEditor)
+      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_scale) {
+        console.log('缩放操作')
+
+        this.currentStrategy = new ToolScale(wbEditor, hoveredShape.data.extraData?.transformOrigin)
+      }
     }
 
-    if (isWbGraphShape(hoveredShape)) {
-      wbEditor.selectManager.onHover(hoveredShape.data.id, false)
-      wbEditor.selectManager.select(hoveredShape.data.id)
+    this.currentStrategy.onActive?.()
+  }
 
-      this.currentStrategy = new ToolTranslate(wbEditor)
-
-      wbEditor.triggerRender()
-    } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_translate) {
-      console.log('平移操作')
-
-      this.currentStrategy = new ToolTranslate(wbEditor)
-    } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_rotate) {
-      console.log('旋转操作')
-
-      this.currentStrategy = new ToolRotate(wbEditor)
-    } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_scale) {
-      console.log('缩放操作')
-
-      this.currentStrategy = new ToolScale(wbEditor, hoveredShape.data.extraData?.transformOrigin)
+  onPointerUp() {
+    console.log('onPointerUp')
+    const prev = this.currentStrategy
+    if (prev) {
+      prev.onDeActive?.()
     }
+
+    this.currentStrategy = null
   }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {

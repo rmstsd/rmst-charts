@@ -43,15 +43,18 @@ export default class ToolManager {
       this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
 
       startDrag(downEvt, {
-        start: () => {
+        onDragStart: () => {
           this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
         },
-        onMove: moveEvt => {
+        onDragMove: moveEvt => {
           this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
         },
-        onUp: upEvt => {
+        onDragEnd: upEvt => {
           this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
           this.switchTool(ToolEnum.Select)
+        },
+        onPointerUp: upEvt => {
+          this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
         }
       })
     }

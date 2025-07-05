@@ -29,18 +29,14 @@ export default class ToolBoxSelection implements ITool {
     lineWidth: 2
   })
 
-  onActive() {
-    this.unBind = this.wbEditor.camera.eventEmitter.on('cameraChange', () => {
-      this.updateBoxSelectionRect()
-    })
-  }
-
-  onDeActive() {
-    this.unBind()
-  }
+  onActive() {}
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.downPos = sceneCoord
+
+    this.unBind = this.wbEditor.camera.eventEmitter.on('cameraChange', () => {
+      this.updateBoxSelectionRect()
+    })
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
@@ -60,5 +56,7 @@ export default class ToolBoxSelection implements ITool {
 
   onDragEnd(upEvt: PointerEvent) {
     this.boxSelectionRect.remove()
+
+    this.unBind?.()
   }
 }
