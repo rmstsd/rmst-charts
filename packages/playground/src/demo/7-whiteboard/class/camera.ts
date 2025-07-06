@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
-import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
+import { compose, inverse, scale, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
 import { ICoord } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'

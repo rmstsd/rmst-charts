@@ -55,6 +55,7 @@ export default class ToolManager {
         },
         onPointerUp: upEvt => {
           this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          this.switchTool(ToolEnum.Select)
         }
       })
     }

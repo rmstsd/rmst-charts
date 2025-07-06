@@ -22,7 +22,7 @@ export default class ToolTranslate implements ITool {
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    console.log('ToolTranslate onDragMove')
+    // console.log('ToolTranslate onDragMove')
 
     this.wbEditor.selectManager.selectedGraphs.forEach((item, index) => {
       const dSnap = this.downSnap[index]

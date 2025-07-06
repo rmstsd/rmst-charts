@@ -17,6 +17,7 @@ document.addEventListener(
   { capture: true }
 )
 
+// 与 html 类似, 发生了 drag 后, 就不会触发 onPointerUp 事件
 export const startDrag = (downEvt: React.PointerEvent | PointerEvent, options: DragOptions) => {
   const { onDragStart, onDragMove, onDragEnd, onPointerUp } = options
 
@@ -57,9 +58,9 @@ export const startDrag = (downEvt: React.PointerEvent | PointerEvent, options: D
 
     if (isMoved) {
       onDragEnd?.(evt)
+    } else {
+      onPointerUp?.(evt)
     }
-
-    onPointerUp?.(evt)
   }
 
   target.addEventListener('pointerup', cancel, { signal: abCt.signal })

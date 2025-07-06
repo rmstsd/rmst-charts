@@ -32,7 +32,7 @@ export default class ToolRotate implements ITool {
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    console.log('ToolRotate onDragMove')
+    // console.log('ToolRotate onDragMove')
 
     const currRad = Math.atan2(sceneCoord.y - this.origin.y, sceneCoord.x - this.origin.x)
     const diffRad = currRad - this.startRad

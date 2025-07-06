@@ -88,22 +88,12 @@ export default class ToolSelect implements ITool {
       }
     }
 
-    let vv = this.currentStrategy.onActive?.()
-
-    this.currentStrategyDispose = vv
+    this.currentStrategyDispose = this.currentStrategy.onActive?.()
   }
 
   onPointerUp() {
     console.log('onPointerUp')
-    const prev = this.currentStrategy
-    if (prev) {
-      prev.onDeActive?.()
-    }
-
-    // console.log(this.currentStrategyDispose)
-    // if (isFunction(this.currentStrategyDispose)) {
-    //   this.currentStrategyDispose()
-    // }
+    this.disposePrev()
 
     this.currentStrategy = null
   }
@@ -122,6 +112,19 @@ export default class ToolSelect implements ITool {
     this.currentStrategy.onDragEnd(upEvt, sceneCoord)
 
     this.wbEditor.selectManager.enableHover()
+
+    this.disposePrev()
+  }
+
+  private disposePrev() {
+    const prev = this.currentStrategy
+    if (prev) {
+      prev.onDeActive?.()
+    }
+
+    if (isFunction(this.currentStrategyDispose)) {
+      this.currentStrategyDispose()
+    }
   }
 }
 

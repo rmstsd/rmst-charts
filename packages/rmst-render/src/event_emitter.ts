@@ -8,7 +8,6 @@ export class EventEmitter<T extends Record<string | symbol, any>> {
     this.eventMap[eventName].push(listener)
 
     return () => {
-      console.log('off')
       this.off(eventName, listener)
     }
   }

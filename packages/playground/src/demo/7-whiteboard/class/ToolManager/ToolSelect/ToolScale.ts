@@ -93,7 +93,7 @@ export default class ToolScale implements ITool {
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    console.log('ToolScale onDragMove')
+    // console.log('ToolScale onDragMove')
 
     const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
 
