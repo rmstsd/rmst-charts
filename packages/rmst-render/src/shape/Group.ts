@@ -1,8 +1,9 @@
-import { mountStage } from '../_stage/renderUi'
-import AbstractUi, { UiData } from './AbstractUi'
-import { IShape } from '../type'
+import { mountParentInChildren, mountStageInChildren } from '../_stage/renderUi'
+import UiBase, { UiBaseData } from './UiBase'
+import { IShape, IShapeType } from '../type'
+import { cloneDeep } from 'es-toolkit'
 
-interface GroupData extends UiData {
+interface GroupData extends UiBaseData {
   children?: IShape[]
 }
 
@@ -10,12 +11,16 @@ const defaultData: GroupData = {
   children: []
 }
 
-export class Group extends AbstractUi<any> {
-  constructor(data: GroupData = {}) {
-    super('Group', data, defaultData)
+export class Group extends UiBase<any> {
+  constructor(data: GroupData = cloneDeep(defaultData)) {
+    super(data, cloneDeep(defaultData))
+
+    mountParentInChildren(this)
   }
 
-  children: IShape[] = []
+  type: IShapeType = 'Group'
+
+  data: GroupData
 
   append(p: IShape[]): void
   append(p: IShape): void
@@ -23,19 +28,34 @@ export class Group extends AbstractUi<any> {
   append(...args) {
     const elements = args.flat(1)
 
-    this.children = this.children.concat(elements)
-    this.children = this.children.map(item => Object.assign(item, { parent: this }))
+    if (!Array.isArray(this.data.children)) {
+      this.data.children = []
+    }
 
-    mountStage(this.children, this.stage)
+    this.data.children = this.data.children.concat(elements)
+
+    mountParentInChildren(this)
+    mountStageInChildren(this.data.children, this.stage)
 
     this.stage?.render()
   }
 
   removeAllChildren() {
-    this.dispose()
-    this.children = []
+    disposeAll(this.data.children)
+    this.data.children = []
+
     this.stage?.render()
   }
 }
 
 export default Group
+
+const disposeAll = (children: IShape[]) => {
+  children.forEach(item => {
+    item.dispose()
+
+    if (Array.isArray(item.children)) {
+      disposeAll(item.children)
+    }
+  })
+}

@@ -1,8 +1,8 @@
 // 等腰梯形, 上面是短边
 
-import AbstractUi, { UiData } from './AbstractUi'
+import UiBase, { UiBaseData } from './UiBase'
 
-export interface TrapezoidData extends UiData {
+export interface TrapezoidData extends UiBaseData {
   x?: number
   y?: number
   width?: number
@@ -10,7 +10,7 @@ export interface TrapezoidData extends UiData {
   shortLength: number | string // 字符串代表相对于长边的百分比
 }
 
-export class Trapezoid extends AbstractUi<TrapezoidData> {
+export class Trapezoid extends UiBase<TrapezoidData> {
   constructor(data: TrapezoidData) {
     super('Trapezoid', data)
   }

@@ -13,16 +13,22 @@ export default function ImageDemo() {
     const image = new RtImage({
       x: 50,
       y: 0,
-      width: 130,
+      width: 80,
       height: 100,
-      src: testJpg
+      src: testJpg,
+      lineWidth: 2,
+      strokeStyle: 'red',
+      objectFit: 'contain'
     })
     const image2 = new RtImage({
-      x: 100,
+      x: 200,
       y: 50,
       width: 130,
-      height: 100,
-      src: zyJpg
+      height: 50,
+      src: zyJpg,
+      lineWidth: 2,
+      strokeStyle: 'red',
+      objectFit: 'contain'
     })
 
     stage.append(image, image2)

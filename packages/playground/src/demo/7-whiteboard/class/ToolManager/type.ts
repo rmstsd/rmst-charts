@@ -3,7 +3,8 @@ import { ICoord } from 'rmst-render'
 export type Destructor = () => void
 
 export interface ITool {
-  onActive?: () => void | Destructor
+  enableActive?: () => Promise<boolean>
+  onActive?: () => void
   onDeActive?: () => void
 
   onPointerDown?: (downEvt: PointerEvent, sceneCoord: ICoord) => void

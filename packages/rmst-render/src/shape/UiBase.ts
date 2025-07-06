@@ -2,12 +2,12 @@ import { Stage } from '../_stage'
 import { Animator, AnimateCartoonConfig } from '../animate'
 import AbsEvent, { EventOpt } from '../AbsEvent'
 import { schedulerTask } from '../_stage/scheduler'
-import { ICursor, IShape, IShapeType } from '../type'
+import { ICursor, IRect, IShape, IShapeType } from '../type'
 import { attrDirty } from '../_stage/controller/DirtyRect'
 import { compose, identity, Matrix, translate } from 'transformation-matrix'
 import { normalizedAttrs } from '../utils/attr'
 
-export interface UiData extends EventOpt {
+export interface UiBaseData extends EventOpt {
   id?: string
   name?: string
   x?: number
@@ -44,16 +44,11 @@ export interface UiData extends EventOpt {
   extraData?: any
 
   mt?: Matrix
+
+  children?: any[]
 }
 
-export interface IRect {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-export const getDefaultAbsData = (): UiData => ({
+export const getDefaultUiBaseDataData = (): UiBaseData => ({
   x: 0,
   y: 0,
   lineWidth: 1,
@@ -70,15 +65,17 @@ export const getDefaultAbsData = (): UiData => ({
   visible: true,
   mt: identity()
 })
+
 export const combineDefaultData = (shapeData, defaultShapeData) => {
-  return { ...getDefaultAbsData(), ...defaultShapeData, ...shapeData }
+  const defaultAbsData = getDefaultUiBaseDataData()
+  const ans = { ...defaultAbsData, ...defaultShapeData, ...shapeData }
+
+  return ans
 }
 
-export abstract class AbstractUi<T = {}> extends AbsEvent {
-  constructor(type: IShapeType, shapeData, defaultShapeData?) {
+export abstract class UiBase<T = {}> extends AbsEvent {
+  constructor(shapeData, defaultShapeData?) {
     super()
-
-    this.type = type
 
     this.data = combineDefaultData(shapeData, defaultShapeData)
 
@@ -89,19 +86,24 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
   extraData
 
-  declare data: UiData
+  declare data: UiBaseData
 
   declare path2D: Path2D
 
   stage: Stage
 
+  get children() {
+    return this.data.children ?? []
+  }
+
   clone() {
-    const Class = this.constructor as new (...args) => AbstractUi<T>
+    // todo 对于有后代的元素还要深度 clone
+    const Class = this.constructor as new (...args) => UiBase<T>
     return new Class(structuredClone(this.data))
   }
 
   getOutLineShape() {
-    const Class = this.constructor as new (...args) => AbstractUi<T>
+    const Class = this.constructor as new (...args) => UiBase<T>
     return new Class(structuredClone(this.data))
   }
 
@@ -110,7 +112,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
       console.warn('还没有被 append')
       return
     }
-    const parentChildren = this.parent.children as IShape[]
+    const parentChildren = this.parent.data.children as IShape[]
 
     parentChildren.splice(parentChildren.indexOf(this), 1)
     parentChildren.push(this)
@@ -118,7 +120,6 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
 
   public attr(data: Partial<T>): void
   public attr<K extends keyof T>(key: K, value: T[K]): void
-
   public attr(...args) {
     const attrs = normalizedAttrs(args)
     this.data = { ...this.data, ...attrs }
@@ -156,7 +157,7 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
   }
 
   remove() {
-    const parentChildren = this.parent.children as IShape[]
+    const parentChildren = this.parent.data.children as IShape[]
     const index = parentChildren.indexOf(this)
 
     if (index !== -1) {
@@ -197,4 +198,4 @@ export abstract class AbstractUi<T = {}> extends AbsEvent {
   }
 }
 
-export default AbstractUi
+export default UiBase

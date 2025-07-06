@@ -293,7 +293,7 @@ export class ChartRoot {
   refreshChart() {
     const { stage } = this
 
-    stage.removeAllShape()
+    stage.removeAllChildren()
     stage.append(this.renderedElements)
 
     this.seriesManager.afterTasks.forEach(fn => {

@@ -6,8 +6,7 @@ export class ResizeMng {
     let mqString = `(resolution: ${window.devicePixelRatio}dppx)`
 
     const updatePixelRatio = () => {
-      console.log('dpr change', window.devicePixelRatio)
-
+      // console.log('dpr change', window.devicePixelRatio)
       // stage.render()
     }
 

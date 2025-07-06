@@ -73,6 +73,15 @@ export default class ToolManager {
 
     this.currentTool = tool
     this.currentToolClass = new ToolClassMap[tool](this.wbEditor)
+
+    if (this.currentToolClass.enableActive) {
+      const enableSuccess = await this.currentToolClass.enableActive?.()
+      if (!enableSuccess) {
+        this.switchTool(ToolEnum.Select)
+        return
+      }
+    }
+
     this.currentToolClass.onActive?.()
   }
 }

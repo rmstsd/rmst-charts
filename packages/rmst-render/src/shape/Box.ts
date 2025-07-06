@@ -1,42 +1,24 @@
-import { mountStage } from '../_stage/renderUi'
-import AbstractUi, { IRect } from './AbstractUi'
-import Rect, { RectData, defaultRectData } from './Rect'
-import { IShape } from '../type'
+import UiBase from './UiBase'
+import { RectData, defaultRectData } from './Rect'
+import { IRect, IShape, IShapeType } from '../type'
 import { omit } from 'es-toolkit'
 import Path from './Path'
+import Group from './Group'
 
-interface BoxData extends RectData {
+export interface BoxData extends RectData {
   children?: IShape[]
 }
 
-export class Box extends AbstractUi<BoxData> {
+export class Box extends Group {
   constructor(data: BoxData) {
-    super('BoxHidden', data, defaultRectData)
-
-    if (data.children) {
-      this.children = data.children
-    }
+    super({ ...defaultRectData, ...data })
   }
 
-  declare data: BoxData
+  data: BoxData
 
-  children: IShape[] = []
+  type: IShapeType = 'Box'
 
-  append(p: IShape[]): void
-  append(p: IShape): void
-  append(...args: IShape[]): void
-  append(...args) {
-    const elements = args.flat(1)
-
-    this.children = this.children.concat(elements)
-    this.children = this.children.map(item => Object.assign(item, { parent: this }))
-
-    mountStage(this.children, this.stage)
-
-    this.stage?.render()
-  }
-
-  override getOutLineShape(): AbstractUi<RectData> {
+  override getOutLineShape(): UiBase<RectData> {
     let newData = omit(this.data, ['children'])
 
     newData = structuredClone(newData)

@@ -9,7 +9,7 @@ export type IShapeType =
   | 'Circle'
   | 'Text'
   | 'Group'
-  | 'BoxHidden'
+  | 'Box'
   | 'Stage'
   | 'Path'
   | 'Image'
@@ -36,3 +36,10 @@ export type ICursor =
   | 'grabbing'
 
 export type ICoord = { x: number; y: number }
+
+export interface IRect {
+  x: number
+  y: number
+  width: number
+  height: number
+}

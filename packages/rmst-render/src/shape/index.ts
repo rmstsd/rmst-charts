@@ -1,4 +1,4 @@
-export * from './AbstractUi'
+export * from './UiBase'
 
 export * from './Text'
 export * from './Circle'

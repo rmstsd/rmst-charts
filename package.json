@@ -12,6 +12,7 @@
     "enum-plus": "^2.3.3",
     "es-toolkit": "^1.39.4",
     "fit-curve": "^0.2.0",
+    "object-fit-math": "^1.0.0",
     "svg-path-bbox": "^2.1.0",
     "svgpath": "^2.6.0",
     "transformation-matrix": "^3.0.0"

@@ -1,20 +1,22 @@
-import AbstractUi, { UiData, IRect } from './AbstractUi'
-import Rect from './Rect'
+import { FitMode } from 'object-fit-math/dist/types'
+import { IRect, IShapeType } from '../type'
+import Box, { BoxData } from './Box'
 
-const defaultData: ImageData = {}
-
-interface ImageData extends UiData {
+interface ImageData extends BoxData {
   src?: string
+  objectFit?: FitMode
 }
 
-export class RmstImage extends AbstractUi {
+export class RmstImage extends Box {
   constructor(data: ImageData) {
-    super('Image', data, defaultData)
+    super(data)
   }
+
+  type: IShapeType = 'Image'
 
   nativeImage: HTMLImageElement
 
-  declare data: ImageData
+  data: ImageData
 
   override getBBox(): IRect {
     return { x: 0, y: 0, width: this.data.width, height: this.data.height }

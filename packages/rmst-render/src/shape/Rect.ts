@@ -1,11 +1,12 @@
-import AbstractUi, { UiData, IRect } from './AbstractUi'
+import { IShapeType } from '../type'
+import UiBase, { UiBaseData } from './UiBase'
 
 export const defaultRectData = {
   cornerRadius: 0,
   lineWidth: 1
 }
 
-export interface RectData extends UiData {
+export interface RectData extends UiBaseData {
   x?: number
   y?: number
   width?: number
@@ -13,10 +14,12 @@ export interface RectData extends UiData {
   cornerRadius?: number
 }
 
-export class Rect extends AbstractUi<RectData> {
+export class Rect extends UiBase<RectData> {
   constructor(data: RectData) {
-    super('Rect', data, defaultRectData)
+    super(data, defaultRectData)
   }
+
+  type: IShapeType = 'Rect'
 
   declare data: RectData
 

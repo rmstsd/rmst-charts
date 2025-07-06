@@ -1,17 +1,18 @@
+import { UiBase } from '../../shape'
 import { IShape } from '../../type'
 
-export function fillOrStroke(ctx: CanvasRenderingContext2D, elementItem) {
+export function fillOrStroke(ctx: CanvasRenderingContext2D, elementItem: UiBase) {
   fill(ctx, elementItem)
   stroke(ctx, elementItem)
 }
 
-export const fill = (ctx: CanvasRenderingContext2D, elementItem) => {
+export const fill = (ctx: CanvasRenderingContext2D, elementItem: UiBase) => {
   if (elementItem.data.fillStyle) {
     ctx.fill(elementItem.path2D)
   }
 }
 
-export const stroke = (ctx: CanvasRenderingContext2D, elementItem) => {
+export const stroke = (ctx: CanvasRenderingContext2D, elementItem: UiBase) => {
   if (hasStroke(elementItem.data.lineWidth, elementItem.data.strokeStyle)) {
     ctx.stroke(elementItem.path2D)
   }

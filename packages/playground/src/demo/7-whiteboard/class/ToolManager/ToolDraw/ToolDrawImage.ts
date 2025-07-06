@@ -1,4 +1,4 @@
-import { Box, getRectByTwoPoint, ICoord, RmstImage } from 'rmst-render'
+import { getRectByTwoPoint, ICoord, RmstImage } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { IGraph } from '../../../type'
@@ -14,37 +14,42 @@ export default class ToolDrawImage implements ITool {
   downPos: ICoord
   graphItem = {} as IGraph
 
-  async onActive() {
-    this.wbEditor.selectManager.clearSelect()
+  url = ''
 
+  async enableActive() {
     const [file] = await showOpenFilePicker({
       types: [{ description: 'Images', accept: { 'image/*': ['.png', '.jpeg', '.jpg'] } }],
       multiple: false
     }).catch(err => {
-      this.wbEditor.toolManager.switchTool(ToolEnum.Select)
-      return Promise.reject(err)
+      return []
     })
 
     if (!file) {
-      this.wbEditor.toolManager.switchTool(ToolEnum.Select)
-      return
+      return false
     }
 
-    let url = URL.createObjectURL(await file.getFile())
+    this.url = URL.createObjectURL(await file.getFile())
+
+    return true
+  }
+
+  async onActive() {
+    this.wbEditor.selectManager.clearSelect()
 
     const { coordSys } = this.wbEditor
     const centerScene = coordSys.world2Scene(coordSys.centerWorld)
 
     const id = uuid()
-    const graphShape = new Box({
+    const graphShape = new RmstImage({
       id,
       width: 100,
       height: 100,
       strokeStyle: OpenColor.gray[5],
       lineWidth: 1,
       cornerRadius: 4,
+      src: this.url,
+      objectFit: 'cover',
       mt: translate(centerScene.x, centerScene.y),
-      children: [new RmstImage({ width: 100, height: 100, src: url })],
       extraData: {
         wbType: ToolEnum.Image
       }
@@ -71,7 +76,6 @@ export default class ToolDrawImage implements ITool {
       height: rect.height,
       mt: translate(rect.x, rect.y)
     })
-    ;(this.graphItem.graphShape as Box).children[0].attr({ width: rect.width, height: rect.height })
   }
 
   onDragEnd(upEvt: PointerEvent) {}
