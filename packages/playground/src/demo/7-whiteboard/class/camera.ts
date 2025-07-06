@@ -1,10 +1,15 @@
 import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
-import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
+import { compose, inverse, scale, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
+import { ICoord } from 'rmst-render'
+import { cloneDeep } from 'es-toolkit'
 
 const zoomSpeed = 1.2
 const speed = 100
+
+const Min_Zoom = 0.01
+const Max_Zoom = 10
 
 interface Events {
   cameraChange: () => void
@@ -20,6 +25,7 @@ export default class Camera {
   zoom = 1
 
   bindEvent() {
+    const { wbEditor } = this
     const { container, graphLayer: graphGroup } = this.wbEditor
     container.onwheel = evt => {
       evt.preventDefault()
@@ -27,17 +33,9 @@ export default class Camera {
       let mt = graphGroup.data.mt
 
       if (evt.ctrlKey) {
-        const center = { x: evt.offsetX, y: evt.offsetY }
-
-        const nvOrigin = applyToPoint(inverse(mt), center)
-
-        const newMt = scale(this.zoom, this.zoom, nvOrigin.x, nvOrigin.y)
-        const tt = compose(mt, inverse(newMt))
-
-        this.zoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
-        mt = compose(tt, scale(this.zoom, this.zoom, nvOrigin.x, nvOrigin.y))
-
-        graphGroup.attr('mt', mt)
+        const nvOrigin = wbEditor.coordSys.client2Scene(evt)
+        let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
+        this.zoomTo(newZoom, nvOrigin)
       } else {
         if (evt.shiftKey) {
           const tmt = evt.deltaY > 0 ? translate(-speed, 0) : translate(speed, 0)
@@ -48,11 +46,47 @@ export default class Camera {
         }
 
         graphGroup.attr('mt', mt)
+        this.triggerCameraChange()
       }
-
-      this.triggerCameraChange()
     }
   }
+
+  // 放大
+  zoomIn() {
+    this.zoomTo(this.zoom * zoomSpeed, this.wbEditor.coordSys.centerScene)
+  }
+
+  // 缩小
+  zoomOut() {
+    this.zoomTo(this.zoom / zoomSpeed, this.wbEditor.coordSys.centerScene)
+  }
+
+  // 缩小
+  zoomToValue(newZoom: number) {
+    this.zoomTo(newZoom, this.wbEditor.coordSys.centerScene)
+  }
+
+  // origin: 场景坐标系
+  zoomTo(newZoom: number, origin: ICoord) {
+    const { wbEditor } = this
+
+    let mt = cloneDeep(wbEditor.graphLayer.data.mt)
+
+    const newMt = scale(this.zoom, this.zoom, origin.x, origin.y)
+    const tt = compose(mt, inverse(newMt))
+
+    newZoom = Math.max(Min_Zoom, Math.min(Max_Zoom, newZoom))
+
+    this.zoom = newZoom
+
+    mt = compose(tt, scale(newZoom, newZoom, origin.x, origin.y))
+    wbEditor.graphLayer.attr('mt', mt)
+
+    this.triggerCameraChange()
+  }
+
+  // 缩放到适合 (适应画布)
+  zoomToFit() {}
 
   triggerCameraChange() {
     this.eventEmitter.emit('cameraChange')

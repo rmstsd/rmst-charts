@@ -1,16 +1,20 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, Matrix, rotate, translate } from 'transformation-matrix'
-import { Circle, Group, Line, Rect, Text } from 'rmst-render'
+import { calcMidPoint, distanceTowPoint, Group, Line, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
 import { Graph_Id } from '../constant'
 import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import EventEmitter from 'rmst-render/event_emitter'
+import colorAlpha from 'color-alpha'
+
+let debugHandle = false
 
 const ctrlSize = 12
 const rotateSize = ctrlSize * 2
+
 interface Events {
   selectedChange: (selectedGraphs: IGraph[]) => void // 选中变化事件, 以及选中的元素的数据变化
 }
@@ -53,7 +57,7 @@ export default class selectedManager {
       const brCoord = applyToPoint(mt, br)
       const blCoord = applyToPoint(mt, bl)
 
-      const padding = 20 / this.wbEditor.camera.zoom
+      const padding = ctrlSize / this.wbEditor.camera.zoom
       const outerBbox = {
         x: bbox.x - padding,
         y: bbox.y - padding,
@@ -68,7 +72,19 @@ export default class selectedManager {
         bl: applyToPoint(mt, { x: outerBbox.x, y: outerBbox.y + outerBbox.height })
       }
 
-      return { tlCoord, trCoord, brCoord, blCoord, outerBboxCoordSys }
+      return {
+        tlCoord,
+        trCoord,
+        brCoord,
+        blCoord,
+        outerBbox,
+        outerBboxCoordSys,
+        downRect: {
+          width: sel.graphShape.data.width,
+          height: sel.graphShape.data.height,
+          mt: cloneDeep(sel.graphShape.data.mt)
+        }
+      }
     }
   }
 
@@ -142,7 +158,7 @@ export default class selectedManager {
       return
     }
 
-    const { tlCoord, trCoord, brCoord, blCoord, outerBboxCoordSys } = this.selectBox
+    const { tlCoord, trCoord, brCoord, blCoord, outerBbox, outerBboxCoordSys, downRect } = this.selectBox
 
     const selFrame = new Line({
       id: Graph_Id.graph_ctrl_translate,
@@ -166,6 +182,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
+      cursor: 'pointer',
       extraData: { transformOrigin: TransformOrigin.br }
     })
     const tlText = new Text({
@@ -184,6 +201,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
+      cursor: 'pointer',
       extraData: { transformOrigin: TransformOrigin.bl }
     })
     const trText = new Text({
@@ -202,6 +220,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
+      cursor: 'pointer',
       extraData: { transformOrigin: TransformOrigin.tl }
     })
     const brText = new Text({
@@ -220,6 +239,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
+      cursor: 'pointer',
       extraData: { transformOrigin: TransformOrigin.tr }
     })
     const blText = new Text({
@@ -230,44 +250,100 @@ export default class selectedManager {
       mt: scaleHandleMt
     })
 
-    const cloned = this.clonedGraphToGraphLayer(sel, { lineWidth: 1 })
+    const clonedOutline = this.clonedOutlineGraphToGraphLayer(sel, { lineWidth: 1 })
 
     const rotateHandleMt = compose(
       translate(-rotateSize / 2, -rotateSize / 2),
       rotate(rad, rotateSize / 2, rotateSize / 2)
     )
-    const rcs = Object.keys(outerBboxCoordSys).map(item => {
+    const rotateHandles = Object.keys(outerBboxCoordSys).map(item => {
       const val = outerBboxCoordSys[item]
-      const rotateCircle = new Rect({
+
+      return new Rect({
         id: Graph_Id.graph_ctrl_rotate,
         x: val.x,
         y: val.y,
         width: rotateSize,
         height: rotateSize,
-        fillStyle: 'white',
+        fillStyle: colorAlpha('white', 0.5),
         strokeStyle: primaryColor,
+        opacity: debugHandle ? 0.5 : 0,
+        cursor: 'grab',
         mt: rotateHandleMt
       })
-
-      return rotateCircle
     })
 
-    const outerCenter = {
-      x: (outerBboxCoordSys.tl.x + outerBboxCoordSys.tr.x) / 2,
-      y: (outerBboxCoordSys.tl.y + outerBboxCoordSys.tr.y) / 2
-    }
+    const width = distanceTowPoint(tlCoord, trCoord)
+    const height = distanceTowPoint(tlCoord, blCoord)
+    const hh = ctrlSize
 
-    const rotateCircle = new Circle({
-      id: Graph_Id.graph_ctrl_rotate,
-      x: outerCenter.x,
-      y: outerCenter.y,
-      radius: ctrlSize,
-      fillStyle: 'white',
-      strokeStyle: primaryColor
+    const top = new Rect({
+      id: Graph_Id.graph_ctrl_scale,
+      ...calcMidPoint(tlCoord, trCoord),
+      width: width,
+      height: hh,
+      fillStyle: 'pink',
+      opacity: debugHandle ? 0.5 : 0,
+      mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
+      cursor: 'pointer',
+      extraData: { transformOrigin: TransformOrigin.Bottom }
+    })
+    const right = new Rect({
+      id: Graph_Id.graph_ctrl_scale,
+      ...calcMidPoint(trCoord, brCoord),
+      width: hh,
+      height: height,
+      fillStyle: 'orange',
+      opacity: debugHandle ? 0.5 : 0,
+      mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
+      cursor: 'pointer',
+      extraData: { transformOrigin: TransformOrigin.Left }
+    })
+    const bottom = new Rect({
+      id: Graph_Id.graph_ctrl_scale,
+      ...calcMidPoint(blCoord, brCoord),
+      width: width,
+      height: hh,
+      fillStyle: 'red',
+      opacity: debugHandle ? 0.5 : 0,
+      mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
+      cursor: 'pointer',
+      extraData: { transformOrigin: TransformOrigin.Top }
+    })
+    const left = new Rect({
+      id: Graph_Id.graph_ctrl_scale,
+      ...calcMidPoint(tlCoord, blCoord),
+      width: hh,
+      height: height,
+      fillStyle: 'purple',
+      opacity: debugHandle ? 0.5 : 0,
+      mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
+      cursor: 'pointer',
+      extraData: { transformOrigin: TransformOrigin.Right }
     })
 
     const g = new Group({ name: 'ctrl-box' })
-    g.append([cloned, selFrame, tlRect, trRect, brRect, blRect, tlText, trText, brText, blText, ...rcs, rotateCircle])
+    g.append([
+      clonedOutline,
+
+      selFrame,
+
+      ...rotateHandles,
+
+      top,
+      right,
+      bottom,
+      left,
+
+      tlRect,
+      trRect,
+      brRect,
+      blRect,
+      tlText,
+      trText,
+      brText,
+      blText
+    ])
 
     this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
     this.wbEditor.selectLayer.selectToolGroup.append(g)
@@ -304,14 +380,14 @@ export default class selectedManager {
     hoveredGroup.removeAllChildren()
 
     if (this.hovered) {
-      const cloned = this.clonedGraphToGraphLayer(this.hovered)
+      const clonedOutline = this.clonedOutlineGraphToGraphLayer(this.hovered)
 
       hoveredGroup.removeAllChildren()
-      hoveredGroup.append(cloned)
+      hoveredGroup.append(clonedOutline)
     }
   }
 
-  private clonedGraphToGraphLayer(graph: IGraph, attrs = {}) {
+  private clonedOutlineGraphToGraphLayer(graph: IGraph, attrs = {}) {
     const { wbEditor } = this
 
     const cloned = graph.graphShape.getOutLineShape()

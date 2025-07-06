@@ -1,22 +1,25 @@
 import svgPath from 'svgpath'
 import { normalizedAttrs } from '../utils/attr'
-import AbstractUi, { UiData, IRect } from './AbstractUi'
+import UiBase, { UiBaseData } from './UiBase'
 import { svgPathBbox } from 'svg-path-bbox'
+import { IShapeType } from '../type'
 
 const defaultData = {
   d: ''
 }
 
-interface PathData extends UiData {
+interface PathData extends UiBaseData {
   d?: string
   width?: number
   height?: number
 }
 
-export class Path extends AbstractUi<PathData> {
+export class Path extends UiBase<PathData> {
   constructor(data: PathData) {
-    super('Path', data, defaultData)
+    super(data, defaultData)
   }
+
+  type: IShapeType = 'Path'
 
   declare data: PathData
 

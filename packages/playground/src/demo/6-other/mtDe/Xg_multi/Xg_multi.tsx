@@ -109,7 +109,7 @@ const Xg_multi = observer(function TranslationCom() {
     }))
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
 
         selectedRects.forEach((item, index) => {
@@ -148,7 +148,7 @@ const Xg_multi = observer(function TranslationCom() {
       startRad = d_90 - startRad
 
       startDrag(downEvt, {
-        onMove: moveEvt => {
+        onDragMove: moveEvt => {
           const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
           const moveLocalPos = applyToPoint(inverse(downMt), movePos)
 
@@ -223,7 +223,7 @@ const Xg_multi = observer(function TranslationCom() {
       }
 
       startDrag(downEvt, {
-        onMove: moveEvt => {
+        onDragMove: moveEvt => {
           const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
           const moveLocalPos = applyToPoint(inverse(downMt), movePos)
           console.log(moveLocalPos)
@@ -339,7 +339,7 @@ const Xg_multi = observer(function TranslationCom() {
 
           rect.mt = compose(mdf, nmt)
         },
-        onUp(upEvt) {
+        onDragEnd(upEvt) {
           console.log(cloneDeep(selectedRects))
         }
       })
@@ -350,7 +350,7 @@ const Xg_multi = observer(function TranslationCom() {
       const dsr = cloneDeep(selectedRects)
 
       startDrag(downEvt, {
-        onMove: moveEvt => {
+        onDragMove: moveEvt => {
           const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
           const moveLocalPos = applyToPoint(inverse(downMt), movePos)
 
@@ -376,7 +376,7 @@ const Xg_multi = observer(function TranslationCom() {
             Object.assign(item, d)
           })
         },
-        onUp(upEvt) {
+        onDragEnd(upEvt) {
           console.log(cloneDeep(selectedRects))
         }
       })
@@ -415,7 +415,7 @@ const Xg_multi = observer(function TranslationCom() {
     })
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
         {
           const startRad = Math.atan2(downPos.y - origin.y, downPos.x - origin.x)

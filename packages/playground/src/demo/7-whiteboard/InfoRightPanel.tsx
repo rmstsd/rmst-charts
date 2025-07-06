@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useWbEditor } from './context'
 import { IGraph } from './type'
+import { compose, translate } from 'transformation-matrix'
 
 export default function InfoRightPanel() {
   const { wbEditor } = useWbEditor()
@@ -30,7 +31,8 @@ export default function InfoRightPanel() {
               <WbInputNumber
                 value={data.mt.e}
                 onChange={val => {
-                  console.log(val)
+                  graphShape.attr({ mt: compose(translate(val - data.mt.e, 0), data.mt) })
+                  wbEditor.triggerRender()
                 }}
               />
             </div>
@@ -39,7 +41,8 @@ export default function InfoRightPanel() {
               <WbInputNumber
                 value={data.mt.f}
                 onChange={val => {
-                  console.log(val)
+                  graphShape.attr({ mt: compose(translate(0, val - data.mt.f), data.mt) })
+                  wbEditor.triggerRender()
                 }}
               />
             </div>
@@ -48,8 +51,6 @@ export default function InfoRightPanel() {
               <WbInputNumber
                 value={data.width}
                 onChange={val => {
-                  console.log(val)
-
                   graphShape.attr({ width: val })
 
                   wbEditor.triggerRender()
@@ -61,7 +62,6 @@ export default function InfoRightPanel() {
               <WbInputNumber
                 value={data.height}
                 onChange={val => {
-                  console.log(val)
                   graphShape.attr({ height: val })
                   wbEditor.triggerRender()
                 }}

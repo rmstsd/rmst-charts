@@ -1,11 +1,10 @@
 import { Draggable, Camera, Ruler, DirtyRect, EventDispatcher } from './controller'
-
 import { initStage } from './utils'
-import { mountStage } from './renderUi'
+import { mountParentInChildren, mountStageInChildren } from './renderUi'
 import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
-import AbsEvent from '../AbsEvent'
 import { ResizeMng } from './controller/resizeMng'
+import { Group } from '../shape'
 
 interface IOption {
   container?: HTMLElement
@@ -20,7 +19,7 @@ const defaultOption: IOption = {
   enableRuler: false
 }
 
-export class Stage extends AbsEvent {
+export class Stage extends Group {
   constructor(option: IOption) {
     super()
 
@@ -46,30 +45,29 @@ export class Stage extends AbsEvent {
     this.removeStageListener = this.addStageListener()
   }
 
+  type: IShapeType = 'Stage'
+
+  data = { children: [] }
+
   camera: Camera
   ruler: Ruler
   draggingMgr: Draggable
   eventDispatcher: EventDispatcher
-
   resizeMng: ResizeMng
 
   dirtyRect: DirtyRect
 
   enableRuler: boolean
-
   dpr = 1
-
-  type: IShapeType = 'Stage'
 
   container: HTMLElement
   canvasElement: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
 
   parent: null
-  children: IShape[] = []
 
   private isDispatchedAsyncRenderTask = false
-  removeStageListener: Function
+  private removeStageListener: Function
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -80,25 +78,15 @@ export class Stage extends AbsEvent {
   }
 
   public dispose() {
+    this.removeStageListener()
     this.canvasElement?.remove()
-    this.removeAllShape()
+    this.removeAllChildren()
 
     this.resizeMng.dispose()
   }
 
-  public removeAllShape() {
-    const disposeAll = (children: IShape[]) => {
-      children.forEach(item => {
-        item.dispose()
-
-        if (Array.isArray(item['children'])) {
-          disposeAll(item['children'])
-        }
-      })
-    }
-    disposeAll(this.children)
-
-    this.children = []
+  override removeAllChildren(): void {
+    super.removeAllChildren()
     this.render()
   }
 
@@ -107,9 +95,12 @@ export class Stage extends AbsEvent {
   public append(...args: IShape[]): void
   public append(...args) {
     const elements = args.flat(1)
-    this.children = this.children.concat(elements)
-    this.children = this.children.map(item => Object.assign(item, { parent: this }))
-    mountStage(this.children, this)
+    this.data.children = this.data.children.concat(elements)
+
+    mountParentInChildren(this)
+
+    this.data.children = this.data.children.map(item => Object.assign(item, { parent: this }))
+    mountStageInChildren(this.data.children, this)
 
     this.render()
 

@@ -1,5 +1,6 @@
+import { IShapeType } from '../type'
 import { createLinePath2D } from '../utils'
-import AbstractUi, { UiData } from './AbstractUi'
+import UiBase, { UiBaseData } from './UiBase'
 
 const defaultData: LineData = {
   lineWidth: 1,
@@ -8,7 +9,7 @@ const defaultData: LineData = {
   percent: 1
 }
 
-interface LineData extends UiData {
+interface LineData extends UiBaseData {
   path2D?: Path2D
   points?: number[]
   closed?: boolean
@@ -16,12 +17,14 @@ interface LineData extends UiData {
   percent?: number // 0 - 1
 }
 
-export class Line extends AbstractUi<LineData> {
+export class Line extends UiBase<LineData> {
   constructor(data: LineData) {
-    super('Line', data, defaultData)
+    super(data, defaultData)
 
     this.path2D = data.path2D ? data.path2D : createLinePath2D(this.data)
   }
+
+  type: IShapeType = 'Line'
 
   declare data: LineData
 }

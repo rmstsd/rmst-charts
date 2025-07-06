@@ -27,7 +27,7 @@ export default class ToolManager {
     makeAutoObservable(this)
   }
 
-  currentTool: ToolEnumKey = ToolEnum.Select
+  currentTool: ToolEnumKey
   currentToolClass: ITool
 
   bindEvent() {
@@ -43,14 +43,18 @@ export default class ToolManager {
       this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
 
       startDrag(downEvt, {
-        start: () => {
+        onDragStart: () => {
           this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
         },
-        onMove: moveEvt => {
+        onDragMove: moveEvt => {
           this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
         },
-        onUp: upEvt => {
+        onDragEnd: upEvt => {
           this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          this.switchTool(ToolEnum.Select)
+        },
+        onPointerUp: upEvt => {
+          this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
           this.switchTool(ToolEnum.Select)
         }
       })
@@ -58,6 +62,10 @@ export default class ToolManager {
   }
 
   async switchTool(tool: ToolEnumKey) {
+    if (tool === this.currentTool) {
+      return
+    }
+
     const prevToolClass = this.currentToolClass
     if (prevToolClass) {
       prevToolClass.onDeActive?.()
@@ -65,6 +73,15 @@ export default class ToolManager {
 
     this.currentTool = tool
     this.currentToolClass = new ToolClassMap[tool](this.wbEditor)
+
+    if (this.currentToolClass.enableActive) {
+      const enableSuccess = await this.currentToolClass.enableActive?.()
+      if (!enableSuccess) {
+        this.switchTool(ToolEnum.Select)
+        return
+      }
+    }
+
     this.currentToolClass.onActive?.()
   }
 }

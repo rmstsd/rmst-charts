@@ -7,7 +7,7 @@ export function isGroup(shape): shape is Group {
 }
 
 export function isBox(shape): shape is Box {
-  return shape.type === 'BoxHidden'
+  return shape.type === 'Box'
 }
 
 export function isLine(shape): shape is Line {

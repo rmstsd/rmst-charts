@@ -1,14 +1,23 @@
-import { IShape } from '../type'
 import { Stage } from '.'
+import { Group } from '../shape'
 
-export function mountStage(children: IShape[], stage: Stage) {
+export function mountStageInChildren(children: any[], stage: Stage) {
   children.forEach(item => {
     item.stage = stage
 
-    // @ts-ignore
-    if (item.children) {
+    if (Array.isArray(item.data.children)) {
       // @ts-ignore
-      mountStage(item.children, stage)
+      mountStageInChildren(item.data.children, stage)
     }
   })
+}
+
+export const mountParentInChildren = (shape: Group) => {
+  if (Array.isArray(shape.data.children)) {
+    shape.data.children.forEach(item => {
+      item.parent = shape
+
+      mountParentInChildren(item as Group)
+    })
+  }
 }

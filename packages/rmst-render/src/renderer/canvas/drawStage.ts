@@ -1,16 +1,15 @@
-import { scale, rotate, translate, compose, applyToPoint, transform } from 'transformation-matrix'
+import { scale, translate, compose } from 'transformation-matrix'
+import { fitAndPosition } from 'object-fit-math'
 
-import { Box, Circle, Ellipse, Group, RmstImage as RrImage, Line, Path, Text, Trapezoid } from '../../shape'
+import { Box, Circle, Ellipse, Group, RmstImage, Line, Path, Text, Trapezoid } from '../../shape'
 import { clipRect, createLinePath2D, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
-import { fill, fillOrStroke, hasStroke, setCtxStyleProp, stroke } from './fillOrStroke'
+import { fill, fillOrStroke, setCtxStyleProp, stroke } from './fillOrStroke'
 import { setCirclePath2D, setEllipsePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 import { sortChildren } from './util'
 
 export function drawStage(stage: Stage) {
-  console.log('--> drawStage')
-
   const { ctx, camera, dpr, container, canvasElement } = stage
   const setCanvasStyle = () => {
     const { clientWidth, clientHeight } = container
@@ -43,7 +42,7 @@ export function drawStage(stage: Stage) {
   // ctx.translate(camera.tx, camera.ty)
   // ctx.scale(camera.zoom, camera.zoom)
 
-  drawChildren(stage.children)
+  drawChildren(stage.data.children)
 
   ctx.restore()
 
@@ -85,17 +84,14 @@ export function drawStage(stage: Stage) {
           break
         }
         case 'Line': {
-          const { closed, path2D } = data as Line['data']
+          const { closed, path2D } = (elementItem as Line).data
 
           // 调用 attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
           elementItem.path2D = path2D ? path2D : createLinePath2D(data)
 
-          if (hasStroke(data.lineWidth, data.strokeStyle)) {
-            ctx.stroke(elementItem.path2D)
-          }
-
+          stroke(ctx, elementItem)
           if (closed) {
-            ctx.fill(elementItem.path2D)
+            fill(ctx, elementItem)
           }
           break
         }
@@ -105,16 +101,16 @@ export function drawStage(stage: Stage) {
           break
         }
         case 'Group': {
-          drawChildren((elementItem as Group).children)
+          drawChildren((elementItem as Group).data.children)
           break
         }
-        case 'BoxHidden': {
+        case 'Box': {
           // 在有描边的情况下, 必须先 fill, 再 stoke, 否则会出现内容覆盖描边的问题
           setRectPath2D(elementItem)
           fill(ctx, elementItem)
 
           clipRect(ctx, elementItem.path2D, () => {
-            drawChildren((elementItem as Box).children)
+            drawChildren((elementItem as Box).data.children)
           })
           stroke(ctx, elementItem)
 
@@ -134,16 +130,35 @@ export function drawStage(stage: Stage) {
           break
         }
         case 'Image': {
-          const rrImageElementItem = elementItem as RrImage
-
-          let { width, height, src } = data as RrImage['data']
-
-          const drawImage = (image: HTMLImageElement) => {
-            ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, width, height)
-          }
+          const rrImageElementItem = elementItem as RmstImage
+          const { width, height, src, objectFit } = rrImageElementItem.data
 
           if (rrImageElementItem.nativeImage) {
-            drawImage(rrImageElementItem.nativeImage)
+            setRectPath2D(elementItem)
+            fill(ctx, elementItem)
+
+            clipRect(ctx, elementItem.path2D, () => {
+              const image = rrImageElementItem.nativeImage
+
+              const rect = fitAndPosition(
+                { width, height },
+                { width: image.naturalWidth, height: image.naturalHeight },
+                objectFit
+              )
+
+              ctx.drawImage(
+                image,
+                0,
+                0,
+                image.naturalWidth,
+                image.naturalHeight,
+                rect.x,
+                rect.y,
+                rect.width,
+                rect.height
+              )
+            })
+            stroke(ctx, elementItem)
           } else {
             const image = new Image()
             image.src = src

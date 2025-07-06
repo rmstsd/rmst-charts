@@ -1,4 +1,5 @@
-import AbstractUi, { UiData } from './AbstractUi'
+import { IShapeType } from '../type'
+import UiBase, { UiBaseData } from './UiBase'
 
 const defaultData = {
   lineWidth: 1,
@@ -7,7 +8,7 @@ const defaultData = {
   offsetAngle: 0
 }
 
-interface CircleData extends UiData {
+interface CircleData extends UiBaseData {
   x?: number
   y?: number
 
@@ -19,10 +20,12 @@ interface CircleData extends UiData {
   offsetAngle?: number // 默认情况下, 圆弧的起始角度是 0, 但是如果需要从其他角度开始, 可以设置 offsetAngle
 }
 
-export class Circle extends AbstractUi<CircleData> {
+export class Circle extends UiBase<CircleData> {
   constructor(data: CircleData) {
-    super('Circle', data, defaultData)
+    super(data, defaultData)
   }
+
+  type: IShapeType = 'Circle'
 
   declare data: CircleData
 }

@@ -17,6 +17,9 @@ importers:
       fit-curve:
         specifier: ^0.2.0
         version: 0.2.0
+      object-fit-math:
+        specifier: ^1.0.0
+        version: 1.0.0
       svg-path-bbox:
         specifier: ^2.1.0
         version: 2.1.0
@@ -2294,6 +2297,9 @@ packages:
   object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
+
+  object-fit-math@1.0.0:
+    resolution: {integrity: sha512-SqsfEKO6OoHR1K3r5E7JpJoloN6Wd5zPZr0QAo0DAI/zjpadPNcajoUhNvrGUcDHDaF8LEQKCgiiz0+p7lVGeg==}
 
   object-hash@3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
@@ -5462,6 +5468,8 @@ snapshots:
       boolbase: 1.0.0
 
   object-assign@4.1.1: {}
+
+  object-fit-math@1.0.0: {}
 
   object-hash@3.0.0: {}
 

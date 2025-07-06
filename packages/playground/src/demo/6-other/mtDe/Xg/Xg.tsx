@@ -95,7 +95,7 @@ const Xg = observer(function TranslationCom() {
     const downLocalPos = applyToPoint(inverse(downMt), downPos)
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
         const moveLocalPos = applyToPoint(inverse(downMt), movePos)
 
@@ -176,7 +176,7 @@ const Xg = observer(function TranslationCom() {
     const downPos = clientToStageCoord({ x: downEvt.clientX, y: downEvt.clientY })
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
         const moveLocalPos = applyToPoint(inverse(downMt), movePos)
 
@@ -303,7 +303,7 @@ const Xg = observer(function TranslationCom() {
     const startRad = Math.atan2(downLocal.y - originLocal.y, downLocal.x - originLocal.x)
 
     startDrag(downEvt, {
-      onMove: moveEvt => {
+      onDragMove: moveEvt => {
         const movePos = clientToStageCoord({ x: moveEvt.clientX, y: moveEvt.clientY })
 
         {

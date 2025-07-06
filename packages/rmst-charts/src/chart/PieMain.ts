@@ -195,7 +195,7 @@ class PieMain extends _Chart<ICharts.PieSeries> {
     }
 
     this.labelElements.forEach(item => {
-      const [exLine, exText] = item.children as unknown as [Line, Text]
+      const [exLine, exText] = item.data.children as unknown as [Line, Text]
 
       exLine.animateCartoon({ percent: 1 }, { duration: this.seriesItem.animationDuration, easing: 'quadraticInOut' })
       exText.animateCartoon({ opacity: 1 }, { duration: this.seriesItem.animationDuration, easing: 'quadraticInOut' })

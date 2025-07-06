@@ -1,4 +1,5 @@
-import AbstractUi, { UiData } from './AbstractUi'
+import { IShapeType } from '../type'
+import UiBase, { UiBaseData } from './UiBase'
 
 const defaultData: TextData = {
   fillStyle: '#333',
@@ -7,7 +8,7 @@ const defaultData: TextData = {
   textBaseline: 'top'
 }
 
-interface TextData extends UiData {
+interface TextData extends UiBaseData {
   x?: number
   y?: number
   content?: string
@@ -16,11 +17,12 @@ interface TextData extends UiData {
   textBaseline?: CanvasTextBaseline
 }
 
-export class Text extends AbstractUi<TextData> {
+export class Text extends UiBase<TextData> {
   constructor(data: TextData) {
-    super('Text', data, defaultData)
+    super(data, defaultData)
   }
 
+  type: IShapeType = 'Text'
   declare data: TextData
 }
 

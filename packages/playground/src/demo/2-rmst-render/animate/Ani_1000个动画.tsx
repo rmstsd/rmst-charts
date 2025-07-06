@@ -22,7 +22,7 @@ const Ani_1000个动画 = () => {
 
   const [count, setCount] = useState(5000)
   const confirm = () => {
-    stageRef.current.removeAllShape()
+    stageRef.current.removeAllChildren()
     renderRects()
   }
 

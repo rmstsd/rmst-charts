@@ -1,7 +1,7 @@
 import { isBox, isGroup } from '../utils'
 import { IShape } from '../type'
 import { isHitShape } from './isHitShape'
-import { Stage } from '..'
+import { Group, Stage } from '..'
 import { compareZLevel, isPointerEventsNone } from './utils'
 
 /*
@@ -28,7 +28,7 @@ export function findHover_v2(stage: Stage, x, y) {
   ctx.translate(camera.tx, camera.ty)
   ctx.scale(camera.zoom, camera.zoom)
 
-  detectHit(stage.children)
+  detectHit(stage.data.children)
   ctx.restore()
 
   if (possible.length === 0) {
@@ -55,17 +55,18 @@ export function findHover_v2(stage: Stage, x, y) {
 
         const mt = elementItem.data.mt
         ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
-        detectHit(elementItem.children)
+        detectHit(elementItem.data.children)
 
         ctx.restore()
       } else if (isBox(elementItem)) {
         if (isHitShape(stage, elementItem, x, y)) {
+          ctx.save()
           const mt = elementItem.data.mt
           ctx.transform(mt.a, mt.b, mt.c, mt.d, mt.e, mt.f)
-          const isHit = isHitDescendant((elementItem as any).children)
+          const isHit = isHitDescendant((elementItem as Group).data.children)
 
           if (isHit) {
-            detectHit(elementItem.children)
+            detectHit(elementItem.data.children)
           } else {
             possible.push(elementItem)
           }
@@ -79,8 +80,9 @@ export function findHover_v2(stage: Stage, x, y) {
     })
   }
 
-  function isHitDescendant(children: any[]) {
+  function isHitDescendant(children: IShape[]) {
     let ans = true
+
     for (const elementItem of children) {
       if (isPointerEventsNone(elementItem)) {
         continue
@@ -90,8 +92,8 @@ export function findHover_v2(stage: Stage, x, y) {
         return ans
       }
 
-      if (elementItem.children) {
-        return isHitDescendant(elementItem.children)
+      if (Array.isArray(elementItem.data.children)) {
+        return isHitDescendant(elementItem.data.children)
       }
     }
 

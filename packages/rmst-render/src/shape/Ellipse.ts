@@ -1,19 +1,22 @@
-import AbstractUi, { UiData } from './AbstractUi'
+import { IShapeType } from '../type'
+import UiBase, { UiBaseData } from './UiBase'
 
 const defaultData = {
   width: 200,
   height: 100
 }
 
-interface EllipseData extends UiData {
+interface EllipseData extends UiBaseData {
   width?: number
   height?: number
 }
 
-export class Ellipse extends AbstractUi<EllipseData> {
+export class Ellipse extends UiBase<EllipseData> {
   constructor(data: EllipseData) {
-    super('Ellipse', data, defaultData)
+    super(data, defaultData)
   }
+
+  type: IShapeType = 'Ellipse'
 
   declare data: EllipseData
 
