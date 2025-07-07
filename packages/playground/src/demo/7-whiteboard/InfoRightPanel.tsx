@@ -18,8 +18,20 @@ export default function InfoRightPanel() {
     return off
   }, [wbEditor])
 
+  const [count, setCount] = useState(0)
+
+  console.log(count)
+
   return (
     <div className="flex-shrink-0 p-2 " style={{ width: 200 }}>
+      <WbInputNumber
+        value={count}
+        onChange={val => {
+          console.log('val', val)
+          setCount(val)
+        }}
+      />
+
       {selectedItems.map(item => {
         const { id, graphShape } = item
         const data = graphShape.data
@@ -95,6 +107,7 @@ const WbInputNumber = props => {
         }
 
         onChange?.(num)
+        inputRet.current.value = String(num)
       }}
     />
   )
