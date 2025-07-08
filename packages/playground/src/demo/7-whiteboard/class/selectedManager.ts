@@ -4,13 +4,14 @@ import { applyToPoint, compose, identity, Matrix, rotate, translate } from 'tran
 import { calcMidPoint, distanceTowPoint, Group, Line, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
-import { Graph_Id } from '../constant'
+import { calcRotateRad, Graph_Id } from '../constant'
 import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
+import { mergeBox } from '@/demo/6-other/mtDe/Xg_multi/util'
 
-let debugHandle = false
+let debugHandle = true
 
 const ctrlSize = 12
 const rotateSize = ctrlSize * 2
@@ -31,61 +32,6 @@ export default class selectedManager {
 
   get selectedGraphs() {
     return this.wbEditor.graphs.filter(g => this.selectedIds.includes(g.id))
-  }
-
-  get selectBox() {
-    if (this.selectedIds.length === 0) {
-      return null
-    }
-
-    if (this.selectedIds.length === 1) {
-      const sel = this.selectedGraphs[0]
-
-      const graData = sel.graphShape.data
-
-      const bbox = sel.graphShape.getBBox()
-
-      const tl = { x: 0, y: 0 }
-      const tr = { x: bbox.width, y: 0 }
-      const br = { x: bbox.width, y: bbox.height }
-      const bl = { x: 0, y: bbox.height }
-
-      const mt = compose(this.wbEditor.graphLayer.data.mt, graData.mt)
-
-      const tlCoord = applyToPoint(mt, tl)
-      const trCoord = applyToPoint(mt, tr)
-      const brCoord = applyToPoint(mt, br)
-      const blCoord = applyToPoint(mt, bl)
-
-      const padding = ctrlSize / this.wbEditor.camera.zoom
-      const outerBbox = {
-        x: bbox.x - padding,
-        y: bbox.y - padding,
-        width: bbox.width + padding * 2,
-        height: bbox.height + padding * 2
-      }
-
-      const outerBboxCoordSys = {
-        tl: applyToPoint(mt, { x: outerBbox.x, y: outerBbox.y }),
-        tr: applyToPoint(mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y }),
-        br: applyToPoint(mt, { x: outerBbox.x + outerBbox.width, y: outerBbox.y + outerBbox.height }),
-        bl: applyToPoint(mt, { x: outerBbox.x, y: outerBbox.y + outerBbox.height })
-      }
-
-      return {
-        tlCoord,
-        trCoord,
-        brCoord,
-        blCoord,
-        outerBbox,
-        outerBboxCoordSys,
-        downRect: {
-          width: sel.graphShape.data.width,
-          height: sel.graphShape.data.height,
-          mt: cloneDeep(sel.graphShape.data.mt)
-        }
-      }
-    }
   }
 
   get transformDownRect() {
@@ -111,13 +57,35 @@ export default class selectedManager {
       }
 
       return {
-        selfCoordSys,
+        // selfCoordSys,
         graphLayerCoordSys,
         downRect: {
           width: sel.graphShape.data.width,
           height: sel.graphShape.data.height,
           mt: cloneDeep(sel.graphShape.data.mt)
         }
+      }
+    }
+
+    // 多个
+    const selRects = this.selectedGraphs.map(item => {
+      const data = item.graphShape.data
+      const tl = applyToPoint(data.mt, { x: 0, y: 0 })
+      const tr = applyToPoint(data.mt, { x: data.width, y: 0 })
+      const br = applyToPoint(data.mt, { x: data.width, y: data.height })
+      const bl = applyToPoint(data.mt, { x: 0, y: data.height })
+      return { tl, tr, br, bl }
+    })
+
+    const { minX, minY, maxX, maxY } = mergeBox(selRects)
+
+    return {
+      // selfCoordSys,
+      // graphLayerCoordSys,
+      downRect: {
+        width: maxX - minX,
+        height: maxY - minY,
+        mt: translate(minX, minY)
       }
     }
   }
@@ -146,19 +114,48 @@ export default class selectedManager {
     }
   }
 
+  batchSelect(ids: string[]) {
+    this.selectedIds = ids
+  }
+
   clearSelect() {
     this.selectedIds = []
   }
 
   private renderSelected() {
-    const sel = this.selectedGraphs[0]
-
-    if (!sel) {
+    if (!this.selectedIds.length) {
       this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
       return
     }
 
-    const { tlCoord, trCoord, brCoord, blCoord, outerBbox, outerBboxCoordSys, downRect } = this.selectBox
+    const { downRect } = this.transformDownRect
+
+    const tl = { x: 0, y: 0 }
+    const tr = { x: downRect.width, y: 0 }
+    const br = { x: downRect.width, y: downRect.height }
+    const bl = { x: 0, y: downRect.height }
+
+    const mtWorld = compose(this.wbEditor.graphLayer.data.mt, downRect.mt)
+
+    const tlCoord = applyToPoint(mtWorld, tl)
+    const trCoord = applyToPoint(mtWorld, tr)
+    const brCoord = applyToPoint(mtWorld, br)
+    const blCoord = applyToPoint(mtWorld, bl)
+
+    const padding = ctrlSize / this.wbEditor.camera.zoom
+    const outerBbox = {
+      x: -padding,
+      y: -padding,
+      width: downRect.width + padding * 2,
+      height: downRect.height + padding * 2
+    }
+
+    const outerBboxCoordWorld = {
+      tl: applyToPoint(mtWorld, { x: outerBbox.x, y: outerBbox.y }),
+      tr: applyToPoint(mtWorld, { x: outerBbox.x + outerBbox.width, y: outerBbox.y }),
+      br: applyToPoint(mtWorld, { x: outerBbox.x + outerBbox.width, y: outerBbox.y + outerBbox.height }),
+      bl: applyToPoint(mtWorld, { x: outerBbox.x, y: outerBbox.y + outerBbox.height })
+    }
 
     const selFrame = new Line({
       id: Graph_Id.graph_ctrl_translate,
@@ -169,10 +166,9 @@ export default class selectedManager {
       lineWidth: 2
     })
 
-    const rad = calcRotateRad(sel.graphShape.data.mt)
+    const rad = calcRotateRad(downRect.mt)
 
     const scaleHandleMt = compose(translate(-ctrlSize / 2, -ctrlSize / 2), rotate(rad, ctrlSize / 2, ctrlSize / 2))
-
     const tlRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
       x: tlCoord.x,
@@ -250,14 +246,14 @@ export default class selectedManager {
       mt: scaleHandleMt
     })
 
-    const clonedOutline = this.clonedOutlineGraphToGraphLayer(sel, { lineWidth: 1 })
+    const clonedOutlines = this.selectedGraphs.map(item => this.clonedOutlineGraphToGraphLayer(item, { lineWidth: 1 }))
 
     const rotateHandleMt = compose(
       translate(-rotateSize / 2, -rotateSize / 2),
       rotate(rad, rotateSize / 2, rotateSize / 2)
     )
-    const rotateHandles = Object.keys(outerBboxCoordSys).map(item => {
-      const val = outerBboxCoordSys[item]
+    const rotateHandles = Object.keys(outerBboxCoordWorld).map(item => {
+      const val = outerBboxCoordWorld[item]
 
       return new Rect({
         id: Graph_Id.graph_ctrl_rotate,
@@ -324,7 +320,7 @@ export default class selectedManager {
 
     const g = new Group({ name: 'ctrl-box' })
     g.append([
-      clonedOutline,
+      ...clonedOutlines,
 
       selFrame,
 
@@ -407,43 +403,4 @@ export default class selectedManager {
 
     return cloned
   }
-}
-
-const calcRotateRad = (mt: Matrix) => {
-  const p = { x: 1, y: 0 }
-  const cmt = cloneDeep(mt)
-  cmt.e = 0
-  cmt.f = 0
-  const tp = applyToPoint(cmt, p)
-  const rad = Math.atan2(tp.y, tp.x)
-
-  return rad
-}
-
-// 来自豆包: https://www.doubao.com/thread/w70e0790decf21329
-function calculatePerpendicularPoint(pointA, pointB, fixedDistance) {
-  // 计算中点C的坐标
-  const midpointC = { x: (pointA.x + pointB.x) / 2, y: (pointA.y + pointB.y) / 2 }
-
-  // 计算AB的向量
-  const vectorAB = { x: pointB.x - pointA.x, y: pointB.y - pointA.y }
-
-  // 计算垂线的方向向量（旋转90度）
-  const perpendicularVector = { x: -vectorAB.y, y: vectorAB.x }
-
-  // 计算垂线方向向量的长度
-  const length = Math.sqrt(
-    perpendicularVector.x * perpendicularVector.x + perpendicularVector.y * perpendicularVector.y
-  )
-
-  // 归一化垂线方向向量
-  const normalizedVector = { x: perpendicularVector.x / length, y: perpendicularVector.y / length }
-
-  // 计算点D的坐标（有两个可能的点，这里取其中一个）
-  const pointD = {
-    x: midpointC.x + normalizedVector.x * fixedDistance,
-    y: midpointC.y + normalizedVector.y * fixedDistance
-  }
-
-  return pointD
 }

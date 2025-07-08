@@ -60,6 +60,8 @@ export default class ToolDrawImage implements ITool {
 
   onPointerDown(downEvt: PointerEvent) {}
 
+  onPointerMove(MoveEvt: PointerEvent) {}
+
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.downPos = sceneCoord
 

@@ -1,9 +1,11 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint } from 'transformation-matrix'
-import { ICoord, Rect } from 'rmst-render'
+import { ICoord, isRectCollision, isRectCollisionOBB, Rect } from 'rmst-render'
 import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 import { noop } from 'es-toolkit'
+import { isRectShapeCollision } from '@/demo/2-rmst-render/funny/Collision/DragManagement'
+import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
@@ -49,6 +51,36 @@ export default class ToolBoxSelection implements ITool {
     this.br = { x: Math.max(this.downPos.x, sceneCoord.x), y: Math.max(this.downPos.y, sceneCoord.y) }
 
     this.updateBoxSelectionRect()
+
+    const boxRectScene = {
+      x: this.tl.x,
+      y: this.tl.y,
+      width: this.br.x - this.tl.x,
+      height: this.br.y - this.tl.y
+    }
+
+    const selectedIds = this.wbEditor.graphLayer.children
+      .filter(item =>
+        // isRectCollision(boxRectScene, {
+        //   x: item.data.mt.e,
+        //   y: item.data.mt.f,
+        //   width: item.data.width,
+        //   height: item.data.height
+        // })
+
+        isRectCollisionOBB(boxRectScene, {
+          x: item.data.mt.e,
+          y: item.data.mt.f,
+          width: item.data.width,
+          height: item.data.height,
+          rotation: calcRotateRad(item.data.mt)
+        })
+      )
+      .map(item => item.data.id)
+
+    this.wbEditor.selectManager.batchSelect(selectedIds)
+
+    this.wbEditor.triggerRender()
   }
 
   private updateBoxSelectionRect() {

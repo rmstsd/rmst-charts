@@ -45,7 +45,7 @@ export interface UiBaseData extends EventOpt {
 
   mt?: Matrix
 
-  children?: any[]
+  children?: IShape[]
 }
 
 export const getDefaultUiBaseDataData = (): UiBaseData => ({

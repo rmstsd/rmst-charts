@@ -5,6 +5,7 @@ import { calcStraightPath2D } from './straight'
 
 export * from './straight'
 export * from './curve'
+export * from './rect'
 
 export function pointToFlatArray(list: ICoord[]) {
   return list.reduce((acc, item) => acc.concat(item.x, item.y), [])
