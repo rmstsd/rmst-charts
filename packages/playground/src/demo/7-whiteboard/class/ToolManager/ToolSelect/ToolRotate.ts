@@ -1,7 +1,6 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-
-import { applyToPoint, compose, inverse, rotate } from 'transformation-matrix'
+import { applyToPoint, compose, rotate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 
@@ -15,12 +14,9 @@ export default class ToolRotate implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolRotate onDragStart')
 
-    const { graphLayerCoordSys } = this.wbEditor.selectManager.transformDownRect
+    const { downRect } = this.wbEditor.selectManager.transformDownRect
 
-    this.origin = {
-      x: (graphLayerCoordSys.tl.x + graphLayerCoordSys.br.x) / 2,
-      y: (graphLayerCoordSys.tl.y + graphLayerCoordSys.br.y) / 2
-    }
+    this.origin = applyToPoint(downRect.mt, { x: downRect.width / 2, y: downRect.height / 2 })
     this.startRad = Math.atan2(sceneCoord.y - this.origin.y, sceneCoord.x - this.origin.x)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({

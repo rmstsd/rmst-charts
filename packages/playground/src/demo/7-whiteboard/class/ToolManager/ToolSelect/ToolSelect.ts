@@ -3,7 +3,6 @@ import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { ToolEnum } from '../constant'
 import { Graph_Id } from '@/demo/7-whiteboard/constant'
-
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'

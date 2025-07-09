@@ -1,6 +1,6 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, pull } from 'es-toolkit'
-import { applyToPoint, compose, identity, Matrix, rotate, translate } from 'transformation-matrix'
+import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
 import { calcMidPoint, distanceTowPoint, Group, Line, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
@@ -38,27 +38,7 @@ export default class selectedManager {
     if (this.selectedIds.length === 1) {
       const sel = this.selectedGraphs[0]
 
-      const graData = sel.graphShape.data
-
-      const bbox = sel.graphShape.getBBox()
-
-      const tl = { x: 0, y: 0 }
-      const tr = { x: bbox.width, y: 0 }
-      const br = { x: bbox.width, y: bbox.height }
-      const bl = { x: 0, y: bbox.height }
-
-      const selfCoordSys = { tl, tr, br, bl }
-
-      const graphLayerCoordSys = {
-        tl: applyToPoint(graData.mt, tl),
-        tr: applyToPoint(graData.mt, tr),
-        br: applyToPoint(graData.mt, br),
-        bl: applyToPoint(graData.mt, bl)
-      }
-
       return {
-        // selfCoordSys,
-        graphLayerCoordSys,
         downRect: {
           width: sel.graphShape.data.width,
           height: sel.graphShape.data.height,
@@ -80,8 +60,6 @@ export default class selectedManager {
     const { minX, minY, maxX, maxY } = mergeBox(selRects)
 
     return {
-      // selfCoordSys,
-      // graphLayerCoordSys,
       downRect: {
         width: maxX - minX,
         height: maxY - minY,
@@ -246,7 +224,7 @@ export default class selectedManager {
       mt: scaleHandleMt
     })
 
-    const clonedOutlines = this.selectedGraphs.map(item => this.clonedOutlineGraphToGraphLayer(item, { lineWidth: 1 }))
+    const clonedOutlines = this.selectedGraphs.map(item => this.getOutlineGraphInWorld(item, { lineWidth: 1 }))
 
     const rotateHandleMt = compose(
       translate(-rotateSize / 2, -rotateSize / 2),
@@ -376,20 +354,22 @@ export default class selectedManager {
     hoveredGroup.removeAllChildren()
 
     if (this.hovered) {
-      const clonedOutline = this.clonedOutlineGraphToGraphLayer(this.hovered)
+      const clonedOutline = this.getOutlineGraphInWorld(this.hovered)
 
       hoveredGroup.removeAllChildren()
       hoveredGroup.append(clonedOutline)
     }
   }
 
-  private clonedOutlineGraphToGraphLayer(graph: IGraph, attrs = {}) {
+  private getOutlineGraphInWorld(graph: IGraph, attrs = {}) {
     const { wbEditor } = this
 
     const cloned = graph.graphShape.getOutLineShape()
 
-    const mt = compose(wbEditor.graphLayer.data.mt, cloned.data.mt)
-    const nd = svgPath(cloned.data.d).matrix([mt.a, mt.b, mt.c, mt.d, mt.e, mt.f]).toString()
+    const mtWorld = compose(wbEditor.graphLayer.data.mt, cloned.data.mt)
+    const nd = svgPath(cloned.data.d)
+      .matrix([mtWorld.a, mtWorld.b, mtWorld.c, mtWorld.d, mtWorld.e, mtWorld.f])
+      .toString()
 
     cloned.attr({
       d: nd,

@@ -4,7 +4,6 @@ import { applyToPoint } from 'transformation-matrix'
 import { ICoord, isRectCollision, isRectCollisionOBB, Rect } from 'rmst-render'
 import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 import { noop } from 'es-toolkit'
-import { isRectShapeCollision } from '@/demo/2-rmst-render/funny/Collision/DragManagement'
 import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 
 export default class ToolBoxSelection implements ITool {
