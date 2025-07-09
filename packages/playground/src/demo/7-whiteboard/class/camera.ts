@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
-import { compose, inverse, scale, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
-import { ICoord } from 'rmst-render'
+import { ICoord, mergeBox } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'
 
 const zoomSpeed = 1.2
@@ -86,7 +86,27 @@ export default class Camera {
   }
 
   // 缩放到适合 (适应画布)
-  zoomToFit() {}
+  zoomToFit() {
+    const { wbEditor } = this
+
+    const selRects = wbEditor.graphLayer.data.children.map(item => {
+      const data = item.data
+      const tl = applyToPoint(data.mt, { x: 0, y: 0 })
+      const tr = applyToPoint(data.mt, { x: data.width, y: 0 })
+      const br = applyToPoint(data.mt, { x: data.width, y: data.height })
+      const bl = applyToPoint(data.mt, { x: 0, y: data.height })
+      return { tl, tr, br, bl }
+    })
+
+    const { minX, minY, maxX, maxY } = mergeBox(selRects)
+
+    const rect = {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY
+    }
+  }
 
   triggerCameraChange() {
     this.eventEmitter.emit('cameraChange')

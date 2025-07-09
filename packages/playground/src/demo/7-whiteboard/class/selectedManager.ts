@@ -1,7 +1,7 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
-import { calcMidPoint, distanceTowPoint, Group, Line, Rect, Text } from 'rmst-render'
+import { calcMidPoint, distanceTowPoint, Group, Line, mergeBox, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
 import { calcRotateRad, Graph_Id } from '../constant'
@@ -9,7 +9,6 @@ import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
-import { mergeBox } from '@/demo/6-other/mtDe/Xg_multi/util'
 
 let debugHandle = true
 
