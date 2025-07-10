@@ -5,6 +5,17 @@ import { ICoord, isRectCollision, isRectCollisionOBB, Rect } from 'rmst-render'
 import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 import { noop } from 'es-toolkit'
 import { calcRotateRad } from '@/demo/7-whiteboard/constant'
+import { Box, System } from 'detect-collisions'
+
+const system = new System()
+// Example: Create and insert box1 body
+const box1 = system.createBox({ x: 0, y: 0 }, 100, 100)
+// Example: Create box2 body
+const box2 = new Box({ x: 0, y: 0 }, 100, 100, { angle: 45 })
+// Example: Insert box2 body
+system.insert(box2)
+
+console.log(system)
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
@@ -59,21 +70,22 @@ export default class ToolBoxSelection implements ITool {
     }
 
     const selectedIds = this.wbEditor.graphLayer.children
-      .filter(item =>
-        // isRectCollision(boxRectScene, {
+      .filter(
+        item =>
+          isRectCollision(boxRectScene, {
+            x: item.data.mt.e,
+            y: item.data.mt.f,
+            width: item.data.width,
+            height: item.data.height
+          })
+
+        // isRectCollisionOBB(boxRectScene, {
         //   x: item.data.mt.e,
         //   y: item.data.mt.f,
         //   width: item.data.width,
-        //   height: item.data.height
+        //   height: item.data.height,
+        //   rotation: calcRotateRad(item.data.mt)
         // })
-
-        isRectCollisionOBB(boxRectScene, {
-          x: item.data.mt.e,
-          y: item.data.mt.f,
-          width: item.data.width,
-          height: item.data.height,
-          rotation: calcRotateRad(item.data.mt)
-        })
       )
       .map(item => item.data.id)
 
