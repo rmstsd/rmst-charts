@@ -233,6 +233,8 @@ export default function Mt() {
         } else if (zoomX < zoomY) {
           ty = (ppp.y - contentRect.height) / 2
         }
+
+        console.log(tx, ty)
       }
 
       const newMt = compose(scaleMt, translate(tx, ty))

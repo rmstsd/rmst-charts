@@ -5,6 +5,11 @@ import { applyToPoint, inverse } from 'transformation-matrix'
 export class CoordSys {
   constructor(private wbEditor: WhiteboardEditor) {}
 
+  get viewportSize() {
+    const canvasSize = this.wbEditor.stage.canvasSize
+    return canvasSize
+  }
+
   // 世界坐标系 中心
   get centerWorld() {
     return { x: this.wbEditor.stage.canvasSize.width / 2, y: this.wbEditor.stage.canvasSize.height / 2 }

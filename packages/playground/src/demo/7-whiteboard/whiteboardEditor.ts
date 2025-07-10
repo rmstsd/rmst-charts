@@ -15,9 +15,7 @@ export interface Events {
 }
 
 class WhiteboardEditor {
-  constructor() {
-    makeAutoObservable(this)
-  }
+  constructor() {}
 
   container: HTMLElement
 

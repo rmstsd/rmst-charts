@@ -20,8 +20,6 @@ export default function InfoRightPanel() {
 
   const [count, setCount] = useState(0)
 
-  console.log(count)
-
   return (
     <div className="flex-shrink-0 p-2 " style={{ width: 200 }}>
       <WbInputNumber
