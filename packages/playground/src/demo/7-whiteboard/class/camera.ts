@@ -1,10 +1,9 @@
 import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
-import { applyToPoint, compose, identity, inverse, scale, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
-import { ICoord, mergeBox, Rect } from 'rmst-render'
+import { ICoord, mergeBox } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'
-import { fitAndPosition } from 'object-fit-math'
 
 const zoomSpeed = 1.2
 const speed = 100
@@ -105,99 +104,38 @@ export default class Camera {
       return { tl, tr, br, bl }
     })
 
-    const { minX, minY, maxX, maxY } = mergeBox(selRects)
+    const { minX, minY, maxX, maxY } = mergeBox(selRects) // 场景坐标系
 
-    const tl = applyToPoint(identity(), { x: minX, y: minY })
-    const br = applyToPoint(identity(), { x: maxX, y: maxY })
+    const contentRect = { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
 
-    const contentRect = { x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y }
-    console.log(contentRect)
-
-    {
-      const viewportSize = wbEditor.coordSys.viewportSize
-      const padding = 40
-      const stageRect = {
-        x: padding,
-        y: padding,
-        width: viewportSize.width - padding * 2,
-        height: viewportSize.height - padding * 2
-      }
-      const zoomX = stageRect.width / contentRect.width
-      const zoomY = stageRect.height / contentRect.height
-      const zoom = Math.min(zoomX, zoomY)
-      this.zoom = zoom
-
-      const scaleMt = compose(
-        translate(-contentRect.x + stageRect.x, -contentRect.y + stageRect.y),
-        scale(zoom, zoom, contentRect.x, contentRect.y)
-      )
-
-      let tx = 0
-      let ty = 0
-
-      {
-        const ppp = applyToPoint(inverse(scale(zoom)), { x: stageRect.width, y: stageRect.height })
-        tx = (stageRect.width / zoom - contentRect.width) / 2
-        ty = (stageRect.height / zoom - contentRect.height) / 2
-      }
-
-      const newMt = compose(scaleMt, translate(tx, ty))
-
-      wbEditor.graphLayer.attr({ mt: newMt })
-
-      this.triggerCameraChange()
+    const viewportSize = wbEditor.coordSys.viewportSize
+    const padding = 80
+    const viewportRect = {
+      x: padding,
+      y: padding,
+      width: viewportSize.width - padding * 2,
+      height: viewportSize.height - padding * 2
     }
+    const zoomX = viewportRect.width / contentRect.width
+    const zoomY = viewportRect.height / contentRect.height
+    const zoom = Math.min(zoomX, zoomY)
+    this.zoom = zoom
 
-    return
+    const scaleMt = compose(
+      translate(-contentRect.x + viewportRect.x, -contentRect.y + viewportRect.y),
+      scale(zoom, zoom, contentRect.x, contentRect.y)
+    )
 
-    {
-      const viewportSize = wbEditor.coordSys.viewportSize
+    const tx = (viewportRect.width / zoom - contentRect.width) / 2
+    const ty = (viewportRect.height / zoom - contentRect.height) / 2
 
-      const zoomX = viewportSize.width / contentRect.width
-      const zoomY = viewportSize.height / contentRect.height
+    const newMt = compose(scaleMt, translate(tx, ty))
+    wbEditor.graphLayer.attr({ mt: newMt })
 
-      const zoom = Math.min(zoomX, zoomY)
-
-      this.zoomTo(zoom, { x: 0, y: 0 })
-
-      //（3）计算视口 x 和 y 值
-      const newViewportX = contentRect.x - (viewportSize.width / zoom - contentRect.width) / 2
-      const newViewportY = contentRect.y - (viewportSize.height / zoom - contentRect.height) / 2
-
-      const tmt = translate(newViewportX, newViewportY) // 内容居中
-
-      wbEditor.graphLayer.attr({ mt: compose(wbEditor.graphLayer.data.mt, tmt) })
-    }
+    this.triggerCameraChange()
   }
 
   triggerCameraChange() {
     this.eventEmitter.emit('cameraChange')
   }
-}
-
-function fitToViewport(contentRect, canvasSize) {
-  // 计算缩放比例
-  const scaleX = canvasSize.width / contentRect.width
-  const scaleY = canvasSize.height / contentRect.height
-  const zoom = Math.min(scaleX, scaleY)
-
-  // 计算内容中心点
-  const center = {
-    x: contentRect.x + contentRect.width / 2,
-    y: contentRect.y + contentRect.height / 2
-  }
-
-  // 计算需要平移的距离，使内容居中
-  const viewportCenter = {
-    x: canvasSize.width / 2,
-    y: canvasSize.height / 2
-  }
-
-  // 应用缩放后的偏移量
-  const offset = {
-    x: viewportCenter.x - center.x * zoom,
-    y: viewportCenter.y - center.y * zoom
-  }
-
-  return { zoom, offset }
 }

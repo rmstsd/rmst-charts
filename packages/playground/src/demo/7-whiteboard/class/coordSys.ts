@@ -12,7 +12,9 @@ export class CoordSys {
 
   // 世界坐标系 中心
   get centerWorld() {
-    return { x: this.wbEditor.stage.canvasSize.width / 2, y: this.wbEditor.stage.canvasSize.height / 2 }
+    const { viewportSize } = this
+
+    return { x: viewportSize.width / 2, y: viewportSize.height / 2 }
   }
 
   // 场景坐标系 中心 by 世界坐标的中心
