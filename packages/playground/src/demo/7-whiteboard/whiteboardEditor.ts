@@ -41,7 +41,7 @@ class WhiteboardEditor {
   init(container: HTMLElement) {
     this.container = container
 
-    this.stage = new Stage({ container, enableCamera: false })
+    this.stage = new Stage({ container, enableCamera: false, enableCursor: false })
 
     this.stage.append(this.graphLayer)
 

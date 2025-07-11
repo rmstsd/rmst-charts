@@ -9,6 +9,7 @@ import { rotate, rotateDEG, toCSS, translate } from 'transformation-matrix'
 import { startDrag } from '@/utils/util'
 import { observer, useLocalObservable } from 'mobx-react-lite'
 import { cloneDeep } from 'es-toolkit'
+import clsx from 'clsx'
 
 const Example = observer(function Example() {
   const rect1 = {
@@ -26,7 +27,7 @@ const Example = observer(function Example() {
       width: 50,
       height: 50
     }
-    return { box_sel }
+    return { box_sel, cursor: 'move', bool: true }
   })
   const { box_sel } = state
 
@@ -41,7 +42,7 @@ const Example = observer(function Example() {
   console.log(circleInPolygon)
 
   return (
-    <svg className="border" width={700} height={600}>
+    <svg className={clsx('border', state.bool ? 'move-cursor' : 'pointer-cursor')} width={700} height={600}>
       <g transform={toCSS(translate(10, 10))}>
         <rect {...rect1} stroke="red" fill="none" transform={toCSS(rotateDEG(45))} />
 
@@ -58,6 +59,8 @@ const Example = observer(function Example() {
                 const dy = moveEvt.clientY - downEvt.clientY
                 state.box_sel.x = downRect.x + dx
                 state.box_sel.y = downRect.y + dy
+
+                state.bool = false
               }
             })
           }}

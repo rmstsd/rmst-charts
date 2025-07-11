@@ -263,6 +263,9 @@ export default class selectedManager {
     const height = distanceTowPoint(tlCoord, blCoord)
     const hh = ctrlSize
 
+    const cursor_test = getCursor(CursorType.scale_top, rad)
+    console.log(cursor_test)
+
     const top = new Rect({
       id: Graph_Id.graph_ctrl_scale,
       ...calcMidPoint(tlCoord, trCoord),
@@ -271,7 +274,7 @@ export default class selectedManager {
       fillStyle: 'pink',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
-      cursor: getCursor(CursorType.scale_top, rad),
+      cursor: cursor_test,
       extraData: { transformOrigin: TransformOrigin.Bottom }
     })
     const right = new Rect({
@@ -331,6 +334,8 @@ export default class selectedManager {
       blText
     ])
 
+    if (!this.wbEditor.selectLayer.selectToolGroup.children.length) {
+    }
     this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
     this.wbEditor.selectLayer.selectToolGroup.append(g)
   }

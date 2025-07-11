@@ -122,6 +122,10 @@ export class EventDispatcher {
   }
 
   setHoveredCursor() {
+    if (!this.stage.options.enableCursor) {
+      return
+    }
+
     const { stage, hovered } = this
 
     if (!hovered) {
@@ -139,6 +143,7 @@ export class EventDispatcher {
       hasCursorTarget = parent
     }
     const cursor = hasCursorTarget.data.cursor || 'auto'
+
     setCursor(stage, cursor)
   }
 
