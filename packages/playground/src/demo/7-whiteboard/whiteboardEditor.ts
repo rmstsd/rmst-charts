@@ -1,4 +1,3 @@
-import { makeAutoObservable } from 'mobx'
 import { Group, Stage } from 'rmst-render'
 import { ToolEnum } from './class/ToolManager/constant'
 

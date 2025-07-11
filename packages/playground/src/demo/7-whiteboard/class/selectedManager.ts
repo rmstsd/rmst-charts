@@ -9,6 +9,7 @@ import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
+import { CursorType, getCursor } from '../cursor'
 
 let debugHandle = true
 
@@ -127,12 +128,25 @@ export default class selectedManager {
       height: downRect.height + padding * 2
     }
 
-    const outerBboxCoordWorld = {
-      tl: applyToPoint(mtWorld, { x: outerBbox.x, y: outerBbox.y }),
-      tr: applyToPoint(mtWorld, { x: outerBbox.x + outerBbox.width, y: outerBbox.y }),
-      br: applyToPoint(mtWorld, { x: outerBbox.x + outerBbox.width, y: outerBbox.y + outerBbox.height }),
-      bl: applyToPoint(mtWorld, { x: outerBbox.x, y: outerBbox.y + outerBbox.height })
-    }
+    // tl tr br bl
+    const outerBboxWorld = [
+      {
+        coord: applyToPoint(mtWorld, { x: outerBbox.x, y: outerBbox.y }),
+        cursorType: CursorType.rotate_tl
+      },
+      {
+        coord: applyToPoint(mtWorld, { x: outerBbox.x + outerBbox.width, y: outerBbox.y }),
+        cursorType: CursorType.rotate_tr
+      },
+      {
+        coord: applyToPoint(mtWorld, { x: outerBbox.x + outerBbox.width, y: outerBbox.y + outerBbox.height }),
+        cursorType: CursorType.rotate_br
+      },
+      {
+        coord: applyToPoint(mtWorld, { x: outerBbox.x, y: outerBbox.y + outerBbox.height }),
+        cursorType: CursorType.rotate_bl
+      }
+    ]
 
     const selFrame = new Line({
       id: Graph_Id.graph_ctrl_translate,
@@ -155,7 +169,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_br, rad),
       extraData: { transformOrigin: TransformOrigin.br }
     })
     const tlText = new Text({
@@ -174,7 +188,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_tr, rad),
       extraData: { transformOrigin: TransformOrigin.bl }
     })
     const trText = new Text({
@@ -193,7 +207,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_br, rad),
       extraData: { transformOrigin: TransformOrigin.tl }
     })
     const brText = new Text({
@@ -212,7 +226,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_tr, rad),
       extraData: { transformOrigin: TransformOrigin.tr }
     })
     const blText = new Text({
@@ -229,19 +243,18 @@ export default class selectedManager {
       translate(-rotateSize / 2, -rotateSize / 2),
       rotate(rad, rotateSize / 2, rotateSize / 2)
     )
-    const rotateHandles = Object.keys(outerBboxCoordWorld).map(item => {
-      const val = outerBboxCoordWorld[item]
 
+    const rotateHandles = outerBboxWorld.map(item => {
       return new Rect({
         id: Graph_Id.graph_ctrl_rotate,
-        x: val.x,
-        y: val.y,
+        x: item.coord.x,
+        y: item.coord.y,
         width: rotateSize,
         height: rotateSize,
         fillStyle: colorAlpha('white', 0.5),
         strokeStyle: primaryColor,
         opacity: debugHandle ? 0.5 : 0,
-        cursor: 'grab',
+        cursor: getCursor(item.cursorType, rad),
         mt: rotateHandleMt
       })
     })
@@ -258,7 +271,7 @@ export default class selectedManager {
       fillStyle: 'pink',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_top, rad),
       extraData: { transformOrigin: TransformOrigin.Bottom }
     })
     const right = new Rect({
@@ -269,7 +282,7 @@ export default class selectedManager {
       fillStyle: 'orange',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_right, rad),
       extraData: { transformOrigin: TransformOrigin.Left }
     })
     const bottom = new Rect({
@@ -280,7 +293,7 @@ export default class selectedManager {
       fillStyle: 'red',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_top, rad),
       extraData: { transformOrigin: TransformOrigin.Top }
     })
     const left = new Rect({
@@ -291,7 +304,7 @@ export default class selectedManager {
       fillStyle: 'purple',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
-      cursor: 'pointer',
+      cursor: getCursor(CursorType.scale_right, rad),
       extraData: { transformOrigin: TransformOrigin.Right }
     })
 

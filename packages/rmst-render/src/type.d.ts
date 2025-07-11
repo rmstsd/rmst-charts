@@ -1,4 +1,5 @@
 import { Box, Circle, Ellipse, Group, RmstImage, Line, Path, Rect, Text } from './shape'
+import type * as CSS from 'csstype'
 
 export type IShape = Group | Box | Circle | Rect | Line | Text | Ellipse | Path | RmstImage
 export type IShapeType =
@@ -14,26 +15,7 @@ export type IShapeType =
   | 'Path'
   | 'Image'
 
-export type ICursor =
-  | 'url'
-  | 'default'
-  | 'auto'
-  | 'crosshair'
-  | 'pointer'
-  | 'move'
-  | 'e-resize'
-  | 'ne-resize'
-  | 'nw-resize'
-  | 'n-resize'
-  | 'se-resize'
-  | 'sw-resize'
-  | 's-resize'
-  | 'w-resize'
-  | 'text'
-  | 'wait'
-  | 'help'
-  | 'grab'
-  | 'grabbing'
+export type ICursor = CSS.Property.Cursor
 
 export type ICoord = { x: number; y: number }
 

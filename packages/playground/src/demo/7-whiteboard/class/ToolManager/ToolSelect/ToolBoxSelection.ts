@@ -1,21 +1,11 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint } from 'transformation-matrix'
-import { ICoord, isRectCollision, isRectCollisionOBB, Rect } from 'rmst-render'
+import { ICoord, Rect } from 'rmst-render'
 import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 import { noop } from 'es-toolkit'
 import { calcRotateRad } from '@/demo/7-whiteboard/constant'
-import { Box, System } from 'detect-collisions'
-
-const system = new System()
-// Example: Create and insert box1 body
-const box1 = system.createBox({ x: 0, y: 0 }, 100, 100)
-// Example: Create box2 body
-const box2 = new Box({ x: 0, y: 0 }, 100, 100, { angle: 45 })
-// Example: Insert box2 body
-system.insert(box2)
-
-console.log(system)
+import { System } from 'detect-collisions'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
@@ -62,32 +52,23 @@ export default class ToolBoxSelection implements ITool {
 
     this.updateBoxSelectionRect()
 
-    const boxRectScene = {
-      x: this.tl.x,
-      y: this.tl.y,
-      width: this.br.x - this.tl.x,
-      height: this.br.y - this.tl.y
-    }
+    const boxRectScene = { x: this.tl.x, y: this.tl.y, width: this.br.x - this.tl.x, height: this.br.y - this.tl.y }
 
-    const selectedIds = this.wbEditor.graphLayer.children
-      .filter(
-        item =>
-          isRectCollision(boxRectScene, {
-            x: item.data.mt.e,
-            y: item.data.mt.f,
-            width: item.data.width,
-            height: item.data.height
-          })
+    const system = new System()
+    const boxes = this.wbEditor.graphLayer.children.map(item => {
+      const boxItem = system.createBox({ x: item.data.mt.e, y: item.data.mt.f }, item.data.width, item.data.height, {
+        angle: calcRotateRad(item.data.mt)
+      })
 
-        // isRectCollisionOBB(boxRectScene, {
-        //   x: item.data.mt.e,
-        //   y: item.data.mt.f,
-        //   width: item.data.width,
-        //   height: item.data.height,
-        //   rotation: calcRotateRad(item.data.mt)
-        // })
-      )
-      .map(item => item.data.id)
+      return { id: item.data.id, boxItem }
+    })
+
+    const selectionBox = system.createBox(
+      { x: boxRectScene.x, y: boxRectScene.y },
+      boxRectScene.width,
+      boxRectScene.height
+    )
+    const selectedIds = boxes.filter(item => system.checkCollision(selectionBox, item.boxItem)).map(item => item.id)
 
     this.wbEditor.selectManager.batchSelect(selectedIds)
 
