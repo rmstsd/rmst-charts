@@ -3,9 +3,11 @@ import { ITool } from '../type'
 import { applyToPoint, compose, rotate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
+import { CursorType } from '../../cursorManager'
+import { calcRotateRad, isFlipped } from '@/demo/7-whiteboard/constant'
 
 export default class ToolRotate implements ITool {
-  constructor(private wbEditor: WhiteboardEditor) {}
+  constructor(private wbEditor: WhiteboardEditor, private cursorType: CursorType) {}
 
   origin: ICoord
   startRad: number
@@ -36,7 +38,15 @@ export default class ToolRotate implements ITool {
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = this.downSnap[item.id].graphShapeRect
 
-      item.graphShape.attr('mt', compose(rotate(diffRad, this.origin.x, this.origin.y), dSnap.mt))
+      const newMt = compose(rotate(diffRad, this.origin.x, this.origin.y), dSnap.mt)
+
+      const isFlip = isFlipped(newMt)
+
+      // let angle = calcRotateRad(newMt)
+
+      // this.wbEditor.cursorManager.setCursor(getCursor(this.cursorType, angle, isFlip))
+
+      item.graphShape.attr('mt', newMt)
     })
 
     this.wbEditor.triggerRender()

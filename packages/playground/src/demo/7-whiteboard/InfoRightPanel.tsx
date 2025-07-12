@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useWbEditor } from './context'
 import { IGraph } from './type'
 import { compose, translate } from 'transformation-matrix'
+import { calcRotateRad } from './constant'
+import { rad2deg } from 'rmst-render'
 
 export default function InfoRightPanel() {
   const { wbEditor } = useWbEditor()
@@ -36,6 +38,9 @@ export default function InfoRightPanel() {
 
         return (
           <div key={item.id}>
+            <button onClick={() => {}}>检测</button>
+
+            <hr />
             <div className="flex gap-2 items-center">
               <span>x</span>
               <WbInputNumber
@@ -76,6 +81,10 @@ export default function InfoRightPanel() {
                   wbEditor.triggerRender()
                 }}
               />
+            </div>
+            <div className="flex gap-2 items-center">
+              <span>rotate</span>
+              <WbInputNumber value={rad2deg(calcRotateRad(data.mt))} onChange={val => {}} />
             </div>
           </div>
         )

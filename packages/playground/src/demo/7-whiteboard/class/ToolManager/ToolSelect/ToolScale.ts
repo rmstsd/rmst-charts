@@ -119,11 +119,7 @@ export default class ToolScale implements ITool {
 
       const fixPos = translate(-diffPos.x, -diffPos.y)
 
-      item.graphShape.attr({
-        width: newSize.width,
-        height: newSize.height,
-        mt: compose(fixPos, newMt)
-      })
+      item.graphShape.attr({ width: newSize.width, height: newSize.height, mt: compose(fixPos, newMt) })
     })
 
     this.wbEditor.triggerRender()

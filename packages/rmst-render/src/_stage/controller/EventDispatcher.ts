@@ -61,7 +61,7 @@ export class EventDispatcher {
     {
       // 触发舞台(canvas Element)的事件
       const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
-      stage.onmouseleave(eventParameter)
+      triggerEventHandlers(stage, 'onmouseleave', eventParameter)
       this.onPointerLeave?.(eventParameter)
     }
   }

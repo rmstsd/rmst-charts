@@ -18,3 +18,29 @@ export const calcRotateRad = (mt: Matrix) => {
 
   return rad
 }
+
+export function isFlipped(matrix: Matrix) {
+  // 提取变换矩阵的相关值
+  const a = matrix.a
+  const b = matrix.b
+  const c = matrix.c
+  const d = matrix.d
+
+  // 计算行列式
+  const determinant = a * d - b * c
+
+  // 如果行列式为负，则图形被翻转
+  return determinant < 0
+}
+
+// 角度
+export function normalizeAngle(degrees) {
+  // 先将角度转换到 0 到 360 度之间
+  degrees = degrees % 360
+  if (degrees < 0) degrees += 360
+
+  // 再将角度转换到 -180 到 180 度之间
+  if (degrees > 180) degrees -= 360
+
+  return degrees
+}

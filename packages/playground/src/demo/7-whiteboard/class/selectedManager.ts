@@ -9,7 +9,7 @@ import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
-import { CursorType, getCursor } from '../cursor'
+import { CursorType } from './cursorManager'
 
 let debugHandle = true
 
@@ -60,11 +60,7 @@ export default class selectedManager {
     const { minX, minY, maxX, maxY } = mergeBox(selRects)
 
     return {
-      downRect: {
-        width: maxX - minX,
-        height: maxY - minY,
-        mt: translate(minX, minY)
-      }
+      downRect: { width: maxX - minX, height: maxY - minY, mt: translate(minX, minY) }
     }
   }
 
@@ -169,8 +165,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: getCursor(CursorType.scale_br, rad),
-      extraData: { transformOrigin: TransformOrigin.br }
+      extraData: { transformOrigin: TransformOrigin.br, cursorType: CursorType.scale_br }
     })
     const tlText = new Text({
       x: tlCoord.x,
@@ -188,8 +183,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: getCursor(CursorType.scale_tr, rad),
-      extraData: { transformOrigin: TransformOrigin.bl }
+      extraData: { transformOrigin: TransformOrigin.bl, cursorType: CursorType.scale_tr }
     })
     const trText = new Text({
       x: trCoord.x,
@@ -207,8 +201,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: getCursor(CursorType.scale_br, rad),
-      extraData: { transformOrigin: TransformOrigin.tl }
+      extraData: { transformOrigin: TransformOrigin.tl, cursorType: CursorType.scale_br }
     })
     const brText = new Text({
       x: brCoord.x,
@@ -226,8 +219,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
-      cursor: getCursor(CursorType.scale_tr, rad),
-      extraData: { transformOrigin: TransformOrigin.tr }
+      extraData: { transformOrigin: TransformOrigin.tr, cursorType: CursorType.scale_tr }
     })
     const blText = new Text({
       x: blCoord.x,
@@ -254,17 +246,14 @@ export default class selectedManager {
         fillStyle: colorAlpha('white', 0.5),
         strokeStyle: primaryColor,
         opacity: debugHandle ? 0.5 : 0,
-        cursor: getCursor(item.cursorType, rad),
-        mt: rotateHandleMt
+        mt: rotateHandleMt,
+        extraData: { cursorType: item.cursorType }
       })
     })
 
     const width = distanceTowPoint(tlCoord, trCoord)
     const height = distanceTowPoint(tlCoord, blCoord)
     const hh = ctrlSize
-
-    const cursor_test = getCursor(CursorType.scale_top, rad)
-    console.log(cursor_test)
 
     const top = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -274,8 +263,7 @@ export default class selectedManager {
       fillStyle: 'pink',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
-      cursor: cursor_test,
-      extraData: { transformOrigin: TransformOrigin.Bottom }
+      extraData: { transformOrigin: TransformOrigin.Bottom, cursorType: CursorType.scale_top }
     })
     const right = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -285,8 +273,7 @@ export default class selectedManager {
       fillStyle: 'orange',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
-      cursor: getCursor(CursorType.scale_right, rad),
-      extraData: { transformOrigin: TransformOrigin.Left }
+      extraData: { transformOrigin: TransformOrigin.Left, cursorType: CursorType.scale_right }
     })
     const bottom = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -296,8 +283,7 @@ export default class selectedManager {
       fillStyle: 'red',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
-      cursor: getCursor(CursorType.scale_top, rad),
-      extraData: { transformOrigin: TransformOrigin.Top }
+      extraData: { transformOrigin: TransformOrigin.Top, cursorType: CursorType.scale_top }
     })
     const left = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -307,8 +293,7 @@ export default class selectedManager {
       fillStyle: 'purple',
       opacity: debugHandle ? 0.5 : 0,
       mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
-      cursor: getCursor(CursorType.scale_right, rad),
-      extraData: { transformOrigin: TransformOrigin.Right }
+      extraData: { transformOrigin: TransformOrigin.Right, cursorType: CursorType.scale_right }
     })
 
     const g = new Group({ name: 'ctrl-box' })

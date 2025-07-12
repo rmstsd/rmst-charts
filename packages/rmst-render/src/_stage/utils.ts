@@ -40,7 +40,7 @@ export function triggerEventHandlers(
   eventName: OnEventType,
   eventParameter: EventParameter
 ) {
-  elementItem[eventName](eventParameter)
+  elementItem[eventName]?.(eventParameter)
   const eventType = eventName.slice(2) as EventType
 
   const handlers = elementItem.eventTypeHandlerMap.get(eventType)

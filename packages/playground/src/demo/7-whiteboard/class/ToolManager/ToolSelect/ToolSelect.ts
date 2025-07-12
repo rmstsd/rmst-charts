@@ -1,13 +1,14 @@
-import { ICoord, IShape } from 'rmst-render'
+import { ICoord, IShape, rad2deg } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { ToolEnum } from '../constant'
-import { Graph_Id } from '@/demo/7-whiteboard/constant'
+import { calcRotateRad, Graph_Id, isFlipped } from '@/demo/7-whiteboard/constant'
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
+import { CursorType } from '../../cursorManager'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -26,6 +27,41 @@ export default class ToolSelect implements ITool {
         return
       }
 
+      if (shape.data.id === Graph_Id.graph_ctrl_rotate) {
+        const { downRect } = wbEditor.selectManager.transformDownRect
+
+        const cursorType = shape.data.extraData?.cursorType
+        const isFlip = isFlipped(downRect.mt)
+        const data = {
+          [CursorType.rotate_tl]: isFlip ? -90 : 0,
+          [CursorType.rotate_tr]: isFlip ? 180 : 90,
+          [CursorType.rotate_br]: isFlip ? 90 : 180,
+          [CursorType.rotate_bl]: isFlip ? 0 : -90
+        }
+        const shapeROtation = rad2deg(calcRotateRad(downRect.mt))
+        const ansRotation = data[cursorType] + shapeROtation
+
+        wbEditor.cursorManager.setCursor({ type: 'rotation', rotation: ansRotation })
+        return
+      }
+      if (shape.data.id === Graph_Id.graph_ctrl_scale) {
+        const { downRect } = wbEditor.selectManager.transformDownRect
+
+        const cursorType = shape.data.extraData?.cursorType
+        const isFlip = isFlipped(downRect.mt)
+        const data = {
+          [CursorType.scale_top]: isFlip ? 0 : 0,
+          [CursorType.scale_right]: isFlip ? 90 : 90,
+          [CursorType.scale_tr]: isFlip ? -45 : 45,
+          [CursorType.scale_br]: isFlip ? 45 : -45
+        }
+        const shapeRotation = rad2deg(calcRotateRad(downRect.mt))
+        const ansRotation = data[cursorType] + shapeRotation
+
+        wbEditor.cursorManager.setCursor({ type: 'resize', rotation: ansRotation })
+        return
+      }
+
       if (isWbGraphShape(shape)) {
         wbEditor.selectManager.onHover(shape.data.id, true)
       }
@@ -35,6 +71,8 @@ export default class ToolSelect implements ITool {
       if (!shape) {
         return
       }
+
+      wbEditor.cursorManager.setCursor('default')
 
       if (isWbGraphShape(shape)) {
         wbEditor.selectManager.onHover(shape.data.id, false)
@@ -79,7 +117,7 @@ export default class ToolSelect implements ITool {
       } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_rotate) {
         console.log('旋转操作')
 
-        this.currentStrategy = new ToolRotate(wbEditor)
+        this.currentStrategy = new ToolRotate(wbEditor, hoveredShape.data.extraData?.cursorType)
       } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_scale) {
         console.log('缩放操作')
 
