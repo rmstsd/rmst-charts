@@ -9,6 +9,7 @@ import { Graph_Id } from './constant'
 import EventEmitter from 'rmst-render/event_emitter'
 import { CoordSys } from './class/coordSys'
 import CursorManager from './class/cursorManager'
+import ControlHandleManager from './class/controlHandleManager'
 
 export interface Events {
   render: () => void // 只要白板内的元素的状态有变化，就触发 (不包含相机的平移缩放)
@@ -30,10 +31,11 @@ class WhiteboardEditor {
 
   graphs: IGraph[] = []
 
-  selectManager = new selectedManager(this)
-  toolManager = new ToolManager(this)
   camera = new Camera(this)
   coordSys = new CoordSys(this)
+  toolManager = new ToolManager(this)
+  selectManager = new selectedManager(this)
+  controlHandleManager = new ControlHandleManager(this)
   cursorManager = new CursorManager(this)
 
   dispose() {
