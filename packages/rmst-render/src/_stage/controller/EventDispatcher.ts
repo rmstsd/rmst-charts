@@ -62,7 +62,6 @@ export class EventDispatcher {
       // 触发舞台(canvas Element)的事件
       const eventParameter: EventParameter = { target: null, x: evt.offsetX, y: evt.offsetY, nativeEvent: evt }
       triggerEventHandlers(stage, 'onmouseleave', eventParameter)
-      this.onPointerLeave?.(eventParameter)
     }
   }
 
@@ -101,7 +100,6 @@ export class EventDispatcher {
         if (!stack.includes(elementItem)) {
           const eventParameter: EventParameter = { target: elementItem, x, y }
           triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-          this.onPointerLeave?.(eventParameter)
 
           this.hoveredStack.splice(i, 1)
         }
@@ -111,7 +109,6 @@ export class EventDispatcher {
         if (!this.hoveredStack.includes(elementItem)) {
           const eventParameter: EventParameter = { target: elementItem, x, y }
           triggerEventHandlers(elementItem, 'onmouseenter', eventParameter)
-          this.onPointerEnter?.(eventParameter)
 
           this.hoveredStack.push(elementItem)
         }
@@ -151,15 +148,8 @@ export class EventDispatcher {
     this.hoveredStack.toReversed().forEach(elementItem => {
       const eventParameter: EventParameter = { target: elementItem, x, y }
       triggerEventHandlers(elementItem, 'onmouseleave', eventParameter)
-      this.onPointerLeave?.(eventParameter)
     })
 
     this.hoveredStack = []
   }
-
-  // 供外部注册
-  onPointerEnter(eventParameter: EventParameter) {}
-
-  // 供外部注册
-  onPointerLeave(eventParameter: EventParameter) {}
 }

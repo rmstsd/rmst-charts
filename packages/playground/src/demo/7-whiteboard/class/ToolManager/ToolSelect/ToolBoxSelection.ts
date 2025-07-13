@@ -26,7 +26,8 @@ export default class ToolBoxSelection implements ITool {
     height: 0,
     fillStyle: primaryAlphaColor,
     strokeStyle: primaryColor,
-    lineWidth: 2
+    lineWidth: 2,
+    pointerEvents: 'none'
   })
 
   onActive() {

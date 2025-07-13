@@ -1,7 +1,5 @@
 import type * as CSS from 'csstype'
-import { rad2deg } from 'rmst-render'
 import WhiteboardEditor from '../whiteboardEditor'
-import { range } from 'es-toolkit'
 
 const getScaleSvg = (rotateDeg: number) => {
   return `

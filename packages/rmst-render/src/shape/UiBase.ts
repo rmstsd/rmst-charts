@@ -73,7 +73,7 @@ export const combineDefaultData = (shapeData, defaultShapeData) => {
   return ans
 }
 
-export abstract class UiBase<T = {}> extends AbsEvent {
+export abstract class UiBase<T = UiBaseData> extends AbsEvent {
   constructor(shapeData, defaultShapeData?) {
     super()
 

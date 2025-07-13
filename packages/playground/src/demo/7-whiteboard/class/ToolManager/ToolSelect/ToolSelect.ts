@@ -9,6 +9,7 @@ import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
 import { CursorType } from '../../cursorManager'
+import { findHover_v2 } from 'rmst-render/_stage/findHover'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -16,80 +17,82 @@ export default class ToolSelect implements ITool {
   currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选
   currentStrategyDispose
 
+  isPointerDown = false
+
   onActive() {
     const { wbEditor } = this
-    const stage_eventDispatcher = wbEditor.stage.eventDispatcher
     wbEditor.selectManager.enableHover()
-
-    stage_eventDispatcher.onPointerEnter = evt => {
-      const shape = evt.target
-      if (!shape) {
-        return
-      }
-
-      if (shape.data.id === Graph_Id.graph_ctrl_rotate) {
-        const { downRect } = wbEditor.selectManager.transformDownRect
-
-        const cursorType = shape.data.extraData?.cursorType
-        const isFlip = isFlipped(downRect.mt)
-        const data = {
-          [CursorType.rotate_tl]: isFlip ? -90 : 0,
-          [CursorType.rotate_tr]: isFlip ? 180 : 90,
-          [CursorType.rotate_br]: isFlip ? 90 : 180,
-          [CursorType.rotate_bl]: isFlip ? 0 : -90
-        }
-        const shapeROtation = rad2deg(calcRotateRad(downRect.mt))
-        const ansRotation = data[cursorType] + shapeROtation
-
-        wbEditor.cursorManager.setCursor({ type: 'rotation', rotation: ansRotation })
-        return
-      }
-      if (shape.data.id === Graph_Id.graph_ctrl_scale) {
-        const { downRect } = wbEditor.selectManager.transformDownRect
-
-        const cursorType = shape.data.extraData?.cursorType
-        const isFlip = isFlipped(downRect.mt)
-        const data = {
-          [CursorType.scale_top]: isFlip ? 0 : 0,
-          [CursorType.scale_right]: isFlip ? 90 : 90,
-          [CursorType.scale_tr]: isFlip ? -45 : 45,
-          [CursorType.scale_br]: isFlip ? 45 : -45
-        }
-        const shapeRotation = rad2deg(calcRotateRad(downRect.mt))
-        const ansRotation = data[cursorType] + shapeRotation
-
-        wbEditor.cursorManager.setCursor({ type: 'resize', rotation: ansRotation })
-        return
-      }
-
-      if (isWbGraphShape(shape)) {
-        wbEditor.selectManager.onHover(shape.data.id, true)
-      }
-    }
-    stage_eventDispatcher.onPointerLeave = evt => {
-      const shape = evt.target
-      if (!shape) {
-        return
-      }
-
-      wbEditor.cursorManager.setCursor('default')
-
-      if (isWbGraphShape(shape)) {
-        wbEditor.selectManager.onHover(shape.data.id, false)
-      }
-    }
   }
 
   onDeActive() {
     const { wbEditor } = this
     wbEditor.selectManager.disableHover()
-
-    const stage_eventDispatcher = wbEditor.stage.eventDispatcher
-    stage_eventDispatcher.onPointerEnter = null
-    stage_eventDispatcher.onPointerLeave = null
   }
 
+  hoveredId: string
+
+  onPointerMoveNotDragging(moveEvt: PointerEvent) {
+    const { wbEditor } = this
+    const hovered = findHover_v2(wbEditor.stage, moveEvt.offsetX, moveEvt.offsetY)
+
+    if (!hovered) {
+      wbEditor.selectManager.onHover(null, false)
+      wbEditor.cursorManager.setCursor('default')
+      this.hoveredId = null
+      return
+    }
+    if (this.hoveredId === hovered.data.id) {
+      return
+    }
+    this.hoveredId = hovered.data.id
+
+    if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
+      wbEditor.cursorManager.setCursor('default')
+      return
+    }
+
+    if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
+      const { downRect } = wbEditor.selectManager.transformDownRect
+
+      const cursorType = hovered.data.extraData?.cursorType
+      const isFlip = isFlipped(downRect.mt)
+      const data = {
+        [CursorType.rotate_tl]: isFlip ? -90 : 0,
+        [CursorType.rotate_tr]: isFlip ? 180 : 90,
+        [CursorType.rotate_br]: isFlip ? 90 : 180,
+        [CursorType.rotate_bl]: isFlip ? 0 : -90
+      }
+      const shapeROtation = rad2deg(calcRotateRad(downRect.mt))
+      const ansRotation = data[cursorType] + shapeROtation
+
+      wbEditor.cursorManager.setCursor({ type: 'rotation', rotation: ansRotation })
+      return
+    }
+    if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
+      const { downRect } = wbEditor.selectManager.transformDownRect
+
+      const cursorType = hovered.data.extraData?.cursorType
+      const isFlip = isFlipped(downRect.mt)
+      const data = {
+        [CursorType.scale_top]: isFlip ? 0 : 0,
+        [CursorType.scale_right]: isFlip ? 90 : 90,
+        [CursorType.scale_tr]: isFlip ? -45 : 45,
+        [CursorType.scale_br]: isFlip ? 45 : -45
+      }
+      const shapeRotation = rad2deg(calcRotateRad(downRect.mt))
+      const ansRotation = data[cursorType] + shapeRotation
+
+      wbEditor.cursorManager.setCursor({ type: 'resize', rotation: ansRotation })
+      return
+    }
+
+    if (isWbGraphShape(hovered)) {
+      wbEditor.selectManager.onHover(hovered.data.id, true)
+    }
+  }
   onPointerDown(downEvt: PointerEvent) {
+    this.isPointerDown = true
+
     const { wbEditor } = this
 
     const stage_eventDispatcher = wbEditor.stage.eventDispatcher
@@ -130,6 +133,7 @@ export default class ToolSelect implements ITool {
 
   onPointerUp() {
     console.log('onPointerUp')
+    this.isPointerDown = false
     this.disposePrev()
 
     this.currentStrategy = null
@@ -146,6 +150,8 @@ export default class ToolSelect implements ITool {
   }
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
+    this.isPointerDown = false
+
     this.currentStrategy.onDragEnd(upEvt, sceneCoord)
 
     this.wbEditor.selectManager.enableHover()

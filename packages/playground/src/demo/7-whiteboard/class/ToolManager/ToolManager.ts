@@ -12,6 +12,7 @@ import ToolDrawEllipse from './ToolDraw/ToolDrawEllipse'
 import ToolDrawRhombus from './ToolDraw/ToolDrawRhombus'
 import ToolDrawPencil from './ToolDraw/ToolDrawPencil'
 import ToolDrawImage from './ToolDraw/ToolDrawImage'
+import { isInnerRect } from 'rmst-charts/utils'
 
 const ToolClassMap = {
   [ToolEnum.Select]: ToolSelect,
@@ -30,11 +31,35 @@ export default class ToolManager {
   currentTool: ToolEnumKey
   currentToolClass: ITool
 
+  isPointerDown = false
+
   bindEvent() {
     const { wbEditor } = this
     const { container } = wbEditor
 
+    let isInContainer = false
+
+    document.onpointermove = moveEvt => {
+      if (!this.isPointerDown) {
+        this.currentToolClass?.onPointerMoveNotDragging?.(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
+      }
+
+      this.currentToolClass?.onPointerMove?.({
+        moveEvt: moveEvt,
+        sceneCoord: wbEditor.coordSys.client2Scene(moveEvt),
+        isInContainer
+      })
+    }
+
+    container.onpointerenter = () => {
+      isInContainer = true
+    }
+    container.onpointerleave = () => {
+      isInContainer = false
+    }
+
     container.onpointerdown = downEvt => {
+      this.isPointerDown = true
       if (downEvt.button !== Pointer_Button.Left) {
         console.warn('非左键操作')
         return
@@ -50,10 +75,14 @@ export default class ToolManager {
           this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
         },
         onDragEnd: upEvt => {
+          this.isPointerDown = false
+
           this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
           this.switchTool(ToolEnum.Select)
         },
         onPointerUp: upEvt => {
+          this.isPointerDown = false
+
           this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
           this.switchTool(ToolEnum.Select)
         }

@@ -1,5 +1,6 @@
 // 等腰梯形, 上面是短边
 
+import { IShapeType } from '../type'
 import UiBase, { UiBaseData } from './UiBase'
 
 export interface TrapezoidData extends UiBaseData {
@@ -15,6 +16,7 @@ export class Trapezoid extends UiBase<TrapezoidData> {
     super('Trapezoid', data)
   }
 
+  type: IShapeType = 'Trapezoid'
   declare data: TrapezoidData
 }
 

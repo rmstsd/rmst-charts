@@ -319,8 +319,6 @@ export default class selectedManager {
       blText
     ])
 
-    if (!this.wbEditor.selectLayer.selectToolGroup.children.length) {
-    }
     this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
     this.wbEditor.selectLayer.selectToolGroup.append(g)
   }
