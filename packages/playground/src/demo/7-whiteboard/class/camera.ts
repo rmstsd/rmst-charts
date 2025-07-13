@@ -20,6 +20,8 @@ export default class Camera {
     makeAutoObservable(this)
   }
 
+  private abCt = new AbortController()
+
   eventEmitter = new EventEmitter<Events>()
 
   zoom = 1
@@ -29,28 +31,36 @@ export default class Camera {
   bindEvent() {
     const { wbEditor } = this
     const { container, graphLayer: graphGroup } = this.wbEditor
-    container.onwheel = evt => {
-      evt.preventDefault()
+    container.addEventListener(
+      'wheel',
+      evt => {
+        evt.preventDefault()
 
-      let mt = graphGroup.data.mt
+        let mt = graphGroup.data.mt
 
-      if (evt.ctrlKey) {
-        const nvOrigin = wbEditor.coordSys.client2Scene(evt)
-        let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
-        this.zoomTo(newZoom, nvOrigin)
-      } else {
-        if (evt.shiftKey) {
-          const tmt = evt.deltaY > 0 ? translate(-speed, 0) : translate(speed, 0)
-          mt = compose(tmt, mt)
+        if (evt.ctrlKey) {
+          const nvOrigin = wbEditor.coordSys.client2Scene(evt)
+          let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
+          this.zoomTo(newZoom, nvOrigin)
         } else {
-          const tmt = evt.deltaY > 0 ? translate(0, -speed) : translate(0, speed)
-          mt = compose(tmt, mt)
-        }
+          if (evt.shiftKey) {
+            const tmt = evt.deltaY > 0 ? translate(-speed, 0) : translate(speed, 0)
+            mt = compose(tmt, mt)
+          } else {
+            const tmt = evt.deltaY > 0 ? translate(0, -speed) : translate(0, speed)
+            mt = compose(tmt, mt)
+          }
 
-        graphGroup.attr('mt', mt)
-        this.triggerCameraChange()
-      }
-    }
+          graphGroup.attr('mt', mt)
+          this.triggerCameraChange()
+        }
+      },
+      { signal: this.abCt.signal }
+    )
+  }
+
+  dispose() {
+    this.abCt.abort()
   }
 
   // 放大

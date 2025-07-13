@@ -40,6 +40,8 @@ class WhiteboardEditor {
 
   dispose() {
     this.stage.dispose()
+    this.camera.dispose()
+    this.toolManager.dispose()
   }
 
   init(container: HTMLElement) {
