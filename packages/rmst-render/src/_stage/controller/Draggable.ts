@@ -44,7 +44,7 @@ export class Draggable {
     this.prevClientX = eventParameter.nativeEvent.clientX
     this.prevClientY = eventParameter.nativeEvent.clientY
 
-    draggedTarget.ondragstart({ target: draggedTarget, x: eventParameter.x, y: eventParameter.y })
+    draggedTarget.ondragstart?.({ target: draggedTarget, x: eventParameter.x, y: eventParameter.y })
 
     const onDocumentMousemove = (evt: MouseEvent) => {
       if (!draggedTarget.data.draggable) {
@@ -66,13 +66,13 @@ export class Draggable {
 
       dndAttr(draggedTarget, dx / this.stage.camera.zoom, dy / this.stage.camera.zoom)
 
-      draggedTarget.ondrag({ target: draggedTarget, x, y, dx, dy })
+      draggedTarget.ondrag?.({ target: draggedTarget, x, y, dx, dy })
     }
 
     const onDocumentMouseup = () => {
       this.dragging = false
 
-      draggedTarget.ondragend({ target: draggedTarget, x: null, y: null })
+      draggedTarget.ondragend?.({ target: draggedTarget, x: null, y: null })
 
       document.removeEventListener('mousemove', onDocumentMousemove)
       document.removeEventListener('mouseup', onDocumentMouseup)

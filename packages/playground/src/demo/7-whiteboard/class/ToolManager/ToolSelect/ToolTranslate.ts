@@ -1,7 +1,6 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-
-import { applyToPoint, compose, inverse, translate } from 'transformation-matrix'
+import { compose, translate } from 'transformation-matrix'
 import { cloneDeep } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 

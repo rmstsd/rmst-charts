@@ -27,6 +27,8 @@ export default class ToolManager {
     makeAutoObservable(this)
   }
 
+  private abCt = new AbortController()
+
   currentTool: ToolEnumKey
   currentToolClass: ITool
 
@@ -34,31 +36,78 @@ export default class ToolManager {
     const { wbEditor } = this
     const { container } = wbEditor
 
-    container.onpointerdown = downEvt => {
-      if (downEvt.button !== Pointer_Button.Left) {
-        console.warn('非左键操作')
-        return
-      }
+    let isPointerDown = false
+    let isInContainer = false
 
-      this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
-
-      startDrag(downEvt, {
-        onDragStart: () => {
-          this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
-        },
-        onDragMove: moveEvt => {
-          this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
-        },
-        onDragEnd: upEvt => {
-          this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-          this.switchTool(ToolEnum.Select)
-        },
-        onPointerUp: upEvt => {
-          this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-          this.switchTool(ToolEnum.Select)
+    document.addEventListener(
+      'pointermove',
+      moveEvt => {
+        if (!isPointerDown) {
+          this.currentToolClass?.onPointerMoveNotDragging?.(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
         }
-      })
-    }
+
+        this.currentToolClass?.onPointerMove?.({
+          moveEvt: moveEvt,
+          sceneCoord: wbEditor.coordSys.client2Scene(moveEvt),
+          isInContainer
+        })
+      },
+      { signal: this.abCt.signal }
+    )
+
+    container.addEventListener(
+      'pointerenter',
+      () => {
+        isInContainer = true
+      },
+      { signal: this.abCt.signal }
+    )
+    container.addEventListener(
+      'pointerleave',
+      () => {
+        isInContainer = false
+      },
+      { signal: this.abCt.signal }
+    )
+
+    container.addEventListener(
+      'pointerdown',
+      downEvt => {
+        isPointerDown = true
+        if (downEvt.button !== Pointer_Button.Left) {
+          console.warn('非左键操作')
+          return
+        }
+
+        this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
+
+        startDrag(downEvt, {
+          onDragStart: () => {
+            this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
+          },
+          onDragMove: moveEvt => {
+            this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
+          },
+          onDragEnd: upEvt => {
+            isPointerDown = false
+
+            this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+            this.switchTool(ToolEnum.Select)
+          },
+          onPointerUp: upEvt => {
+            isPointerDown = false
+
+            this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+            this.switchTool(ToolEnum.Select)
+          }
+        })
+      },
+      { signal: this.abCt.signal }
+    )
+  }
+
+  dispose() {
+    this.abCt.abort()
   }
 
   async switchTool(tool: ToolEnumKey) {
@@ -83,5 +132,6 @@ export default class ToolManager {
     }
 
     this.currentToolClass.onActive?.()
+    this.wbEditor.cursorManager.setCursor('crosshair')
   }
 }

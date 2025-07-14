@@ -1,19 +1,19 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-
 import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
+import { getCursorRotation } from '../../cursorManager'
 
 type StrategyOp = {
   getOrigin: (downRect) => ICoord
   getNewSize: (origin: ICoord, movePos: ICoord, downRect) => { width: number; height: number }
 }
 
-type Strategy = Record<TransformOrigin, StrategyOp>
+type ResizeStrategy = Record<TransformOrigin, StrategyOp>
 
-const strategy: Strategy = {
+const resizeStrategy: ResizeStrategy = {
   [TransformOrigin.tl]: {
     getOrigin: downRect => ({ x: 0, y: 0 }),
     getNewSize: (origin: ICoord, movePos: ICoord) => ({ width: movePos.x - origin.x, height: movePos.y - origin.y })
@@ -58,7 +58,7 @@ const strategy: Strategy = {
 }
 
 export default class ToolScale implements ITool {
-  constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin) {
+  constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {
     console.log(transformOrigin)
 
     if (!transformOrigin) {
@@ -81,7 +81,7 @@ export default class ToolScale implements ITool {
 
     this.downRect = downRect
 
-    this.strategy = strategy[this.transformOrigin]
+    this.strategy = resizeStrategy[this.transformOrigin]
     this.origin = this.strategy.getOrigin(downRect)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
@@ -108,10 +108,12 @@ export default class ToolScale implements ITool {
 
     const newOrigin = this.strategy.getOrigin(newSize)
 
+    let newMt
+
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = this.downSnap[item.id].graphShapeRect
 
-      const newMt = compose(dSnap.mt, scaleMt)
+      newMt = compose(dSnap.mt, scaleMt)
 
       const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
       const newGlobalPos = applyToPoint(newMt, newOrigin)
@@ -120,12 +122,13 @@ export default class ToolScale implements ITool {
 
       const fixPos = translate(-diffPos.x, -diffPos.y)
 
-      item.graphShape.attr({
-        width: newSize.width,
-        height: newSize.height,
-        mt: compose(fixPos, newMt)
-      })
+      item.graphShape.attr({ width: newSize.width, height: newSize.height, mt: compose(fixPos, newMt) })
     })
+
+    {
+      const rotation = getCursorRotation('resize', this.cursorType, newMt)
+      this.wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
+    }
 
     this.wbEditor.triggerRender()
   }

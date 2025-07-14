@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useWbEditor } from './context'
 import { IGraph } from './type'
 import { compose, translate } from 'transformation-matrix'
+import { calcRotateRad } from './constant'
+import { rad2deg } from 'rmst-render'
 
 export default function InfoRightPanel() {
   const { wbEditor } = useWbEditor()
@@ -18,14 +20,27 @@ export default function InfoRightPanel() {
     return off
   }, [wbEditor])
 
+  const [count, setCount] = useState(0)
+
   return (
     <div className="flex-shrink-0 p-2 " style={{ width: 200 }}>
+      <WbInputNumber
+        value={count}
+        onChange={val => {
+          console.log('val', val)
+          setCount(val)
+        }}
+      />
+
       {selectedItems.map(item => {
         const { id, graphShape } = item
         const data = graphShape.data
 
         return (
           <div key={item.id}>
+            <button onClick={() => {}}>检测</button>
+
+            <hr />
             <div className="flex gap-2 items-center">
               <span>x</span>
               <WbInputNumber
@@ -67,6 +82,10 @@ export default function InfoRightPanel() {
                 }}
               />
             </div>
+            <div className="flex gap-2 items-center">
+              <span>rotate</span>
+              <WbInputNumber value={rad2deg(calcRotateRad(data.mt))} onChange={val => {}} />
+            </div>
           </div>
         )
       })}
@@ -95,6 +114,7 @@ const WbInputNumber = props => {
         }
 
         onChange?.(num)
+        inputRet.current.value = String(num)
       }}
     />
   )

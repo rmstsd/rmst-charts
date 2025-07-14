@@ -5,7 +5,7 @@ import { IGraph } from '../../../type'
 import { uuid } from '@/utils'
 import { ToolEnum } from '../constant'
 import { showOpenFilePicker } from 'show-open-file-picker'
-import { translate } from 'transformation-matrix'
+import { applyToPoint, translate } from 'transformation-matrix'
 import OpenColor from 'open-color'
 
 export default class ToolDrawImage implements ITool {
@@ -15,6 +15,14 @@ export default class ToolDrawImage implements ITool {
   graphItem = {} as IGraph
 
   url = ''
+
+  private previewedImage = new RmstImage({
+    height: 60,
+    src: '',
+    mt: translate(0, 0),
+    opacity: 0,
+    pointerEvents: 'none'
+  })
 
   async enableActive() {
     const [file] = await showOpenFilePicker({
@@ -29,12 +37,14 @@ export default class ToolDrawImage implements ITool {
     }
 
     this.url = URL.createObjectURL(await file.getFile())
+    this.previewedImage.attr({ src: this.url })
 
     return true
   }
 
   async onActive() {
     this.wbEditor.selectManager.clearSelect()
+    this.wbEditor.stage.append(this.previewedImage)
 
     const { coordSys } = this.wbEditor
     const centerScene = coordSys.world2Scene(coordSys.centerWorld)
@@ -58,7 +68,15 @@ export default class ToolDrawImage implements ITool {
     this.graphItem = { id, graphShape: graphShape }
   }
 
-  onPointerDown(downEvt: PointerEvent) {}
+  onDeActive() {
+    this.previewedImage.remove()
+  }
+
+  onPointerMove({ sceneCoord, isInContainer }) {
+    const coord = applyToPoint(this.wbEditor.graphLayer.data.mt, sceneCoord as ICoord)
+
+    this.previewedImage.attr({ x: coord.x + 4, y: coord.y + 4, opacity: isInContainer ? 1 : 0 })
+  }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.downPos = sceneCoord
@@ -71,12 +89,10 @@ export default class ToolDrawImage implements ITool {
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     const rect = getRectByTwoPoint(this.downPos, sceneCoord)
 
-    this.graphItem.graphShape.attr({
-      width: rect.width,
-      height: rect.height,
-      mt: translate(rect.x, rect.y)
-    })
+    this.graphItem.graphShape.attr({ width: rect.width, height: rect.height, mt: translate(rect.x, rect.y) })
   }
 
-  onDragEnd(upEvt: PointerEvent) {}
+  onDragEnd(upEvt: PointerEvent) {
+    this.previewedImage.remove()
+  }
 }

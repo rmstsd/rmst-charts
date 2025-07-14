@@ -12,11 +12,13 @@ interface IOption {
 
   enableCamera?: boolean
   enableRuler?: boolean
+  enableCursor?: boolean
 }
 
 const defaultOption: IOption = {
   enableCamera: true,
-  enableRuler: false
+  enableRuler: false,
+  enableCursor: true
 }
 
 export class Stage extends Group {
@@ -25,6 +27,8 @@ export class Stage extends Group {
 
     const mergedOptions = { ...defaultOption, ...option }
     const { container, dpr, enableCamera, enableRuler } = mergedOptions
+    this.options = mergedOptions
+
     this.enableRuler = enableRuler
 
     this.dpr = dpr ?? window.devicePixelRatio
@@ -44,6 +48,8 @@ export class Stage extends Group {
 
     this.removeStageListener = this.addStageListener()
   }
+
+  options: IOption
 
   type: IShapeType = 'Stage'
 

@@ -2,104 +2,82 @@ import * as React from 'react'
 import { getStroke, getStrokePoints } from 'perfect-freehand'
 import fitCurve from 'fit-curve'
 import dogPng from '@/assets/zy.jpg'
+import jntmPng from '@/assets/jntm.png'
+import { Box, deg2rad, rad2deg, System } from 'detect-collisions'
 
 import oc from 'open-color'
+import { rotate, rotateDEG, toCSS, translate } from 'transformation-matrix'
+import { startDrag } from '@/utils/util'
+import { observer, useLocalObservable } from 'mobx-react-lite'
+import { cloneDeep } from 'es-toolkit'
+import clsx from 'clsx'
 
-export default function Example() {
-  const [points, setPoints] = React.useState<number[][]>([])
-
-  function handlePointerDown(e: React.PointerEvent) {
-    setPoints([[e.nativeEvent.offsetX, e.nativeEvent.offsetY, e.pressure]])
+const Example = observer(function Example() {
+  const rect1 = {
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 100,
+    rotate: 45
   }
 
-  function handlePointerMove(e: React.PointerEvent) {
-    if (e.buttons === 1) {
-      setPoints([...points, [e.nativeEvent.offsetX, e.nativeEvent.offsetY, e.pressure]])
+  const state = useLocalObservable(() => {
+    const box_sel = {
+      x: 90,
+      y: 90,
+      width: 50,
+      height: 50
     }
-  }
-
-  const stroke = getStroke(points, {
-    size: 16,
-    thinning: 0.5,
-    smoothing: 0.5,
-    streamline: 0.5
+    return { box_sel, cursor: 'move', bool: true }
   })
+  const { box_sel } = state
 
-  let ss = getStrokePoints(stroke)
+  const system = new System()
 
-  // console.log(ss)
-
-  // const d = getSvgPathFromStroke(stroke)
-  // console.log(d)
-
-  var error = 50 // The smaller the number - the much closer spline should be
-
-  var bezierCurves = fitCurve(points, error)
-
-  let dd = ''
-  bezierCurves.forEach(item => {
-    const [f1, c1, c2, s2] = item
-
-    dd += `M ${f1[0]},${f1[1]} C ${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${s2[0]},${s2[1]}`
+  const r_1 = system.createBox({ x: rect1.x, y: rect1.y }, rect1.width, rect1.height, {
+    angle: deg2rad(rect1.rotate)
   })
+  const sel = system.createBox({ x: box_sel.x, y: box_sel.y }, box_sel.width, box_sel.height)
 
-  React.useEffect(() => {
-    const canvas = document.querySelector('canvas')
-    const ctx = canvas.getContext('2d')
-
-    ctx.clearRect(0, 0, 600, 600)
-
-    ctx.save()
-    ctx.beginPath()
-
-    const rect2d = new Path2D()
-
-    rect2d.rect(100, 100, 100, 100)
-
-    ctx.clip(rect2d)
-
-    ctx.beginPath()
-    ctx.arc(100, 100, 50, 0, Math.PI * 2, true)
-    ctx.fillStyle = 'red'
-    ctx.fill()
-
-    ctx.restore()
-
-    ctx.fillStyle = 'pink'
-    ctx.strokeStyle = 'orange'
-    ctx.lineWidth = 4
-    ctx.stroke(rect2d)
-  }, [])
-
-  const onLoad = () => {}
+  const circleInPolygon = system.checkCollision(sel, r_1)
+  console.log(circleInPolygon)
 
   return (
     <div>
-      <canvas className="border" width={600} height={600}></canvas>
+      <img src={jntmPng} style={{ height: 100 }} />
     </div>
   )
 
   return (
-    <svg
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      className="border"
-      width={700}
-      height={600}
-    >
-      {/* {stroke.map((item, index) => (
-        <circle key={index} cx={item[0]} cy={item[1]} r={2} />
-      ))} */}
+    <svg className={clsx('border', state.bool ? 'move-cursor' : 'pointer-cursor')} width={700} height={600}>
+      <g transform={toCSS(translate(10, 10))}>
+        <rect {...rect1} stroke="red" fill="none" transform={toCSS(rotateDEG(45))} />
 
-      {/* {points.map((item, index) => (
-        <circle key={index} cx={item[0]} cy={item[1]} r={2} />
-      ))} */}
+        <rect
+          {...box_sel}
+          stroke="blue"
+          fill="rgba(0, 0, 0, 0.1)"
+          onPointerDown={downEvt => {
+            const downRect = cloneDeep(box_sel)
 
-      {/* <path d={dd} fill="none" stroke="red" strokeWidth={2} /> */}
-      {/* {points && <path fill="pink" d={getSvgPathFromStroke(stroke)} />} */}
+            startDrag(downEvt, {
+              onDragMove: moveEvt => {
+                const dx = moveEvt.clientX - downEvt.clientX
+                const dy = moveEvt.clientY - downEvt.clientY
+                state.box_sel.x = downRect.x + dx
+                state.box_sel.y = downRect.y + dy
+
+                state.bool = false
+              }
+            })
+          }}
+        />
+      </g>
     </svg>
   )
-}
+})
+
+export default Example
 
 export function getSvgPathFromStroke(stroke) {
   if (!stroke.length) return ''

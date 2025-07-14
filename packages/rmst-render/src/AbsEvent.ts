@@ -19,18 +19,18 @@ export interface EventOpt {
 }
 
 abstract class AbsEvent {
-  onclick: Handler = Noop
+  onclick: Handler
 
-  onmouseenter: Handler = Noop
-  onmousemove: Handler = Noop
-  onmouseleave: Handler = Noop
+  onmouseenter: Handler
+  onmousemove: Handler
+  onmouseleave: Handler
 
-  onmousedown: Handler = Noop
-  onmouseup: Handler = Noop
+  onmousedown: Handler
+  onmouseup: Handler
 
-  ondragstart: Handler = Noop
-  ondrag: Handler = Noop
-  ondragend: Handler = Noop
+  ondragstart: Handler
+  ondrag: Handler
+  ondragend: Handler
 
   parent: Stage | Group | Box = null
 

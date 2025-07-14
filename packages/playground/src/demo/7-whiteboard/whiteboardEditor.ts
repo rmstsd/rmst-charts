@@ -1,4 +1,3 @@
-import { makeAutoObservable } from 'mobx'
 import { Group, Stage } from 'rmst-render'
 import { ToolEnum } from './class/ToolManager/constant'
 
@@ -9,15 +8,15 @@ import Camera from './class/camera'
 import { Graph_Id } from './constant'
 import EventEmitter from 'rmst-render/event_emitter'
 import { CoordSys } from './class/coordSys'
+import CursorManager from './class/cursorManager'
+import ControlHandleManager from './class/controlHandleManager'
 
 export interface Events {
   render: () => void // 只要白板内的元素的状态有变化，就触发 (不包含相机的平移缩放)
 }
 
 class WhiteboardEditor {
-  constructor() {
-    makeAutoObservable(this)
-  }
+  constructor() {}
 
   container: HTMLElement
 
@@ -32,19 +31,23 @@ class WhiteboardEditor {
 
   graphs: IGraph[] = []
 
-  selectManager = new selectedManager(this)
-  toolManager = new ToolManager(this)
   camera = new Camera(this)
   coordSys = new CoordSys(this)
+  toolManager = new ToolManager(this)
+  selectManager = new selectedManager(this)
+  controlHandleManager = new ControlHandleManager(this)
+  cursorManager = new CursorManager(this)
 
   dispose() {
     this.stage.dispose()
+    this.camera.dispose()
+    this.toolManager.dispose()
   }
 
   init(container: HTMLElement) {
     this.container = container
 
-    this.stage = new Stage({ container, enableCamera: false })
+    this.stage = new Stage({ container, enableCamera: false, enableCursor: false })
 
     this.stage.append(this.graphLayer)
 

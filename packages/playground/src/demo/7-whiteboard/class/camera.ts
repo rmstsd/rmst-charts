@@ -1,8 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
-import { compose, inverse, scale, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
-import { ICoord } from 'rmst-render'
+import { ICoord, mergeBox } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'
 
 const zoomSpeed = 1.2
@@ -20,35 +20,47 @@ export default class Camera {
     makeAutoObservable(this)
   }
 
+  private abCt = new AbortController()
+
   eventEmitter = new EventEmitter<Events>()
 
   zoom = 1
+  tx = 0
+  ty = 0
 
   bindEvent() {
     const { wbEditor } = this
     const { container, graphLayer: graphGroup } = this.wbEditor
-    container.onwheel = evt => {
-      evt.preventDefault()
+    container.addEventListener(
+      'wheel',
+      evt => {
+        evt.preventDefault()
 
-      let mt = graphGroup.data.mt
+        let mt = graphGroup.data.mt
 
-      if (evt.ctrlKey) {
-        const nvOrigin = wbEditor.coordSys.client2Scene(evt)
-        let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
-        this.zoomTo(newZoom, nvOrigin)
-      } else {
-        if (evt.shiftKey) {
-          const tmt = evt.deltaY > 0 ? translate(-speed, 0) : translate(speed, 0)
-          mt = compose(tmt, mt)
+        if (evt.ctrlKey) {
+          const nvOrigin = wbEditor.coordSys.client2Scene(evt)
+          let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
+          this.zoomTo(newZoom, nvOrigin)
         } else {
-          const tmt = evt.deltaY > 0 ? translate(0, -speed) : translate(0, speed)
-          mt = compose(tmt, mt)
-        }
+          if (evt.shiftKey) {
+            const tmt = evt.deltaY > 0 ? translate(-speed, 0) : translate(speed, 0)
+            mt = compose(tmt, mt)
+          } else {
+            const tmt = evt.deltaY > 0 ? translate(0, -speed) : translate(0, speed)
+            mt = compose(tmt, mt)
+          }
 
-        graphGroup.attr('mt', mt)
-        this.triggerCameraChange()
-      }
-    }
+          graphGroup.attr('mt', mt)
+          this.triggerCameraChange()
+        }
+      },
+      { signal: this.abCt.signal }
+    )
+  }
+
+  dispose() {
+    this.abCt.abort()
   }
 
   // 放大
@@ -58,16 +70,20 @@ export default class Camera {
 
   // 缩小
   zoomOut() {
-    this.zoomTo(this.zoom / zoomSpeed, this.wbEditor.coordSys.centerScene)
+    this.zoomTo(this.zoom / zoomSpeed)
   }
 
   // 缩小
   zoomToValue(newZoom: number) {
-    this.zoomTo(newZoom, this.wbEditor.coordSys.centerScene)
+    this.zoomTo(newZoom)
   }
 
   // origin: 场景坐标系
-  zoomTo(newZoom: number, origin: ICoord) {
+  zoomTo(newZoom: number, origin?: ICoord) {
+    if (!origin) {
+      origin = this.wbEditor.coordSys.centerScene
+    }
+
     const { wbEditor } = this
 
     let mt = cloneDeep(wbEditor.graphLayer.data.mt)
@@ -86,7 +102,48 @@ export default class Camera {
   }
 
   // 缩放到适合 (适应画布)
-  zoomToFit() {}
+  zoomToFit() {
+    const { wbEditor } = this
+
+    const selRects = wbEditor.graphLayer.data.children.map(item => {
+      const data = item.data
+      const tl = applyToPoint(data.mt, { x: 0, y: 0 })
+      const tr = applyToPoint(data.mt, { x: data.width, y: 0 })
+      const br = applyToPoint(data.mt, { x: data.width, y: data.height })
+      const bl = applyToPoint(data.mt, { x: 0, y: data.height })
+      return { tl, tr, br, bl }
+    })
+
+    const { minX, minY, maxX, maxY } = mergeBox(selRects) // 场景坐标系
+
+    const contentRect = { x: minX, y: minY, width: maxX - minX, height: maxY - minY }
+
+    const viewportSize = wbEditor.coordSys.viewportSize
+    const padding = 80
+    const viewportRect = {
+      x: padding,
+      y: padding,
+      width: viewportSize.width - padding * 2,
+      height: viewportSize.height - padding * 2
+    }
+    const zoomX = viewportRect.width / contentRect.width
+    const zoomY = viewportRect.height / contentRect.height
+    const zoom = Math.min(zoomX, zoomY)
+    this.zoom = zoom
+
+    const scaleMt = compose(
+      translate(-contentRect.x + viewportRect.x, -contentRect.y + viewportRect.y),
+      scale(zoom, zoom, contentRect.x, contentRect.y)
+    )
+
+    const tx = (viewportRect.width / zoom - contentRect.width) / 2
+    const ty = (viewportRect.height / zoom - contentRect.height) / 2
+
+    const newMt = compose(scaleMt, translate(tx, ty))
+    wbEditor.graphLayer.attr({ mt: newMt })
+
+    this.triggerCameraChange()
+  }
 
   triggerCameraChange() {
     this.eventEmitter.emit('cameraChange')

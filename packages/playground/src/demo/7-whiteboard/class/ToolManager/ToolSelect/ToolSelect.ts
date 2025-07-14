@@ -3,12 +3,13 @@ import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { ToolEnum } from '../constant'
 import { Graph_Id } from '@/demo/7-whiteboard/constant'
-
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
+import { getCursorRotation } from '../../cursorManager'
+import { findHover_v2 } from 'rmst-render/_stage/findHover'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -16,49 +17,71 @@ export default class ToolSelect implements ITool {
   currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选
   currentStrategyDispose
 
+  isPointerDown = false
+
   onActive() {
     const { wbEditor } = this
-    const stage_eventDispatcher = wbEditor.stage.eventDispatcher
     wbEditor.selectManager.enableHover()
-
-    stage_eventDispatcher.onPointerEnter = evt => {
-      const shape = evt.target
-      if (!shape) {
-        return
-      }
-
-      if (isWbGraphShape(shape)) {
-        wbEditor.selectManager.onHover(shape.data.id, true)
-      }
-    }
-    stage_eventDispatcher.onPointerLeave = evt => {
-      const shape = evt.target
-      if (!shape) {
-        return
-      }
-
-      if (isWbGraphShape(shape)) {
-        wbEditor.selectManager.onHover(shape.data.id, false)
-      }
-    }
   }
 
   onDeActive() {
     const { wbEditor } = this
     wbEditor.selectManager.disableHover()
-
-    const stage_eventDispatcher = wbEditor.stage.eventDispatcher
-    stage_eventDispatcher.onPointerEnter = null
-    stage_eventDispatcher.onPointerLeave = null
   }
 
+  hoveredId: string
+
+  onPointerMoveNotDragging(moveEvt: PointerEvent) {
+    const { wbEditor } = this
+    const hovered = findHover_v2(wbEditor.stage, moveEvt.offsetX, moveEvt.offsetY)
+
+    if (!hovered) {
+      wbEditor.selectManager.onHover(null, false)
+      wbEditor.cursorManager.setCursor('default')
+      this.hoveredId = null
+      return
+    }
+    // if (this.hoveredId === hovered.data.id) {
+    //   return
+    // }
+    this.hoveredId = hovered.data.id
+
+    if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
+      wbEditor.cursorManager.setCursor('default')
+      return
+    }
+
+    if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
+      const { downRect } = wbEditor.selectManager.transformDownRect
+      const cursorType = hovered.data.extraData?.cursorType
+
+      const rotation = getCursorRotation('rotation', cursorType, downRect.mt)
+      wbEditor.cursorManager.setCursor({ type: 'rotation', rotation })
+      return
+    }
+    if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
+      const { downRect } = wbEditor.selectManager.transformDownRect
+
+      const cursorType = hovered.data.extraData?.cursorType
+
+      const rotation = getCursorRotation('resize', cursorType, downRect.mt)
+      wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
+      return
+    }
+
+    if (isWbGraphShape(hovered)) {
+      wbEditor.selectManager.onHover(hovered.data.id, true)
+    }
+  }
   onPointerDown(downEvt: PointerEvent) {
+    this.isPointerDown = true
+
     const { wbEditor } = this
 
     const stage_eventDispatcher = wbEditor.stage.eventDispatcher
-    const hoveredShape = stage_eventDispatcher.hovered
+    const hovered = stage_eventDispatcher.hovered
 
-    if (!hoveredShape) {
+    if (!hovered) {
       console.log('按在 空白处')
 
       wbEditor.selectManager.clearSelect()
@@ -66,25 +89,26 @@ export default class ToolSelect implements ITool {
 
       wbEditor.triggerRender()
     } else {
-      if (isWbGraphShape(hoveredShape)) {
-        wbEditor.selectManager.onHover(hoveredShape.data.id, false)
-        wbEditor.selectManager.select(hoveredShape.data.id)
+      if (isWbGraphShape(hovered)) {
+        wbEditor.selectManager.onHover(hovered.data.id, false)
+        wbEditor.selectManager.select(hovered.data.id)
 
         this.currentStrategy = new ToolTranslate(wbEditor)
 
         wbEditor.triggerRender()
-      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_translate) {
+      } else if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
         console.log('平移操作')
 
         this.currentStrategy = new ToolTranslate(wbEditor)
-      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_rotate) {
+      } else if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
         console.log('旋转操作')
 
-        this.currentStrategy = new ToolRotate(wbEditor)
-      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_scale) {
+        this.currentStrategy = new ToolRotate(wbEditor, hovered.data.extraData?.cursorType)
+      } else if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
         console.log('缩放操作')
 
-        this.currentStrategy = new ToolScale(wbEditor, hoveredShape.data.extraData?.transformOrigin)
+        const { transformOrigin, cursorType } = hovered.data.extraData
+        this.currentStrategy = new ToolScale(wbEditor, transformOrigin, cursorType)
       }
     }
 
@@ -93,6 +117,7 @@ export default class ToolSelect implements ITool {
 
   onPointerUp() {
     console.log('onPointerUp')
+    this.isPointerDown = false
     this.disposePrev()
 
     this.currentStrategy = null
@@ -109,6 +134,8 @@ export default class ToolSelect implements ITool {
   }
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
+    this.isPointerDown = false
+
     this.currentStrategy.onDragEnd(upEvt, sceneCoord)
 
     this.wbEditor.selectManager.enableHover()

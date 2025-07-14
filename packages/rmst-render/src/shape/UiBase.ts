@@ -45,7 +45,7 @@ export interface UiBaseData extends EventOpt {
 
   mt?: Matrix
 
-  children?: any[]
+  children?: IShape[]
 }
 
 export const getDefaultUiBaseDataData = (): UiBaseData => ({
@@ -73,7 +73,7 @@ export const combineDefaultData = (shapeData, defaultShapeData) => {
   return ans
 }
 
-export abstract class UiBase<T = {}> extends AbsEvent {
+export abstract class UiBase<T = UiBaseData> extends AbsEvent {
   constructor(shapeData, defaultShapeData?) {
     super()
 
@@ -157,6 +157,9 @@ export abstract class UiBase<T = {}> extends AbsEvent {
   }
 
   remove() {
+    if (!this.parent) {
+      return
+    }
     const parentChildren = this.parent.data.children as IShape[]
     const index = parentChildren.indexOf(this)
 
