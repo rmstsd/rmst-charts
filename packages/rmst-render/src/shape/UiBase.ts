@@ -157,6 +157,9 @@ export abstract class UiBase<T = UiBaseData> extends AbsEvent {
   }
 
   remove() {
+    if (!this.parent) {
+      return
+    }
     const parentChildren = this.parent.data.children as IShape[]
     const index = parentChildren.indexOf(this)
 

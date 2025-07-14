@@ -2,6 +2,7 @@ import * as React from 'react'
 import { getStroke, getStrokePoints } from 'perfect-freehand'
 import fitCurve from 'fit-curve'
 import dogPng from '@/assets/zy.jpg'
+import jntmPng from '@/assets/jntm.png'
 import { Box, deg2rad, rad2deg, System } from 'detect-collisions'
 
 import oc from 'open-color'
@@ -40,6 +41,12 @@ const Example = observer(function Example() {
 
   const circleInPolygon = system.checkCollision(sel, r_1)
   console.log(circleInPolygon)
+
+  return (
+    <div>
+      <img src={jntmPng} style={{ height: 100 }} />
+    </div>
+  )
 
   return (
     <svg className={clsx('border', state.bool ? 'move-cursor' : 'pointer-cursor')} width={700} height={600}>

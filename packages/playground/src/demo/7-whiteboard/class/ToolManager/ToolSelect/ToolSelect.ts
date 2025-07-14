@@ -41,9 +41,9 @@ export default class ToolSelect implements ITool {
       this.hoveredId = null
       return
     }
-    if (this.hoveredId === hovered.data.id) {
-      return
-    }
+    // if (this.hoveredId === hovered.data.id) {
+    //   return
+    // }
     this.hoveredId = hovered.data.id
 
     if (hovered.data.id === Graph_Id.graph_ctrl_translate) {

@@ -79,7 +79,15 @@ export default class CursorManager {
   }
 }
 
+const cached = new Map<string, string>()
+
 function getCursor_v2(cursor: CursorResize | CursorRotation) {
+  const key = `${cursor.type}-${cursor.rotation}`
+
+  if (cached.has(key)) {
+    return cached.get(key)
+  }
+
   let svgString = ''
 
   switch (cursor.type) {
@@ -94,6 +102,8 @@ function getCursor_v2(cursor: CursorResize | CursorRotation) {
   }
 
   const cursorString = getCursorString(svgString)
+
+  cached.set(key, cursorString)
 
   return cursorString
 }

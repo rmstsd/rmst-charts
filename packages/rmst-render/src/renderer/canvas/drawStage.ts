@@ -6,8 +6,9 @@ import { clipRect, createLinePath2D, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
 import { fill, fillOrStroke, setCtxStyleProp, stroke } from './fillOrStroke'
-import { setCirclePath2D, setEllipsePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
+import { createRectPath2D, setCirclePath2D, setEllipsePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 import { sortChildren } from './util'
+import { isNil } from 'es-toolkit'
 
 export function drawStage(stage: Stage) {
   const { ctx, camera, dpr, container, canvasElement } = stage
@@ -131,21 +132,27 @@ export function drawStage(stage: Stage) {
         }
         case 'Image': {
           const rrImageElementItem = elementItem as RmstImage
-          const { width, height, src, objectFit } = rrImageElementItem.data
+          let { width, height, cornerRadius, src, objectFit } = rrImageElementItem.data
 
           if (rrImageElementItem.nativeImage) {
-            setRectPath2D(elementItem)
-            fill(ctx, elementItem)
+            const image = rrImageElementItem.nativeImage
+            const ratio = image.naturalWidth / image.naturalHeight
 
-            clipRect(ctx, elementItem.path2D, () => {
-              const image = rrImageElementItem.nativeImage
+            if (width && isNil(height)) {
+              height = width / ratio
+            } else if (height && isNil(width)) {
+              width = height * ratio
+            }
 
+            rrImageElementItem.path2D = createRectPath2D({ x: 0, y: 0, width, height, cornerRadius })
+            fill(ctx, rrImageElementItem)
+
+            clipRect(ctx, rrImageElementItem.path2D, () => {
               const rect = fitAndPosition(
                 { width, height },
                 { width: image.naturalWidth, height: image.naturalHeight },
                 objectFit
               )
-
               ctx.drawImage(
                 image,
                 0,
@@ -158,7 +165,8 @@ export function drawStage(stage: Stage) {
                 rect.height
               )
             })
-            stroke(ctx, elementItem)
+
+            stroke(ctx, rrImageElementItem)
           } else {
             const image = new Image()
             image.src = src

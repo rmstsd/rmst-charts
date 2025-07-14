@@ -14,7 +14,7 @@ import { CursorType } from './cursorManager'
 let debugHandle = true
 
 const ctrlSize = 12
-const rotateSize = ctrlSize * 2
+const rotateSize = ctrlSize * 1.5
 
 interface Events {
   selectedChange: (selectedGraphs: IGraph[]) => void // 选中变化事件, 以及选中的元素的数据变化

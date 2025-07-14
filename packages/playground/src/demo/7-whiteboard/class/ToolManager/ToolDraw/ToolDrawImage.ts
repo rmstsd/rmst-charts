@@ -17,8 +17,7 @@ export default class ToolDrawImage implements ITool {
   url = ''
 
   private previewedImage = new RmstImage({
-    width: 100,
-    height: 100,
+    height: 60,
     src: '',
     mt: translate(0, 0),
     opacity: 0,
