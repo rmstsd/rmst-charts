@@ -11,9 +11,9 @@ import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
 
-let debugHandle = true
+let debugHandle = false
 
-const ctrlSize = 12
+const ctrlSize = 10
 const rotateSize = ctrlSize * 1.5
 
 interface Events {
@@ -172,7 +172,8 @@ export default class selectedManager {
       y: tlCoord.y,
       content: '1',
       pointerEvents: 'none',
-      mt: scaleHandleMt
+      mt: scaleHandleMt,
+      opacity: debugHandle ? 0.5 : 0
     })
     const trRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -190,7 +191,8 @@ export default class selectedManager {
       y: trCoord.y,
       content: '2',
       pointerEvents: 'none',
-      mt: scaleHandleMt
+      mt: scaleHandleMt,
+      opacity: debugHandle ? 0.5 : 0
     })
     const brRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -208,7 +210,8 @@ export default class selectedManager {
       y: brCoord.y,
       content: '3',
       pointerEvents: 'none',
-      mt: scaleHandleMt
+      mt: scaleHandleMt,
+      opacity: debugHandle ? 0.5 : 0
     })
     const blRect = new Rect({
       id: Graph_Id.graph_ctrl_scale,
@@ -226,7 +229,8 @@ export default class selectedManager {
       y: blCoord.y,
       content: '4',
       pointerEvents: 'none',
-      mt: scaleHandleMt
+      mt: scaleHandleMt,
+      opacity: debugHandle ? 0.5 : 0
     })
 
     const clonedOutlines = this.selectedGraphs.map(item => this.getOutlineGraphInWorld(item, { lineWidth: 1 }))
