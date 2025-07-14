@@ -132,5 +132,6 @@ export default class ToolManager {
     }
 
     this.currentToolClass.onActive?.()
+    this.wbEditor.cursorManager.setCursor('crosshair')
   }
 }

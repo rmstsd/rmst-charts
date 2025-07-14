@@ -33,14 +33,10 @@ export function isFlipped(matrix: Matrix) {
   return determinant < 0
 }
 
-// 角度
+//  0 到 360 度之间
 export function normalizeAngle(degrees) {
-  // 先将角度转换到 0 到 360 度之间
   degrees = degrees % 360
   if (degrees < 0) degrees += 360
-
-  // 再将角度转换到 -180 到 180 度之间
-  if (degrees > 180) degrees -= 360
 
   return degrees
 }

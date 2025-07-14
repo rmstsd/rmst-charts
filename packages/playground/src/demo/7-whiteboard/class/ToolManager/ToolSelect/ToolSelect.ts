@@ -1,14 +1,14 @@
-import { ICoord, IShape, rad2deg } from 'rmst-render'
+import { ICoord, IShape } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { ToolEnum } from '../constant'
-import { calcRotateRad, Graph_Id, isFlipped } from '@/demo/7-whiteboard/constant'
+import { Graph_Id } from '@/demo/7-whiteboard/constant'
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
-import { CursorType } from '../../cursorManager'
+import { getCursorRotation } from '../../cursorManager'
 import { findHover_v2 } from 'rmst-render/_stage/findHover'
 
 export default class ToolSelect implements ITool {
@@ -53,36 +53,19 @@ export default class ToolSelect implements ITool {
 
     if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
       const { downRect } = wbEditor.selectManager.transformDownRect
-
       const cursorType = hovered.data.extraData?.cursorType
-      const isFlip = isFlipped(downRect.mt)
-      const data = {
-        [CursorType.rotate_tl]: isFlip ? -90 : 0,
-        [CursorType.rotate_tr]: isFlip ? 180 : 90,
-        [CursorType.rotate_br]: isFlip ? 90 : 180,
-        [CursorType.rotate_bl]: isFlip ? 0 : -90
-      }
-      const shapeROtation = rad2deg(calcRotateRad(downRect.mt))
-      const ansRotation = data[cursorType] + shapeROtation
 
-      wbEditor.cursorManager.setCursor({ type: 'rotation', rotation: ansRotation })
+      const rotation = getCursorRotation('rotation', cursorType, downRect.mt)
+      wbEditor.cursorManager.setCursor({ type: 'rotation', rotation })
       return
     }
     if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
       const { downRect } = wbEditor.selectManager.transformDownRect
 
       const cursorType = hovered.data.extraData?.cursorType
-      const isFlip = isFlipped(downRect.mt)
-      const data = {
-        [CursorType.scale_top]: isFlip ? 0 : 0,
-        [CursorType.scale_right]: isFlip ? 90 : 90,
-        [CursorType.scale_tr]: isFlip ? -45 : 45,
-        [CursorType.scale_br]: isFlip ? 45 : -45
-      }
-      const shapeRotation = rad2deg(calcRotateRad(downRect.mt))
-      const ansRotation = data[cursorType] + shapeRotation
 
-      wbEditor.cursorManager.setCursor({ type: 'resize', rotation: ansRotation })
+      const rotation = getCursorRotation('resize', cursorType, downRect.mt)
+      wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
       return
     }
 
@@ -96,9 +79,9 @@ export default class ToolSelect implements ITool {
     const { wbEditor } = this
 
     const stage_eventDispatcher = wbEditor.stage.eventDispatcher
-    const hoveredShape = stage_eventDispatcher.hovered
+    const hovered = stage_eventDispatcher.hovered
 
-    if (!hoveredShape) {
+    if (!hovered) {
       console.log('按在 空白处')
 
       wbEditor.selectManager.clearSelect()
@@ -106,25 +89,26 @@ export default class ToolSelect implements ITool {
 
       wbEditor.triggerRender()
     } else {
-      if (isWbGraphShape(hoveredShape)) {
-        wbEditor.selectManager.onHover(hoveredShape.data.id, false)
-        wbEditor.selectManager.select(hoveredShape.data.id)
+      if (isWbGraphShape(hovered)) {
+        wbEditor.selectManager.onHover(hovered.data.id, false)
+        wbEditor.selectManager.select(hovered.data.id)
 
         this.currentStrategy = new ToolTranslate(wbEditor)
 
         wbEditor.triggerRender()
-      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_translate) {
+      } else if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
         console.log('平移操作')
 
         this.currentStrategy = new ToolTranslate(wbEditor)
-      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_rotate) {
+      } else if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
         console.log('旋转操作')
 
-        this.currentStrategy = new ToolRotate(wbEditor, hoveredShape.data.extraData?.cursorType)
-      } else if (hoveredShape.data.id === Graph_Id.graph_ctrl_scale) {
+        this.currentStrategy = new ToolRotate(wbEditor, hovered.data.extraData?.cursorType)
+      } else if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
         console.log('缩放操作')
 
-        this.currentStrategy = new ToolScale(wbEditor, hoveredShape.data.extraData?.transformOrigin)
+        const { transformOrigin, cursorType } = hovered.data.extraData
+        this.currentStrategy = new ToolScale(wbEditor, transformOrigin, cursorType)
       }
     }
 
