@@ -17,7 +17,7 @@ export default class ToolDrawImage implements ITool {
   url = ''
 
   private previewedImage = new RmstImage({
-    height: 60,
+    height: 80,
     src: '',
     mt: translate(0, 0),
     opacity: 0,
@@ -54,9 +54,9 @@ export default class ToolDrawImage implements ITool {
       id,
       width: 100,
       height: 100,
-      strokeStyle: OpenColor.gray[5],
-      lineWidth: 1,
-      cornerRadius: 4,
+      // strokeStyle: OpenColor.gray[5],
+      // lineWidth: 1,
+      cornerRadius: 8,
       src: this.url,
       objectFit: 'cover',
       mt: translate(centerScene.x, centerScene.y),
@@ -82,14 +82,18 @@ export default class ToolDrawImage implements ITool {
     this.downPos = sceneCoord
 
     this.wbEditor.graphs.push(this.graphItem)
-
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
+
+    this.wbEditor.selectManager.clearSelect()
+    this.wbEditor.selectManager.select(this.graphItem.id)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     const rect = getRectByTwoPoint(this.downPos, sceneCoord)
 
     this.graphItem.graphShape.attr({ width: rect.width, height: rect.height, mt: translate(rect.x, rect.y) })
+
+    this.wbEditor.triggerRender()
   }
 
   onDragEnd(upEvt: PointerEvent) {

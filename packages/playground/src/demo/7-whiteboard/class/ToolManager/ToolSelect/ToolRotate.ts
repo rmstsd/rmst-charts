@@ -2,8 +2,9 @@ import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint, compose, rotate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
-import { ICoord } from 'rmst-render'
+import { ICoord, rad2deg } from 'rmst-render'
 import { CursorType, getCursorRotation } from '../../cursorManager'
+import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 
 export default class ToolRotate implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private cursorType: CursorType) {}
@@ -11,14 +12,21 @@ export default class ToolRotate implements ITool {
   origin: ICoord
   startRad: number
   downSnap
+  downRect
+  isSingleSelect = false
+
+  startShapeRotation
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolRotate onDragStart')
 
-    const { downRect } = this.wbEditor.selectManager.transformDownRect
+    this.downRect = this.wbEditor.selectManager.transformDownRect.downRect
+    this.isSingleSelect = this.wbEditor.selectManager.selectedIds.length === 1
 
-    this.origin = applyToPoint(downRect.mt, { x: downRect.width / 2, y: downRect.height / 2 })
+    this.origin = applyToPoint(this.downRect.mt, { x: this.downRect.width / 2, y: this.downRect.height / 2 })
     this.startRad = Math.atan2(sceneCoord.y - this.origin.y, sceneCoord.x - this.origin.x)
+
+    this.startShapeRotation = calcRotateRad(this.downRect.mt)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
       id: item.id,
@@ -45,7 +53,8 @@ export default class ToolRotate implements ITool {
     })
 
     {
-      const rotation = getCursorRotation('rotation', this.cursorType, newMt)
+      const mt = this.isSingleSelect ? newMt : compose(rotate(diffRad, this.origin.x, this.origin.y), this.downRect.mt)
+      const rotation = getCursorRotation('rotation', this.cursorType, mt)
       this.wbEditor.cursorManager.setCursor({ type: 'rotation', rotation })
     }
 

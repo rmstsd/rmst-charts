@@ -4,6 +4,8 @@ import { calcRotateRad, isFlipped, normalizeAngle } from '../constant'
 import { rad2deg } from 'rmst-render'
 import { range } from 'es-toolkit'
 
+import selectCursorSvg from './icon/cursor.svg?raw'
+
 const getScaleSvg = (rotateDeg: number) => {
   return `
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,8 +62,15 @@ export enum CursorType {
 
 type CursorResize = { type: 'resize'; rotation: number } // 角度
 type CursorRotation = { type: 'rotation'; rotation: number } // 角度
+type CursorSelect = { type: 'select' } // 角度
 
-type WbCursor = CSS.Property.Cursor | CursorResize | CursorRotation
+type ICursorCustom = CursorResize | CursorRotation | CursorSelect
+
+export type WbCursor = CSS.Property.Cursor | ICursorCustom
+
+function getCssCursorValue(url: string) {
+  return `url("${url}") 16 16, auto`
+}
 
 export default class CursorManager {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -79,6 +88,8 @@ const cursorCached = new Map<string, string>()
   genCursor()
 
   function genCursor() {
+    cursorCached.set('select', 'default')
+
     range(0, 61).forEach(item => {
       const dataAngle = scaleValue(item, 60, 360)
       {
@@ -86,16 +97,14 @@ const cursorCached = new Map<string, string>()
         const svgString = getRotationSvg(dataAngle)
 
         const url = svgToBase64(svgString)
-        const cursorString = `url("${url}") 16 16, auto`
-        cursorCached.set(key, cursorString)
+        cursorCached.set(key, getCssCursorValue(url))
       }
 
       {
         const svgString2 = getScaleSvg(dataAngle)
         const key2 = `resize-${item}`
         const url2 = svgToBase64(svgString2)
-        const cursorString2 = `url("${url2}") 16 16, auto`
-        cursorCached.set(key2, cursorString2)
+        cursorCached.set(key2, getCssCursorValue(url2))
       }
     })
   }
@@ -105,7 +114,11 @@ function scaleValue(value, oldMax, newMax) {
   return (value / oldMax) * newMax
 }
 
-function getCursor_v2(cursor: CursorResize | CursorRotation) {
+function getCursor_v2(cursor: ICursorCustom) {
+  if (cursor.type === 'select') {
+    return cursorCached.get(cursor.type)
+  }
+
   const cc = scaleValue(normalizeAngle(cursor.rotation), 360, 60)
   const rotation = Math.round(cc)
 
