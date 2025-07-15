@@ -36,6 +36,7 @@ export default class ToolScale implements ITool {
 
     this.strategy = resizeStrategy[this.transformOrigin]
     this.origin = this.strategy.getOrigin(downRect)
+    console.log(this.origin)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
       id: item.id,
@@ -90,6 +91,8 @@ export default class ToolScale implements ITool {
       const sx = newSize.width / this.downRect.width
       const sy = newSize.height / this.downRect.height
 
+      console.log(sx, sy)
+
       const scaleTransform = scale(sx, sy)
 
       const newMt = compose(this.downRect.mt, scaleTransform)
@@ -105,10 +108,11 @@ export default class ToolScale implements ITool {
 
         const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: neMt })
 
-        const diffPos = {
-          x: (newGlobalPos.x - oldGlobalPos.x) / sx,
-          y: (newGlobalPos.y - oldGlobalPos.y) / sy
-        }
+        // 和具体的图形有关
+        const diffPos = applyToPoint(scaleTransform, {
+          x: newGlobalPos.x - oldGlobalPos.x,
+          y: newGlobalPos.y - oldGlobalPos.y
+        })
 
         const fixPos = translate(-diffPos.x, -diffPos.y)
         item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: compose(fixPos, reCalcRect.mt) })
