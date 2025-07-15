@@ -1,30 +1,29 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import WhiteboardEditor from './whiteboardEditor'
+import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
-import { ToolEnum } from './class/ToolManager/constant'
 import { round } from 'es-toolkit'
+import WhiteboardEditor from './whiteboardEditor'
+import { ToolEnum } from './class/ToolManager/constant'
 import { WbEditorContext } from './context'
 import InfoRightPanel from './InfoRightPanel'
 
-import './style.less'
 import { observer } from 'mobx-react-lite'
 import { createPortal } from 'react-dom'
 import { isDev, isProd } from '@/utils'
 
+import './style.less'
+
 const Whiteboard = observer(function Whiteboard() {
   const domRef = useRef()
-  const [wbEditor, setWbEditor] = useState<WhiteboardEditor>(() => new WhiteboardEditor())
+  const [wbEditor] = useState(() => new WhiteboardEditor())
 
   useEffect(() => {
-    const editor = new WhiteboardEditor()
     // @ts-ignore
-    window.wbEditor = editor
+    window.wbEditor = wbEditor
 
-    setWbEditor(editor)
-    editor.init(domRef.current)
+    wbEditor.init(domRef.current)
 
     return () => {
-      editor.dispose()
+      wbEditor.dispose()
     }
   }, [])
 
@@ -50,7 +49,9 @@ const Whiteboard = observer(function Whiteboard() {
 
           <div className="absolute bg-white shadow-xl rounded-lg p-2 bottom-0 left-0 border flex gap-1 items-center">
             <button onClick={() => wbEditor.camera.zoomOut()}>缩小</button>
-            <span>zoom: {round(wbEditor.camera.zoom * 100, 2)}%</span>
+            <span style={{ width: 90 }} className="text-center">
+              zoom: {round(wbEditor.camera.zoom * 100)}%
+            </span>
             <button onClick={() => wbEditor.camera.zoomIn()}>放大</button>
             <button onClick={() => wbEditor.camera.zoomToValue(1)}>100%</button>
             <button onClick={() => wbEditor.camera.zoomToFit()}>适应画布</button>
