@@ -6,6 +6,7 @@ import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
 import { resizeStrategy, ResizeStrategyOp } from './resizeStrategy'
+import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
 
 export default class ToolScale implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {
@@ -20,6 +21,7 @@ export default class ToolScale implements ITool {
   startRad: number
   downSnap
 
+  isSingleSelect = false
   downRect
 
   strategy: ResizeStrategyOp
@@ -30,13 +32,18 @@ export default class ToolScale implements ITool {
     const { downRect } = this.wbEditor.selectManager.transformDownRect
 
     this.downRect = downRect
+    this.isSingleSelect = this.wbEditor.selectManager.selectedIds.length === 1
 
     this.strategy = resizeStrategy[this.transformOrigin]
     this.origin = this.strategy.getOrigin(downRect)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
       id: item.id,
-      graphShapeRect: { mt: cloneDeep(item.graphShape.data.mt) }
+      graphShapeRect: {
+        width: item.graphShape.data.width,
+        height: item.graphShape.data.height,
+        mt: cloneDeep(item.graphShape.data.mt)
+      }
     }))
 
     this.downSnap = keyBy(sel, item => item.id)
@@ -58,26 +65,54 @@ export default class ToolScale implements ITool {
 
     const newOrigin = this.strategy.getOrigin(newSize)
 
-    let newMt
+    if (this.isSingleSelect) {
+      let newMt
 
-    this.wbEditor.selectManager.selectedGraphs.forEach(item => {
-      const dSnap = this.downSnap[item.id].graphShapeRect
+      this.wbEditor.selectManager.selectedGraphs.forEach(item => {
+        const dSnap = this.downSnap[item.id].graphShapeRect
 
-      newMt = compose(dSnap.mt, scaleMt)
+        newMt = compose(dSnap.mt, scaleMt)
+
+        const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
+        const newGlobalPos = applyToPoint(newMt, newOrigin)
+
+        const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+        const fixPos = translate(-diffPos.x, -diffPos.y)
+
+        item.graphShape.attr({ width: newSize.width, height: newSize.height, mt: compose(fixPos, newMt) })
+      })
+
+      {
+        const rotation = getCursorRotation('resize', this.cursorType, newMt)
+        this.wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
+      }
+    } else {
+      const sx = newSize.width / this.downRect.width
+      const sy = newSize.height / this.downRect.height
+
+      const scaleTransform = scale(sx, sy)
+
+      const newMt = compose(this.downRect.mt, scaleTransform)
 
       const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
       const newGlobalPos = applyToPoint(newMt, newOrigin)
 
-      const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+      const varMt = compose(newMt, inverse(this.downRect.mt))
+      this.wbEditor.selectManager.selectedGraphs.forEach(item => {
+        const dSnap = this.downSnap[item.id].graphShapeRect
 
-      const fixPos = translate(-diffPos.x, -diffPos.y)
+        const neMt = compose(varMt, dSnap.mt)
 
-      item.graphShape.attr({ width: newSize.width, height: newSize.height, mt: compose(fixPos, newMt) })
-    })
+        const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: neMt })
 
-    {
-      const rotation = getCursorRotation('resize', this.cursorType, newMt)
-      this.wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
+        const diffPos = {
+          x: (newGlobalPos.x - oldGlobalPos.x) / sx,
+          y: (newGlobalPos.y - oldGlobalPos.y) / sy
+        }
+
+        const fixPos = translate(-diffPos.x, -diffPos.y)
+        item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: compose(fixPos, reCalcRect.mt) })
+      })
     }
 
     this.wbEditor.triggerRender()
