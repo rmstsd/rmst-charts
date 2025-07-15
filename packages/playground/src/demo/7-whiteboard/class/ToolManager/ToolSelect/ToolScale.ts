@@ -109,12 +109,12 @@ export default class ToolScale implements ITool {
         const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: neMt })
 
         // 和具体的图形有关
-        const diffPos = applyToPoint(scaleTransform, {
+        const diffPos = {
           x: newGlobalPos.x - oldGlobalPos.x,
           y: newGlobalPos.y - oldGlobalPos.y
-        })
+        }
 
-        const fixPos = translate(-diffPos.x, -diffPos.y)
+        const fixPos = translate(-diffPos.x * (sx - 1), -diffPos.y * (sy - 1))
         item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: compose(fixPos, reCalcRect.mt) })
       })
     }
