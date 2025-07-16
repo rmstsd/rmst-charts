@@ -1,6 +1,6 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
+import { applyToPoint, compose, identity, inverse, scale, translate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
@@ -90,32 +90,27 @@ export default class ToolScale implements ITool {
     } else {
       const sx = newSize.width / this.downRect.width
       const sy = newSize.height / this.downRect.height
-
-      console.log(sx, sy)
-
       const scaleTransform = scale(sx, sy)
 
-      const newMt = compose(this.downRect.mt, scaleTransform)
+      const transformRect = { mt: compose(this.downRect.mt, scaleTransform) }
 
       const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
-      const newGlobalPos = applyToPoint(newMt, newOrigin)
+      const newGlobalPos = applyToPoint(transformRect.mt, newOrigin)
+      const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+      const fixPos = translate(-diffPos.x, -diffPos.y)
+      transformRect.mt = compose(fixPos, transformRect.mt)
 
-      const varMt = compose(newMt, inverse(this.downRect.mt))
+      const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
+
       this.wbEditor.selectManager.selectedGraphs.forEach(item => {
         const dSnap = this.downSnap[item.id].graphShapeRect
 
-        const neMt = compose(varMt, dSnap.mt)
+        const newWorldTf = compose(prependedTransform, dSnap.mt)
+        const newLocalTf = compose(inverse(identity()), newWorldTf)
 
-        const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: neMt })
+        const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: newWorldTf })
 
-        // 和具体的图形有关
-        const diffPos = {
-          x: newGlobalPos.x - oldGlobalPos.x,
-          y: newGlobalPos.y - oldGlobalPos.y
-        }
-
-        const fixPos = translate(-diffPos.x * (sx - 1), -diffPos.y * (sy - 1))
-        item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: compose(fixPos, reCalcRect.mt) })
+        item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: reCalcRect.mt })
       })
     }
 
