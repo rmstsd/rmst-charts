@@ -8,11 +8,13 @@ import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
-import { getCursorRotation } from '../../cursorManager'
+import { getCursorRotation, WbCursor } from '../../cursorManager'
 import { findHover_v2 } from 'rmst-render/_stage/findHover'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
+
+  cursor?: WbCursor = { type: 'select' }
 
   currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选
   currentStrategyDispose
@@ -37,7 +39,7 @@ export default class ToolSelect implements ITool {
 
     if (!hovered) {
       wbEditor.selectManager.onHover(null, false)
-      wbEditor.cursorManager.setCursor('default')
+      wbEditor.cursorManager.setCursor(this.cursor)
       this.hoveredId = null
       return
     }
@@ -47,7 +49,7 @@ export default class ToolSelect implements ITool {
     this.hoveredId = hovered.data.id
 
     if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
-      wbEditor.cursorManager.setCursor('default')
+      wbEditor.cursorManager.setCursor(this.cursor)
       return
     }
 

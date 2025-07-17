@@ -6,7 +6,7 @@ import { ICoord, mergeBox } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'
 
 const zoomSpeed = 1.2
-const speed = 100
+const scrollSpeed = 100
 
 const Min_Zoom = 0.01
 const Max_Zoom = 10
@@ -44,10 +44,10 @@ export default class Camera {
           this.zoomTo(newZoom, nvOrigin)
         } else {
           if (evt.shiftKey) {
-            const tmt = evt.deltaY > 0 ? translate(-speed, 0) : translate(speed, 0)
+            const tmt = evt.deltaY > 0 ? translate(-scrollSpeed, 0) : translate(scrollSpeed, 0)
             mt = compose(tmt, mt)
           } else {
-            const tmt = evt.deltaY > 0 ? translate(0, -speed) : translate(0, speed)
+            const tmt = evt.deltaY > 0 ? translate(0, -scrollSpeed) : translate(0, scrollSpeed)
             mt = compose(tmt, mt)
           }
 
@@ -104,6 +104,11 @@ export default class Camera {
   // 缩放到适合 (适应画布)
   zoomToFit() {
     const { wbEditor } = this
+
+    if (!wbEditor.graphLayer.data.children.length) {
+      this.zoomTo(1)
+      return
+    }
 
     const selRects = wbEditor.graphLayer.data.children.map(item => {
       const data = item.data

@@ -4,6 +4,7 @@ import { IRect, IShape, IShapeType } from '../type'
 import { omit } from 'es-toolkit'
 import Path from './Path'
 import Group from './Group'
+import { createRoundedRectPath } from '../renderer/canvas'
 
 export interface BoxData extends RectData {
   children?: IShape[]
@@ -22,8 +23,7 @@ export class Box extends Group {
     let newData = omit(this.data, ['children'])
 
     newData = structuredClone(newData)
-    const d = `M${newData.x},${newData.y}h${newData.width}v${newData.height}h-${newData.width}z`
-    newData.d = d
+    newData.d = createRoundedRectPath(newData.x, newData.y, newData.width, newData.height, newData.cornerRadius)
 
     return new Path(newData)
   }

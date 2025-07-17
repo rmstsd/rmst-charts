@@ -39,71 +39,60 @@ export default class ToolManager {
     let isPointerDown = false
     let isInContainer = false
 
-    document.addEventListener(
-      'pointermove',
-      moveEvt => {
-        if (!isPointerDown) {
-          this.currentToolClass?.onPointerMoveNotDragging?.(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
+    const onPointerDown = (downEvt: PointerEvent) => {
+      isPointerDown = true
+      if (downEvt.button !== Pointer_Button.Left) {
+        console.warn('非左键操作')
+        return
+      }
+
+      this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
+
+      startDrag(downEvt, {
+        onDragStart: () => {
+          this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
+        },
+        onDragMove: moveEvt => {
+          this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
+        },
+        onDragEnd: upEvt => {
+          isPointerDown = false
+
+          this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          this.switchTool(ToolEnum.Select)
+        },
+        onPointerUp: upEvt => {
+          isPointerDown = false
+
+          this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          this.switchTool(ToolEnum.Select)
         }
+      })
+    }
 
-        this.currentToolClass?.onPointerMove?.({
-          moveEvt: moveEvt,
-          sceneCoord: wbEditor.coordSys.client2Scene(moveEvt),
-          isInContainer
-        })
-      },
-      { signal: this.abCt.signal }
-    )
+    const onPointerEnter = () => {
+      isInContainer = true
+    }
+    const onPointerLeave = () => {
+      isInContainer = false
+    }
 
-    container.addEventListener(
-      'pointerenter',
-      () => {
-        isInContainer = true
-      },
-      { signal: this.abCt.signal }
-    )
-    container.addEventListener(
-      'pointerleave',
-      () => {
-        isInContainer = false
-      },
-      { signal: this.abCt.signal }
-    )
+    const onDocumentPointerMove = (moveEvt: PointerEvent) => {
+      if (!isPointerDown) {
+        this.currentToolClass?.onPointerMoveNotDragging?.(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
+      }
 
-    container.addEventListener(
-      'pointerdown',
-      downEvt => {
-        isPointerDown = true
-        if (downEvt.button !== Pointer_Button.Left) {
-          console.warn('非左键操作')
-          return
-        }
+      this.currentToolClass?.onPointerMove?.({
+        moveEvt: moveEvt,
+        sceneCoord: wbEditor.coordSys.client2Scene(moveEvt),
+        isInContainer
+      })
+    }
 
-        this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
-
-        startDrag(downEvt, {
-          onDragStart: () => {
-            this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
-          },
-          onDragMove: moveEvt => {
-            this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
-          },
-          onDragEnd: upEvt => {
-            isPointerDown = false
-
-            this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-            this.switchTool(ToolEnum.Select)
-          },
-          onPointerUp: upEvt => {
-            isPointerDown = false
-
-            this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-            this.switchTool(ToolEnum.Select)
-          }
-        })
-      },
-      { signal: this.abCt.signal }
-    )
+    container.addEventListener('pointerenter', onPointerEnter, { signal: this.abCt.signal })
+    container.addEventListener('pointerleave', onPointerLeave, { signal: this.abCt.signal })
+    container.addEventListener('pointerdown', onPointerDown, { signal: this.abCt.signal })
+    document.addEventListener('pointermove', onDocumentPointerMove, { signal: this.abCt.signal })
   }
 
   dispose() {
@@ -132,6 +121,6 @@ export default class ToolManager {
     }
 
     this.currentToolClass.onActive?.()
-    this.wbEditor.cursorManager.setCursor('crosshair')
+    this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
   }
 }

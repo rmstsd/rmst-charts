@@ -24,7 +24,7 @@ export default abstract class ToolDrawByRect implements ITool {
     this.wbEditor.graphs.push(this.graphItem)
 
     this.wbEditor.selectManager.clearSelect()
-    this.wbEditor.selectManager.selectedIds.push(this.graphItem.id)
+    this.wbEditor.selectManager.select(this.graphItem.id)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {

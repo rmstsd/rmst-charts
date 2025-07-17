@@ -1,7 +1,7 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { compose, translate } from 'transformation-matrix'
-import { cloneDeep } from 'es-toolkit'
+import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 
 export default class ToolTranslate implements ITool {
@@ -15,16 +15,18 @@ export default class ToolTranslate implements ITool {
 
     this.downPos = sceneCoord
 
-    this.downSnap = this.wbEditor.selectManager.selectedGraphs.map(item => ({
-      downMt: cloneDeep(item.graphShape.data.mt)
-    }))
+    this.downSnap = this.downSnap = keyBy(
+      this.wbEditor.selectManager.selectedGraphs.map(item => ({
+        id: item.id,
+        downMt: cloneDeep(item.graphShape.data.mt)
+      })),
+      item => item.id
+    )
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    // console.log('ToolTranslate onDragMove')
-
-    this.wbEditor.selectManager.selectedGraphs.forEach((item, index) => {
-      const dSnap = this.downSnap[index]
+    this.wbEditor.selectManager.selectedGraphs.forEach(item => {
+      const dSnap = this.downSnap[item.id]
       const moveLocalPos = sceneCoord
 
       const dx = moveLocalPos.x - this.downPos.x

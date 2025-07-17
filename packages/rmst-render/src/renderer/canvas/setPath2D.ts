@@ -36,6 +36,8 @@ export function createRectPath2D(data) {
   x = 0
   y = 0
 
+  return new Path2D(createRoundedRectPath(x, y, width, height, cornerRadius))
+
   const path2D = new Path2D()
   path2D.moveTo(x + cornerRadius, y)
   path2D.lineTo(x + width - cornerRadius, y)
@@ -49,6 +51,34 @@ export function createRectPath2D(data) {
   path2D.closePath()
 
   return path2D
+}
+
+// https://chat.deepseek.com/a/chat/s/ebe7e178-bb6f-4c5a-a33b-022c965469f3
+export function createRoundedRectPath(x, y, width, height, radius = 0) {
+  // 处理边界情况：确保半径不超过宽度或高度的一半
+  const maxRadius = Math.min(width, height) / 2
+  radius = Math.min(radius, maxRadius)
+
+  // 如果半径为0，则创建直角矩形
+  if (radius === 0) {
+    return `M${x},${y}h${width}v${height}h-${width}z`
+  }
+
+  // 创建圆角矩形路径
+  return `
+    M${x + radius},${y}
+    h${width - 2 * radius}
+    a${radius},${radius} 0 0 1 ${radius},${radius}
+    v${height - 2 * radius}
+    a${radius},${radius} 0 0 1 -${radius},${radius}
+    h-${width - 2 * radius}
+    a${radius},${radius} 0 0 1 -${radius},-${radius}
+    v-${height - 2 * radius}
+    a${radius},${radius} 0 0 1 ${radius},-${radius}
+    z
+  `
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 export function setCirclePath2D(elementItem: Circle) {

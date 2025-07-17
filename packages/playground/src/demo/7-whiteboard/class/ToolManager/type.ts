@@ -1,8 +1,11 @@
 import { ICoord } from 'rmst-render'
+import { WbCursor } from '../cursorManager'
 
 export type Destructor = () => void
 
 export interface ITool {
+  cursor?: WbCursor
+
   enableActive?: () => Promise<boolean>
   onActive?: () => void
   onDeActive?: () => void
