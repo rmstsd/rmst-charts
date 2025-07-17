@@ -56,32 +56,27 @@ export default class ToolScale implements ITool {
     const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
 
     const newSize = this.strategy.getNewSize(this.origin, movePos, this.downRect)
-
-    const scaleX = Math.sign(newSize.width) || 1 // 如果是 0 取 1
-    const scaleY = Math.sign(newSize.height) || 1
-    const scaleMt = scale(scaleX, scaleY)
-
-    newSize.width = Math.abs(newSize.width)
-    newSize.height = Math.abs(newSize.height)
-
     const newOrigin = this.strategy.getOrigin(newSize)
 
     if (this.isSingleSelect) {
-      let newMt
+      const scaleX = Math.sign(newSize.width) || 1 // 如果是 0 取 1
+      const scaleY = Math.sign(newSize.height) || 1
+      const scaleMt = scale(scaleX, scaleY)
+      newSize.width = Math.abs(newSize.width)
+      newSize.height = Math.abs(newSize.height)
 
-      this.wbEditor.selectManager.selectedGraphs.forEach(item => {
-        const dSnap = this.downSnap[item.id].graphShapeRect
+      const item = this.wbEditor.selectManager.selectedGraphs[0]
+      const dSnap = this.downSnap[item.id].graphShapeRect
 
-        newMt = compose(dSnap.mt, scaleMt)
+      const newMt = compose(dSnap.mt, scaleMt)
 
-        const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
-        const newGlobalPos = applyToPoint(newMt, newOrigin)
+      const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
+      const newGlobalPos = applyToPoint(newMt, newOrigin)
 
-        const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
-        const fixPos = translate(-diffPos.x, -diffPos.y)
+      const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+      const fixPos = translate(-diffPos.x, -diffPos.y)
 
-        item.graphShape.attr({ width: newSize.width, height: newSize.height, mt: compose(fixPos, newMt) })
-      })
+      item.graphShape.attr({ width: newSize.width, height: newSize.height, mt: compose(fixPos, newMt) })
 
       {
         const rotation = getCursorRotation('resize', this.cursorType, newMt)
@@ -90,6 +85,7 @@ export default class ToolScale implements ITool {
     } else {
       const sx = newSize.width / this.downRect.width
       const sy = newSize.height / this.downRect.height
+
       const scaleTransform = scale(sx, sy)
 
       const transformRect = { mt: compose(this.downRect.mt, scaleTransform) }
@@ -98,7 +94,7 @@ export default class ToolScale implements ITool {
       const newGlobalPos = applyToPoint(transformRect.mt, newOrigin)
       const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
       const fixPos = translate(-diffPos.x, -diffPos.y)
-      transformRect.mt = compose(transformRect.mt)
+      transformRect.mt = compose(fixPos, transformRect.mt)
 
       const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
 
@@ -106,7 +102,6 @@ export default class ToolScale implements ITool {
         const dSnap = this.downSnap[item.id].graphShapeRect
 
         const newWorldTf = compose(prependedTransform, dSnap.mt)
-        // const newLocalTf = compose(inverse(identity()), newWorldTf)
 
         const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: newWorldTf })
 

@@ -55,7 +55,12 @@ export const recomputeTransformRect = (rect: ITransformRect): ITransformRect => 
 
   const tf = compose(rect.mt, scaleMatrix)
 
-  return { ...rect, width: newSize.width, height: newSize.height, mt: tf }
+  return {
+    //  ...rect,
+    width: newSize.width,
+    height: newSize.height,
+    mt: tf
+  }
 }
 
 const distance = (p1: IPoint, p2: IPoint) => {
