@@ -31,8 +31,6 @@ export default class ToolScale implements ITool {
 
     const { downRect } = this.wbEditor.selectManager.transformDownRect
 
-    console.log('downRect', downRect)
-
     this.downRect = downRect
     this.isSingleSelect = this.wbEditor.selectManager.selectedIds.length === 1
 
@@ -55,9 +53,7 @@ export default class ToolScale implements ITool {
     // console.log('ToolScale onDragMove')
 
     const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
-
     const newSize = this.strategy.getNewSize(this.origin, movePos, this.downRect)
-    const newOrigin = this.strategy.getOrigin(newSize)
 
     if (this.isSingleSelect) {
       const scaleX = Math.sign(newSize.width) || 1 // 如果是 0 取 1
@@ -72,6 +68,7 @@ export default class ToolScale implements ITool {
       const newMt = compose(dSnap.mt, scaleMt)
 
       const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
+      const newOrigin = this.strategy.getOrigin(newSize)
       const newGlobalPos = applyToPoint(newMt, newOrigin)
 
       const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
@@ -92,7 +89,7 @@ export default class ToolScale implements ITool {
       const transformRect = { mt: compose(this.downRect.mt, scaleTransform) }
 
       const oldGlobalPos = applyToPoint(this.downRect.mt, this.origin)
-      const newOrigin = this.origin // 缩放多个时, 改变的是矩阵, 缩放中心要基于原 rect 的宽高来求
+      const newOrigin = this.strategy.getOrigin(this.downRect) // 缩放多个时, 改变的是矩阵, 缩放中心要基于原 rect 的宽高来求
       const newGlobalPos = applyToPoint(transformRect.mt, newOrigin)
       const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
       const fixPos = translate(-diffPos.x, -diffPos.y)
@@ -106,6 +103,11 @@ export default class ToolScale implements ITool {
         const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: newWorldTf })
         item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: reCalcRect.mt })
       })
+
+      {
+        const rotation = getCursorRotation('resize', this.cursorType, transformRect.mt)
+        this.wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
+      }
     }
 
     this.wbEditor.triggerRender()
