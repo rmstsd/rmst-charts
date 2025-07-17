@@ -39,7 +39,7 @@ class WhiteboardEditor {
   cursorManager = new CursorManager(this)
 
   dispose() {
-    this.stage.dispose()
+    this.stage?.dispose()
     this.camera.dispose()
     this.toolManager.dispose()
   }

@@ -98,7 +98,7 @@ export default class ToolScale implements ITool {
       const newGlobalPos = applyToPoint(transformRect.mt, newOrigin)
       const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
       const fixPos = translate(-diffPos.x, -diffPos.y)
-      transformRect.mt = compose(fixPos, transformRect.mt)
+      transformRect.mt = compose(transformRect.mt)
 
       const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
 
@@ -106,7 +106,7 @@ export default class ToolScale implements ITool {
         const dSnap = this.downSnap[item.id].graphShapeRect
 
         const newWorldTf = compose(prependedTransform, dSnap.mt)
-        const newLocalTf = compose(inverse(identity()), newWorldTf)
+        // const newLocalTf = compose(inverse(identity()), newWorldTf)
 
         const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: newWorldTf })
 

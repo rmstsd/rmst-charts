@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { createPortal } from 'react-dom'
 import clsx from 'clsx'
 import { round } from 'es-toolkit'
 import WhiteboardEditor from './whiteboardEditor'
@@ -6,24 +8,24 @@ import { ToolEnum } from './class/ToolManager/constant'
 import { WbEditorContext } from './context'
 import InfoRightPanel from './InfoRightPanel'
 
-import { observer } from 'mobx-react-lite'
-import { createPortal } from 'react-dom'
 import { isDev, isProd } from '@/utils'
 
 import './style.less'
 
 const Whiteboard = observer(function Whiteboard() {
   const domRef = useRef()
-  const [wbEditor] = useState(() => new WhiteboardEditor())
+  const [wbEditor, setWbEditor] = useState(() => new WhiteboardEditor())
 
   useEffect(() => {
-    // @ts-ignore
-    window.wbEditor = wbEditor
+    const editor = new WhiteboardEditor()
+    setWbEditor(editor)
+    editor.init(domRef.current)
 
-    wbEditor.init(domRef.current)
+    // @ts-ignore
+    window.wbEditor = editor
 
     return () => {
-      wbEditor.dispose()
+      editor.dispose()
     }
   }, [])
 
