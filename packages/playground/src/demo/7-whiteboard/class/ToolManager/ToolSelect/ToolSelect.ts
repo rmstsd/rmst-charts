@@ -2,7 +2,7 @@ import { ICoord, IShape } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { ToolEnum } from '../constant'
-import { Graph_Id } from '@/demo/7-whiteboard/constant'
+import { Graph_Id, isCtrlHandleShape, isWbGraphShape } from '@/demo/7-whiteboard/constant'
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
@@ -48,32 +48,41 @@ export default class ToolSelect implements ITool {
     // }
     this.hoveredId = hovered.data.id
 
-    if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
-      wbEditor.cursorManager.setCursor(this.cursor)
-      return
-    }
+    const isCtrlHandle = isCtrlHandleShape(hovered)
+    const isWbGraph = isWbGraphShape(hovered)
 
-    if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
+    if (isCtrlHandle) {
+      wbEditor.selectManager.onHover(null, false)
+
       const { downRect } = wbEditor.selectManager.transformDownRect
       const cursorType = hovered.data.extraData?.cursorType
 
-      const rotation = getCursorRotation('rotation', cursorType, downRect.mt)
-      wbEditor.cursorManager.setCursor({ type: 'rotation', rotation })
-      return
-    }
-    if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
-      const { downRect } = wbEditor.selectManager.transformDownRect
+      switch (hovered.data.id) {
+        case Graph_Id.graph_ctrl_translate: {
+          wbEditor.cursorManager.setCursor(this.cursor)
+          break
+        }
+        case Graph_Id.graph_ctrl_rotate: {
+          const rotation = getCursorRotation('rotation', cursorType, downRect.mt)
+          wbEditor.cursorManager.setCursor({ type: 'rotation', rotation })
+          break
+        }
+        case Graph_Id.graph_ctrl_scale: {
+          const rotation = getCursorRotation('resize', cursorType, downRect.mt)
+          wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
+          break
+        }
 
-      const cursorType = hovered.data.extraData?.cursorType
-
-      const rotation = getCursorRotation('resize', cursorType, downRect.mt)
-      wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
-      return
-    }
-
-    if (isWbGraphShape(hovered)) {
-      wbEditor.cursorManager.setCursor(this.cursor)
+        default: {
+          console.error('未匹配')
+          break
+        }
+      }
+    } else if (isWbGraph) {
       wbEditor.selectManager.onHover(hovered.data.id, true)
+      wbEditor.cursorManager.setCursor(this.cursor)
+    } else {
+      wbEditor.cursorManager.setCursor(this.cursor)
     }
   }
   onPointerDown(downEvt: PointerEvent) {
@@ -156,9 +165,4 @@ export default class ToolSelect implements ITool {
       this.currentStrategyDispose()
     }
   }
-}
-
-// 是用户绘制出来的图形
-const isWbGraphShape = (shape: IShape) => {
-  return ToolEnum.has(shape.data.extraData?.wbType)
 }
