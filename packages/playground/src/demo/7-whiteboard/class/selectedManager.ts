@@ -1,7 +1,7 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
-import { calcMidPoint, distanceTowPoint, Group, Line, mergeBox, Rect, Text } from 'rmst-render'
+import { Group, ICoord, Line, mergeBox, pointToFlatArray, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
 import { calcRotateRad, Graph_Id } from '../constant'
@@ -11,7 +11,7 @@ import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
 
-let debugHandle = false
+let debugHandle = true
 
 const ctrlSize = 10
 const rotateSize = ctrlSize * 1.5
@@ -255,48 +255,37 @@ export default class selectedManager {
       })
     })
 
-    const width = distanceTowPoint(tlCoord, trCoord)
-    const height = distanceTowPoint(tlCoord, blCoord)
-    const hh = ctrlSize
-
-    const top = new Rect({
+    const top = new Line({
       id: Graph_Id.graph_ctrl_scale,
-      ...calcMidPoint(tlCoord, trCoord),
-      width: width,
-      height: hh,
+      points: pointToFlatArray(calculateRectangleVertices(tlCoord, trCoord, ctrlSize)),
+      closed: true,
       fillStyle: 'pink',
       opacity: debugHandle ? 0.5 : 0,
-      mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
       extraData: { transformOrigin: TransformOrigin.Bottom, cursorType: CursorType.scale_top }
     })
-    const right = new Rect({
+
+    const right = new Line({
       id: Graph_Id.graph_ctrl_scale,
-      ...calcMidPoint(trCoord, brCoord),
-      width: hh,
-      height: height,
+      points: pointToFlatArray(calculateRectangleVertices(trCoord, brCoord, ctrlSize)),
+      closed: true,
       fillStyle: 'orange',
       opacity: debugHandle ? 0.5 : 0,
-      mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
       extraData: { transformOrigin: TransformOrigin.Left, cursorType: CursorType.scale_right }
     })
-    const bottom = new Rect({
+    const bottom = new Line({
       id: Graph_Id.graph_ctrl_scale,
-      ...calcMidPoint(blCoord, brCoord),
-      width: width,
-      height: hh,
+      points: pointToFlatArray(calculateRectangleVertices(blCoord, brCoord, ctrlSize)),
+      closed: true,
       fillStyle: 'red',
       opacity: debugHandle ? 0.5 : 0,
-      mt: compose(translate(-width / 2, -hh / 2), rotate(rad, width / 2, hh / 2)),
       extraData: { transformOrigin: TransformOrigin.Top, cursorType: CursorType.scale_top }
     })
-    const left = new Rect({
+    const left = new Line({
       id: Graph_Id.graph_ctrl_scale,
-      ...calcMidPoint(tlCoord, blCoord),
-      width: hh,
-      height: height,
+      points: pointToFlatArray(calculateRectangleVertices(tlCoord, blCoord, ctrlSize)),
+      closed: true,
       fillStyle: 'purple',
       opacity: debugHandle ? 0.5 : 0,
-      mt: compose(translate(-hh / 2, -height / 2), rotate(rad, hh / 2, height / 2)),
       extraData: { transformOrigin: TransformOrigin.Right, cursorType: CursorType.scale_right }
     })
 
@@ -387,4 +376,50 @@ export default class selectedManager {
 
     return cloned
   }
+}
+
+// https://www.doubao.com/chat/12714978760467970
+function calculateRectangleVertices(midPoint1: ICoord, midPoint2: ICoord, height: number) {
+  // 计算两点之间的距离，作为矩形的一条边长
+  const length = Math.sqrt(Math.pow(midPoint2.x - midPoint1.x, 2) + Math.pow(midPoint2.y - midPoint1.y, 2))
+
+  // 计算从 midPoint1 到 midPoint2 的方向向量
+  const dx = midPoint2.x - midPoint1.x
+  const dy = midPoint2.y - midPoint1.y
+
+  // 计算方向向量的单位向量
+  const magnitude = Math.sqrt(dx * dx + dy * dy)
+  const unitX = dx / magnitude
+  const unitY = dy / magnitude
+
+  // 计算垂直于方向向量的单位向量（旋转90度）
+  const perpendicularUnitX = -unitY
+  const perpendicularUnitY = unitX
+
+  // 矩形的宽度可以任意设定，这里假设宽度是长度的一半
+  const width = length / 2
+  const halfWidth = height / 2
+
+  // 计算四个顶点的坐标
+  const vertex1 = {
+    x: midPoint1.x + halfWidth * perpendicularUnitX,
+    y: midPoint1.y + halfWidth * perpendicularUnitY
+  }
+
+  const vertex2 = {
+    x: midPoint1.x - halfWidth * perpendicularUnitX,
+    y: midPoint1.y - halfWidth * perpendicularUnitY
+  }
+
+  const vertex3 = {
+    x: midPoint2.x - halfWidth * perpendicularUnitX,
+    y: midPoint2.y - halfWidth * perpendicularUnitY
+  }
+
+  const vertex4 = {
+    x: midPoint2.x + halfWidth * perpendicularUnitX,
+    y: midPoint2.y + halfWidth * perpendicularUnitY
+  }
+
+  return [vertex1, vertex2, vertex3, vertex4]
 }

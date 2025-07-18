@@ -4,22 +4,25 @@ import { applyToPoint } from 'transformation-matrix'
 import { ICoord, Rect } from 'rmst-render'
 import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
 import { noop } from 'es-toolkit'
-import { calcRotateRad } from '@/demo/7-whiteboard/constant'
-import { System } from 'detect-collisions'
+import { Box, Polygon, System } from 'detect-collisions'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
     console.log('ToolBoxSelection')
   }
 
-  downPos: ICoord
+  private downPos: ICoord
 
-  tl: ICoord
-  br: ICoord
+  private tl: ICoord
+  private br: ICoord
 
-  unBind = noop
+  private system = new System()
+  private selectionBox: Box
+  private boxes: Polygon[] = []
 
-  boxSelectionRect = new Rect({
+  private unBind = noop
+
+  private boxSelectionRect = new Rect({
     x: 0,
     y: 0,
     width: 0,
@@ -44,7 +47,22 @@ export default class ToolBoxSelection implements ITool {
   }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.system.clear()
+
     this.downPos = sceneCoord
+
+    this.selectionBox = this.system.createBox({ x: 0, y: 0 }, 0, 0)
+
+    this.boxes = this.wbEditor.graphLayer.children.map(item => {
+      const points = [
+        { x: 0, y: 0 },
+        { x: item.data.width, y: 0 },
+        { x: item.data.width, y: item.data.height },
+        { x: 0, y: item.data.height }
+      ].map(pointItem => applyToPoint(item.data.mt, pointItem))
+
+      return this.system.createPolygon({ x: 0, y: 0 }, points, { userData: { id: item.data.id } })
+    })
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
@@ -54,22 +72,14 @@ export default class ToolBoxSelection implements ITool {
     this.updateBoxSelectionRect()
 
     const boxRectScene = { x: this.tl.x, y: this.tl.y, width: this.br.x - this.tl.x, height: this.br.y - this.tl.y }
+    this.selectionBox.x = this.tl.x
+    this.selectionBox.y = this.tl.y
+    this.selectionBox.width = boxRectScene.width
+    this.selectionBox.height = boxRectScene.height
 
-    const system = new System()
-    const boxes = this.wbEditor.graphLayer.children.map(item => {
-      const boxItem = system.createBox({ x: item.data.mt.e, y: item.data.mt.f }, item.data.width, item.data.height, {
-        angle: calcRotateRad(item.data.mt)
-      })
-
-      return { id: item.data.id, boxItem }
-    })
-
-    const selectionBox = system.createBox(
-      { x: boxRectScene.x, y: boxRectScene.y },
-      boxRectScene.width,
-      boxRectScene.height
-    )
-    const selectedIds = boxes.filter(item => system.checkCollision(selectionBox, item.boxItem)).map(item => item.id)
+    const selectedIds = this.boxes
+      .filter(item => this.system.checkCollision(this.selectionBox, item))
+      .map(item => item.userData.id)
 
     this.wbEditor.selectManager.batchSelect(selectedIds)
 
@@ -85,6 +95,7 @@ export default class ToolBoxSelection implements ITool {
   }
 
   onDragEnd(upEvt: PointerEvent) {
+    this.system.clear()
     this.boxSelectionRect.remove()
   }
 }

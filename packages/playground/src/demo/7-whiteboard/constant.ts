@@ -1,11 +1,26 @@
 import { cloneDeep } from 'es-toolkit'
 import { applyToPoint, Matrix } from 'transformation-matrix'
+import { ToolEnum } from './class/ToolManager/constant'
+import { IShape } from 'rmst-render'
 
 export enum Graph_Id {
   graph_root_group = 'graph_root_group',
-  graph_ctrl_translate = 'translate',
-  graph_ctrl_rotate = 'rotate',
-  graph_ctrl_scale = 'scale'
+  graph_ctrl_translate = 'graph_ctrl_translate',
+  graph_ctrl_rotate = 'graph_ctrl_rotate',
+  graph_ctrl_scale = 'graph_ctrl_scale'
+}
+
+export const isCtrlHandleShape = (shape: IShape) => {
+  return (
+    shape.data.id === Graph_Id.graph_ctrl_translate ||
+    shape.data.id === Graph_Id.graph_ctrl_rotate ||
+    shape.data.id === Graph_Id.graph_ctrl_scale
+  )
+}
+
+// 是用户绘制出来的图形
+export const isWbGraphShape = (shape: IShape) => {
+  return ToolEnum.has(shape.data.extraData?.wbType)
 }
 
 export const calcRotateRad = (mt: Matrix) => {

@@ -222,7 +222,7 @@ export default observer(function PureMt() {
           const fixPosMt = translate(-offset.x, -offset.y)
 
           let varMt = compose(newMt, inverse(downRect.mt))
-          // varMt = compose(fixPosMt, varMt)
+          varMt = compose(fixPosMt, varMt)
 
           selectedRects.forEach(item => {
             const dSnap = downSnap[item.id]

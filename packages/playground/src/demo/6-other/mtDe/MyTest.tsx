@@ -6,7 +6,7 @@ import jntmPng from '@/assets/jntm.png'
 import { Box, deg2rad, rad2deg, System } from 'detect-collisions'
 
 import oc from 'open-color'
-import { rotate, rotateDEG, toCSS, translate } from 'transformation-matrix'
+import { applyToPoint, compose, rotate, rotateDEG, skew, toCSS, translate } from 'transformation-matrix'
 import { startDrag } from '@/utils/util'
 import { observer, useLocalObservable } from 'mobx-react-lite'
 import { cloneDeep } from 'es-toolkit'
@@ -14,11 +14,11 @@ import clsx from 'clsx'
 
 const Example = observer(function Example() {
   const rect1 = {
-    x: 0,
-    y: 0,
+    x: 100,
+    y: 100,
     width: 100,
     height: 100,
-    rotate: 45
+    mt: compose(rotateDEG(30), skew(0.3, 0.4))
   }
 
   const state = useLocalObservable(() => {
@@ -34,24 +34,31 @@ const Example = observer(function Example() {
 
   const system = new System()
 
-  const r_1 = system.createBox({ x: rect1.x, y: rect1.y }, rect1.width, rect1.height, {
-    angle: deg2rad(rect1.rotate)
-  })
+  const points = [
+    { x: rect1.x, y: rect1.y },
+    { x: rect1.x + rect1.width, y: rect1.y },
+    { x: rect1.x + rect1.width, y: rect1.y + rect1.height },
+    { x: rect1.x, y: rect1.y + rect1.height }
+  ].map(item => applyToPoint(rect1.mt, item))
+
+  const r_1 = system.createPolygon({ x: 0, y: 0 }, points)
   const sel = system.createBox({ x: box_sel.x, y: box_sel.y }, box_sel.width, box_sel.height)
 
-  const circleInPolygon = system.checkCollision(sel, r_1)
-  console.log(circleInPolygon)
+  const isCollision = system.checkCollision(sel, r_1)
 
-  return (
-    <div>
-      <img src={jntmPng} style={{ height: 100 }} />
-    </div>
-  )
+  // 示例用法
+  const midPointA = { x: 100, y: 100 }
+  const midPointB = { x: 400, y: 200 }
+  const vertices = calculateRectangleVertices(midPointA, midPointB)
 
   return (
     <svg className={clsx('border', state.bool ? 'move-cursor' : 'pointer-cursor')} width={700} height={600}>
+      <polygon points={vertices.map(item => `${item.x},${item.y}`).join(' ')} fill="orange" />
+      <circle cx={midPointA.x} cy={midPointA.y} r={4} fill="red" />
+      <circle cx={midPointB.x} cy={midPointB.y} r={4} fill="red" />
+
       <g transform={toCSS(translate(10, 10))}>
-        <rect {...rect1} stroke="red" fill="none" transform={toCSS(rotateDEG(45))} />
+        <rect {...rect1} stroke="red" fill={isCollision ? 'pink' : 'none'} transform={toCSS(rect1.mt)} />
 
         <rect
           {...box_sel}
@@ -95,4 +102,49 @@ export function getSvgPathFromStroke(stroke) {
 
   d.push('Z')
   return d.join(' ')
+}
+
+function calculateRectangleVertices(midPoint1, midPoint2) {
+  // 计算两点之间的距离，作为矩形的一条边长
+  const length = Math.sqrt(Math.pow(midPoint2.x - midPoint1.x, 2) + Math.pow(midPoint2.y - midPoint1.y, 2))
+
+  // 计算从 midPoint1 到 midPoint2 的方向向量
+  const dx = midPoint2.x - midPoint1.x
+  const dy = midPoint2.y - midPoint1.y
+
+  // 计算方向向量的单位向量
+  const magnitude = Math.sqrt(dx * dx + dy * dy)
+  const unitX = dx / magnitude
+  const unitY = dy / magnitude
+
+  // 计算垂直于方向向量的单位向量（旋转90度）
+  const perpendicularUnitX = -unitY
+  const perpendicularUnitY = unitX
+
+  // 矩形的宽度可以任意设定，这里假设宽度是长度的一半
+  const width = length / 2
+  const halfWidth = 10
+
+  // 计算四个顶点的坐标
+  const vertex1 = {
+    x: midPoint1.x + halfWidth * perpendicularUnitX,
+    y: midPoint1.y + halfWidth * perpendicularUnitY
+  }
+
+  const vertex2 = {
+    x: midPoint1.x - halfWidth * perpendicularUnitX,
+    y: midPoint1.y - halfWidth * perpendicularUnitY
+  }
+
+  const vertex3 = {
+    x: midPoint2.x - halfWidth * perpendicularUnitX,
+    y: midPoint2.y - halfWidth * perpendicularUnitY
+  }
+
+  const vertex4 = {
+    x: midPoint2.x + halfWidth * perpendicularUnitX,
+    y: midPoint2.y + halfWidth * perpendicularUnitY
+  }
+
+  return [vertex1, vertex2, vertex3, vertex4]
 }
