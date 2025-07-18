@@ -46,8 +46,17 @@ const Example = observer(function Example() {
 
   const isCollision = system.checkCollision(sel, r_1)
 
+  // 示例用法
+  const midPointA = { x: 100, y: 100 }
+  const midPointB = { x: 400, y: 200 }
+  const vertices = calculateRectangleVertices(midPointA, midPointB)
+
   return (
     <svg className={clsx('border', state.bool ? 'move-cursor' : 'pointer-cursor')} width={700} height={600}>
+      <polygon points={vertices.map(item => `${item.x},${item.y}`).join(' ')} fill="orange" />
+      <circle cx={midPointA.x} cy={midPointA.y} r={4} fill="red" />
+      <circle cx={midPointB.x} cy={midPointB.y} r={4} fill="red" />
+
       <g transform={toCSS(translate(10, 10))}>
         <rect {...rect1} stroke="red" fill={isCollision ? 'pink' : 'none'} transform={toCSS(rect1.mt)} />
 
@@ -93,4 +102,49 @@ export function getSvgPathFromStroke(stroke) {
 
   d.push('Z')
   return d.join(' ')
+}
+
+function calculateRectangleVertices(midPoint1, midPoint2) {
+  // 计算两点之间的距离，作为矩形的一条边长
+  const length = Math.sqrt(Math.pow(midPoint2.x - midPoint1.x, 2) + Math.pow(midPoint2.y - midPoint1.y, 2))
+
+  // 计算从 midPoint1 到 midPoint2 的方向向量
+  const dx = midPoint2.x - midPoint1.x
+  const dy = midPoint2.y - midPoint1.y
+
+  // 计算方向向量的单位向量
+  const magnitude = Math.sqrt(dx * dx + dy * dy)
+  const unitX = dx / magnitude
+  const unitY = dy / magnitude
+
+  // 计算垂直于方向向量的单位向量（旋转90度）
+  const perpendicularUnitX = -unitY
+  const perpendicularUnitY = unitX
+
+  // 矩形的宽度可以任意设定，这里假设宽度是长度的一半
+  const width = length / 2
+  const halfWidth = 10
+
+  // 计算四个顶点的坐标
+  const vertex1 = {
+    x: midPoint1.x + halfWidth * perpendicularUnitX,
+    y: midPoint1.y + halfWidth * perpendicularUnitY
+  }
+
+  const vertex2 = {
+    x: midPoint1.x - halfWidth * perpendicularUnitX,
+    y: midPoint1.y - halfWidth * perpendicularUnitY
+  }
+
+  const vertex3 = {
+    x: midPoint2.x - halfWidth * perpendicularUnitX,
+    y: midPoint2.y - halfWidth * perpendicularUnitY
+  }
+
+  const vertex4 = {
+    x: midPoint2.x + halfWidth * perpendicularUnitX,
+    y: midPoint2.y + halfWidth * perpendicularUnitY
+  }
+
+  return [vertex1, vertex2, vertex3, vertex4]
 }

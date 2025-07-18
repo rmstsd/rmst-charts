@@ -72,6 +72,7 @@ export default class ToolSelect implements ITool {
     }
 
     if (isWbGraphShape(hovered)) {
+      wbEditor.cursorManager.setCursor(this.cursor)
       wbEditor.selectManager.onHover(hovered.data.id, true)
     }
   }
