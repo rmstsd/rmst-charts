@@ -6,7 +6,7 @@ import jntmPng from '@/assets/jntm.png'
 import { Box, deg2rad, rad2deg, System } from 'detect-collisions'
 
 import oc from 'open-color'
-import { rotate, rotateDEG, toCSS, translate } from 'transformation-matrix'
+import { applyToPoint, compose, rotate, rotateDEG, skew, toCSS, translate } from 'transformation-matrix'
 import { startDrag } from '@/utils/util'
 import { observer, useLocalObservable } from 'mobx-react-lite'
 import { cloneDeep } from 'es-toolkit'
@@ -14,11 +14,11 @@ import clsx from 'clsx'
 
 const Example = observer(function Example() {
   const rect1 = {
-    x: 0,
-    y: 0,
+    x: 100,
+    y: 100,
     width: 100,
     height: 100,
-    rotate: 45
+    mt: compose(rotateDEG(30), skew(0.3, 0.4))
   }
 
   const state = useLocalObservable(() => {
@@ -34,24 +34,22 @@ const Example = observer(function Example() {
 
   const system = new System()
 
-  const r_1 = system.createBox({ x: rect1.x, y: rect1.y }, rect1.width, rect1.height, {
-    angle: deg2rad(rect1.rotate)
-  })
+  const points = [
+    { x: rect1.x, y: rect1.y },
+    { x: rect1.x + rect1.width, y: rect1.y },
+    { x: rect1.x + rect1.width, y: rect1.y + rect1.height },
+    { x: rect1.x, y: rect1.y + rect1.height }
+  ].map(item => applyToPoint(rect1.mt, item))
+
+  const r_1 = system.createPolygon({ x: 0, y: 0 }, points)
   const sel = system.createBox({ x: box_sel.x, y: box_sel.y }, box_sel.width, box_sel.height)
 
-  const circleInPolygon = system.checkCollision(sel, r_1)
-  console.log(circleInPolygon)
-
-  return (
-    <div>
-      <img src={jntmPng} style={{ height: 100 }} />
-    </div>
-  )
+  const isCollision = system.checkCollision(sel, r_1)
 
   return (
     <svg className={clsx('border', state.bool ? 'move-cursor' : 'pointer-cursor')} width={700} height={600}>
       <g transform={toCSS(translate(10, 10))}>
-        <rect {...rect1} stroke="red" fill="none" transform={toCSS(rotateDEG(45))} />
+        <rect {...rect1} stroke="red" fill={isCollision ? 'pink' : 'none'} transform={toCSS(rect1.mt)} />
 
         <rect
           {...box_sel}
