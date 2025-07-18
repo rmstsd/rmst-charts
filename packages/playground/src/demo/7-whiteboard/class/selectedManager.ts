@@ -11,7 +11,7 @@ import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
 
-let debugHandle = false
+let debugHandle = true
 
 const ctrlSize = 10
 const rotateSize = ctrlSize * 1.5
