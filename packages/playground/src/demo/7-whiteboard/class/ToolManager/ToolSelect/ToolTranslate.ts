@@ -15,7 +15,7 @@ export default class ToolTranslate implements ITool {
 
     this.downPos = sceneCoord
 
-    this.downSnap = this.downSnap = keyBy(
+    this.downSnap = keyBy(
       this.wbEditor.selectManager.selectedGraphs.map(item => ({
         id: item.id,
         downMt: cloneDeep(item.graphShape.data.mt)

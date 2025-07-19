@@ -42,6 +42,7 @@ class WhiteboardEditor {
     this.stage?.dispose()
     this.camera.dispose()
     this.toolManager.dispose()
+    this.selectManager.dispose()
   }
 
   init(container: HTMLElement) {

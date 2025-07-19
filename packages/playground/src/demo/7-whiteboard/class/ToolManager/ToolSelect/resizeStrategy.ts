@@ -1,9 +1,10 @@
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
+import { applyToPoint, compose, Matrix, scale, translate } from 'transformation-matrix'
 
 export type ResizeStrategyOp = {
   getOrigin: (downRect) => ICoord
-  getNewSize: (origin: ICoord, movePos: ICoord, downRect) => { width: number; height: number }
+  getNewSize: (origin: ICoord, movePos: ICoord, downRect: TransformRect) => { width: number; height: number }
 }
 
 type ResizeStrategy = Record<TransformOrigin, ResizeStrategyOp>
@@ -49,5 +50,76 @@ export const resizeStrategy: ResizeStrategy = {
       width: movePos.x - origin.x,
       height: downRect.height
     })
+  }
+}
+
+export interface TransformRect {
+  width: number
+  height: number
+  mt: Matrix
+}
+interface ResizeRectOptions {
+  changeWidthAndHeight: boolean
+}
+
+export const resizeRect = (
+  transformOrigin: TransformOrigin,
+  movePos: ICoord,
+  downRect: TransformRect,
+  options?: ResizeRectOptions
+) => {
+  if (!options) {
+    options = {} as ResizeRectOptions
+  }
+
+  const { changeWidthAndHeight = true } = options
+
+  const strategy = resizeStrategy[transformOrigin]
+  const origin = strategy.getOrigin(downRect)
+  const newSize = strategy.getNewSize(origin, movePos, downRect)
+
+  if (changeWidthAndHeight) {
+    const scaleX = Math.sign(newSize.width) || 1 // 如果是 0 取 1
+    const scaleY = Math.sign(newSize.height) || 1
+    const scaleMt = scale(scaleX, scaleY)
+    newSize.width = Math.abs(newSize.width)
+    newSize.height = Math.abs(newSize.height)
+
+    let newMt = compose(downRect.mt, scaleMt)
+
+    const oldGlobalPos = applyToPoint(downRect.mt, origin)
+    const newOrigin = strategy.getOrigin(newSize)
+    const newGlobalPos = applyToPoint(newMt, newOrigin)
+
+    const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+    const fixPos = translate(-diffPos.x, -diffPos.y)
+
+    newMt = compose(fixPos, newMt)
+
+    return {
+      width: newSize.width,
+      height: newSize.height,
+      mt: newMt
+    }
+  } else {
+    const sx = newSize.width / downRect.width
+    const sy = newSize.height / downRect.height
+
+    const scaleTransform = scale(sx, sy)
+
+    const transformRect = { mt: compose(downRect.mt, scaleTransform) }
+
+    const oldGlobalPos = applyToPoint(downRect.mt, origin)
+    const newOrigin = strategy.getOrigin(downRect) // 缩放多个时, 改变的是矩阵, 缩放中心要基于原 rect 的宽高来求
+    const newGlobalPos = applyToPoint(transformRect.mt, newOrigin)
+    const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+    const fixPos = translate(-diffPos.x, -diffPos.y)
+    transformRect.mt = compose(fixPos, transformRect.mt)
+
+    return {
+      width: downRect.width,
+      height: downRect.height,
+      mt: transformRect.mt
+    }
   }
 }

@@ -1,5 +1,5 @@
 import WhiteboardEditor from '../whiteboardEditor'
-import { cloneDeep, pull } from 'es-toolkit'
+import { cloneDeep, noop, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
 import { Group, ICoord, Line, mergeBox, pointToFlatArray, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
@@ -30,21 +30,16 @@ export default class selectedManager {
 
   selectedIds: string[] = []
 
+  unbind = noop
+
   get selectedGraphs() {
     return this.wbEditor.graphs.filter(g => this.selectedIds.includes(g.id))
   }
 
-  get transformDownRect() {
+  get transformRect() {
     if (this.selectedIds.length === 1) {
-      const sel = this.selectedGraphs[0]
-
-      return {
-        downRect: {
-          width: sel.graphShape.data.width,
-          height: sel.graphShape.data.height,
-          mt: cloneDeep(sel.graphShape.data.mt)
-        }
-      }
+      const shapeData = this.selectedGraphs[0].graphShape.data
+      return { width: shapeData.width, height: shapeData.height, mt: cloneDeep(shapeData.mt) }
     }
 
     // 多个
@@ -58,24 +53,30 @@ export default class selectedManager {
     })
 
     const { minX, minY, maxX, maxY } = mergeBox(selRects)
-
-    return {
-      downRect: { width: maxX - minX, height: maxY - minY, mt: translate(minX, minY) }
-    }
+    return { width: maxX - minX, height: maxY - minY, mt: translate(minX, minY) }
   }
 
   bindEvent() {
     const { wbEditor } = this
 
-    wbEditor.camera.eventEmitter.on('cameraChange', () => {
+    const off_1 = wbEditor.camera.eventEmitter.on('cameraChange', () => {
       this.renderSelected()
       this.renderHovered()
     })
 
-    wbEditor.eventEmitter.on('render', () => {
+    const off_2 = wbEditor.eventEmitter.on('render', () => {
       this.renderSelected()
       this.renderHovered()
     })
+
+    this.unbind = () => {
+      off_1()
+      off_2()
+    }
+  }
+
+  dispose() {
+    this.unbind()
   }
 
   select(id: string) {
@@ -102,7 +103,7 @@ export default class selectedManager {
       return
     }
 
-    const { downRect } = this.transformDownRect
+    const downRect = this.transformRect
 
     const tl = { x: 0, y: 0 }
     const tr = { x: downRect.width, y: 0 }

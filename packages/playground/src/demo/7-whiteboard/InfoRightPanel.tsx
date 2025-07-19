@@ -23,7 +23,7 @@ export default function InfoRightPanel() {
   const [count, setCount] = useState(0)
 
   return (
-    <div className="flex-shrink-0 p-2 overflow-auto " style={{ width: 200 }}>
+    <div className="right-attr-panel flex-shrink-0 p-2 overflow-auto " style={{ width: 200 }}>
       <WbInputNumber
         value={count}
         onChange={val => {

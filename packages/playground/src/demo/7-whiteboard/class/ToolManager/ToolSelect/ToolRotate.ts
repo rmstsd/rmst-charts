@@ -20,7 +20,7 @@ export default class ToolRotate implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolRotate onDragStart')
 
-    this.downRect = this.wbEditor.selectManager.transformDownRect.downRect
+    this.downRect = this.wbEditor.selectManager.transformRect
     this.isSingleSelect = this.wbEditor.selectManager.selectedIds.length === 1
 
     this.origin = applyToPoint(this.downRect.mt, { x: this.downRect.width / 2, y: this.downRect.height / 2 })

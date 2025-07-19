@@ -8,9 +8,11 @@ import { ToolEnum } from './class/ToolManager/constant'
 import { WbEditorContext } from './context'
 import InfoRightPanel from './InfoRightPanel'
 
-import { isDev, isProd } from '@/utils'
+import { isProd } from '@/utils'
 
 import './style.less'
+
+// let isProd = false
 
 const Whiteboard = observer(function Whiteboard() {
   const domRef = useRef()
@@ -49,7 +51,7 @@ const Whiteboard = observer(function Whiteboard() {
         <main className="flex h-full">
           <div className="whiteboard-canvas flex-grow h-full relative border" ref={domRef}></div>
 
-          <div className="absolute bg-white shadow-xl rounded-lg p-2 bottom-0 left-0 border flex gap-1 items-center">
+          <div className="zoom-container absolute bg-white shadow-xl rounded-lg p-2 bottom-0 left-0 border flex gap-1 items-center">
             <button onClick={() => wbEditor.camera.zoomOut()}>缩小</button>
             <span style={{ width: 90 }} className="text-center">
               zoom: {round(wbEditor.camera.zoom * 100)}%
@@ -65,11 +67,7 @@ const Whiteboard = observer(function Whiteboard() {
     </WbEditorContext.Provider>
   )
 
-  if (isDev) {
-    return wbApp
-  }
-
-  return createPortal(wbApp, document.body)
+  return wbApp
 })
 
 export default Whiteboard

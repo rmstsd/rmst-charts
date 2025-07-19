@@ -54,7 +54,7 @@ export default class ToolSelect implements ITool {
     if (isCtrlHandle) {
       wbEditor.selectManager.onHover(null, false)
 
-      const { downRect } = wbEditor.selectManager.transformDownRect
+      const downRect = wbEditor.selectManager.transformRect
       const cursorType = hovered.data.extraData?.cursorType
 
       switch (hovered.data.id) {
