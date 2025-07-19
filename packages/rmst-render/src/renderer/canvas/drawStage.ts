@@ -2,7 +2,7 @@ import { scale, translate, compose } from 'transformation-matrix'
 import { fitAndPosition } from 'object-fit-math'
 
 import { Box, Circle, Ellipse, Group, RmstImage, Line, Path, Text, Trapezoid } from '../../shape'
-import { clipRect, createLinePath2D, setCtxFontSize } from '../../utils'
+import { clipRect, createLinePath2D, measureText, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
 import { fill, fillOrStroke, setCtxStyleProp, stroke } from './fillOrStroke'
@@ -87,7 +87,6 @@ export function drawStage(stage: Stage) {
         case 'Line': {
           const { closed, path2D } = (elementItem as Line).data
 
-          // 调用 attr() 方法后,  需重新计算 path2D, 且一定会有 bug, 需要优化
           elementItem.path2D = path2D ? path2D : createLinePath2D(data)
 
           stroke(ctx, elementItem)
@@ -118,16 +117,36 @@ export function drawStage(stage: Stage) {
           break
         }
         case 'Text': {
-          let { x, y, content, fontSize, textAlign = 'left', textBaseline } = data as Text['data']
+          const textElementItem = elementItem as Text
+          let { content, fontSize, textAlign = 'left', textBaseline, boxData } = data as Text['data']
 
-          x = 0
-          y = 0
+          const textSize = measureText(content, fontSize)
 
-          setCtxFontSize(ctx, fontSize)
+          const padding = boxData?.padding ?? 0
+          textElementItem.path2D = createRectPath2D({
+            x: 0,
+            y: 0,
+            width: textSize.textWidth + padding * 2,
+            height: textSize.textHeight + padding * 2,
+            cornerRadius: boxData?.cornerRadius ?? 0
+          })
 
-          ctx.textBaseline = textBaseline
-          ctx.textAlign = textAlign
-          ctx.fillText(content, x, y)
+          if (boxData?.fillStyle) {
+            ctx.fillStyle = boxData.fillStyle
+            ctx.fill(textElementItem.path2D)
+          }
+
+          setCtxStyleProp(ctx, textElementItem)
+          clipRect(ctx, textElementItem.path2D, () => {
+            setCtxFontSize(ctx, fontSize)
+
+            ctx.textBaseline = textBaseline
+            ctx.textAlign = textAlign
+            ctx.fillText(content, padding, padding)
+          })
+
+          stroke(ctx, textElementItem)
+
           break
         }
         case 'Image': {
@@ -175,6 +194,7 @@ export function drawStage(stage: Stage) {
 
             image.onload = () => {
               rrImageElementItem.nativeImage = image
+              rrImageElementItem.onLoad?.()
               drawStage(stage)
             }
           }

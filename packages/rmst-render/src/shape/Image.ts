@@ -23,6 +23,9 @@ export class RmstImage extends Box {
   override getBBox(): IRect {
     return { x: 0, y: 0, width: this.data.width, height: this.data.height }
   }
+
+  // 图片加载完成后 会调用该方法
+  onLoad() {}
 }
 
 export default RmstImage

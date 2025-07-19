@@ -7,11 +7,8 @@ export const defaultRectData = {
 }
 
 export interface RectData extends UiBaseData {
-  x?: number
-  y?: number
-  width?: number
-  height?: number
   cornerRadius?: number
+  padding?: number
 }
 
 export class Rect extends UiBase<RectData> {
