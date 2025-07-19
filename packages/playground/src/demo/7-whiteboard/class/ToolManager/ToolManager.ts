@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { isBoolean } from 'es-toolkit'
 import WhiteboardEditor from '../../whiteboardEditor'
 import { ToolEnum, ToolEnumKey } from './constant'
 import { Pointer_Button } from 'rmst-render/constant'
@@ -12,6 +12,7 @@ import ToolDrawEllipse from './ToolDraw/ToolDrawEllipse'
 import ToolDrawRhombus from './ToolDraw/ToolDrawRhombus'
 import ToolDrawPencil from './ToolDraw/ToolDrawPencil'
 import ToolDrawImage from './ToolDraw/ToolDrawImage'
+import EventEmitter from 'rmst-render/event_emitter'
 
 const ToolClassMap = {
   [ToolEnum.Select]: ToolSelect,
@@ -22,12 +23,16 @@ const ToolClassMap = {
   [ToolEnum.Image]: ToolDrawImage
 }
 
+type Events = {
+  switchToolChange: (tool: ToolEnumKey) => void
+}
+
 export default class ToolManager {
-  constructor(private wbEditor: WhiteboardEditor) {
-    makeAutoObservable(this)
-  }
+  constructor(private wbEditor: WhiteboardEditor) {}
 
   private abCt = new AbortController()
+
+  eventEmitter = new EventEmitter<Events>()
 
   currentTool: ToolEnumKey
   currentToolClass: ITool
@@ -58,14 +63,26 @@ export default class ToolManager {
         onDragEnd: upEvt => {
           isPointerDown = false
 
-          this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-          this.switchTool(ToolEnum.Select)
+          const exitCurrentTool = this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          if (isBoolean(exitCurrentTool)) {
+            if (exitCurrentTool) {
+              this.switchTool(ToolEnum.Select)
+            }
+          } else {
+            this.switchTool(ToolEnum.Select)
+          }
         },
         onPointerUp: upEvt => {
           isPointerDown = false
 
-          this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-          this.switchTool(ToolEnum.Select)
+          const exitCurrentTool = this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          if (isBoolean(exitCurrentTool)) {
+            if (exitCurrentTool) {
+              this.switchTool(ToolEnum.Select)
+            }
+          } else {
+            this.switchTool(ToolEnum.Select)
+          }
         }
       })
     }
@@ -103,6 +120,8 @@ export default class ToolManager {
     if (tool === this.currentTool) {
       return
     }
+
+    this.eventEmitter.emit('switchToolChange', tool)
 
     const prevToolClass = this.currentToolClass
     if (prevToolClass) {

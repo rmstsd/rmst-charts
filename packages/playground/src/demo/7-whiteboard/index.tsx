@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { observer } from 'mobx-react-lite'
-import { createPortal } from 'react-dom'
 import clsx from 'clsx'
 import { round } from 'es-toolkit'
 import WhiteboardEditor from './whiteboardEditor'
-import { ToolEnum } from './class/ToolManager/constant'
 import { WbEditorContext } from './context'
+
+import ToolBar from './ToolBar'
 import InfoRightPanel from './InfoRightPanel'
 
 import { isProd } from '@/utils'
@@ -36,17 +36,7 @@ const Whiteboard = observer(function Whiteboard() {
   const wbApp = (
     <WbEditorContext.Provider value={wbEditorContextValue}>
       <div className={clsx('whiteboard-app', isProd && 'prod')}>
-        <div className="tools-bar flex gap-2 absolute z-50 shadow-lg p-2 left-0 top-2 border right-0 mx-auto w-fit rounded-lg bg-white">
-          {ToolEnum.items.map(item => (
-            <button
-              key={item.key}
-              className={clsx('tool-btn', wbEditor.toolManager.currentTool === item.key && 'selected')}
-              onClick={() => wbEditor.toolManager.switchTool(item.key)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+        <ToolBar />
 
         <main className="flex h-full">
           <div className="whiteboard-canvas flex-grow h-full relative border" ref={domRef}></div>

@@ -6,7 +6,7 @@ export type Destructor = () => void
 export interface ITool {
   cursor?: WbCursor
 
-  enableActive?: () => Promise<boolean>
+  enableActive?: () => Promise<boolean> // 代表激活成功
   onActive?: () => void
   onDeActive?: () => void
 
@@ -17,9 +17,9 @@ export interface ITool {
 
   // 移动时 不是拖拽
   onPointerMoveNotDragging?: (moveEvt: PointerEvent, sceneCoord: ICoord) => void
-  onPointerUp?: (downEvt: PointerEvent, sceneCoord: ICoord) => void
+  onPointerUp?: (downEvt: PointerEvent, sceneCoord: ICoord) => void | boolean // 相当于 onClick 事件, 返回值代表是否退出当前工具
 
   onDragStart: (downEvt: PointerEvent, sceneCoord: ICoord) => void
   onDragMove: (moveEvt: PointerEvent, sceneCoord: ICoord) => void
-  onDragEnd: (upEvt: PointerEvent, sceneCoord: ICoord) => void
+  onDragEnd: (upEvt: PointerEvent, sceneCoord: ICoord) => void | boolean // 拖拽结束后是否退出当前工具
 }

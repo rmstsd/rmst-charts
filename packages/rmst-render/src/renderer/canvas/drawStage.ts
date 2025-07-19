@@ -134,7 +134,7 @@ export function drawStage(stage: Stage) {
           const rrImageElementItem = elementItem as RmstImage
           let { width, height, cornerRadius, src, objectFit } = rrImageElementItem.data
 
-          if (rrImageElementItem.nativeImage) {
+          if (rrImageElementItem.nativeImage && rrImageElementItem.oldSrc === src) {
             const image = rrImageElementItem.nativeImage
             const ratio = image.naturalWidth / image.naturalHeight
 
@@ -168,6 +168,8 @@ export function drawStage(stage: Stage) {
 
             stroke(ctx, rrImageElementItem)
           } else {
+            rrImageElementItem.oldSrc = src
+
             const image = new Image()
             image.src = src
 

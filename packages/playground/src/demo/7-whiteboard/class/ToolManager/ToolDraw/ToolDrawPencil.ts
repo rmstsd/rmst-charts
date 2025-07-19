@@ -60,8 +60,8 @@ export default class ToolDrawPencil implements ITool {
       id: this.graphItem.id,
       name: ToolEnum.label(ToolEnum.Pencil),
       d: tempD,
-      // mt: translate(x1, y1),
       strokeStyle: defaultGraphPencilColor,
+      lineCap: 'round',
       lineWidth: 3,
       extraData: {
         wbType: ToolEnum.Pencil
@@ -75,6 +75,13 @@ export default class ToolDrawPencil implements ITool {
     const bbox = getBBox(curveD)
     curveD = svgPath(curveD).translate(-bbox.x, -bbox.y).toString()
     this.graphItem.graphShape.attr({ d: curveD, width: bbox.width, height: bbox.height, mt: translate(bbox.x, bbox.y) })
+
+    this.points = []
+
+    return false
+  }
+  onPointerUp(downEvt: PointerEvent, sceneCoord: ICoord) {
+    return false
   }
 }
 

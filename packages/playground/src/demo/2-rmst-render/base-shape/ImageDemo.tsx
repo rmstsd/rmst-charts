@@ -31,6 +31,10 @@ export default function ImageDemo() {
       objectFit: 'contain'
     })
 
+    setTimeout(() => {
+      image2.attr({ src: testJpg })
+    }, 2000)
+
     stage.append(image, image2)
   })
 

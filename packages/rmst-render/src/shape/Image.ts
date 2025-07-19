@@ -12,6 +12,8 @@ export class RmstImage extends Box {
     super(data)
   }
 
+  oldSrc: string // 内部私有 用于渲染时比较
+
   type: IShapeType = 'Image'
 
   nativeImage: HTMLImageElement
