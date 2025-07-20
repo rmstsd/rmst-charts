@@ -17,13 +17,8 @@ export default class ToolDrawImage implements ITool {
   private urls: string[] = []
   private index = 0
 
-  private previewedImageGroup = new Group({ pointerEvents: 'none' })
-  private previewedImage = new RmstImage({
-    height: 80,
-    src: '',
-    mt: translate(0, 0),
-    strokeStyle: '#ddd'
-  })
+  private previewedImageGroup = new Group({ name: 'previewed-image-group', pointerEvents: 'none' })
+  private previewedImage = new RmstImage({ height: 80, mt: translate(0, 0), strokeStyle: '#ddd' })
   private text = new Text({
     fillStyle: 'white',
     fontSize: 12,
@@ -151,6 +146,8 @@ export default class ToolDrawImage implements ITool {
         height: nativeImage.naturalHeight,
         mt: translate(sceneCoord.x - nativeImage.naturalWidth / 2, sceneCoord.y - nativeImage.naturalHeight / 2)
       })
+
+      this.wbEditor.triggerRender()
 
       graphShape.onLoad = null
     }
