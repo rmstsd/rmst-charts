@@ -28,7 +28,8 @@ export default function ImageDemo() {
       src: zyJpg,
       lineWidth: 2,
       strokeStyle: 'red',
-      objectFit: 'contain'
+      objectFit: 'cover',
+      cornerRadius: 10
     })
 
     setTimeout(() => {

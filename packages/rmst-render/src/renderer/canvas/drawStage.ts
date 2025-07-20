@@ -86,7 +86,6 @@ export function drawStage(stage: Stage) {
         }
         case 'Line': {
           const { closed, path2D } = (elementItem as Line).data
-
           elementItem.path2D = path2D ? path2D : createLinePath2D(data)
 
           stroke(ctx, elementItem)
@@ -113,6 +112,56 @@ export function drawStage(stage: Stage) {
             drawChildren((elementItem as Box).data.children)
           })
           stroke(ctx, elementItem)
+
+          break
+        }
+        case 'Image': {
+          const rrImageElementItem = elementItem as RmstImage
+          let { width, height, cornerRadius, src, objectFit } = rrImageElementItem.data
+
+          if (rrImageElementItem.nativeImage && rrImageElementItem._oldSrc === src) {
+            const image = rrImageElementItem.nativeImage
+            const ratio = image.naturalWidth / image.naturalHeight
+
+            if (width && isNil(height)) {
+              height = width / ratio
+            } else if (height && isNil(width)) {
+              width = height * ratio
+            }
+
+            rrImageElementItem.path2D = createRectPath2D({ x: 0, y: 0, width, height, cornerRadius })
+            fill(ctx, rrImageElementItem)
+            clipRect(ctx, rrImageElementItem.path2D, () => {
+              const rect = fitAndPosition(
+                { width, height },
+                { width: image.naturalWidth, height: image.naturalHeight },
+                objectFit
+              )
+              ctx.drawImage(
+                image,
+                0,
+                0,
+                image.naturalWidth,
+                image.naturalHeight,
+                rect.x,
+                rect.y,
+                rect.width,
+                rect.height
+              )
+            })
+            stroke(ctx, rrImageElementItem)
+          } else {
+            rrImageElementItem._oldSrc = src
+
+            const image = new Image()
+            image.src = src
+
+            image.onload = () => {
+              rrImageElementItem.nativeImage = image
+              rrImageElementItem.onLoad?.()
+              drawStage(stage)
+            }
+          }
 
           break
         }
@@ -146,58 +195,6 @@ export function drawStage(stage: Stage) {
           })
 
           stroke(ctx, textElementItem)
-
-          break
-        }
-        case 'Image': {
-          const rrImageElementItem = elementItem as RmstImage
-          let { width, height, cornerRadius, src, objectFit } = rrImageElementItem.data
-
-          if (rrImageElementItem.nativeImage && rrImageElementItem.oldSrc === src) {
-            const image = rrImageElementItem.nativeImage
-            const ratio = image.naturalWidth / image.naturalHeight
-
-            if (width && isNil(height)) {
-              height = width / ratio
-            } else if (height && isNil(width)) {
-              width = height * ratio
-            }
-
-            rrImageElementItem.path2D = createRectPath2D({ x: 0, y: 0, width, height, cornerRadius })
-            fill(ctx, rrImageElementItem)
-
-            clipRect(ctx, rrImageElementItem.path2D, () => {
-              const rect = fitAndPosition(
-                { width, height },
-                { width: image.naturalWidth, height: image.naturalHeight },
-                objectFit
-              )
-              ctx.drawImage(
-                image,
-                0,
-                0,
-                image.naturalWidth,
-                image.naturalHeight,
-                rect.x,
-                rect.y,
-                rect.width,
-                rect.height
-              )
-            })
-
-            stroke(ctx, rrImageElementItem)
-          } else {
-            rrImageElementItem.oldSrc = src
-
-            const image = new Image()
-            image.src = src
-
-            image.onload = () => {
-              rrImageElementItem.nativeImage = image
-              rrImageElementItem.onLoad?.()
-              drawStage(stage)
-            }
-          }
 
           break
         }

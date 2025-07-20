@@ -13,6 +13,8 @@ export default class ToolTranslate implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolTranslate onDragStart')
 
+    this.wbEditor.selectManager.hideCtrlBox()
+
     this.downPos = sceneCoord
 
     this.downSnap = keyBy(
@@ -42,5 +44,7 @@ export default class ToolTranslate implements ITool {
 
   onDragEnd(upEvt: PointerEvent) {
     console.log('ToolTranslate onDragEnd')
+
+    this.wbEditor.selectManager.showCtrlBox()
   }
 }

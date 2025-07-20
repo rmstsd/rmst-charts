@@ -10,7 +10,7 @@ export interface BoxData extends RectData {
   children?: IShape[]
 }
 
-export class Box extends Group {
+export class Box<Data = BoxData> extends Group<Data> {
   constructor(data: BoxData) {
     super({ ...defaultRectData, ...data })
   }

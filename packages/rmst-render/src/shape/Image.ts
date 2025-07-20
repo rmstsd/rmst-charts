@@ -7,12 +7,12 @@ interface ImageData extends BoxData {
   objectFit?: FitMode
 }
 
-export class RmstImage extends Box {
+export class RmstImage extends Box<ImageData> {
   constructor(data: ImageData) {
     super(data)
   }
 
-  oldSrc: string // 内部私有 用于渲染时比较
+  _oldSrc: string // 内部私有 用于渲染时比较
 
   type: IShapeType = 'Image'
 

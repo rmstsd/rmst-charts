@@ -1,5 +1,5 @@
 import { EventParameter } from '../../constant'
-import { isBox, isGroup, isLine, isStage } from '../../utils/isShape'
+import { isGroup, isLine, isStage } from '../../utils/isShape'
 import { convertToNormalPoints, pointToFlatArray } from '../../utils'
 import { IShape } from '../../type'
 import { Stage } from '../..'

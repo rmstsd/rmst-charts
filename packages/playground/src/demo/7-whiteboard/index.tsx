@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { observer } from 'mobx-react-lite'
 import clsx from 'clsx'
 import { round } from 'es-toolkit'
 import WhiteboardEditor from './whiteboardEditor'
@@ -14,7 +13,7 @@ import './style.less'
 
 // let isProd = false
 
-const Whiteboard = observer(function Whiteboard() {
+const Whiteboard = function Whiteboard() {
   const domRef = useRef()
   const [wbEditor, setWbEditor] = useState(() => new WhiteboardEditor())
 
@@ -58,6 +57,6 @@ const Whiteboard = observer(function Whiteboard() {
   )
 
   return wbApp
-})
+}
 
 export default Whiteboard

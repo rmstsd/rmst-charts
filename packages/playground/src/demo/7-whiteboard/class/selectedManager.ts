@@ -28,6 +28,8 @@ export default class selectedManager {
   private hovered: IGraph
   private enabledHover = true
 
+  private ctrlBoxGroup = new Group({ name: 'ctrl-box' })
+
   selectedIds: string[] = []
 
   unbind = noop
@@ -97,9 +99,16 @@ export default class selectedManager {
     this.selectedIds = []
   }
 
+  hideCtrlBox() {
+    this.wbEditor.selectLayer.ctrlBoxGroup.attr({ visible: false })
+  }
+  showCtrlBox() {
+    this.wbEditor.selectLayer.ctrlBoxGroup.attr({ visible: true })
+  }
+
   private renderSelected() {
     if (!this.selectedIds.length) {
-      this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
+      this.wbEditor.selectLayer.ctrlBoxGroup.removeAllChildren()
       return
     }
 
@@ -313,8 +322,8 @@ export default class selectedManager {
       blText
     ])
 
-    this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
-    this.wbEditor.selectLayer.selectToolGroup.append(g)
+    this.wbEditor.selectLayer.ctrlBoxGroup.removeAllChildren()
+    this.wbEditor.selectLayer.ctrlBoxGroup.append(g)
   }
 
   enableHover() {
