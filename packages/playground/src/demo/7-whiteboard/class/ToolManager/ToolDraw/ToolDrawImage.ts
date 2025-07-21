@@ -1,4 +1,4 @@
-import { Box, getRectByTwoPoint, Group, ICoord, RmstImage, Text } from 'rmst-render'
+import { getRectByTwoPoint, Group, ICoord, RmstImage, Text } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { IGraph } from '../../../type'
@@ -17,7 +17,7 @@ export default class ToolDrawImage implements ITool {
   private urls: string[] = []
   private index = 0
 
-  private previewedImageGroup = new Group({ name: 'previewed-image-group', pointerEvents: 'none' })
+  private previewedImageGroup = new Group({ name: 'previewed-image-group', pointerEvents: 'none', visible: false })
   private previewedImage = new RmstImage({ height: 80, mt: translate(0, 0), strokeStyle: '#ddd' })
   private text = new Text({
     fillStyle: 'white',
@@ -66,12 +66,14 @@ export default class ToolDrawImage implements ITool {
     this.previewedImage.remove()
   }
 
-  onPointerMove({ sceneCoord, isInContainer }) {
-    const coord = applyToPoint(this.wbEditor.graphLayer.data.mt, sceneCoord as ICoord)
+  onPointerMove({ sceneCoord, isInWbCanvas }) {
+    this.previewedImageGroup.attr({ visible: isInWbCanvas })
 
-    this.previewedImageGroup.attr({ visible: isInContainer ? true : false })
-    this.previewedImage.attr({ x: coord.x + 4, y: coord.y + 4 })
-    this.text.attr({ x: coord.x + 4, y: coord.y + 4 })
+    if (isInWbCanvas) {
+      const coord = applyToPoint(this.wbEditor.graphLayer.data.mt, sceneCoord as ICoord)
+      this.previewedImage.attr({ x: coord.x + 4, y: coord.y + 4 })
+      this.text.attr({ x: coord.x + 4, y: coord.y + 4 })
+    }
   }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {

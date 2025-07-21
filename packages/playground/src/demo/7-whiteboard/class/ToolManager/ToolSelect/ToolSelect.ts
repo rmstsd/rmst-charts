@@ -1,7 +1,6 @@
-import { ICoord, IShape } from 'rmst-render'
+import { ICoord } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
-import { ToolEnum } from '../constant'
 import { Graph_Id, isCtrlHandleShape, isWbGraphShape } from '@/demo/7-whiteboard/constant'
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
@@ -31,11 +30,20 @@ export default class ToolSelect implements ITool {
     wbEditor.selectManager.disableHover()
   }
 
-  hoveredId: string
+  private hoveredId: string
 
-  onPointerMoveNotDragging(moveEvt: PointerEvent) {
+  onPointerMoveNotDragging({ moveEvt, isInWbCanvas }) {
     const { wbEditor } = this
-    const hovered = findHover_v2(wbEditor.stage, moveEvt.offsetX, moveEvt.offsetY)
+
+    if (!isInWbCanvas) {
+      wbEditor.selectManager.onHover(null, false)
+      wbEditor.cursorManager.setCursor(this.cursor)
+      this.hoveredId = null
+      return
+    }
+
+    const worldPoint = wbEditor.coordSys.client2World(moveEvt)
+    const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
 
     if (!hovered) {
       wbEditor.selectManager.onHover(null, false)
@@ -82,7 +90,7 @@ export default class ToolSelect implements ITool {
       wbEditor.selectManager.onHover(hovered.data.id, true)
       wbEditor.cursorManager.setCursor(this.cursor)
     } else {
-      wbEditor.cursorManager.setCursor(this.cursor)
+      // wbEditor.cursorManager.setCursor(this.cursor)
     }
   }
   onPointerDown(downEvt: PointerEvent) {
