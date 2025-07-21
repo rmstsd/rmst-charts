@@ -94,7 +94,7 @@ export default class ToolManager {
       this.currentToolClass?.onPointerMove?.({ isInWbCanvas })
     }
 
-    const onDocumentPointerMove = (moveEvt: PointerEvent) => {
+    const onPointerMove = (moveEvt: PointerEvent) => {
       const sceneCoord = wbEditor.coordSys.client2Scene(moveEvt)
       if (!isPointerDown) {
         this.currentToolClass?.onPointerMoveNotDragging?.({ moveEvt, sceneCoord, isInWbCanvas })
@@ -106,7 +106,7 @@ export default class ToolManager {
     container.addEventListener('pointerenter', onPointerEnter, { signal: this.abCt.signal })
     container.addEventListener('pointerleave', onPointerLeave, { signal: this.abCt.signal })
     container.addEventListener('pointerdown', onPointerDown, { signal: this.abCt.signal })
-    container.addEventListener('pointermove', onDocumentPointerMove, { signal: this.abCt.signal })
+    container.addEventListener('pointermove', onPointerMove, { signal: this.abCt.signal })
   }
 
   dispose() {
