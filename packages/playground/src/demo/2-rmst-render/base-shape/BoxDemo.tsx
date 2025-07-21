@@ -16,19 +16,18 @@ const BoxDemo = () => {
       lineWidth: 10,
       strokeStyle: OpenColor.blue[6],
       cursor: 'move',
-      draggable: true
+      draggable: true,
+      children: [
+        new Ellipse({
+          x: -40,
+          y: -30,
+          width: 150,
+          height: 100,
+          fillStyle: 'red',
+          draggable: true
+        })
+      ]
     })
-
-    const cir = new Ellipse({
-      x: -40,
-      y: -30,
-      width: 150,
-      height: 100,
-      fillStyle: 'red',
-      draggable: true
-    })
-
-    ell.append(cir)
 
     stage.append(ell)
   })

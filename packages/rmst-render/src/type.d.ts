@@ -1,3 +1,4 @@
+import { Matrix } from 'transformation-matrix'
 import { Box, Circle, Ellipse, Group, RmstImage, Line, Path, Rect, Text } from './shape'
 import type * as CSS from 'csstype'
 
@@ -18,6 +19,8 @@ export type IShapeType =
 export type ICursor = CSS.Property.Cursor
 
 export type ICoord = { x: number; y: number }
+
+export type ITransFormRect = { width: number; height: number; mt: Matrix }
 
 export interface IRect {
   x: number

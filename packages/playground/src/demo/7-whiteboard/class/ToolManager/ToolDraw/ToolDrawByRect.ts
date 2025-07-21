@@ -17,12 +17,11 @@ export default abstract class ToolDrawByRect implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.downPos = sceneCoord
 
-    this.graphItem.id = uuid()
-    this.graphItem.graphShape = new Path({})
+    const id = uuid()
+    this.graphItem = { id, graphShape: new Path({ id }) }
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
 
     this.wbEditor.graphs.push(this.graphItem)
-
     this.wbEditor.selectManager.select(this.graphItem.id)
   }
 
@@ -37,7 +36,6 @@ export default abstract class ToolDrawByRect implements ITool {
 
     const graphData = this.getGraphPathD({ x: 0, y: 0, width, height })
     this.graphItem.graphShape.attr({
-      id: this.graphItem.id,
       name: graphData.name,
       d: graphData.d,
       width,
@@ -45,9 +43,7 @@ export default abstract class ToolDrawByRect implements ITool {
       mt: translate(tl.x, tl.y),
       fillStyle: defaultGraphFillColor,
       lineWidth: 1,
-      extraData: {
-        wbType: graphData.wbType
-      }
+      extraData: { wbType: graphData.wbType }
     })
 
     wbEditor.triggerRender()
@@ -78,9 +74,7 @@ export default abstract class ToolDrawByRect implements ITool {
       mt: translate(sceneCoord.x - width / 2, sceneCoord.y - height / 2),
       fillStyle: defaultGraphFillColor,
       lineWidth: 1,
-      extraData: {
-        wbType: graphData.wbType
-      }
+      extraData: { wbType: graphData.wbType }
     })
 
     this.wbEditor.triggerRender()

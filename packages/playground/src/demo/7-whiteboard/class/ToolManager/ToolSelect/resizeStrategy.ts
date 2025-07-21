@@ -1,4 +1,4 @@
-import { ICoord } from 'rmst-render'
+import { ICoord, ITransFormRect } from 'rmst-render'
 import { TransformOrigin } from '../constant'
 import { applyToPoint, compose, Matrix, scale, translate } from 'transformation-matrix'
 
@@ -78,6 +78,11 @@ export const resizeRect = (
   const origin = strategy.getOrigin(downRect)
   const newSize = strategy.getNewSize(origin, movePos, downRect)
 
+  const oldGlobalPos = applyToPoint(downRect.mt, origin)
+
+  let newGlobalPos: ICoord
+  let transformRect: ITransFormRect = { width: 0, height: 0, mt: downRect.mt }
+
   if (changeWidthAndHeight) {
     const scaleX = Math.sign(newSize.width) || 1 // 如果是 0 取 1
     const scaleY = Math.sign(newSize.height) || 1
@@ -85,41 +90,25 @@ export const resizeRect = (
     newSize.width = Math.abs(newSize.width)
     newSize.height = Math.abs(newSize.height)
 
-    let newMt = compose(downRect.mt, scaleMt)
+    const newMt = compose(downRect.mt, scaleMt)
 
-    const oldGlobalPos = applyToPoint(downRect.mt, origin)
     const newOrigin = strategy.getOrigin(newSize)
-    const newGlobalPos = applyToPoint(newMt, newOrigin)
+    newGlobalPos = applyToPoint(newMt, newOrigin)
 
-    const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
-    const fixPos = translate(-diffPos.x, -diffPos.y)
-
-    newMt = compose(fixPos, newMt)
-
-    return {
-      width: newSize.width,
-      height: newSize.height,
-      mt: newMt
-    }
+    transformRect = { width: newSize.width, height: newSize.height, mt: newMt }
   } else {
     const sx = newSize.width / downRect.width
     const sy = newSize.height / downRect.height
+    const scaleMt = scale(sx, sy)
+    transformRect = { width: downRect.width, height: downRect.height, mt: compose(downRect.mt, scaleMt) }
 
-    const scaleTransform = scale(sx, sy)
-
-    const transformRect = { mt: compose(downRect.mt, scaleTransform) }
-
-    const oldGlobalPos = applyToPoint(downRect.mt, origin)
-    const newOrigin = strategy.getOrigin(downRect) // 缩放多个时, 改变的是矩阵, 缩放中心要基于原 rect 的宽高来求
-    const newGlobalPos = applyToPoint(transformRect.mt, newOrigin)
-    const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
-    const fixPos = translate(-diffPos.x, -diffPos.y)
-    transformRect.mt = compose(fixPos, transformRect.mt)
-
-    return {
-      width: downRect.width,
-      height: downRect.height,
-      mt: transformRect.mt
-    }
+    const newOrigin = origin // 缩放多个时, 改变的是矩阵, 缩放中心要基于原 rect 的宽高来求
+    newGlobalPos = applyToPoint(transformRect.mt, newOrigin)
   }
+
+  const diffPos = { x: newGlobalPos.x - oldGlobalPos.x, y: newGlobalPos.y - oldGlobalPos.y }
+  const fixPos = translate(-diffPos.x, -diffPos.y)
+  transformRect.mt = compose(fixPos, transformRect.mt)
+
+  return transformRect
 }

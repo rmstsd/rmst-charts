@@ -11,7 +11,7 @@ const defaultData: GroupData = {
   children: []
 }
 
-export class Group extends UiBase<any> {
+export class Group<Data = GroupData> extends UiBase<Data> {
   constructor(data: GroupData = cloneDeep(defaultData)) {
     super(data, cloneDeep(defaultData))
 

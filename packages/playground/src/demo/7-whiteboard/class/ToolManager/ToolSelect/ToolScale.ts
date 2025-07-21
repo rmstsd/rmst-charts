@@ -1,11 +1,11 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-import { applyToPoint, compose, identity, inverse, scale, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
-import { resizeRect, resizeStrategy, ResizeStrategyOp, TransformRect } from './resizeStrategy'
+import { resizeRect, TransformRect } from './resizeStrategy'
 import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
 
 export default class ToolScale implements ITool {

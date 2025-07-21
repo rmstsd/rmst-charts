@@ -1,4 +1,5 @@
 import { IShapeType } from '../type'
+import { BoxData } from './Box'
 import UiBase, { UiBaseData } from './UiBase'
 
 const defaultData: TextData = {
@@ -8,13 +9,13 @@ const defaultData: TextData = {
   textBaseline: 'top'
 }
 
-interface TextData extends UiBaseData {
-  x?: number
-  y?: number
+export interface TextData extends UiBaseData {
   content?: string
   fontSize?: number
   textAlign?: CanvasTextAlign
   textBaseline?: CanvasTextBaseline
+
+  boxData?: BoxData
 }
 
 export class Text extends UiBase<TextData> {

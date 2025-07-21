@@ -7,12 +7,12 @@ interface ImageData extends BoxData {
   objectFit?: FitMode
 }
 
-export class RmstImage extends Box {
+export class RmstImage extends Box<ImageData> {
   constructor(data: ImageData) {
     super(data)
   }
 
-  oldSrc: string // 内部私有 用于渲染时比较
+  _oldSrc: string // 内部私有 用于渲染时比较
 
   type: IShapeType = 'Image'
 
@@ -23,6 +23,9 @@ export class RmstImage extends Box {
   override getBBox(): IRect {
     return { x: 0, y: 0, width: this.data.width, height: this.data.height }
   }
+
+  // 图片加载完成后 会调用该方法
+  onLoad() {}
 }
 
 export default RmstImage

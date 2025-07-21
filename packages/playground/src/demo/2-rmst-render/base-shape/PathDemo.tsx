@@ -53,32 +53,24 @@ const PathDemo = () => {
 
 export default PathDemo
 
-/**
- * 使用 SVG 的 d 属性绘制五角星
- * @param {number} cx - 五角星中心的 x 坐标
- * @param {number} cy - 五角星中心的 y 坐标
- * @param {number} r - 五角星外接圆半径
- * @param {number} [rotate=0] - 旋转角度（可选，单位：弧度）
- * @returns {string} - 五角星的 SVG d 属性路径值
- */
-function drawStar(cx, cy, r, rotate = 0) {
-  const points = []
-  const innerRadius = r * 0.382 // 内接圆半径，黄金分割比例
+function drawStar(width, height, r, rotate = 0) {
+  const outerRadius = this.outerRadius()
+  const innerRadius = this.innerRadius()
+  const numPoints = 5
 
-  for (let i = 0; i < 10; i++) {
-    // 计算每个点的角度（五角星有10个点）
-    const angle = rotate + (i * Math.PI) / 5
+  let d = ''
 
-    // 交替使用外接圆半径和内接圆半径
-    const radius = i % 2 === 0 ? r : innerRadius
+  d += `M${0},${0 - outerRadius}`
 
-    // 计算点的坐标
-    const x = cx + radius * Math.cos(angle)
-    const y = cy + radius * Math.sin(angle)
+  for (let n = 1; n < numPoints * 2; n++) {
+    const radius = n % 2 === 0 ? outerRadius : innerRadius
+    const x = radius * Math.sin((n * Math.PI) / numPoints)
+    const y = -1 * radius * Math.cos((n * Math.PI) / numPoints)
 
-    points.push(`${x},${y}`)
+    d += `L${x},${y}`
   }
 
-  // 构建路径字符串
-  return `M ${points.join(' L ')} Z`
+  d += 'Z'
+
+  return d
 }

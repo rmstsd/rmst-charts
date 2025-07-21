@@ -2,7 +2,7 @@ import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint, compose, rotate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
-import { ICoord, rad2deg } from 'rmst-render'
+import { ICoord } from 'rmst-render'
 import { CursorType, getCursorRotation } from '../../cursorManager'
 import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 

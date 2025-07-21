@@ -1,7 +1,7 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, noop, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
-import { Group, ICoord, Line, mergeBox, pointToFlatArray, Rect, Text } from 'rmst-render'
+import { Group, ICoord, ITransFormRect, Line, mergeBox, pointToFlatArray, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
 import { calcRotateRad, Graph_Id } from '../constant'
@@ -36,7 +36,7 @@ export default class selectedManager {
     return this.wbEditor.graphs.filter(g => this.selectedIds.includes(g.id))
   }
 
-  get transformRect() {
+  get transformRect(): ITransFormRect {
     if (this.selectedIds.length === 1) {
       const shapeData = this.selectedGraphs[0].graphShape.data
       return { width: shapeData.width, height: shapeData.height, mt: cloneDeep(shapeData.mt) }
@@ -97,9 +97,16 @@ export default class selectedManager {
     this.selectedIds = []
   }
 
+  hideCtrlBox() {
+    this.wbEditor.selectLayer.ctrlBoxGroup.attr({ visible: false })
+  }
+  showCtrlBox() {
+    this.wbEditor.selectLayer.ctrlBoxGroup.attr({ visible: true })
+  }
+
   private renderSelected() {
     if (!this.selectedIds.length) {
-      this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
+      this.wbEditor.selectLayer.ctrlBoxGroup.removeAllChildren()
       return
     }
 
@@ -313,8 +320,8 @@ export default class selectedManager {
       blText
     ])
 
-    this.wbEditor.selectLayer.selectToolGroup.removeAllChildren()
-    this.wbEditor.selectLayer.selectToolGroup.append(g)
+    this.wbEditor.selectLayer.ctrlBoxGroup.removeAllChildren()
+    this.wbEditor.selectLayer.ctrlBoxGroup.append(g)
   }
 
   enableHover() {

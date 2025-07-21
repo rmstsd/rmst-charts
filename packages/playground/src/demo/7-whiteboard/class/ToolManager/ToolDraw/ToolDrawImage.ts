@@ -1,4 +1,4 @@
-import { Box, getRectByTwoPoint, Group, ICoord, RmstImage, Text } from 'rmst-render'
+import { getRectByTwoPoint, Group, ICoord, RmstImage, Text } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { IGraph } from '../../../type'
@@ -17,10 +17,13 @@ export default class ToolDrawImage implements ITool {
   private urls: string[] = []
   private index = 0
 
-  private previewedImageGroup = new Group({ pointerEvents: 'none' })
-  private previewedImage = new RmstImage({ height: 80, src: '', mt: translate(0, 0) })
-  private textBox = new Box({ width: 16, height: 16, cornerRadius: 4, fillStyle: OpenColor.red[7] })
-  private text = new Text({ fillStyle: 'white' })
+  private previewedImageGroup = new Group({ name: 'previewed-image-group', pointerEvents: 'none', visible: false })
+  private previewedImage = new RmstImage({ height: 80, mt: translate(0, 0), strokeStyle: '#ddd' })
+  private text = new Text({
+    fillStyle: 'white',
+    fontSize: 12,
+    boxData: { cornerRadius: 4, fillStyle: OpenColor.red[7], padding: 4 }
+  })
 
   private get count() {
     return this.urls.length - this.index
@@ -54,8 +57,7 @@ export default class ToolDrawImage implements ITool {
   async onActive() {
     this.wbEditor.selectManager.clearSelect()
 
-    this.textBox.append(this.text)
-    this.previewedImageGroup.append(this.previewedImage, this.textBox)
+    this.previewedImageGroup.append(this.previewedImage, this.text)
 
     this.wbEditor.stage.append(this.previewedImageGroup)
   }
@@ -64,12 +66,14 @@ export default class ToolDrawImage implements ITool {
     this.previewedImage.remove()
   }
 
-  onPointerMove({ sceneCoord, isInContainer }) {
-    const coord = applyToPoint(this.wbEditor.graphLayer.data.mt, sceneCoord as ICoord)
+  onPointerMove({ sceneCoord, isInWbCanvas }) {
+    this.previewedImageGroup.attr({ visible: isInWbCanvas })
 
-    this.previewedImageGroup.attr({ visible: isInContainer ? true : false })
-    this.previewedImage.attr({ x: coord.x + 4, y: coord.y + 4 })
-    this.textBox.attr({ x: coord.x + 4, y: coord.y + 4 })
+    if (isInWbCanvas) {
+      const coord = applyToPoint(this.wbEditor.graphLayer.data.mt, sceneCoord as ICoord)
+      this.previewedImage.attr({ x: coord.x + 4, y: coord.y + 4 })
+      this.text.attr({ x: coord.x + 4, y: coord.y + 4 })
+    }
   }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
@@ -78,19 +82,20 @@ export default class ToolDrawImage implements ITool {
     const url = this.urls[this.index]
 
     const id = uuid()
-    const graphShape = new RmstImage({
+    this.graphItem = {
       id,
-      width: 100,
-      height: 100,
-      // strokeStyle: OpenColor.gray[5],
-      // lineWidth: 1,
-      cornerRadius: 8,
-      src: url,
-      objectFit: 'cover',
-      mt: translate(0, 0),
-      extraData: { wbType: ToolEnum.Image }
-    })
-    this.graphItem = { id, graphShape }
+      graphShape: new RmstImage({
+        id,
+        width: 100,
+        height: 100,
+        // strokeStyle: OpenColor.gray[5],
+        // lineWidth: 1,
+        cornerRadius: 8,
+        src: url,
+        objectFit: 'cover',
+        extraData: { wbType: ToolEnum.Image }
+      })
+    }
 
     this.wbEditor.graphs.push(this.graphItem)
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
@@ -125,17 +130,29 @@ export default class ToolDrawImage implements ITool {
     const id = uuid()
     const graphShape = new RmstImage({
       id,
-      width: 100,
-      height: 100,
       // strokeStyle: OpenColor.gray[5],
       // lineWidth: 1,
       cornerRadius: 8,
       src: url,
       objectFit: 'cover',
-      mt: translate(sceneCoord.x, sceneCoord.y),
+
       extraData: { wbType: ToolEnum.Image }
     })
     this.graphItem = { id, graphShape }
+
+    graphShape.onLoad = () => {
+      const { nativeImage } = graphShape
+
+      graphShape.attr({
+        width: nativeImage.naturalWidth,
+        height: nativeImage.naturalHeight,
+        mt: translate(sceneCoord.x - nativeImage.naturalWidth / 2, sceneCoord.y - nativeImage.naturalHeight / 2)
+      })
+
+      this.wbEditor.triggerRender()
+
+      graphShape.onLoad = null
+    }
 
     this.wbEditor.graphs.push(this.graphItem)
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)

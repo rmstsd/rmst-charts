@@ -29,8 +29,8 @@ export default class ToolDrawPencil implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.points.push([sceneCoord.x, sceneCoord.y, downEvt.pressure])
 
-    this.graphItem.id = uuid()
-    this.graphItem.graphShape = new Path({})
+    const id = uuid()
+    this.graphItem = { id, graphShape: new Path({ id }) }
     this.wbEditor.graphs.push(this.graphItem)
 
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
@@ -57,7 +57,6 @@ export default class ToolDrawPencil implements ITool {
     const tempD = 'M' + this.points.map(item => `${item[0]},${item[1]}`).join(' L')
 
     this.graphItem.graphShape.attr({
-      id: this.graphItem.id,
       name: ToolEnum.label(ToolEnum.Pencil),
       d: tempD,
       strokeStyle: defaultGraphPencilColor,

@@ -9,7 +9,18 @@ const TextDemo = () => {
 
   useEffectStage(canvasRef, stage => {
     const texts = [
-      new Text({ x: 100, y: 60, content: '人美声甜', fillStyle: '#333', cursor: 'pointer' })
+      new Text({
+        x: 100,
+        y: 60,
+        content: '人美声甜',
+        fillStyle: 'white',
+        cursor: 'pointer',
+        boxData: {
+          fillStyle: 'orange',
+          cornerRadius: 4,
+          padding: 4
+        }
+      })
       // new Text({
       //   x: 210,
       //   y: 10,

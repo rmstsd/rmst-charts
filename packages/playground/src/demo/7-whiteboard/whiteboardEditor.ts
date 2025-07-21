@@ -26,7 +26,7 @@ class WhiteboardEditor {
   graphLayer = new Group({ id: Graph_Id.graph_root_group, name: '图形层' }) // 图形层
   selectLayer = {
     hoveredGroup: new Group({ name: 'hovered 层', pointerEvents: 'none' }),
-    selectToolGroup: new Group({ name: 'ctrl 层' })
+    ctrlBoxGroup: new Group({ name: 'ctrl 层' })
   }
 
   graphs: IGraph[] = []
@@ -52,7 +52,7 @@ class WhiteboardEditor {
 
     this.stage.append(this.graphLayer)
 
-    this.stage.append(this.selectLayer.hoveredGroup, this.selectLayer.selectToolGroup)
+    this.stage.append(this.selectLayer.hoveredGroup, this.selectLayer.ctrlBoxGroup)
 
     this.toolManager.switchTool(ToolEnum.Select)
     this.toolManager.bindEvent()

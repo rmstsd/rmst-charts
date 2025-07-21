@@ -42,7 +42,7 @@ export default class ToolManager {
     const { container } = wbEditor
 
     let isPointerDown = false
-    let isInContainer = false
+    let isInWbCanvas = false
 
     const onPointerDown = (downEvt: PointerEvent) => {
       isPointerDown = true
@@ -53,6 +53,16 @@ export default class ToolManager {
 
       this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
 
+      const drawWbGraphEnd = (exitCurrentTool: boolean | void) => {
+        if (isBoolean(exitCurrentTool)) {
+          if (exitCurrentTool) {
+            this.switchTool(ToolEnum.Select)
+          }
+        } else {
+          this.switchTool(ToolEnum.Select)
+        }
+      }
+
       startDrag(downEvt, {
         onDragStart: () => {
           this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
@@ -62,54 +72,41 @@ export default class ToolManager {
         },
         onDragEnd: upEvt => {
           isPointerDown = false
-
           const exitCurrentTool = this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-          if (isBoolean(exitCurrentTool)) {
-            if (exitCurrentTool) {
-              this.switchTool(ToolEnum.Select)
-            }
-          } else {
-            this.switchTool(ToolEnum.Select)
-          }
+          drawWbGraphEnd(exitCurrentTool)
         },
         onPointerUp: upEvt => {
           isPointerDown = false
-
           const exitCurrentTool = this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
-          if (isBoolean(exitCurrentTool)) {
-            if (exitCurrentTool) {
-              this.switchTool(ToolEnum.Select)
-            }
-          } else {
-            this.switchTool(ToolEnum.Select)
-          }
+          drawWbGraphEnd(exitCurrentTool)
         }
       })
     }
 
     const onPointerEnter = () => {
-      isInContainer = true
-    }
-    const onPointerLeave = () => {
-      isInContainer = false
+      isInWbCanvas = true
     }
 
-    const onDocumentPointerMove = (moveEvt: PointerEvent) => {
+    const onPointerLeave = () => {
+      isInWbCanvas = false
+
+      this.currentToolClass?.onPointerMoveNotDragging?.({ isInWbCanvas })
+      this.currentToolClass?.onPointerMove?.({ isInWbCanvas })
+    }
+
+    const onPointerMove = (moveEvt: PointerEvent) => {
+      const sceneCoord = wbEditor.coordSys.client2Scene(moveEvt)
       if (!isPointerDown) {
-        this.currentToolClass?.onPointerMoveNotDragging?.(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
+        this.currentToolClass?.onPointerMoveNotDragging?.({ moveEvt, sceneCoord, isInWbCanvas })
       }
 
-      this.currentToolClass?.onPointerMove?.({
-        moveEvt: moveEvt,
-        sceneCoord: wbEditor.coordSys.client2Scene(moveEvt),
-        isInContainer
-      })
+      this.currentToolClass?.onPointerMove?.({ moveEvt, sceneCoord, isInWbCanvas })
     }
 
     container.addEventListener('pointerenter', onPointerEnter, { signal: this.abCt.signal })
     container.addEventListener('pointerleave', onPointerLeave, { signal: this.abCt.signal })
     container.addEventListener('pointerdown', onPointerDown, { signal: this.abCt.signal })
-    document.addEventListener('pointermove', onDocumentPointerMove, { signal: this.abCt.signal })
+    container.addEventListener('pointermove', onPointerMove, { signal: this.abCt.signal })
   }
 
   dispose() {
