@@ -2,7 +2,6 @@ import { getRectByTwoPoint, Group, ICoord, RmstImage, Text } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
 import { IGraph } from '../../../type'
-import { uuid } from '@/utils'
 import { ToolEnum } from '../constant'
 import { showOpenFilePicker } from 'show-open-file-picker'
 import { applyToPoint, translate } from 'transformation-matrix'
@@ -81,15 +80,10 @@ export default class ToolDrawImage implements ITool {
 
     const url = this.urls[this.index]
 
-    const id = uuid()
     this.graphItem = {
-      id,
       graphShape: new RmstImage({
-        id,
         width: 100,
         height: 100,
-        // strokeStyle: OpenColor.gray[5],
-        // lineWidth: 1,
         cornerRadius: 8,
         src: url,
         objectFit: 'cover',
@@ -100,7 +94,7 @@ export default class ToolDrawImage implements ITool {
     this.wbEditor.graphs.push(this.graphItem)
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
 
-    this.wbEditor.selectManager.select(this.graphItem.id)
+    this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
@@ -127,18 +121,13 @@ export default class ToolDrawImage implements ITool {
   onPointerUp(upEvt: PointerEvent, sceneCoord: ICoord) {
     const url = this.urls[this.index]
 
-    const id = uuid()
     const graphShape = new RmstImage({
-      id,
-      // strokeStyle: OpenColor.gray[5],
-      // lineWidth: 1,
       cornerRadius: 8,
       src: url,
       objectFit: 'cover',
-
       extraData: { wbType: ToolEnum.Image }
     })
-    this.graphItem = { id, graphShape }
+    this.graphItem = { graphShape }
 
     graphShape.onLoad = () => {
       const { nativeImage } = graphShape
@@ -157,7 +146,7 @@ export default class ToolDrawImage implements ITool {
     this.wbEditor.graphs.push(this.graphItem)
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
 
-    this.wbEditor.selectManager.select(this.graphItem.id)
+    this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
 
     this.index++
 

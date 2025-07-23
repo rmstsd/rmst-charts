@@ -6,6 +6,7 @@ import { ICursor, IRect, IShape, IShapeType } from '../type'
 import { attrDirty } from '../_stage/controller/DirtyRect'
 import { compose, identity, Matrix, translate } from 'transformation-matrix'
 import { normalizedAttrs } from '../utils/attr'
+import { uuid } from '../utils'
 
 export interface UiBaseData extends EventOpt {
   id?: string
@@ -79,6 +80,10 @@ export abstract class UiBase<T = UiBaseData> extends AbsEvent {
 
     this.data = combineDefaultData(shapeData, defaultShapeData)
 
+    if (!this.data.id) {
+      this.data.id = uuid()
+    }
+
     this.data.mt = compose(translate(this.data.x ?? 0, this.data.y ?? 0), this.data.mt)
   }
 
@@ -91,6 +96,10 @@ export abstract class UiBase<T = UiBaseData> extends AbsEvent {
   declare path2D: Path2D
 
   stage: Stage
+
+  get id() {
+    return this.data.id
+  }
 
   get children() {
     return this.data.children ?? []

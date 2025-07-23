@@ -30,7 +30,7 @@ export default class ToolScale implements ITool {
     this.isSingleSelect = this.wbEditor.selectManager.selectedIds.length === 1
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
-      id: item.id,
+      id: item.graphShape.id,
       graphShapeRect: {
         width: item.graphShape.data.width,
         height: item.graphShape.data.height,
@@ -57,7 +57,7 @@ export default class ToolScale implements ITool {
       const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
 
       this.wbEditor.selectManager.selectedGraphs.forEach(item => {
-        const dSnap = this.downSnap[item.id].graphShapeRect
+        const dSnap = this.downSnap[item.graphShape.id].graphShapeRect
         const newWorldTf = compose(prependedTransform, dSnap.mt)
         const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: newWorldTf })
         item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: reCalcRect.mt })

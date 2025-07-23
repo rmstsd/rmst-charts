@@ -55,3 +55,5 @@ export function isShallowEqual(objA, objB): boolean {
 
   return true
 }
+
+export const uuid = () => crypto.randomUUID()

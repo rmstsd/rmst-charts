@@ -29,7 +29,7 @@ export default class ToolRotate implements ITool {
     this.startShapeRotation = calcRotateRad(this.downRect.mt)
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
-      id: item.id,
+      id: item.graphShape.id,
       graphShapeRect: { mt: cloneDeep(item.graphShape.data.mt) }
     }))
 
@@ -45,7 +45,7 @@ export default class ToolRotate implements ITool {
     let newMt
 
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
-      const dSnap = this.downSnap[item.id].graphShapeRect
+      const dSnap = this.downSnap[item.graphShape.id].graphShapeRect
 
       newMt = compose(rotate(diffRad, this.origin.x, this.origin.y), dSnap.mt)
 

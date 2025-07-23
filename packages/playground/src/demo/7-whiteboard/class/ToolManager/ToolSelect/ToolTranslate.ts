@@ -19,7 +19,7 @@ export default class ToolTranslate implements ITool {
 
     this.downSnap = keyBy(
       this.wbEditor.selectManager.selectedGraphs.map(item => ({
-        id: item.id,
+        id: item.graphShape.id,
         downMt: cloneDeep(item.graphShape.data.mt)
       })),
       item => item.id
@@ -28,7 +28,7 @@ export default class ToolTranslate implements ITool {
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
-      const dSnap = this.downSnap[item.id]
+      const dSnap = this.downSnap[item.graphShape.id]
       const moveLocalPos = sceneCoord
 
       const dx = moveLocalPos.x - this.downPos.x

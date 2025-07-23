@@ -33,11 +33,11 @@ export default function InfoRightPanel() {
       />
 
       {selectedItems.map(item => {
-        const { id, graphShape } = item
+        const { graphShape } = item
         const data = graphShape.data
 
         return (
-          <div key={item.id}>
+          <div key={data.id}>
             <button onClick={() => {}}>检测</button>
 
             <hr />

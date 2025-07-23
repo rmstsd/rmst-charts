@@ -33,7 +33,7 @@ export default class selectedManager {
   unbind = noop
 
   get selectedGraphs() {
-    return this.wbEditor.graphs.filter(g => this.selectedIds.includes(g.id))
+    return this.wbEditor.graphs.filter(g => this.selectedIds.includes(g.graphShape.id))
   }
 
   get transformRect(): ITransFormRect {
@@ -341,7 +341,7 @@ export default class selectedManager {
     const { wbEditor } = this
 
     if (enter) {
-      this.hovered = wbEditor.graphs.find(g => g.id === id)
+      this.hovered = wbEditor.graphs.find(g => g.graphShape.id === id)
     } else {
       this.hovered = null
     }

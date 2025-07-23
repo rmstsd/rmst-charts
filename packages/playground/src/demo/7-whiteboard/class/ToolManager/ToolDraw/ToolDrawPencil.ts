@@ -5,7 +5,6 @@ import { ITool } from './../type'
 import { ToolEnum } from './../constant'
 import { translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
-import { uuid } from '@/utils'
 import { svgPathBbox } from 'svg-path-bbox'
 import svgPath from 'svgpath'
 import fitCurve from 'fit-curve'
@@ -29,8 +28,7 @@ export default class ToolDrawPencil implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.points.push([sceneCoord.x, sceneCoord.y, downEvt.pressure])
 
-    const id = uuid()
-    this.graphItem = { id, graphShape: new Path({ id }) }
+    this.graphItem = { graphShape: new Path({}) }
     this.wbEditor.graphs.push(this.graphItem)
 
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)

@@ -17,12 +17,11 @@ export default abstract class ToolDrawByRect implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.downPos = sceneCoord
 
-    const id = uuid()
-    this.graphItem = { id, graphShape: new Path({ id }) }
+    this.graphItem = { graphShape: new Path({}) }
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
 
     this.wbEditor.graphs.push(this.graphItem)
-    this.wbEditor.selectManager.select(this.graphItem.id)
+    this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
@@ -57,16 +56,15 @@ export default abstract class ToolDrawByRect implements ITool {
 
     const graphData = this.getGraphPathD({ x: 0, y: 0, width, height })
 
-    this.graphItem.id = uuid()
     this.graphItem.graphShape = new Path({})
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
 
     this.wbEditor.graphs.push(this.graphItem)
 
-    this.wbEditor.selectManager.select(this.graphItem.id)
+    this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
 
     this.graphItem.graphShape.attr({
-      id: this.graphItem.id,
+      id: this.graphItem.graphShape.id,
       name: graphData.name,
       d: graphData.d,
       width,
