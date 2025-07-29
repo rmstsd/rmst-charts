@@ -30,11 +30,11 @@ export default class ToolScale implements ITool {
     this.isSingleSelect = this.wbEditor.selectManager.selectedIds.length === 1
 
     const sel = this.wbEditor.selectManager.selectedGraphs.map(item => ({
-      id: item.graphShape.id,
+      id: item.id,
       graphShapeRect: {
-        width: item.graphShape.data.width,
-        height: item.graphShape.data.height,
-        mt: cloneDeep(item.graphShape.data.mt)
+        width: item.data.width,
+        height: item.data.height,
+        mt: cloneDeep(item.data.mt)
       }
     }))
 
@@ -50,17 +50,17 @@ export default class ToolScale implements ITool {
       transformRect = resizeRect(this.transformOrigin, movePos, this.downRect)
 
       const item = this.wbEditor.selectManager.selectedGraphs[0]
-      item.graphShape.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
+      item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
       transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, { changeWidthAndHeight: false })
 
       const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
 
       this.wbEditor.selectManager.selectedGraphs.forEach(item => {
-        const dSnap = this.downSnap[item.graphShape.id].graphShapeRect
+        const dSnap = this.downSnap[item.id].graphShapeRect
         const newWorldTf = compose(prependedTransform, dSnap.mt)
         const reCalcRect = recomputeTransformRect({ width: dSnap.width, height: dSnap.height, mt: newWorldTf })
-        item.graphShape.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: reCalcRect.mt })
+        item.attr({ width: reCalcRect.width, height: reCalcRect.height, mt: reCalcRect.mt })
       })
     }
 

@@ -1,32 +1,30 @@
-import { getRectByTwoPoint, Group, ICoord, RmstImage, Text } from 'rmst-render'
+import { Group, ICoord, RmstImage, Text } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
-import { ITool } from '../type'
-import { IGraph } from '../../../type'
 import { ToolEnum } from '../constant'
 import { showOpenFilePicker } from 'show-open-file-picker'
 import { applyToPoint, translate } from 'transformation-matrix'
 import OpenColor from 'open-color'
+import ToolDrawByRect from './ToolDrawByRect'
 
-export default class ToolDrawImage implements ITool {
-  constructor(private wbEditor: WhiteboardEditor) {}
-
-  private downPos: ICoord
-  private graphItem = {} as IGraph
+export default class ToolDrawImage extends ToolDrawByRect {
+  constructor(wbEditor: WhiteboardEditor) {
+    super(wbEditor)
+  }
 
   private urls: string[] = []
   private index = 0
 
+  private get leftCount() {
+    return this.urls.length - this.index
+  }
+
   private previewedImageGroup = new Group({ name: 'previewed-image-group', pointerEvents: 'none', visible: false })
-  private previewedImage = new RmstImage({ height: 80, mt: translate(0, 0), strokeStyle: '#ddd' })
+  private previewedImage = new RmstImage({ height: 100, mt: translate(0, 0), strokeStyle: '#ddd' })
   private text = new Text({
     fillStyle: 'white',
     fontSize: 12,
     boxData: { cornerRadius: 4, fillStyle: OpenColor.red[7], padding: 4 }
   })
-
-  private get count() {
-    return this.urls.length - this.index
-  }
 
   async enableActive() {
     const files = await showOpenFilePicker({
@@ -48,21 +46,22 @@ export default class ToolDrawImage implements ITool {
     this.urls = realFiles.map(item => URL.createObjectURL(item))
 
     this.previewedImage.attr({ src: this.urls[this.index] })
-    this.text.attr({ content: this.count.toString() })
+    this.text.attr({ content: this.leftCount.toString() })
 
     return true
   }
 
-  async onActive() {
-    this.wbEditor.selectManager.clearSelect()
+  onActive() {
+    super.onActive()
 
     this.previewedImageGroup.append(this.previewedImage, this.text)
-
-    this.wbEditor.stage.append(this.previewedImageGroup)
+    this.wbEditor.tempLayer.append(this.previewedImageGroup)
   }
 
   onDeActive() {
-    this.previewedImage.remove()
+    super.onDeActive()
+
+    this.previewedImageGroup.remove()
   }
 
   onPointerMove({ sceneCoord, isInWbCanvas }) {
@@ -75,58 +74,9 @@ export default class ToolDrawImage implements ITool {
     }
   }
 
-  onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
-    this.downPos = sceneCoord
+  override onPointerUp(upEvt: PointerEvent, sceneCoord: ICoord) {
+    const graphShape = this.getShape()
 
-    const url = this.urls[this.index]
-
-    this.graphItem = {
-      graphShape: new RmstImage({
-        width: 100,
-        height: 100,
-        cornerRadius: 8,
-        src: url,
-        objectFit: 'cover',
-        extraData: { wbType: ToolEnum.Image }
-      })
-    }
-
-    this.wbEditor.graphs.push(this.graphItem)
-    this.wbEditor.graphLayer.append(this.graphItem.graphShape)
-
-    this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
-  }
-
-  onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    const rect = getRectByTwoPoint(this.downPos, sceneCoord)
-    this.graphItem.graphShape.attr({ width: rect.width, height: rect.height, mt: translate(rect.x, rect.y) })
-    this.wbEditor.triggerRender()
-  }
-
-  onDragEnd(upEvt: PointerEvent) {
-    this.index++
-
-    // 最后一个画完后, 移除预览图
-    if (this.index > this.urls.length - 1) {
-      this.previewedImageGroup.remove()
-      return true
-    }
-
-    this.previewedImage.attr({ src: this.urls[this.index] })
-    this.text.attr({ content: this.count.toString() })
-
-    return false
-  }
-
-  onPointerUp(upEvt: PointerEvent, sceneCoord: ICoord) {
-    const url = this.urls[this.index]
-
-    const graphShape = new RmstImage({
-      cornerRadius: 8,
-      src: url,
-      objectFit: 'cover',
-      extraData: { wbType: ToolEnum.Image }
-    })
     this.graphItem = { graphShape }
 
     graphShape.onLoad = () => {
@@ -143,11 +93,11 @@ export default class ToolDrawImage implements ITool {
       graphShape.onLoad = null
     }
 
-    this.wbEditor.graphs.push(this.graphItem)
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
-
     this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
+  }
 
+  onDrawAfterEnd() {
     this.index++
 
     // 最后一个画完后, 移除预览图
@@ -157,8 +107,18 @@ export default class ToolDrawImage implements ITool {
     }
 
     this.previewedImage.attr({ src: this.urls[this.index] })
-    this.text.attr({ content: this.count.toString() })
+    this.text.attr({ content: this.leftCount.toString() })
 
     return false
+  }
+
+  getShape() {
+    return new RmstImage({
+      src: this.urls[this.index],
+      objectFit: 'cover',
+      cornerRadius: 4,
+      name: ToolEnum.label(ToolEnum.Image),
+      extraData: { wbType: ToolEnum.Image }
+    })
   }
 }

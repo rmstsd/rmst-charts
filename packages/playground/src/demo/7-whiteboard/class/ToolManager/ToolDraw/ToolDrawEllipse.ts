@@ -1,4 +1,4 @@
-import { IRect } from 'rmst-render'
+import { IRect, Path } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import ToolDrawByRect from './ToolDrawByRect'
 import { ToolEnum } from './../constant'
@@ -18,7 +18,18 @@ export default class ToolDrawEllipse extends ToolDrawByRect {
 
     const d = drawEllipse(cx, cy, rx, ry)
 
-    return { d, name: ToolEnum.label(ToolEnum.Ellipse), wbType: ToolEnum.Ellipse }
+    return d
+  }
+
+  getShape() {
+    const rect = { x: 0, y: 0, width: 1, height: 1 }
+
+    return new Path({
+      d: this.getGraphPathD(rect),
+      ...rect,
+      name: ToolEnum.label(ToolEnum.Ellipse),
+      extraData: { wbType: ToolEnum.Ellipse }
+    })
   }
 }
 

@@ -2,7 +2,7 @@ import { Matrix } from 'transformation-matrix'
 import { Box, Circle, Ellipse, Group, RmstImage, Line, Path, Rect, Text } from './shape'
 import type * as CSS from 'csstype'
 
-export type IShape = Group | Box | Circle | Rect | Line | Text | Ellipse | Path | RmstImage
+export type IShape = Group | Box | Rect | Circle | Line | Text | Ellipse | Path | RmstImage
 export type IShapeType =
   | 'Line'
   | 'Rect'

@@ -11,37 +11,20 @@ import { sortChildren } from './util'
 import { isNil } from 'es-toolkit'
 
 export function drawStage(stage: Stage) {
-  const { ctx, camera, dpr, container, canvasElement } = stage
-  const setCanvasStyle = () => {
-    const { clientWidth, clientHeight } = container
+  const { ctx, camera, dpr } = stage
 
-    const canvasWidth = clientWidth * dpr
-    const canvasHeight = clientHeight * dpr
+  stage.updateCanvasSize()
 
-    canvasElement.width = canvasWidth
-    canvasElement.height = canvasHeight
+  ctx.clearRect(0, 0, stage.canvasElement.width * dpr, stage.canvasElement.height * dpr)
 
-    canvasElement.style.position = 'absolute'
-    canvasElement.style.inset = '0'
-    canvasElement.style.width = `${clientWidth}px`
-    canvasElement.style.height = `${clientHeight}px`
-
-    ctx.scale(dpr, dpr)
-    ctx.textBaseline = 'hanging'
-    ctx.font = `${14}px 微软雅黑`
-  }
-
-  setCanvasStyle()
-
-  ctx.clearRect(0, 0, stage.canvasSize.width * stage.dpr, stage.canvasSize.height * stage.dpr)
+  ctx.scale(dpr, dpr)
+  ctx.textBaseline = 'hanging'
+  ctx.font = `${14}px 微软雅黑`
 
   ctx.save()
 
   const matrix = compose(translate(camera.tx, camera.ty), scale(camera.zoom, camera.zoom))
   ctx.transform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.e, matrix.f)
-
-  // ctx.translate(camera.tx, camera.ty)
-  // ctx.scale(camera.zoom, camera.zoom)
 
   drawChildren(stage.data.children)
 
@@ -137,17 +120,7 @@ export function drawStage(stage: Stage) {
                 { width: image.naturalWidth, height: image.naturalHeight },
                 objectFit
               )
-              ctx.drawImage(
-                image,
-                0,
-                0,
-                image.naturalWidth,
-                image.naturalHeight,
-                rect.x,
-                rect.y,
-                rect.width,
-                rect.height
-              )
+              ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, rect.x, rect.y, rect.width, rect.height)
             })
             stroke(ctx, rrImageElementItem)
           } else {

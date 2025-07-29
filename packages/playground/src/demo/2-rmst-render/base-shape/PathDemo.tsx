@@ -5,9 +5,6 @@ import { Stage, Rect, Circle, Text, Ellipse, Path } from 'rmst-render'
 const PathDemo = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
 
-  // 示例用法
-  const starPath = drawStar(100, 100, 50)
-
   useEffectStage(canvasRef, stage => {
     const p1 = new Path({
       x: 10,
@@ -30,18 +27,7 @@ const PathDemo = () => {
       draggable: true
     })
 
-    const p3 = new Path({
-      x: 400,
-      y: 100,
-      d: starPath,
-      fillStyle: 'orange',
-      lineWidth: 2,
-      strokeStyle: 'red',
-      cursor: 'move',
-      draggable: true
-    })
-
-    stage.append(p1, p2, p3)
+    stage.append(p1, p2)
   })
 
   return (
@@ -52,25 +38,3 @@ const PathDemo = () => {
 }
 
 export default PathDemo
-
-function drawStar(width, height, r, rotate = 0) {
-  const outerRadius = this.outerRadius()
-  const innerRadius = this.innerRadius()
-  const numPoints = 5
-
-  let d = ''
-
-  d += `M${0},${0 - outerRadius}`
-
-  for (let n = 1; n < numPoints * 2; n++) {
-    const radius = n % 2 === 0 ? outerRadius : innerRadius
-    const x = radius * Math.sin((n * Math.PI) / numPoints)
-    const y = -1 * radius * Math.cos((n * Math.PI) / numPoints)
-
-    d += `L${x},${y}`
-  }
-
-  d += 'Z'
-
-  return d
-}

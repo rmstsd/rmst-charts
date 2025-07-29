@@ -1,7 +1,7 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, noop, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
-import { Group, ICoord, ITransFormRect, Line, mergeBox, pointToFlatArray, Rect, Text } from 'rmst-render'
+import { Group, ICoord, IShape, ITransFormRect, Line, mergeBox, Path, pointToFlatArray, Rect, Text } from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
 import { calcRotateRad, Graph_Id } from '../constant'
@@ -25,7 +25,7 @@ export default class selectedManager {
 
   eventEmitter = new EventEmitter<Events>()
 
-  private hovered: IGraph
+  private hovered: IShape
   private enabledHover = true
 
   selectedIds: string[] = []
@@ -33,18 +33,18 @@ export default class selectedManager {
   unbind = noop
 
   get selectedGraphs() {
-    return this.wbEditor.graphs.filter(g => this.selectedIds.includes(g.graphShape.id))
+    return this.wbEditor.graphLayer.children.filter(g => this.selectedIds.includes(g.id))
   }
 
   get transformRect(): ITransFormRect {
     if (this.selectedIds.length === 1) {
-      const shapeData = this.selectedGraphs[0].graphShape.data
+      const shapeData = this.selectedGraphs[0].data
       return { width: shapeData.width, height: shapeData.height, mt: cloneDeep(shapeData.mt) }
     }
 
     // 多个
     const selRects = this.selectedGraphs.map(item => {
-      const data = item.graphShape.data
+      const data = item.data
       const tl = applyToPoint(data.mt, { x: 0, y: 0 })
       const tr = applyToPoint(data.mt, { x: data.width, y: 0 })
       const br = applyToPoint(data.mt, { x: data.width, y: data.height })
@@ -98,15 +98,16 @@ export default class selectedManager {
   }
 
   hideCtrlBox() {
-    this.wbEditor.selectLayer.ctrlBoxGroup.attr({ visible: false })
+    this.wbEditor.ctrlBoxLayer.attr({ visible: false })
   }
+
   showCtrlBox() {
-    this.wbEditor.selectLayer.ctrlBoxGroup.attr({ visible: true })
+    this.wbEditor.ctrlBoxLayer.attr({ visible: true })
   }
 
   private renderSelected() {
     if (!this.selectedIds.length) {
-      this.wbEditor.selectLayer.ctrlBoxGroup.removeAllChildren()
+      this.wbEditor.ctrlBoxLayer.removeAllChildren()
       return
     }
 
@@ -243,10 +244,7 @@ export default class selectedManager {
 
     const clonedOutlines = this.selectedGraphs.map(item => this.getOutlineGraphInWorld(item, { lineWidth: 1 }))
 
-    const rotateHandleMt = compose(
-      translate(-rotateSize / 2, -rotateSize / 2),
-      rotate(rad, rotateSize / 2, rotateSize / 2)
-    )
+    const rotateHandleMt = compose(translate(-rotateSize / 2, -rotateSize / 2), rotate(rad, rotateSize / 2, rotateSize / 2))
 
     const rotateHandles = outerBboxWorld.map(item => {
       return new Rect({
@@ -320,8 +318,8 @@ export default class selectedManager {
       blText
     ])
 
-    this.wbEditor.selectLayer.ctrlBoxGroup.removeAllChildren()
-    this.wbEditor.selectLayer.ctrlBoxGroup.append(g)
+    this.wbEditor.ctrlBoxLayer.removeAllChildren()
+    this.wbEditor.ctrlBoxLayer.append(g)
   }
 
   enableHover() {
@@ -341,7 +339,7 @@ export default class selectedManager {
     const { wbEditor } = this
 
     if (enter) {
-      this.hovered = wbEditor.graphs.find(g => g.graphShape.id === id)
+      this.hovered = wbEditor.graphLayer.children.find(g => g.id === id)
     } else {
       this.hovered = null
     }
@@ -350,27 +348,24 @@ export default class selectedManager {
   }
 
   renderHovered() {
-    const { wbEditor } = this
-    const { hoveredGroup } = wbEditor.selectLayer
-    hoveredGroup.removeAllChildren()
+    const { hoveredLayer } = this.wbEditor
+    hoveredLayer.removeAllChildren()
 
     if (this.hovered) {
       const clonedOutline = this.getOutlineGraphInWorld(this.hovered)
 
-      hoveredGroup.removeAllChildren()
-      hoveredGroup.append(clonedOutline)
+      hoveredLayer.removeAllChildren()
+      hoveredLayer.append(clonedOutline)
     }
   }
 
-  private getOutlineGraphInWorld(graph: IGraph, attrs = {}) {
+  private getOutlineGraphInWorld(graph: IShape, attrs = {}) {
     const { wbEditor } = this
 
-    const cloned = graph.graphShape.getOutLineShape()
+    const cloned = graph.getOutLineShape() as Path
 
     const mtWorld = compose(wbEditor.graphLayer.data.mt, cloned.data.mt)
-    const nd = svgPath(cloned.data.d)
-      .matrix([mtWorld.a, mtWorld.b, mtWorld.c, mtWorld.d, mtWorld.e, mtWorld.f])
-      .toString()
+    const nd = svgPath(cloned.data.d).matrix([mtWorld.a, mtWorld.b, mtWorld.c, mtWorld.d, mtWorld.e, mtWorld.f]).toString()
 
     cloned.attr({
       d: nd,

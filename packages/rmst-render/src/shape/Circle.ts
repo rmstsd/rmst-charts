@@ -9,9 +9,6 @@ const defaultData = {
 }
 
 interface CircleData extends UiBaseData {
-  x?: number
-  y?: number
-
   radius?: number
   innerRadius?: number
 

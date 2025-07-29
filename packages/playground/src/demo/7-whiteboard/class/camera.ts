@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
-import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, rotateDEG, scale, skew, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
 import { ICoord, mergeBox } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'
@@ -25,33 +25,40 @@ export default class Camera {
   eventEmitter = new EventEmitter<Events>()
 
   zoom = 1
-  tx = 0
-  ty = 0
 
   bindEvent() {
     const { wbEditor } = this
-    const { container, graphLayer: graphGroup } = this.wbEditor
+    const { container, graphLayer } = this.wbEditor
     container.addEventListener(
       'wheel',
       evt => {
         evt.preventDefault()
 
-        let mt = graphGroup.data.mt
+        let mt = graphLayer.data.mt
 
         if (evt.ctrlKey) {
-          const nvOrigin = wbEditor.coordSys.client2Scene(evt)
+          const nvOrigin = wbEditor.coordSys.client2World(evt)
           let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
           this.zoomTo(newZoom, nvOrigin)
         } else {
+          let tmt
+
           if (evt.shiftKey) {
-            const tmt = evt.deltaY > 0 ? translate(-scrollSpeed, 0) : translate(scrollSpeed, 0)
-            mt = compose(tmt, mt)
+            tmt = evt.deltaY > 0 ? translate(-scrollSpeed, 0) : translate(scrollSpeed, 0)
+
+            // mt = compose(tmt, mt)
           } else {
-            const tmt = evt.deltaY > 0 ? translate(0, -scrollSpeed) : translate(0, scrollSpeed)
-            mt = compose(tmt, mt)
+            tmt = evt.deltaY > 0 ? translate(0, -scrollSpeed) : translate(0, scrollSpeed)
+
+            // mt = compose(tmt, mt)
           }
 
-          graphGroup.attr('mt', mt)
+          const sceneCoord = { x: tmt.e / this.zoom, y: tmt.f / this.zoom }
+          this.pan(sceneCoord.x, sceneCoord.y)
+          return
+
+          graphLayer.attr('mt', mt)
+
           this.triggerCameraChange()
         }
       },
@@ -61,6 +68,16 @@ export default class Camera {
 
   dispose() {
     this.abCt.abort()
+  }
+
+  // 平移
+  pan(deltaX: number, deltaY: number) {
+    const { graphLayer } = this.wbEditor
+
+    const newMt = compose(graphLayer.data.mt, translate(deltaX, deltaY))
+    graphLayer.attr('mt', newMt)
+
+    this.triggerCameraChange()
   }
 
   // 放大
@@ -86,19 +103,43 @@ export default class Camera {
 
     const { wbEditor } = this
 
-    let mt = cloneDeep(wbEditor.graphLayer.data.mt)
+    {
+      // https://codesandbox.io/p/sandbox/tm25rv gg_demo
+      const delta = newZoom / this.zoom
+      this.zoom = newZoom
 
-    const newMt = scale(this.zoom, this.zoom, origin.x, origin.y)
-    const tt = compose(mt, inverse(newMt))
+      // const nvOrigin = wbEditor.coordSys.client2Scene(evt)
+      const mt = compose(scale(delta, delta, origin.x, origin.y), wbEditor.graphLayer.data.mt)
+      wbEditor.graphLayer.attr('mt', mt)
+      this.triggerCameraChange()
+      return
+    }
 
-    newZoom = Math.max(Min_Zoom, Math.min(Max_Zoom, newZoom))
+    {
+      // https://codesandbox.io/p/sandbox/tm25rv gg_demo
+      const delta = newZoom / this.zoom
+      this.zoom = newZoom
 
-    this.zoom = newZoom
+      const mt = compose(wbEditor.graphLayer.data.mt, scale(delta, delta, origin.x, origin.y))
+      wbEditor.graphLayer.attr('mt', mt)
+      this.triggerCameraChange()
+      return
+    }
 
-    mt = compose(tt, scale(newZoom, newZoom, origin.x, origin.y))
-    wbEditor.graphLayer.attr('mt', mt)
+    {
+      let mt = cloneDeep(wbEditor.graphLayer.data.mt)
 
-    this.triggerCameraChange()
+      const newMt = scale(this.zoom, this.zoom, origin.x, origin.y)
+      const tt = compose(mt, inverse(newMt))
+
+      newZoom = Math.max(Min_Zoom, Math.min(Max_Zoom, newZoom))
+
+      this.zoom = newZoom
+
+      mt = compose(tt, scale(newZoom, newZoom, origin.x, origin.y))
+      wbEditor.graphLayer.attr('mt', mt)
+      this.triggerCameraChange()
+    }
   }
 
   // 缩放到适合 (适应画布)

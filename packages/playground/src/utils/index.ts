@@ -23,3 +23,11 @@ export function sleep(ms: number) {
 }
 
 export const uuid = () => crypto.randomUUID()
+
+export const nextTick = () => {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      resolve(null)
+    })
+  })
+}
