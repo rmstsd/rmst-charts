@@ -98,6 +98,8 @@ export default class ToolDrawImage extends ToolDrawByRect {
   }
 
   onDrawAfterEnd() {
+    super.onDrawAfterEnd()
+
     this.index++
 
     // 最后一个画完后, 移除预览图

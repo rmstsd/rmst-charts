@@ -5,7 +5,7 @@ import EventEmitter from 'rmst-render/event_emitter'
 import { ICoord, mergeBox } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'
 
-const zoomSpeed = 1.2
+const zoomSpeed = 1.3
 const scrollSpeed = 100
 
 const Min_Zoom = 0.01

@@ -137,5 +137,10 @@ export default abstract class ToolDrawByRect implements ITool {
     this.wbEditor.triggerRender()
   }
 
+  onDrawAfterEnd() {
+    this.downPos = null
+    this.movePos = null
+  }
+
   protected abstract getShape(): IShape
 }
