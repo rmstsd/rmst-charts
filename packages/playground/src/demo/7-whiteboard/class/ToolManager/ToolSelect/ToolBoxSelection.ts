@@ -23,13 +23,14 @@ export default class ToolBoxSelection implements ITool {
   private unBind = noop
 
   private boxSelectionRect = new Rect({
+    name: '框选 box rect',
     x: 0,
     y: 0,
     width: 0,
     height: 0,
     fillStyle: primaryAlphaColor,
     strokeStyle: primaryColor,
-    lineWidth: 2,
+    lineWidth: 1,
     pointerEvents: 'none'
   })
 
@@ -43,14 +44,17 @@ export default class ToolBoxSelection implements ITool {
 
   onDeActive() {
     console.log('ToolBoxSelection onDeActive')
+
+    this.boxSelectionRect.remove()
     this.unBind?.()
   }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.boxSelectionRect.attr({ visible: true })
+
     this.system.clear()
 
     this.downPos = sceneCoord
-
     this.selectionBox = this.system.createBox({ x: 0, y: 0 }, 0, 0)
 
     this.boxes = this.wbEditor.graphLayer.children.map(item => {
@@ -88,14 +92,14 @@ export default class ToolBoxSelection implements ITool {
 
   private updateBoxSelectionRect() {
     // 场景坐标转世界坐标
-    const tl = applyToPoint(this.wbEditor.graphLayer.data.mt, this.tl)
-    const br = applyToPoint(this.wbEditor.graphLayer.data.mt, this.br)
+    const tl = this.wbEditor.coordSys.scene2World(this.tl)
+    const br = this.wbEditor.coordSys.scene2World(this.br)
 
     this.boxSelectionRect.attr({ x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
   }
 
   onDragEnd(upEvt: PointerEvent) {
+    this.boxSelectionRect.attr({ visible: false })
     this.system.clear()
-    this.boxSelectionRect.remove()
   }
 }

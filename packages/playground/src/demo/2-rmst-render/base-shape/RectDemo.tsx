@@ -31,10 +31,6 @@ const RectDemo = () => {
       })
     ]
 
-    setTimeout(() => {
-      stage.render()
-    }, 1000)
-
     const box = new Box({
       name: 'outer_box',
       x: 100,

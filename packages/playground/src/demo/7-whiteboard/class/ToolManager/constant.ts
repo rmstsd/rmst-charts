@@ -1,6 +1,7 @@
 import { Enum } from 'enum-plus'
 
 export const ToolEnum = Enum({
+  Pan: { label: '平移' },
   Select: { label: '选择' },
   Rect: { label: '矩形' },
   Ellipse: { label: '椭圆' },

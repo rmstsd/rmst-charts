@@ -1,5 +1,4 @@
 import { Draggable, Camera, Ruler, DirtyRect, EventDispatcher } from './controller'
-import { initStage } from './utils'
 import { mountParentInChildren, mountStageInChildren } from './renderUi'
 import { IShape, IShapeType } from '../type'
 import { drawStage } from '../renderer/canvas'
@@ -33,10 +32,7 @@ export class Stage extends Group {
 
     this.dpr = dpr ?? window.devicePixelRatio
     this.container = container
-    const stage = initStage(container, this.dpr)
-
-    this.canvasElement = stage.canvasElement
-    this.ctx = stage.ctx
+    this.initStage()
 
     this.draggingMgr = new Draggable(this)
     this.camera = new Camera(this, enableCamera)
@@ -74,6 +70,36 @@ export class Stage extends Group {
 
   private isDispatchedAsyncRenderTask = false
   private removeStageListener: Function
+
+  initStage() {
+    this.container.style.position = 'relative'
+
+    const canvasElement = document.createElement('canvas')
+    const ctx = canvasElement.getContext('2d')
+    this.canvasElement = canvasElement
+    this.ctx = ctx
+
+    canvasElement.style.position = 'absolute'
+    canvasElement.style.inset = '0'
+
+    this.updateCanvasSize()
+
+    this.container.append(canvasElement)
+  }
+
+  updateCanvasSize() {
+    this.dpr = window.devicePixelRatio
+
+    const { container, canvasElement } = this
+
+    const canvasWidth = container.clientWidth * this.dpr
+    const canvasHeight = container.clientHeight * this.dpr
+
+    canvasElement.width = canvasWidth
+    canvasElement.height = canvasHeight
+    canvasElement.style.width = `${container.clientWidth}px`
+    canvasElement.style.height = `${container.clientHeight}px`
+  }
 
   get center() {
     return { x: this.canvasElement.offsetWidth / 2, y: this.canvasElement.offsetHeight / 2 }
@@ -126,8 +152,9 @@ export class Stage extends Group {
   }
 
   // 同步绘制
-  private syncRender() {
+  syncRender() {
     drawStage(this)
+
     if (this.enableRuler) {
       this.ruler.drawRuler()
     }

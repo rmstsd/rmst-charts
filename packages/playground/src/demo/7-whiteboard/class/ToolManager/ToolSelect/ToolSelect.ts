@@ -7,7 +7,7 @@ import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
-import { getCursorRotation, WbCursor } from '../../cursorManager'
+import { duplicateCursor, getCursorRotation, WbCursor } from '../../cursorManager'
 import { findHover_v2 } from 'rmst-render/_stage/findHover'
 
 export default class ToolSelect implements ITool {
@@ -30,15 +30,12 @@ export default class ToolSelect implements ITool {
     wbEditor.selectManager.disableHover()
   }
 
-  private hoveredId: string
-
   onPointerMoveNotDragging({ moveEvt, isInWbCanvas }) {
     const { wbEditor } = this
 
     if (!isInWbCanvas) {
       wbEditor.selectManager.onHover(null, false)
       wbEditor.cursorManager.setCursor(this.cursor)
-      this.hoveredId = null
       return
     }
 
@@ -48,13 +45,8 @@ export default class ToolSelect implements ITool {
     if (!hovered) {
       wbEditor.selectManager.onHover(null, false)
       wbEditor.cursorManager.setCursor(this.cursor)
-      this.hoveredId = null
       return
     }
-    // if (this.hoveredId === hovered.data.id) {
-    //   return
-    // }
-    this.hoveredId = hovered.data.id
 
     const isCtrlHandle = isCtrlHandleShape(hovered)
     const isWbGraph = isWbGraphShape(hovered)
@@ -67,7 +59,7 @@ export default class ToolSelect implements ITool {
 
       switch (hovered.data.id) {
         case Graph_Id.graph_ctrl_translate: {
-          wbEditor.cursorManager.setCursor(this.cursor)
+          this.updateCursor_Select_Or_Duplicate()
           break
         }
         case Graph_Id.graph_ctrl_rotate: {
@@ -88,11 +80,15 @@ export default class ToolSelect implements ITool {
       }
     } else if (isWbGraph) {
       wbEditor.selectManager.onHover(hovered.data.id, true)
-      wbEditor.cursorManager.setCursor(this.cursor)
+
+      this.updateCursor_Select_Or_Duplicate()
     } else {
-      // wbEditor.cursorManager.setCursor(this.cursor)
+      // 标尺
+      wbEditor.selectManager.onHover(null, false)
+      wbEditor.cursorManager.setCursor(this.cursor)
     }
   }
+
   onPointerDown(downEvt: PointerEvent) {
     this.isPointerDown = true
 
@@ -132,35 +128,52 @@ export default class ToolSelect implements ITool {
       }
     }
 
-    this.currentStrategyDispose = this.currentStrategy.onActive?.()
+    if (this.currentStrategy) {
+      this.currentStrategyDispose = this.currentStrategy.onActive?.()
+    }
   }
 
   onPointerUp() {
     console.log('onPointerUp')
+
     this.isPointerDown = false
     this.disposePrev()
-
     this.currentStrategy = null
   }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.wbEditor.selectManager.disableHover()
 
-    this.currentStrategy.onDragStart(downEvt, sceneCoord)
+    this.currentStrategy?.onDragStart(downEvt, sceneCoord)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    this.currentStrategy.onDragMove(moveEvt, sceneCoord)
+    this.currentStrategy?.onDragMove(moveEvt, sceneCoord)
   }
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
     this.isPointerDown = false
 
-    this.currentStrategy.onDragEnd(upEvt, sceneCoord)
+    this.currentStrategy?.onDragEnd(upEvt, sceneCoord)
+    this.currentStrategy = null
+    this.disposePrev()
 
     this.wbEditor.selectManager.enableHover()
+  }
 
-    this.disposePrev()
+  onShiftToggle(isShiftKeyPressing: boolean) {
+    this.currentStrategy?.onShiftToggle(isShiftKeyPressing)
+  }
+
+  onAltToggle(isAltPressing: boolean) {
+    this.currentStrategy?.onAltToggle(isAltPressing)
+
+    this.updateCursor_Select_Or_Duplicate()
+  }
+
+  private updateCursor_Select_Or_Duplicate() {
+    const cursor = this.wbEditor.keyboard.isAltPressing ? duplicateCursor : this.cursor
+    this.wbEditor.cursorManager.setCursor(cursor)
   }
 
   private disposePrev() {

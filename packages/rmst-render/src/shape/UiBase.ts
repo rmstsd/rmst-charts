@@ -46,7 +46,7 @@ export interface UiBaseData extends EventOpt {
 
   mt?: Matrix
 
-  children?: IShape[]
+  children?: UiBase[]
 }
 
 export const getDefaultUiBaseDataData = (): UiBaseData => ({
@@ -108,7 +108,9 @@ export abstract class UiBase<T = UiBaseData> extends AbsEvent {
   clone() {
     // todo 对于有后代的元素还要深度 clone
     const Class = this.constructor as new (...args) => UiBase<T>
-    return new Class(structuredClone(this.data))
+    const newData = structuredClone(this.data)
+    newData.id = uuid()
+    return new Class(newData)
   }
 
   getOutLineShape() {

@@ -1,48 +1,115 @@
-import { ICoord, IRect, Path } from 'rmst-render'
+import { getRectByTwoPoint, ICoord, IShape } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
-import { uuid } from '@/utils'
 import { translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
-import { ToolEnumKey } from './../constant'
 import { defaultGraphFillColor } from '@/demo/7-whiteboard/color'
+import { cloneDeep, noop } from 'es-toolkit'
 
 export default abstract class ToolDrawByRect implements ITool {
-  constructor(private wbEditor: WhiteboardEditor) {}
+  constructor(protected wbEditor: WhiteboardEditor) {}
 
-  downPos: ICoord
+  private downPos: ICoord
+  private movePos: ICoord
 
   graphItem = {} as IGraph
+
+  private unbind = noop
+
+  private spaceDownPos
+  private spacePrevPos
+
+  onActive() {
+    const unbind_1 = this.wbEditor.keyboard.eventEmitter.on('shiftKeyToggle', () => {
+      this.updateShape()
+    })
+    const unbind_2 = this.wbEditor.keyboard.eventEmitter.on('altToggle', () => {
+      this.updateShape()
+    })
+
+    const unbind_3 = this.wbEditor.keyboard.eventEmitter.on('spaceToggle', () => {
+      this.spaceDownPos = cloneDeep(this.downPos)
+      this.spacePrevPos = cloneDeep(this.movePos)
+
+      this.updateShape()
+    })
+
+    this.unbind = () => {
+      unbind_1()
+      unbind_2()
+      unbind_3()
+    }
+  }
+
+  onDeActive() {
+    this.unbind()
+  }
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.downPos = sceneCoord
 
-    this.graphItem = { graphShape: new Path({}) }
+    this.graphItem = { graphShape: this.getShape() }
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
 
-    this.wbEditor.graphs.push(this.graphItem)
     this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    const { wbEditor, downPos } = this
+    this.movePos = sceneCoord
 
-    const tl = { x: Math.min(sceneCoord.x, downPos.x), y: Math.min(sceneCoord.y, downPos.y) }
-    const br = { x: Math.max(sceneCoord.x, downPos.x), y: Math.max(sceneCoord.y, downPos.y) }
+    this.updateShape()
+  }
 
-    const width = br.x - tl.x
-    const height = br.y - tl.y
+  private updateShape() {
+    const { wbEditor, downPos, movePos } = this
 
-    const graphData = this.getGraphPathD({ x: 0, y: 0, width, height })
+    if (!downPos || !movePos) {
+      return
+    }
+
+    const { isSpacePressing, isAltPressing, isShiftKeyPressing } = wbEditor.keyboard
+
+    if (isSpacePressing) {
+      const dx = movePos.x - this.spacePrevPos.x
+      const dy = movePos.y - this.spacePrevPos.y
+
+      downPos.x = this.spaceDownPos.x + dx
+      downPos.y = this.spaceDownPos.y + dy
+    }
+
+    const rect = { x: downPos.x, y: downPos.y, width: movePos.x - downPos.x, height: movePos.y - downPos.y }
+
+    let cx = 0
+    let cy = 0
+    if (isAltPressing) {
+      rect.width = rect.width * 2
+      rect.height = rect.height * 2
+      rect.x = rect.x - rect.width / 2
+      rect.y = rect.y - rect.height / 2
+
+      cx = rect.x + rect.width / 2
+      cy = rect.y + rect.height / 2
+    }
+
+    if (isShiftKeyPressing) {
+      const maxSize = Math.max(Math.abs(rect.width), Math.abs(rect.height))
+      rect.width = (Math.sign(rect.width) || 1) * maxSize
+      rect.height = (Math.sign(rect.height) || 1) * maxSize
+    }
+
+    if (isAltPressing) {
+      rect.x = cx - rect.width / 2
+      rect.y = cy - rect.height / 2
+    }
+
+    const rectAns = getRectByTwoPoint({ x: rect.x, y: rect.y }, { x: rect.x + rect.width, y: rect.y + rect.height })
+
     this.graphItem.graphShape.attr({
-      name: graphData.name,
-      d: graphData.d,
-      width,
-      height,
-      mt: translate(tl.x, tl.y),
+      width: rectAns.width,
+      height: rectAns.height,
+      mt: translate(rectAns.x, rectAns.y),
       fillStyle: defaultGraphFillColor,
-      lineWidth: 1,
-      extraData: { wbType: graphData.wbType }
+      lineWidth: 1
     })
 
     wbEditor.triggerRender()
@@ -54,29 +121,26 @@ export default abstract class ToolDrawByRect implements ITool {
     const width = 100
     const height = 100
 
-    const graphData = this.getGraphPathD({ x: 0, y: 0, width, height })
-
-    this.graphItem.graphShape = new Path({})
+    this.graphItem.graphShape = this.getShape()
     this.wbEditor.graphLayer.append(this.graphItem.graphShape)
-
-    this.wbEditor.graphs.push(this.graphItem)
 
     this.wbEditor.selectManager.select(this.graphItem.graphShape.id)
 
     this.graphItem.graphShape.attr({
-      id: this.graphItem.graphShape.id,
-      name: graphData.name,
-      d: graphData.d,
       width,
       height,
       mt: translate(sceneCoord.x - width / 2, sceneCoord.y - height / 2),
       fillStyle: defaultGraphFillColor,
-      lineWidth: 1,
-      extraData: { wbType: graphData.wbType }
+      lineWidth: 1
     })
 
     this.wbEditor.triggerRender()
   }
 
-  protected abstract getGraphPathD(rect: IRect): { d: string; name: string; wbType: ToolEnumKey }
+  onDrawAfterEnd() {
+    this.downPos = null
+    this.movePos = null
+  }
+
+  protected abstract getShape(): IShape
 }

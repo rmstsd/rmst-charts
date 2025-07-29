@@ -1,11 +1,10 @@
 import { getBBox, ICoord, Path } from 'rmst-render'
 import { getStroke } from 'perfect-freehand'
+import { svgPathBbox } from 'svg-path-bbox'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
 import { ToolEnum } from './../constant'
 import { translate } from 'transformation-matrix'
-import { IGraph } from '../../../type'
-import { svgPathBbox } from 'svg-path-bbox'
 import svgPath from 'svgpath'
 import fitCurve from 'fit-curve'
 import { defaultGraphPencilColor } from '@/demo/7-whiteboard/color'
@@ -13,7 +12,7 @@ import { defaultGraphPencilColor } from '@/demo/7-whiteboard/color'
 export default class ToolDrawPencil implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
-  graphItem = {} as IGraph
+  graphShape: Path
 
   private points: [number, number, number][] = []
 
@@ -28,33 +27,30 @@ export default class ToolDrawPencil implements ITool {
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     this.points.push([sceneCoord.x, sceneCoord.y, downEvt.pressure])
 
-    this.graphItem = { graphShape: new Path({}) }
-    this.wbEditor.graphs.push(this.graphItem)
-
-    this.wbEditor.graphLayer.append(this.graphItem.graphShape)
+    this.graphShape = new Path({})
+    this.wbEditor.graphLayer.append(this.graphShape)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     this.points.push([sceneCoord.x, sceneCoord.y, moveEvt.pressure])
 
-    const stroke = getStroke(this.points, {
-      size: 2,
-      smoothing: 0.5,
-      thinning: 0,
-      streamline: 0.5,
-      easing: t => t,
-      start: { taper: 0, cap: true },
-      end: { taper: 0, cap: true }
-    })
-    const pathData = getSvgPathFromStroke(stroke)
-
-    const bbox = svgPathBbox(pathData)
-    const [x1, y1] = bbox
-    const d = svgPath(pathData).translate(-x1, -y1).toString()
+    // const stroke = getStroke(this.points, {
+    //   size: 2,
+    //   smoothing: 0.5,
+    //   thinning: 0,
+    //   streamline: 0.5,
+    //   easing: t => t,
+    //   start: { taper: 0, cap: true },
+    //   end: { taper: 0, cap: true }
+    // })
+    // const pathData = getSvgPathFromStroke(stroke)
+    // const bbox = svgPathBbox(pathData)
+    // const [x1, y1] = bbox
+    // const d = svgPath(pathData).translate(-x1, -y1).toString()
 
     const tempD = 'M' + this.points.map(item => `${item[0]},${item[1]}`).join(' L')
 
-    this.graphItem.graphShape.attr({
+    this.graphShape.attr({
       name: ToolEnum.label(ToolEnum.Pencil),
       d: tempD,
       strokeStyle: defaultGraphPencilColor,
@@ -64,6 +60,8 @@ export default class ToolDrawPencil implements ITool {
         wbType: ToolEnum.Pencil
       }
     })
+
+    this.wbEditor.triggerRender()
   }
 
   onDragEnd(upEvt: PointerEvent) {
@@ -71,13 +69,14 @@ export default class ToolDrawPencil implements ITool {
 
     const bbox = getBBox(curveD)
     curveD = svgPath(curveD).translate(-bbox.x, -bbox.y).toString()
-    this.graphItem.graphShape.attr({ d: curveD, width: bbox.width, height: bbox.height, mt: translate(bbox.x, bbox.y) })
+    this.graphShape.attr({ d: curveD, width: bbox.width, height: bbox.height, mt: translate(bbox.x, bbox.y) })
 
     this.points = []
 
-    return false
+    this.wbEditor.triggerRender()
   }
-  onPointerUp(downEvt: PointerEvent, sceneCoord: ICoord) {
+
+  onDrawAfterEnd() {
     return false
   }
 }

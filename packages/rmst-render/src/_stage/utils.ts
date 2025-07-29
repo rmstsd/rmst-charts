@@ -3,43 +3,7 @@ import { EventParameter, EventType, OnEventType, supportBubblesEventType } from 
 import { IShape } from '../type'
 import { isStage } from '../utils'
 
-export function initStage(canvasContainer: HTMLElement, dpr) {
-  canvasContainer.style.position = 'relative'
-
-  const canvasElement = document.createElement('canvas')
-  const ctx = canvasElement.getContext('2d')
-
-  const setCanvasStyle = () => {
-    const { clientWidth, clientHeight } = canvasContainer
-
-    const canvasWidth = clientWidth * dpr
-    const canvasHeight = clientHeight * dpr
-
-    canvasElement.width = canvasWidth
-    canvasElement.height = canvasHeight
-
-    canvasElement.style.position = 'absolute'
-    canvasElement.style.inset = '0'
-    canvasElement.style.width = `${clientWidth}px`
-    canvasElement.style.height = `${clientHeight}px`
-
-    ctx.scale(dpr, dpr)
-    ctx.textBaseline = 'hanging'
-    ctx.font = `${14}px 微软雅黑`
-  }
-
-  setCanvasStyle()
-
-  canvasContainer.append(canvasElement)
-
-  return { canvasElement, ctx }
-}
-
-export function triggerEventHandlers(
-  elementItem: IShape | Stage,
-  eventName: OnEventType,
-  eventParameter: EventParameter
-) {
+export function triggerEventHandlers(elementItem: IShape | Stage, eventName: OnEventType, eventParameter: EventParameter) {
   elementItem[eventName]?.(eventParameter)
   const eventType = eventName.slice(2) as EventType
 

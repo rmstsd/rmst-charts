@@ -27,6 +27,10 @@ export class EventEmitter<T extends Record<string | symbol, any>> {
     }
     return this
   }
+
+  offAll() {
+    this.eventMap = {} as any
+  }
 }
 
 export default EventEmitter

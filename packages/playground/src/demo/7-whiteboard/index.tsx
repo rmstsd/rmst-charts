@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
-import { round } from 'es-toolkit'
 import WhiteboardEditor from './whiteboardEditor'
 import { WbEditorContext } from './context'
 
 import ToolBar from './ToolBar'
-import InfoRightPanel from './InfoRightPanel'
+import InfoRightPanel from './components/InfoRightPanel'
 
 import { isProd } from '@/utils'
 
 import './style.less'
+import LeftPanel from './components/LeftPanel'
 
 // let isProd = false
 
@@ -38,17 +38,9 @@ const Whiteboard = function Whiteboard() {
         <ToolBar />
 
         <main className="flex h-full">
-          <div className="whiteboard-canvas flex-grow h-full relative border" ref={domRef}></div>
+          <LeftPanel />
 
-          <div className="zoom-container absolute bg-white shadow-xl rounded-lg p-2 bottom-0 left-0 border flex gap-1 items-center">
-            <button onClick={() => wbEditor.camera.zoomOut()}>缩小</button>
-            <span style={{ width: 90 }} className="text-center">
-              zoom: {round(wbEditor.camera.zoom * 100)}%
-            </span>
-            <button onClick={() => wbEditor.camera.zoomIn()}>放大</button>
-            <button onClick={() => wbEditor.camera.zoomToValue(1)}>100%</button>
-            <button onClick={() => wbEditor.camera.zoomToFit()}>适应画布</button>
-          </div>
+          <div className="whiteboard-canvas flex-grow h-full relative border" ref={domRef}></div>
 
           <InfoRightPanel />
         </main>

@@ -7,7 +7,11 @@ export enum Graph_Id {
   graph_root_group = 'graph_root_group',
   graph_ctrl_translate = 'graph_ctrl_translate',
   graph_ctrl_rotate = 'graph_ctrl_rotate',
-  graph_ctrl_scale = 'graph_ctrl_scale'
+  graph_ctrl_scale = 'graph_ctrl_scale',
+
+  ruler_assist_line_x = 'ruler_assist_line_x',
+  ruler_assist_line_y = 'ruler_assist_line_y',
+  ruler_assist_line_both = 'ruler_assist_line_both'
 }
 
 export const isCtrlHandleShape = (shape: IShape) => {
@@ -54,4 +58,16 @@ export function normalizeAngle(degrees) {
   if (degrees < 0) degrees += 360
 
   return degrees
+}
+
+// 计算 x 方向的缩放因子
+export const getScaleFromMatrix_x = (m: Matrix) => {
+  const { a, b } = m
+  return Math.sqrt(a * a + b * b)
+}
+
+// 计算 y 方向的缩放因子
+export const getScaleFromMatrix_y = (m: Matrix) => {
+  const { c, d } = m
+  return Math.sqrt(c * c + d * d)
 }

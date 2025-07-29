@@ -15,9 +15,14 @@ export interface ITool {
 
   // 移动时 不是拖拽
   onPointerMoveNotDragging?: (context: { moveEvt?: PointerEvent; sceneCoord?: ICoord; isInWbCanvas: boolean }) => void
-  onPointerUp?: (downEvt: PointerEvent, sceneCoord: ICoord) => void | boolean // 相当于 onClick 事件, 返回值代表是否退出当前工具
+  onPointerUp?: (downEvt: PointerEvent, sceneCoord: ICoord) => void
 
   onDragStart: (downEvt: PointerEvent, sceneCoord: ICoord) => void
   onDragMove: (moveEvt: PointerEvent, sceneCoord: ICoord) => void
-  onDragEnd: (upEvt: PointerEvent, sceneCoord: ICoord) => void | boolean // 拖拽结束后是否退出当前工具
+  onDragEnd: (upEvt: PointerEvent, sceneCoord: ICoord) => void
+
+  onDrawAfterEnd?: () => void | boolean // 拖拽结束后是否退出当前工具
+
+  onShiftToggle?: (isShiftKeyPressing: boolean) => void
+  onAltToggle?: (isAltPressing: boolean) => void
 }

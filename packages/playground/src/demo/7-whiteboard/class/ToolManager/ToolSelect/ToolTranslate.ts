@@ -7,44 +7,76 @@ import { ICoord } from 'rmst-render'
 export default class ToolTranslate implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
-  downPos
-  downSnap
+  private downPos
+  private downSnap
+
+  private moveCoord
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolTranslate onDragStart')
+
+    const { selectManager, keyboard } = this.wbEditor
+    const { isAltPressing } = keyboard
 
     this.wbEditor.selectManager.hideCtrlBox()
 
     this.downPos = sceneCoord
 
+    if (isAltPressing) {
+      const clonedList = this.wbEditor.selectManager.selectedGraphs.map(item => item.clone())
+      this.wbEditor.graphLayer.append(clonedList)
+      selectManager.batchSelect(clonedList.map(item => item.id))
+    }
+
     this.downSnap = keyBy(
       this.wbEditor.selectManager.selectedGraphs.map(item => ({
-        id: item.graphShape.id,
-        downMt: cloneDeep(item.graphShape.data.mt)
+        id: item.id,
+        downMt: cloneDeep(item.data.mt)
       })),
       item => item.id
     )
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    this.wbEditor.selectManager.selectedGraphs.forEach(item => {
-      const dSnap = this.downSnap[item.graphShape.id]
-      const moveLocalPos = sceneCoord
-
-      const dx = moveLocalPos.x - this.downPos.x
-      const dy = moveLocalPos.y - this.downPos.y
-
-      const tmt = translate(dx, dy)
-
-      item.graphShape.attr('mt', compose(tmt, dSnap.downMt))
-    })
-
-    this.wbEditor.triggerRender()
+    this.moveCoord = sceneCoord
+    this.updatePosition()
   }
 
   onDragEnd(upEvt: PointerEvent) {
     console.log('ToolTranslate onDragEnd')
 
     this.wbEditor.selectManager.showCtrlBox()
+  }
+
+  onShiftToggle(isShiftKeyPressing: boolean) {
+    this.updatePosition()
+  }
+
+  onAltToggle(isAltPressing: boolean) {}
+
+  private updatePosition() {
+    const { isShiftKeyPressing } = this.wbEditor.keyboard
+
+    this.wbEditor.selectManager.selectedGraphs.forEach(item => {
+      const dSnap = this.downSnap[item.id]
+      const moveLocalPos = this.moveCoord
+
+      let dx = moveLocalPos.x - this.downPos.x
+      let dy = moveLocalPos.y - this.downPos.y
+
+      if (isShiftKeyPressing) {
+        if (Math.abs(dx) > Math.abs(dy)) {
+          dy = 0
+        } else {
+          dx = 0
+        }
+      }
+
+      const tmt = translate(dx, dy)
+
+      item.attr('mt', compose(tmt, dSnap.downMt))
+    })
+
+    this.wbEditor.triggerRender()
   }
 }

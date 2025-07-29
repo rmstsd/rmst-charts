@@ -6,6 +6,7 @@ import { Pointer_Button } from 'rmst-render/constant'
 import { startDrag } from '@/utils/util'
 import { ITool } from './type'
 
+import ToolPan from './ToolPan'
 import ToolSelect from './ToolSelect/ToolSelect'
 import ToolDrawRect from './ToolDraw/ToolDrawRect'
 import ToolDrawEllipse from './ToolDraw/ToolDrawEllipse'
@@ -13,8 +14,10 @@ import ToolDrawRhombus from './ToolDraw/ToolDrawRhombus'
 import ToolDrawPencil from './ToolDraw/ToolDrawPencil'
 import ToolDrawImage from './ToolDraw/ToolDrawImage'
 import EventEmitter from 'rmst-render/event_emitter'
+import { nextTick } from '@/utils'
 
 const ToolClassMap = {
+  [ToolEnum.Pan]: ToolPan,
   [ToolEnum.Select]: ToolSelect,
   [ToolEnum.Rect]: ToolDrawRect,
   [ToolEnum.Ellipse]: ToolDrawEllipse,
@@ -39,12 +42,36 @@ export default class ToolManager {
 
   bindEvent() {
     const { wbEditor } = this
-    const { container } = wbEditor
+    const { container, keyboard } = wbEditor
+
+    keyboard.onSpaceToggle = isSpacePressing => {
+      if (isPointerDown) {
+        return
+      }
+
+      if (isSpacePressing) {
+        this.switchTool(ToolEnum.Pan)
+      } else {
+        if (isPointerDown) {
+        } else {
+          this.switchTool(ToolEnum.Select)
+        }
+      }
+    }
+
+    keyboard.onShiftToggle = isShiftKeyPressing => {
+      this.currentToolClass?.onShiftToggle?.(isShiftKeyPressing)
+    }
+    keyboard.onAltToggle = isAltPressing => {
+      this.currentToolClass?.onAltToggle?.(isAltPressing)
+    }
 
     let isPointerDown = false
     let isInWbCanvas = false
 
-    const onPointerDown = (downEvt: PointerEvent) => {
+    const onPointerDown = async (downEvt: PointerEvent) => {
+      await nextTick() // 让输入框能触发 blur 事件
+
       isPointerDown = true
       if (downEvt.button !== Pointer_Button.Left) {
         console.warn('非左键操作')
@@ -72,12 +99,16 @@ export default class ToolManager {
         },
         onDragEnd: upEvt => {
           isPointerDown = false
-          const exitCurrentTool = this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+
+          const exitCurrentTool = this.currentToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
         },
         onPointerUp: upEvt => {
           isPointerDown = false
-          const exitCurrentTool = this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+
+          const exitCurrentTool = this.currentToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
         }
       })
