@@ -44,12 +44,12 @@ export default class ToolManager {
     const { wbEditor } = this
     const { container, keyboard } = wbEditor
 
-    keyboard.onSpaceToggle = isSpacePressing => {
+    keyboard.onSpaceToggle = isSpaceKeyPressing => {
       if (isPointerDown) {
         return
       }
 
-      if (isSpacePressing) {
+      if (isSpaceKeyPressing) {
         this.switchTool(ToolEnum.Pan)
       } else {
         if (isPointerDown) {
@@ -62,8 +62,8 @@ export default class ToolManager {
     keyboard.onShiftToggle = isShiftKeyPressing => {
       this.currentToolClass?.onShiftToggle?.(isShiftKeyPressing)
     }
-    keyboard.onAltToggle = isAltPressing => {
-      this.currentToolClass?.onAltToggle?.(isAltPressing)
+    keyboard.onAltToggle = isAltKeyPressing => {
+      this.currentToolClass?.onAltToggle?.(isAltKeyPressing)
     }
 
     let isPointerDown = false

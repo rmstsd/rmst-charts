@@ -16,13 +16,13 @@ export default class ToolTranslate implements ITool {
     console.log('ToolTranslate onDragStart')
 
     const { selectManager, keyboard } = this.wbEditor
-    const { isAltPressing } = keyboard
+    const { isAltKeyPressing } = keyboard
 
     this.wbEditor.selectManager.hideCtrlBox()
 
     this.downPos = sceneCoord
 
-    if (isAltPressing) {
+    if (isAltKeyPressing) {
       const clonedList = this.wbEditor.selectManager.selectedGraphs.map(item => item.clone())
       this.wbEditor.graphLayer.append(clonedList)
       selectManager.batchSelect(clonedList.map(item => item.id))
@@ -51,8 +51,6 @@ export default class ToolTranslate implements ITool {
   onShiftToggle(isShiftKeyPressing: boolean) {
     this.updatePosition()
   }
-
-  onAltToggle(isAltPressing: boolean) {}
 
   private updatePosition() {
     const { isShiftKeyPressing } = this.wbEditor.keyboard

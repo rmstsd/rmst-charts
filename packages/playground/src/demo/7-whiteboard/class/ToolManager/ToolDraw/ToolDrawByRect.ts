@@ -67,9 +67,9 @@ export default abstract class ToolDrawByRect implements ITool {
       return
     }
 
-    const { isSpacePressing, isAltPressing, isShiftKeyPressing } = wbEditor.keyboard
+    const { isSpaceKeyPressing, isAltKeyPressing, isShiftKeyPressing } = wbEditor.keyboard
 
-    if (isSpacePressing) {
+    if (isSpaceKeyPressing) {
       const dx = movePos.x - this.spacePrevPos.x
       const dy = movePos.y - this.spacePrevPos.y
 
@@ -81,7 +81,7 @@ export default abstract class ToolDrawByRect implements ITool {
 
     let cx = 0
     let cy = 0
-    if (isAltPressing) {
+    if (isAltKeyPressing) {
       rect.width = rect.width * 2
       rect.height = rect.height * 2
       rect.x = rect.x - rect.width / 2
@@ -97,7 +97,7 @@ export default abstract class ToolDrawByRect implements ITool {
       rect.height = (Math.sign(rect.height) || 1) * maxSize
     }
 
-    if (isAltPressing) {
+    if (isAltKeyPressing) {
       rect.x = cx - rect.width / 2
       rect.y = cy - rect.height / 2
     }

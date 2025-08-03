@@ -23,6 +23,8 @@ export default class ToolScale implements ITool {
   isSingleSelect = false
   downRect
 
+  movePos: ICoord
+
   onDragStart(downEvt: PointerEvent) {
     console.log('ToolScale onDragStart')
 
@@ -43,6 +45,23 @@ export default class ToolScale implements ITool {
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
+
+    this.movePos = movePos
+
+    this.updateSize()
+  }
+
+  onDragEnd(upEvt: PointerEvent) {
+    console.log('ToolScale onDragEnd')
+  }
+
+  private updateSize() {
+    const { movePos } = this
+    if (!movePos) {
+      return
+    }
+
+    const { isShiftKeyPressing, isAltKeyPressing } = this.wbEditor.keyboard
 
     let transformRect: TransformRect
 
@@ -72,7 +91,11 @@ export default class ToolScale implements ITool {
     this.wbEditor.triggerRender()
   }
 
-  onDragEnd(upEvt: PointerEvent) {
-    console.log('ToolScale onDragEnd')
+  onShiftToggle() {
+    this.updateSize()
+  }
+
+  onAltToggle() {
+    this.updateSize()
   }
 }

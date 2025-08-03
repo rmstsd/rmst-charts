@@ -165,14 +165,14 @@ export default class ToolSelect implements ITool {
     this.currentStrategy?.onShiftToggle(isShiftKeyPressing)
   }
 
-  onAltToggle(isAltPressing: boolean) {
-    this.currentStrategy?.onAltToggle(isAltPressing)
+  onAltToggle(isAltKeyPressing: boolean) {
+    this.currentStrategy?.onAltToggle(isAltKeyPressing)
 
     this.updateCursor_Select_Or_Duplicate()
   }
 
   private updateCursor_Select_Or_Duplicate() {
-    const cursor = this.wbEditor.keyboard.isAltPressing ? duplicateCursor : this.cursor
+    const cursor = this.wbEditor.keyboard.isAltKeyPressing ? duplicateCursor : this.cursor
     this.wbEditor.cursorManager.setCursor(cursor)
   }
 
