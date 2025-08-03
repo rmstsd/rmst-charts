@@ -104,7 +104,7 @@ export default function InfoRightPanel() {
             </div>
             <div className="flex gap-2 items-center">
               <span>rotate</span>
-              <WbInputNumber value={rad2deg(calcRotateRad(data.mt))} onChange={val => {}} />
+              <WbInputNumber value={round(rad2deg(calcRotateRad(data.mt)))} onChange={val => {}} />
             </div>
             <div className="flex gap-2 items-center">
               <span>mt</span>

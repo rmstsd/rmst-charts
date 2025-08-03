@@ -1,8 +1,8 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-import { applyToPoint, compose, rotate } from 'transformation-matrix'
-import { cloneDeep, keyBy } from 'es-toolkit'
-import { ICoord } from 'rmst-render'
+import { applyToPoint, compose, inverse, rotate, rotateDEG } from 'transformation-matrix'
+import { cloneDeep, keyBy, range } from 'es-toolkit'
+import { ICoord, rad2deg } from 'rmst-render'
 import { CursorType, getCursorRotation } from '../../cursorManager'
 import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 
@@ -16,6 +16,8 @@ export default class ToolRotate implements ITool {
   isSingleSelect = false
 
   startShapeRotation
+
+  movePos: ICoord
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('ToolRotate onDragStart')
@@ -39,21 +41,42 @@ export default class ToolRotate implements ITool {
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     // console.log('ToolRotate onDragMove')
 
-    const currRad = Math.atan2(sceneCoord.y - this.origin.y, sceneCoord.x - this.origin.x)
-    const diffRad = currRad - this.startRad
+    this.movePos = sceneCoord
+    this.updateRotation()
+  }
 
-    let newMt
+  onDragEnd(upEvt: PointerEvent) {
+    console.log('ToolRotate onDragEnd')
+  }
+
+  private updateRotation() {
+    if (!this.movePos) {
+      return
+    }
+
+    const { isShiftKeyPressing } = this.wbEditor.keyboard
+
+    const { origin } = this
+
+    const currRad = Math.atan2(this.movePos.y - origin.y, this.movePos.x - origin.x)
+    const diffRad = currRad - this.startRad
+    let diffMt = rotate(diffRad, origin.x, origin.y)
+
+    if (isShiftKeyPressing) {
+      const newMt_2 = compose(diffMt, this.downRect.mt)
+      const newDeg = findNearestRotation(rad2deg(calcRotateRad(newMt_2)))
+      const newRotationMt = rotateDEG(newDeg, origin.x, origin.y)
+      diffMt = compose(newRotationMt, inverse(rotate(this.startShapeRotation, origin.x, origin.y)))
+    }
 
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = this.downSnap[item.id].graphShapeRect
-
-      newMt = compose(rotate(diffRad, this.origin.x, this.origin.y), dSnap.mt)
-
+      const newMt = compose(diffMt, dSnap.mt)
       item.attr('mt', newMt)
     })
 
     {
-      const mt = this.isSingleSelect ? newMt : compose(rotate(diffRad, this.origin.x, this.origin.y), this.downRect.mt)
+      const mt = compose(diffMt, this.downRect.mt)
       const rotation = getCursorRotation('rotation', this.cursorType, mt)
       this.wbEditor.cursorManager.setCursor({ type: 'rotation', rotation })
     }
@@ -61,7 +84,26 @@ export default class ToolRotate implements ITool {
     this.wbEditor.triggerRender()
   }
 
-  onDragEnd(upEvt: PointerEvent) {
-    console.log('ToolRotate onDragEnd')
+  onShiftToggle(isShiftKeyPressing: boolean) {
+    this.updateRotation()
   }
+}
+
+function findNearestRotation(randomNum) {
+  const targets = range(-180, 180, 15)
+
+  // 初始化最小差值和对应的目标值
+  let minDiff = Math.abs(randomNum - targets[0])
+  let nearest = targets[0]
+
+  // 遍历所有目标值，找到最接近的
+  for (let i = 1; i < targets.length; i++) {
+    const diff = Math.abs(randomNum - targets[i])
+    if (diff < minDiff) {
+      minDiff = diff
+      nearest = targets[i]
+    }
+  }
+
+  return nearest
 }
