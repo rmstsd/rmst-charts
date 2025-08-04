@@ -7,6 +7,7 @@ import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
 import { resizeRect, TransformRect } from './resizeStrategy'
 import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
+import { ass } from '../ass'
 
 export default class ToolScale implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {
@@ -22,6 +23,8 @@ export default class ToolScale implements ITool {
 
   isSingleSelect = false
   downRect
+
+  movePos: ICoord
 
   onDragStart(downEvt: PointerEvent) {
     console.log('ToolScale onDragStart')
@@ -44,15 +47,39 @@ export default class ToolScale implements ITool {
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
     const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
 
+    this.movePos = movePos
+
+    this.updateSize()
+  }
+
+  onDragEnd(upEvt: PointerEvent) {
+    console.log('ToolScale onDragEnd')
+  }
+
+  private updateSize() {
+    const { movePos } = this
+    if (!movePos) {
+      return
+    }
+
+    const { isShiftKeyPressing, isAltKeyPressing } = this.wbEditor.keyboard
+
     let transformRect: TransformRect
 
     if (this.isSingleSelect) {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect)
+      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+        keepRatio: isShiftKeyPressing,
+        scaleFromCenter: isAltKeyPressing
+      })
 
       const item = this.wbEditor.selectManager.selectedGraphs[0]
       item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, { changeWidthAndHeight: false })
+      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+        changeWidthAndHeight: false,
+        keepRatio: isShiftKeyPressing,
+        scaleFromCenter: isAltKeyPressing
+      })
 
       const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
 
@@ -72,7 +99,11 @@ export default class ToolScale implements ITool {
     this.wbEditor.triggerRender()
   }
 
-  onDragEnd(upEvt: PointerEvent) {
-    console.log('ToolScale onDragEnd')
+  onShiftToggle() {
+    this.updateSize()
+  }
+
+  onAltToggle() {
+    this.updateSize()
   }
 }

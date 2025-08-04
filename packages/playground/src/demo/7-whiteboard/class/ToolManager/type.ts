@@ -24,5 +24,6 @@ export interface ITool {
   onDrawAfterEnd?: () => void | boolean // 拖拽结束后是否退出当前工具
 
   onShiftToggle?: (isShiftKeyPressing: boolean) => void
-  onAltToggle?: (isAltPressing: boolean) => void
+  onAltToggle?: (isAltKeyPressing: boolean) => void
+  onSpaceToggle?: (isSpaceKeyPressing: boolean) => void
 }

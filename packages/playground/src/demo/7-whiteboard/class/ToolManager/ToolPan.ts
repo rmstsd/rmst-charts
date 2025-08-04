@@ -38,6 +38,6 @@ export default class ToolPan implements ITool {
   }
 
   onDrawAfterEnd() {
-    return !this.wbEditor.keyboard.isSpacePressing
+    return !this.wbEditor.keyboard.isSpaceKeyPressing
   }
 }

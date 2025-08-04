@@ -18,6 +18,8 @@ export default class ToolSelect implements ITool {
   currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选
   currentStrategyDispose
 
+  currentHoverStrategyTypeId
+
   isPointerDown = false
 
   onActive() {
@@ -34,15 +36,19 @@ export default class ToolSelect implements ITool {
     const { wbEditor } = this
 
     if (!isInWbCanvas) {
+      this.currentHoverStrategyTypeId = null
+
       wbEditor.selectManager.onHover(null, false)
       wbEditor.cursorManager.setCursor(this.cursor)
       return
     }
 
-    const worldPoint = wbEditor.coordSys.client2World(moveEvt)
+    const worldPoint = wbEditor.coordSys.client2World(moveEvt, true)
     const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
 
     if (!hovered) {
+      this.currentHoverStrategyTypeId = null
+
       wbEditor.selectManager.onHover(null, false)
       wbEditor.cursorManager.setCursor(this.cursor)
       return
@@ -59,15 +65,18 @@ export default class ToolSelect implements ITool {
 
       switch (hovered.data.id) {
         case Graph_Id.graph_ctrl_translate: {
+          this.currentHoverStrategyTypeId = Graph_Id.graph_ctrl_translate
           this.updateCursor_Select_Or_Duplicate()
           break
         }
         case Graph_Id.graph_ctrl_rotate: {
+          this.currentHoverStrategyTypeId = Graph_Id.graph_ctrl_rotate
           const rotation = getCursorRotation('rotation', cursorType, downRect.mt)
           wbEditor.cursorManager.setCursor({ type: 'rotation', rotation })
           break
         }
         case Graph_Id.graph_ctrl_scale: {
+          this.currentHoverStrategyTypeId = Graph_Id.graph_ctrl_scale
           const rotation = getCursorRotation('resize', cursorType, downRect.mt)
           wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
           break
@@ -79,10 +88,13 @@ export default class ToolSelect implements ITool {
         }
       }
     } else if (isWbGraph) {
+      this.currentHoverStrategyTypeId = Graph_Id.graph_ctrl_translate
       wbEditor.selectManager.onHover(hovered.data.id, true)
 
       this.updateCursor_Select_Or_Duplicate()
     } else {
+      console.log('ruler')
+      this.currentHoverStrategyTypeId = null
       // 标尺
       wbEditor.selectManager.onHover(null, false)
       wbEditor.cursorManager.setCursor(this.cursor)
@@ -162,18 +174,28 @@ export default class ToolSelect implements ITool {
   }
 
   onShiftToggle(isShiftKeyPressing: boolean) {
-    this.currentStrategy?.onShiftToggle(isShiftKeyPressing)
+    this.currentStrategy?.onShiftToggle?.(isShiftKeyPressing)
   }
 
-  onAltToggle(isAltPressing: boolean) {
-    this.currentStrategy?.onAltToggle(isAltPressing)
+  onSpaceToggle(isSpaceKeyPressing: boolean) {
+    this.currentStrategy?.onSpaceToggle?.(isSpaceKeyPressing)
+  }
+
+  onAltToggle(isAltKeyPressing: boolean) {
+    this.currentStrategy?.onAltToggle?.(isAltKeyPressing)
 
     this.updateCursor_Select_Or_Duplicate()
   }
 
   private updateCursor_Select_Or_Duplicate() {
-    const cursor = this.wbEditor.keyboard.isAltPressing ? duplicateCursor : this.cursor
-    this.wbEditor.cursorManager.setCursor(cursor)
+    if (this.isPointerDown) {
+      return
+    }
+
+    if (this.currentHoverStrategyTypeId === Graph_Id.graph_ctrl_translate) {
+      const cursor = this.wbEditor.keyboard.isAltKeyPressing ? duplicateCursor : this.cursor
+      this.wbEditor.cursorManager.setCursor(cursor)
+    }
   }
 
   private disposePrev() {

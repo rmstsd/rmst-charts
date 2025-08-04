@@ -2,9 +2,9 @@ import EventEmitter from 'rmst-render/event_emitter'
 import WhiteboardEditor from '../whiteboardEditor'
 
 interface Events {
-  spaceToggle: (isSpacePressing: boolean) => void
+  spaceToggle: (isSpaceKeyPressing: boolean) => void
   ctrlToggle: (isCtrlPressing: boolean) => void
-  altToggle: (isAltPressing: boolean) => void
+  altToggle: (isAltKeyPressing: boolean) => void
   shiftKeyToggle: (isShiftKeyPressing: boolean) => void
 }
 
@@ -15,9 +15,9 @@ export class Keyboard {
 
   eventEmitter = new EventEmitter<Events>()
 
-  isSpacePressing = false
-  isCtrlPressing = false
-  isAltPressing = false
+  isSpaceKeyPressing = false
+  isCtrlKeyPressing = false
+  isAltKeyPressing = false
   isShiftKeyPressing = false
 
   bindEvent() {
@@ -27,32 +27,32 @@ export class Keyboard {
         evt.preventDefault()
       }
 
-      const prevIsSpacePressing = this.isSpacePressing
-      const prevIsCtrlPressing = this.isCtrlPressing
-      const prevIsAltPressing = this.isAltPressing
+      const prevIsSpacePressing = this.isSpaceKeyPressing
+      const prevIsCtrlPressing = this.isCtrlKeyPressing
+      const prevIsAltPressing = this.isAltKeyPressing
       const prevIsShiftKeyPressing = this.isShiftKeyPressing
 
-      this.isCtrlPressing = evt.ctrlKey
-      this.isAltPressing = evt.altKey
+      this.isCtrlKeyPressing = evt.ctrlKey
+      this.isAltKeyPressing = evt.altKey
       this.isShiftKeyPressing = evt.shiftKey
 
       if (evt.code === 'Space') {
-        this.isSpacePressing = evt.type === 'keydown'
+        this.isSpaceKeyPressing = evt.type === 'keydown'
       }
 
-      if (this.isSpacePressing !== prevIsSpacePressing) {
-        this.onSpaceToggle(this.isSpacePressing)
-        this.eventEmitter.emit('spaceToggle', this.isSpacePressing)
+      if (this.isSpaceKeyPressing !== prevIsSpacePressing) {
+        this.onSpaceToggle(this.isSpaceKeyPressing)
+        this.eventEmitter.emit('spaceToggle', this.isSpaceKeyPressing)
       }
 
-      if (this.isCtrlPressing !== prevIsCtrlPressing) {
-        this.onCtrlToggle(this.isCtrlPressing)
-        this.eventEmitter.emit('ctrlToggle', this.isCtrlPressing)
+      if (this.isCtrlKeyPressing !== prevIsCtrlPressing) {
+        this.onCtrlToggle(this.isCtrlKeyPressing)
+        this.eventEmitter.emit('ctrlToggle', this.isCtrlKeyPressing)
       }
 
-      if (this.isAltPressing !== prevIsAltPressing) {
-        this.onAltToggle(this.isAltPressing)
-        this.eventEmitter.emit('altToggle', this.isAltPressing)
+      if (this.isAltKeyPressing !== prevIsAltPressing) {
+        this.onAltToggle(this.isAltKeyPressing)
+        this.eventEmitter.emit('altToggle', this.isAltKeyPressing)
       }
 
       if (this.isShiftKeyPressing !== prevIsShiftKeyPressing) {
@@ -69,11 +69,11 @@ export class Keyboard {
     document.addEventListener('keyup', documentKeydown, { signal: this.abCt.signal })
   }
 
-  onCtrlToggle(isCtrlPressing: boolean) {}
+  onCtrlToggle(isCtrlKeyPressing: boolean) {}
 
-  onAltToggle(isAltPressing: boolean) {}
+  onAltToggle(isAltKeyPressing: boolean) {}
 
-  onSpaceToggle(isSpacePressing: boolean) {}
+  onSpaceToggle(isSpaceKeyPressing: boolean) {}
 
   onShiftToggle(isShiftKeyPressing: boolean) {}
 

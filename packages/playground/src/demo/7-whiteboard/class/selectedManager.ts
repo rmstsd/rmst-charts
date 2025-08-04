@@ -1,7 +1,19 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, noop, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
-import { Group, ICoord, IShape, ITransFormRect, Line, mergeBox, Path, pointToFlatArray, Rect, Text } from 'rmst-render'
+import {
+  distanceTowPoint,
+  Group,
+  ICoord,
+  IShape,
+  ITransFormRect,
+  Line,
+  mergeBox,
+  Path,
+  pointToFlatArray,
+  Rect,
+  Text
+} from 'rmst-render'
 import svgPath from 'svgpath'
 import { IGraph } from '../type'
 import { calcRotateRad, Graph_Id } from '../constant'
@@ -125,6 +137,9 @@ export default class selectedManager {
     const brCoord = applyToPoint(mtWorld, br)
     const blCoord = applyToPoint(mtWorld, bl)
 
+    const widthWorld = distanceTowPoint(tlCoord, trCoord)
+    const heightWorld = distanceTowPoint(tlCoord, blCoord)
+
     const padding = ctrlSize / this.wbEditor.camera.zoom
     const outerBbox = {
       x: -padding,
@@ -174,6 +189,7 @@ export default class selectedManager {
       fillStyle: 'white',
       strokeStyle: primaryColor,
       mt: scaleHandleMt,
+      visible: widthWorld > rotateSize && heightWorld > rotateSize,
       extraData: { transformOrigin: TransformOrigin.br, cursorType: CursorType.scale_br }
     })
     const tlText = new Text({
@@ -192,6 +208,7 @@ export default class selectedManager {
       height: ctrlSize,
       fillStyle: 'white',
       strokeStyle: primaryColor,
+      visible: heightWorld > rotateSize,
       mt: scaleHandleMt,
       extraData: { transformOrigin: TransformOrigin.bl, cursorType: CursorType.scale_tr }
     })
@@ -230,6 +247,7 @@ export default class selectedManager {
       height: ctrlSize,
       fillStyle: 'white',
       strokeStyle: primaryColor,
+      visible: widthWorld > rotateSize,
       mt: scaleHandleMt,
       extraData: { transformOrigin: TransformOrigin.tr, cursorType: CursorType.scale_tr }
     })

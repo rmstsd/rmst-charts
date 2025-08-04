@@ -5,6 +5,7 @@ import { translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
 import { defaultGraphFillColor } from '@/demo/7-whiteboard/color'
 import { cloneDeep, noop } from 'es-toolkit'
+import { ass } from '../ass'
 
 export default abstract class ToolDrawByRect implements ITool {
   constructor(protected wbEditor: WhiteboardEditor) {}
@@ -67,42 +68,15 @@ export default abstract class ToolDrawByRect implements ITool {
       return
     }
 
-    const { isSpacePressing, isAltPressing, isShiftKeyPressing } = wbEditor.keyboard
+    const { isSpaceKeyPressing, isAltKeyPressing, isShiftKeyPressing } = wbEditor.keyboard
 
-    if (isSpacePressing) {
-      const dx = movePos.x - this.spacePrevPos.x
-      const dy = movePos.y - this.spacePrevPos.y
-
-      downPos.x = this.spaceDownPos.x + dx
-      downPos.y = this.spaceDownPos.y + dy
-    }
-
-    const rect = { x: downPos.x, y: downPos.y, width: movePos.x - downPos.x, height: movePos.y - downPos.y }
-
-    let cx = 0
-    let cy = 0
-    if (isAltPressing) {
-      rect.width = rect.width * 2
-      rect.height = rect.height * 2
-      rect.x = rect.x - rect.width / 2
-      rect.y = rect.y - rect.height / 2
-
-      cx = rect.x + rect.width / 2
-      cy = rect.y + rect.height / 2
-    }
-
-    if (isShiftKeyPressing) {
-      const maxSize = Math.max(Math.abs(rect.width), Math.abs(rect.height))
-      rect.width = (Math.sign(rect.width) || 1) * maxSize
-      rect.height = (Math.sign(rect.height) || 1) * maxSize
-    }
-
-    if (isAltPressing) {
-      rect.x = cx - rect.width / 2
-      rect.y = cy - rect.height / 2
-    }
-
-    const rectAns = getRectByTwoPoint({ x: rect.x, y: rect.y }, { x: rect.x + rect.width, y: rect.y + rect.height })
+    const rectAns = ass(downPos, movePos, {
+      isSpaceKeyPressing,
+      isAltKeyPressing,
+      isShiftKeyPressing,
+      spacePrevPos: this.spacePrevPos,
+      spaceDownPos: this.spaceDownPos
+    })
 
     this.graphItem.graphShape.attr({
       width: rectAns.width,
