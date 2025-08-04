@@ -1,6 +1,6 @@
 import { ICoord } from '../../type'
 
-// 根据两个点的坐标, 返回矩形的 x  ,y , width, height
+// 根据两个点的坐标, 返回矩形的 x, y, width, height
 export function getRectByTwoPoint(p1: ICoord, p2: ICoord) {
   const x = Math.min(p1.x, p2.x)
   const y = Math.min(p1.y, p2.y)

@@ -46,6 +46,8 @@ export default class ToolManager {
 
     keyboard.onSpaceToggle = isSpaceKeyPressing => {
       if (isPointerDown) {
+        this.currentToolClass?.onSpaceToggle?.(isSpaceKeyPressing)
+
         return
       }
 

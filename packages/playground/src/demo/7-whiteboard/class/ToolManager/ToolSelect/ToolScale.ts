@@ -7,6 +7,7 @@ import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
 import { resizeRect, TransformRect } from './resizeStrategy'
 import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
+import { ass } from '../ass'
 
 export default class ToolScale implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {
@@ -66,12 +67,15 @@ export default class ToolScale implements ITool {
     let transformRect: TransformRect
 
     if (this.isSingleSelect) {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect)
+      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, { keepRatio: isShiftKeyPressing })
 
       const item = this.wbEditor.selectManager.selectedGraphs[0]
       item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, { changeWidthAndHeight: false })
+      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+        changeWidthAndHeight: false,
+        keepRatio: isShiftKeyPressing
+      })
 
       const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
 

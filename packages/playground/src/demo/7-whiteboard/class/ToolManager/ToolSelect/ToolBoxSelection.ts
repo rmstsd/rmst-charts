@@ -3,8 +3,9 @@ import { ITool } from '../type'
 import { applyToPoint } from 'transformation-matrix'
 import { ICoord, Rect } from 'rmst-render'
 import { primaryAlphaColor, primaryColor } from '@/demo/7-whiteboard/color'
-import { noop } from 'es-toolkit'
+import { cloneDeep, noop } from 'es-toolkit'
 import { Box, Polygon, System } from 'detect-collisions'
+import { ass } from '../ass'
 
 export default class ToolBoxSelection implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {
@@ -12,6 +13,10 @@ export default class ToolBoxSelection implements ITool {
   }
 
   private downPos: ICoord
+  private movePos: ICoord
+
+  private spaceDownPos: ICoord
+  private spacePrevPos: ICoord
 
   private tl: ICoord
   private br: ICoord
@@ -35,7 +40,7 @@ export default class ToolBoxSelection implements ITool {
   })
 
   onActive() {
-    this.wbEditor.stage.append(this.boxSelectionRect)
+    this.wbEditor.graphLayerWithRulerWrapper.append(this.boxSelectionRect)
 
     this.unBind = this.wbEditor.camera.eventEmitter.on('cameraChange', () => {
       this.updateBoxSelectionRect()
@@ -70,8 +75,42 @@ export default class ToolBoxSelection implements ITool {
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    this.tl = { x: Math.min(this.downPos.x, sceneCoord.x), y: Math.min(this.downPos.y, sceneCoord.y) }
-    this.br = { x: Math.max(this.downPos.x, sceneCoord.x), y: Math.max(this.downPos.y, sceneCoord.y) }
+    this.movePos = sceneCoord
+    this.updateRect()
+  }
+
+  private updateBoxSelectionRect() {
+    // 场景坐标转世界坐标
+    const tl = this.wbEditor.coordSys.scene2World(this.tl)
+    const br = this.wbEditor.coordSys.scene2World(this.br)
+
+    this.boxSelectionRect.attr({ x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
+  }
+
+  onDragEnd(upEvt: PointerEvent) {
+    this.boxSelectionRect.attr({ visible: false })
+    this.system.clear()
+  }
+
+  private updateRect() {
+    const { downPos, movePos } = this
+
+    if (!downPos || !movePos) {
+      return
+    }
+
+    const { isSpaceKeyPressing, isAltKeyPressing, isShiftKeyPressing } = this.wbEditor.keyboard
+
+    const rectAns = ass(downPos, movePos, {
+      isSpaceKeyPressing,
+      isAltKeyPressing,
+      isShiftKeyPressing,
+      spacePrevPos: this.spacePrevPos,
+      spaceDownPos: this.spaceDownPos
+    })
+
+    this.tl = { x: rectAns.x, y: rectAns.y }
+    this.br = { x: rectAns.x + rectAns.width, y: rectAns.y + rectAns.height }
 
     this.updateBoxSelectionRect()
 
@@ -90,16 +129,16 @@ export default class ToolBoxSelection implements ITool {
     this.wbEditor.triggerRender()
   }
 
-  private updateBoxSelectionRect() {
-    // 场景坐标转世界坐标
-    const tl = this.wbEditor.coordSys.scene2World(this.tl)
-    const br = this.wbEditor.coordSys.scene2World(this.br)
+  onSpaceToggle(isSpaceKeyPressing: boolean) {
+    this.spaceDownPos = cloneDeep(this.downPos)
+    this.spacePrevPos = cloneDeep(this.movePos)
 
-    this.boxSelectionRect.attr({ x: tl.x, y: tl.y, width: br.x - tl.x, height: br.y - tl.y })
+    this.updateRect()
   }
-
-  onDragEnd(upEvt: PointerEvent) {
-    this.boxSelectionRect.attr({ visible: false })
-    this.system.clear()
+  onShiftToggle(isShiftKeyPressing: boolean) {
+    this.updateRect()
+  }
+  onAltToggle(isAltKeyPressing: boolean) {
+    this.updateRect()
   }
 }

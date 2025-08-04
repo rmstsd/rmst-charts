@@ -82,7 +82,7 @@ export default class Camera {
 
   // 放大
   zoomIn() {
-    this.zoomTo(this.zoom * zoomSpeed, this.wbEditor.coordSys.centerScene)
+    this.zoomTo(this.zoom * zoomSpeed)
   }
 
   // 缩小
@@ -90,7 +90,6 @@ export default class Camera {
     this.zoomTo(this.zoom / zoomSpeed)
   }
 
-  // 缩小
   zoomToValue(newZoom: number) {
     this.zoomTo(newZoom)
   }
@@ -103,8 +102,11 @@ export default class Camera {
 
     const { wbEditor } = this
 
+    newZoom = Math.max(Min_Zoom, Math.min(Max_Zoom, newZoom))
+
     {
       // https://codesandbox.io/p/sandbox/tm25rv gg_demo
+
       const delta = newZoom / this.zoom
       this.zoom = newZoom
 

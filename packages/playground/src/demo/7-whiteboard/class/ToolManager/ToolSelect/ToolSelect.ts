@@ -39,7 +39,7 @@ export default class ToolSelect implements ITool {
       return
     }
 
-    const worldPoint = wbEditor.coordSys.client2World(moveEvt)
+    const worldPoint = wbEditor.coordSys.client2World(moveEvt, true)
     const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
 
     if (!hovered) {
@@ -162,11 +162,15 @@ export default class ToolSelect implements ITool {
   }
 
   onShiftToggle(isShiftKeyPressing: boolean) {
-    this.currentStrategy?.onShiftToggle(isShiftKeyPressing)
+    this.currentStrategy?.onShiftToggle?.(isShiftKeyPressing)
+  }
+
+  onSpaceToggle(isSpaceKeyPressing: boolean) {
+    this.currentStrategy?.onSpaceToggle?.(isSpaceKeyPressing)
   }
 
   onAltToggle(isAltKeyPressing: boolean) {
-    this.currentStrategy?.onAltToggle(isAltKeyPressing)
+    this.currentStrategy?.onAltToggle?.(isAltKeyPressing)
 
     this.updateCursor_Select_Or_Duplicate()
   }

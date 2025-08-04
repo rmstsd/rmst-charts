@@ -25,4 +25,5 @@ export interface ITool {
 
   onShiftToggle?: (isShiftKeyPressing: boolean) => void
   onAltToggle?: (isAltKeyPressing: boolean) => void
+  onSpaceToggle?: (isSpaceKeyPressing: boolean) => void
 }

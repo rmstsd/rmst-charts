@@ -59,7 +59,8 @@ export interface TransformRect {
   mt: Matrix
 }
 interface ResizeRectOptions {
-  changeWidthAndHeight: boolean
+  changeWidthAndHeight?: boolean
+  keepRatio?: boolean
 }
 
 export const resizeRect = (
@@ -72,11 +73,17 @@ export const resizeRect = (
     options = {} as ResizeRectOptions
   }
 
-  const { changeWidthAndHeight = true } = options
+  const { changeWidthAndHeight = true, keepRatio = false } = options
 
   const strategy = resizeStrategy[transformOrigin]
   const origin = strategy.getOrigin(downRect)
   const newSize = strategy.getNewSize(origin, movePos, downRect)
+
+  if (keepRatio) {
+    const maxSize = Math.max(Math.abs(newSize.width), Math.abs(newSize.height))
+    newSize.width = (Math.sign(newSize.width) || 1) * maxSize
+    newSize.height = (Math.sign(newSize.height) || 1) * maxSize
+  }
 
   const oldGlobalPos = applyToPoint(downRect.mt, origin)
 
