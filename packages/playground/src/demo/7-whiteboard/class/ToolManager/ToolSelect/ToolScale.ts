@@ -67,14 +67,18 @@ export default class ToolScale implements ITool {
     let transformRect: TransformRect
 
     if (this.isSingleSelect) {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, { keepRatio: isShiftKeyPressing })
+      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+        keepRatio: isShiftKeyPressing,
+        scaleFromCenter: isAltKeyPressing
+      })
 
       const item = this.wbEditor.selectManager.selectedGraphs[0]
       item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
       transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
         changeWidthAndHeight: false,
-        keepRatio: isShiftKeyPressing
+        keepRatio: isShiftKeyPressing,
+        scaleFromCenter: isAltKeyPressing
       })
 
       const prependedTransform = compose(transformRect.mt, inverse(this.downRect.mt))
