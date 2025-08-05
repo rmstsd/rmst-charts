@@ -29,13 +29,13 @@ const ctrlSize = 10
 const rotateSize = ctrlSize * 1.5
 
 interface Events {
-  selectedChange: (selectedGraphs: IGraph[]) => void // 选中变化事件, 以及选中的元素的数据变化
+  // selectedChange: (selectedGraphs: IGraph[]) => void // 选中变化事件, 以及选中的元素的数据变化
 }
 
 export default class selectedManager {
   constructor(private wbEditor: WhiteboardEditor) {}
 
-  eventEmitter = new EventEmitter<Events>()
+  // eventEmitter = new EventEmitter<Events>()
 
   private hovered: IShape
   private enabledHover = true
