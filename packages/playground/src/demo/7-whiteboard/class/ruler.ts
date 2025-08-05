@@ -2,7 +2,7 @@ import { Group, Line, Rect, Text } from 'rmst-render'
 import WhiteboardEditor from '../whiteboardEditor'
 import { noop } from 'es-toolkit'
 import OpenColor from 'open-color'
-import { rotateDEG } from 'transformation-matrix'
+import { applyToPoint, rotateDEG } from 'transformation-matrix'
 import { Graph_Id } from '../constant'
 
 const tickSize = 6
@@ -20,12 +20,19 @@ export class Ruler {
   bindEvent() {
     this.drawRuler()
 
-    this.unbind = this.wbEditor.camera.eventEmitter.on('cameraChange', () => {
+    const u1 = this.wbEditor.camera.eventEmitter.on('cameraChange', () => {
       this.drawRuler()
     })
-
+    const u2 = this.wbEditor.eventEmitter.on('render', () => {
+      this.drawRuler()
+    })
     this.wbEditor.stage.resizeMng.onResize = () => {
       this.drawRuler()
+    }
+
+    this.unbind = () => {
+      u1()
+      u2()
     }
   }
 
@@ -34,12 +41,23 @@ export class Ruler {
   }
 
   drawRuler() {
-    const { camera, coordSys, rulerLayer } = this.wbEditor
+    const { camera, coordSys, rulerLayer, selectManager } = this.wbEditor
     const { viewportSize } = coordSys
 
     const rulerViewSize = { width: viewportSize.width + rulerSize, height: viewportSize.height + rulerSize }
 
     rulerLayer.removeAllChildren()
+
+    const { selectedGraphs } = selectManager
+    selectedGraphs.map(item => {
+      const data = item.data
+      const tl = applyToPoint(data.mt, { x: 0, y: 0 })
+      const tr = applyToPoint(data.mt, { x: data.width, y: 0 })
+      const br = applyToPoint(data.mt, { x: data.width, y: data.height })
+      const bl = applyToPoint(data.mt, { x: 0, y: data.height })
+
+      return { tl, tr, br, bl }
+    })
 
     const tx = this.wbEditor.graphLayer.data.mt.e + rulerSize
     const ty = this.wbEditor.graphLayer.data.mt.f + rulerSize
