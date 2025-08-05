@@ -1,4 +1,4 @@
-import { Group, Line, Rect, Text } from 'rmst-render'
+import { Group, Line, mergeBox, Rect, Text } from 'rmst-render'
 import WhiteboardEditor from '../whiteboardEditor'
 import { noop } from 'es-toolkit'
 import OpenColor from 'open-color'
@@ -49,14 +49,24 @@ export class Ruler {
     rulerLayer.removeAllChildren()
 
     const { selectedGraphs } = selectManager
-    selectedGraphs.map(item => {
+    const highlightData = selectedGraphs.map(item => {
       const data = item.data
       const tl = applyToPoint(data.mt, { x: 0, y: 0 })
       const tr = applyToPoint(data.mt, { x: data.width, y: 0 })
       const br = applyToPoint(data.mt, { x: data.width, y: data.height })
       const bl = applyToPoint(data.mt, { x: 0, y: data.height })
+      return mergeBox([{ tl, tr, br, bl }])
+    })
 
-      return { tl, tr, br, bl }
+    const xHighlightRects = highlightData.map(item => {
+      const p1 = coordSys.scene2World({ x: item.minX, y: 0 })
+      const p2 = coordSys.scene2World({ x: item.maxX, y: 0 })
+      return new Rect({ x: p1.x + rulerSize, y: 0, width: p2.x - p1.x, height: rulerSize, fillStyle: OpenColor.indigo[0] })
+    })
+    const yHighlightRects = highlightData.map(item => {
+      const p1 = coordSys.scene2World({ x: 0, y: item.minY })
+      const p2 = coordSys.scene2World({ x: 0, y: item.maxY })
+      return new Rect({ x: 0, y: p1.y + rulerSize, width: rulerSize, height: p2.y - p1.y, fillStyle: OpenColor.indigo[0] })
     })
 
     const tx = this.wbEditor.graphLayer.data.mt.e + rulerSize
@@ -69,7 +79,8 @@ export class Ruler {
     const g_x = new Group()
     g_x.append(
       new Rect({ id: Graph_Id.ruler_assist_line_x, width: rulerViewSize.width, height: rulerSize, fillStyle: 'white' }),
-      new Line({ points: [0, rulerSize, rulerViewSize.width, rulerSize], strokeStyle: borderColor })
+      new Line({ points: [0, rulerSize, rulerViewSize.width, rulerSize], strokeStyle: borderColor }),
+      ...xHighlightRects
     )
     for (const item of xTicksData) {
       g_x.append(new Line({ points: [item.coord, rulerSize - tickSize, item.coord, rulerSize], strokeStyle: borderColor }))
@@ -79,7 +90,8 @@ export class Ruler {
     const g_y = new Group()
     g_y.append(
       new Rect({ id: Graph_Id.ruler_assist_line_y, width: rulerSize, height: rulerViewSize.height, fillStyle: 'white' }),
-      new Line({ points: [rulerSize, 0, rulerSize, rulerViewSize.height], strokeStyle: borderColor })
+      new Line({ points: [rulerSize, 0, rulerSize, rulerViewSize.height], strokeStyle: borderColor }),
+      ...yHighlightRects
     )
     for (const item of yTicksData) {
       g_y.append(new Line({ points: [rulerSize - tickSize, item.coord, rulerSize, item.coord], strokeStyle: borderColor }))
