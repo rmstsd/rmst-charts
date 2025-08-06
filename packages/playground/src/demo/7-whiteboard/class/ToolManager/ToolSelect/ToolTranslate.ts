@@ -53,6 +53,10 @@ export default class ToolTranslate implements ITool {
   }
 
   private updatePosition() {
+    if (!this.downPos || !this.moveCoord) {
+      return
+    }
+
     const { isShiftKeyPressing } = this.wbEditor.keyboard
 
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
