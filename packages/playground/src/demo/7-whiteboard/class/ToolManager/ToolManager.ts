@@ -15,6 +15,11 @@ import ToolDrawPencil from './ToolDraw/ToolDrawPencil'
 import ToolDrawImage from './ToolDraw/ToolDrawImage'
 import EventEmitter from 'rmst-render/event_emitter'
 import { nextTick } from '@/utils'
+import { ToolRuler } from './ToolRuler'
+import { findHover_v2 } from 'rmst-render/_stage/findHover'
+import { Graph_Id, rulerIds } from '../../constant'
+import { checkIfStateModificationsAreAllowed } from 'mobx/dist/internal'
+import { ICoord } from 'rmst-render'
 
 const ToolClassMap = {
   [ToolEnum.Pan]: ToolPan,
@@ -40,9 +45,16 @@ export default class ToolManager {
   currentTool: ToolEnumKey
   currentToolClass: ITool
 
+  toolTempPan: ToolPan // 临时的 pan, 用于按下空格
+  toolRuler: ToolRuler
+
+  pointerContext: { moveEvt: PointerEvent; sceneCoord: ICoord; isInWbCanvas: boolean } = {} as any
+
   bindEvent() {
     const { wbEditor } = this
     const { container, keyboard } = wbEditor
+
+    this.toolRuler = new ToolRuler(this.wbEditor)
 
     keyboard.onSpaceToggle = isSpaceKeyPressing => {
       if (isPointerDown) {
@@ -51,12 +63,20 @@ export default class ToolManager {
         return
       }
 
-      if (isSpaceKeyPressing) {
-        this.switchTool(ToolEnum.Pan)
-      } else {
-        if (isPointerDown) {
+      if (this.currentTool !== ToolEnum.Pan) {
+        if (isSpaceKeyPressing) {
+          this.currentToolClass.onTempActive()
+
+          this.toolTempPan = new ToolPan(this.wbEditor)
+          this.wbEditor.cursorManager.setCursor(this.toolTempPan.cursor)
         } else {
-          this.switchTool(ToolEnum.Select)
+          if (isPointerDown) {
+          } else {
+            this.currentToolClass.onTempDeActive()
+
+            this.toolTempPan = null
+            this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+          }
         }
       }
     }
@@ -69,7 +89,6 @@ export default class ToolManager {
     }
 
     let isPointerDown = false
-    let isInWbCanvas = false
 
     const onPointerDown = async (downEvt: PointerEvent) => {
       await nextTick() // 让输入框能触发 blur 事件
@@ -80,7 +99,15 @@ export default class ToolManager {
         return
       }
 
-      this.currentToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
+      const hovered = this.findHover()
+
+      const isRuler = rulerIds.includes(hovered?.id)
+      if (rulerIds.includes(hovered?.id)) {
+        this.toolRuler.setRulerId(hovered?.id)
+      }
+
+      const finalToolClass = isRuler ? this.toolRuler : this.toolTempPan || this.currentToolClass
+      finalToolClass.onPointerDown?.(downEvt, wbEditor.coordSys.client2Scene(downEvt))
 
       const drawWbGraphEnd = (exitCurrentTool: boolean | void) => {
         if (isBoolean(exitCurrentTool)) {
@@ -94,46 +121,52 @@ export default class ToolManager {
 
       startDrag(downEvt, {
         onDragStart: () => {
-          this.currentToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
+          finalToolClass.onDragStart(downEvt, wbEditor.coordSys.client2Scene(downEvt))
         },
         onDragMove: moveEvt => {
-          this.currentToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
+          finalToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
         },
         onDragEnd: upEvt => {
           isPointerDown = false
-          this.currentToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          finalToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
 
-          const exitCurrentTool = this.currentToolClass.onDrawAfterEnd?.()
+          const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
         },
         onPointerUp: upEvt => {
           isPointerDown = false
-          this.currentToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
+          finalToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
 
-          const exitCurrentTool = this.currentToolClass.onDrawAfterEnd?.()
+          const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
         }
       })
     }
 
     const onPointerEnter = () => {
-      isInWbCanvas = true
+      this.pointerContext.isInWbCanvas = true
     }
 
     const onPointerLeave = () => {
-      isInWbCanvas = false
+      this.pointerContext.isInWbCanvas = false
 
-      this.currentToolClass?.onPointerMoveNotDragging?.({ isInWbCanvas })
-      this.currentToolClass?.onPointerMove?.({ isInWbCanvas })
+      const finalToolClass = this.toolTempPan || this.currentToolClass
+
+      finalToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
+      finalToolClass?.onPointerMove?.(this.pointerContext)
     }
 
     const onPointerMove = (moveEvt: PointerEvent) => {
       const sceneCoord = wbEditor.coordSys.client2Scene(moveEvt)
+      this.pointerContext.moveEvt = moveEvt
+      this.pointerContext.sceneCoord = sceneCoord
+
+      const finalToolClass = this.toolTempPan || this.currentToolClass
       if (!isPointerDown) {
-        this.currentToolClass?.onPointerMoveNotDragging?.({ moveEvt, sceneCoord, isInWbCanvas })
+        this.onPointerMoveNotDragging()
       }
 
-      this.currentToolClass?.onPointerMove?.({ moveEvt, sceneCoord, isInWbCanvas })
+      finalToolClass?.onPointerMove?.(this.pointerContext)
     }
 
     container.addEventListener('pointerenter', onPointerEnter, { signal: this.abCt.signal })
@@ -171,5 +204,46 @@ export default class ToolManager {
 
     this.currentToolClass.onActive?.()
     this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+  }
+
+  findHover() {
+    const { wbEditor } = this
+    const worldPoint = wbEditor.coordSys.client2World(this.pointerContext.moveEvt, true)
+    const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
+
+    return hovered
+  }
+
+  onPointerMoveNotDragging() {
+    const { wbEditor } = this
+    const { moveEvt, sceneCoord, isInWbCanvas } = this.pointerContext
+
+    if (!isInWbCanvas) {
+      return
+    }
+
+    const hovered = this.findHover()
+
+    if (!hovered) {
+      wbEditor.cursorManager.setCursor('default')
+      return
+    }
+
+    if (rulerIds.includes(hovered.id)) {
+      if (hovered.id === Graph_Id.ruler_assist_line_both) {
+        wbEditor.cursorManager.setCursor('crosshair')
+      }
+      if (hovered.id === Graph_Id.ruler_assist_line_x) {
+        wbEditor.cursorManager.setCursor('ns-resize')
+      }
+      if (hovered.id === Graph_Id.ruler_assist_line_y) {
+        wbEditor.cursorManager.setCursor('ew-resize')
+      }
+
+      return
+    }
+
+    const finalToolClass = this.toolTempPan || this.currentToolClass
+    finalToolClass?.onPointerMoveNotDragging?.({ moveEvt, sceneCoord, isInWbCanvas })
   }
 }

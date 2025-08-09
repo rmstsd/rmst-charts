@@ -14,6 +14,8 @@ export enum Graph_Id {
   ruler_assist_line_both = 'ruler_assist_line_both'
 }
 
+export const rulerIds: string[] = [Graph_Id.ruler_assist_line_x, Graph_Id.ruler_assist_line_y, Graph_Id.ruler_assist_line_both]
+
 export const isCtrlHandleShape = (shape: IShape) => {
   return (
     shape.data.id === Graph_Id.graph_ctrl_translate ||

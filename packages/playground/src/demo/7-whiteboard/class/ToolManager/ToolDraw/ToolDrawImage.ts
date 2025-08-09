@@ -64,6 +64,14 @@ export default class ToolDrawImage extends ToolDrawByRect {
     this.previewedImageGroup.remove()
   }
 
+  onTempActive() {
+    this.previewedImageGroup.attr({ visible: false })
+  }
+
+  onTempDeActive() {
+    this.previewedImageGroup.attr({ visible: true })
+  }
+
   onPointerMove({ sceneCoord, isInWbCanvas }) {
     this.previewedImageGroup.attr({ visible: isInWbCanvas })
 

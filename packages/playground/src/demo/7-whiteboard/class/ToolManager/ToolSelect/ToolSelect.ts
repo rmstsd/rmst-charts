@@ -92,12 +92,6 @@ export default class ToolSelect implements ITool {
       wbEditor.selectManager.onHover(hovered.data.id, true)
 
       this.updateCursor_Select_Or_Duplicate()
-    } else {
-      console.log('ruler')
-      this.currentHoverStrategyTypeId = null
-      // 标尺
-      wbEditor.selectManager.onHover(null, false)
-      wbEditor.cursorManager.setCursor(this.cursor)
     }
   }
 
