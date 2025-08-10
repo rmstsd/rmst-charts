@@ -136,23 +136,27 @@ export class Ruler {
     rulerLayer.append(g_x, g_y, ruler_tl)
 
     {
-      const horizontal = this.rulerData.horizontal.map(
-        item =>
-          new Line({
-            id: item.id,
-            points: [0, item.pos + rulerSize, rulerViewSize.width, item.pos + rulerSize],
-            strokeStyle: OpenColor.red[5],
-            cursor: 'ns-resize'
-          })
-      )
-      const vertical = this.rulerData.vertical.map(
-        item =>
-          new Line({
-            id: item.id,
-            points: [item.pos + rulerSize, 0, item.pos + rulerSize, rulerViewSize.height],
-            strokeStyle: OpenColor.red[5]
-          })
-      )
+      const horizontal = this.rulerData.horizontal.map(item => {
+        const coord = this.wbEditor.coordSys.scene2World({ x: 0, y: item.pos })
+        const y = coord.y + rulerSize
+
+        return new Line({
+          id: item.id,
+          points: [0, y, rulerViewSize.width, y],
+          strokeStyle: OpenColor.red[5],
+          cursor: 'ns-resize'
+        })
+      })
+      const vertical = this.rulerData.vertical.map(item => {
+        const coord = this.wbEditor.coordSys.scene2World({ x: item.pos, y: 0 })
+        const x = coord.x + rulerSize
+
+        return new Line({
+          id: item.id,
+          points: [x, 0, x, rulerViewSize.height],
+          strokeStyle: OpenColor.red[5]
+        })
+      })
 
       const rulerLineGroup = new Group({ name: 'rulerLineGroup' })
       rulerLineGroup.append([...horizontal, ...vertical])
