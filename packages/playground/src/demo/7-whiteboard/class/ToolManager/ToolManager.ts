@@ -17,7 +17,8 @@ import EventEmitter from 'rmst-render/event_emitter'
 import { nextTick } from '@/utils'
 import { ToolRuler } from './ToolRuler'
 import { findHover_v2 } from 'rmst-render/_stage/findHover'
-import { Graph_Id, rulerIds } from '../../constant'
+import { Graph_Id, isRulerLineHorizontal, isRulerLineVertical, rulerZoneIds } from '../../constant'
+import { rulerRemoveCursor } from '../cursorManager'
 
 const ToolClassMap = {
   [ToolEnum.Pan]: ToolPan,
@@ -95,15 +96,23 @@ export default class ToolManager {
 
       const hovered = this.findHover()
 
-      const isRuler = rulerIds.includes(hovered?.id)
-      if (rulerIds.includes(hovered?.id)) {
-        this.toolRuler.setRulerId(hovered?.id)
-      }
+      const isHor = isRulerLineHorizontal(hovered)
+      const isVer = isRulerLineVertical(hovered)
+
+      const isRulerZone = rulerZoneIds.includes(hovered?.id)
+
+      const isRuler = isRulerZone || isHor || isVer
 
       let finalToolClass
       if (keyboard.isSpaceKeyPressing && this.toolTempPan) {
         finalToolClass = this.toolTempPan
       } else if (isRuler) {
+        this.toolRuler.setRuler({
+          isRulerZone,
+          zone: { id: hovered?.id },
+          line: { id: hovered?.id, isHor, isVer }
+        })
+
         finalToolClass = this.toolRuler
       } else {
         finalToolClass = this.currentToolClass
@@ -228,16 +237,19 @@ export default class ToolManager {
       return
     }
 
-    if (rulerIds.includes(hovered?.id)) {
+    const isHor = isRulerLineHorizontal(hovered)
+    const isVer = isRulerLineVertical(hovered)
+
+    if (rulerZoneIds.includes(hovered?.id) || isHor || isVer) {
       wbEditor.selectManager.onHover(null, false)
 
-      if (hovered.id === Graph_Id.ruler_assist_line_both) {
+      if (hovered.id === Graph_Id.ruler_zone_both) {
         wbEditor.cursorManager.setCursor('crosshair')
       }
-      if (hovered.id === Graph_Id.ruler_assist_line_x) {
+      if (hovered.id === Graph_Id.ruler_zone_horizontal || isHor) {
         wbEditor.cursorManager.setCursor('ns-resize')
       }
-      if (hovered.id === Graph_Id.ruler_assist_line_y) {
+      if (hovered.id === Graph_Id.ruler_zone_vertical || isVer) {
         wbEditor.cursorManager.setCursor('ew-resize')
       }
 

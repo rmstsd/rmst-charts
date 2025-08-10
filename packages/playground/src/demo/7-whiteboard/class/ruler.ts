@@ -3,7 +3,7 @@ import WhiteboardEditor from '../whiteboardEditor'
 import { noop } from 'es-toolkit'
 import OpenColor from 'open-color'
 import { applyToPoint, rotateDEG } from 'transformation-matrix'
-import { Graph_Id } from '../constant'
+import { Graph_Id, Ruler_Direction } from '../constant'
 
 const tickSize = 6
 
@@ -144,7 +144,10 @@ export class Ruler {
           id: item.id,
           points: [0, y, rulerViewSize.width, y],
           strokeStyle: OpenColor.red[5],
-          cursor: 'ns-resize'
+          cursor: 'ns-resize',
+          extraData: {
+            type: Ruler_Direction.ruler_line_horizontal
+          }
         })
       })
       const vertical = this.rulerData.vertical.map(item => {
@@ -154,7 +157,10 @@ export class Ruler {
         return new Line({
           id: item.id,
           points: [x, 0, x, rulerViewSize.height],
-          strokeStyle: OpenColor.red[5]
+          strokeStyle: OpenColor.red[5],
+          extraData: {
+            type: Ruler_Direction.ruler_line_vertical
+          }
         })
       })
 
@@ -166,12 +172,12 @@ export class Ruler {
     {
       // 图形拾取
       const rect_tl_cloned = rect_tl.clone()
-      rect_tl_cloned.attr({ id: Graph_Id.ruler_assist_line_both, opacity: 0 })
+      rect_tl_cloned.attr({ id: 'Graph_Id.ruler_zone_both', opacity: 0 })
 
       const rect_bg_x_cloned = rect_bg_x.clone()
       const rect_bg_y_cloned = rect_bg_y.clone()
-      rect_bg_x_cloned.attr({ id: Graph_Id.ruler_assist_line_x, opacity: 0 })
-      rect_bg_y_cloned.attr({ id: Graph_Id.ruler_assist_line_y, opacity: 0 })
+      rect_bg_x_cloned.attr({ id: Graph_Id.ruler_zone_horizontal, opacity: 0 })
+      rect_bg_y_cloned.attr({ id: Graph_Id.ruler_zone_vertical, opacity: 0 })
 
       rulerLayer.append(rect_bg_x_cloned, rect_bg_y_cloned, rect_tl_cloned)
     }
