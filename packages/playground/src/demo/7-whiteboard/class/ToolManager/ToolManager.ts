@@ -243,14 +243,11 @@ export default class ToolManager {
     if (rulerZoneIds.includes(hovered?.id) || isHor || isVer) {
       wbEditor.selectManager.onHover(null, false)
 
-      if (hovered.id === Graph_Id.ruler_zone_both) {
-        wbEditor.cursorManager.setCursor('crosshair')
-      }
       if (hovered.id === Graph_Id.ruler_zone_horizontal || isHor) {
-        wbEditor.cursorManager.setCursor('ns-resize')
+        wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Horizontal)
       }
       if (hovered.id === Graph_Id.ruler_zone_vertical || isVer) {
-        wbEditor.cursorManager.setCursor('ew-resize')
+        wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Vertical)
       }
 
       return

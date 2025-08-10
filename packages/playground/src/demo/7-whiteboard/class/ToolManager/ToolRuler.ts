@@ -7,9 +7,11 @@ import { rulerRemoveCursor } from '../cursorManager'
 export class ToolRuler implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
+  static Cursor_Horizontal = 'ns-resize'
+  static Cursor_Vertical = 'ew-resize'
+
   private isX: boolean
   private isY: boolean
-  private isBoth: boolean
 
   private x_id: string
   private y_id: string
@@ -17,12 +19,14 @@ export class ToolRuler implements ITool {
   private isRulerZone: boolean
   private line
 
+  private visibleHor: boolean
+  private visibleVer: boolean
+
   setRuler({ isRulerZone, zone, line }) {
     this.isRulerZone = isRulerZone
     if (isRulerZone) {
       this.isX = zone.id === Graph_Id.ruler_zone_horizontal
       this.isY = zone.id === Graph_Id.ruler_zone_vertical
-      this.isBoth = zone.id === Graph_Id.ruler_zone_both
     } else {
       this.line = line
 
@@ -57,14 +61,29 @@ export class ToolRuler implements ITool {
 
   onDragMove(evt: PointerEvent, sceneCoord: ICoord) {
     const worldCoord = this.wbEditor.coordSys.scene2World(sceneCoord)
-    // this.wbEditor.cursorManager.setCursor(rulerRemoveCursor)
+
+    const visibleHor = worldCoord.y > 0
+    const visibleVer = worldCoord.x > 0
+
+    this.visibleHor = visibleHor
+    this.visibleVer = visibleVer
+
+    let cursor
+
+    if (!visibleHor || !visibleVer) {
+      cursor = rulerRemoveCursor
+    } else {
+      cursor = this.isX || this.line?.isHor ? ToolRuler.Cursor_Horizontal : ToolRuler.Cursor_Vertical
+    }
+
+    this.wbEditor.cursorManager.setCursor(cursor)
 
     if (this.isRulerZone) {
       const updateX = () => {
-        this.wbEditor.ruler.updateRuler('horizontal', this.x_id, sceneCoord.y)
+        this.wbEditor.ruler.updateRuler('horizontal', this.x_id, sceneCoord.y, visibleHor)
       }
       const updateY = () => {
-        this.wbEditor.ruler.updateRuler('vertical', this.y_id, sceneCoord.x)
+        this.wbEditor.ruler.updateRuler('vertical', this.y_id, sceneCoord.x, visibleVer)
       }
 
       if (this.isX) {
@@ -74,10 +93,10 @@ export class ToolRuler implements ITool {
       }
     } else {
       const updateX = () => {
-        this.wbEditor.ruler.updateRuler('horizontal', this.line.id, sceneCoord.y)
+        this.wbEditor.ruler.updateRuler('horizontal', this.line.id, sceneCoord.y, visibleHor)
       }
       const updateY = () => {
-        this.wbEditor.ruler.updateRuler('vertical', this.line.id, sceneCoord.x)
+        this.wbEditor.ruler.updateRuler('vertical', this.line.id, sceneCoord.x, visibleVer)
       }
 
       if (this.line.isHor) {
@@ -88,7 +107,19 @@ export class ToolRuler implements ITool {
     }
   }
 
-  onDragEnd(evt: PointerEvent, sceneCoord: ICoord) {}
+  onDragEnd(evt: PointerEvent, sceneCoord: ICoord) {
+    const { ruler } = this.wbEditor
+
+    if (!this.visibleHor) {
+      ruler.removeRuler(this.x_id)
+      ruler.removeRuler(this.line.id)
+    }
+
+    if (!this.visibleVer) {
+      ruler.removeRuler(this.y_id)
+      ruler.removeRuler(this.line.id)
+    }
+  }
 
   onDrawAfterEnd() {
     return false
