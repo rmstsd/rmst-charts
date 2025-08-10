@@ -43,6 +43,10 @@ export function distanceTowPoint(p1: ICoord, p2: ICoord) {
 
 // 折线 -非曲线
 function calcPointsByPercent(points: number[], percent: number) {
+  if (!points.length) {
+    return []
+  }
+
   const normalPoints = convertToNormalPoints(points)
   const { totalLineLength, lines, lineLengths } = calcTotalLineLength(normalPoints)
   const elapsedLength = totalLineLength * percent

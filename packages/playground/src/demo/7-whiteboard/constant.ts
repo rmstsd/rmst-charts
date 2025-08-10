@@ -9,10 +9,17 @@ export enum Graph_Id {
   graph_ctrl_rotate = 'graph_ctrl_rotate',
   graph_ctrl_scale = 'graph_ctrl_scale',
 
-  ruler_assist_line_x = 'ruler_assist_line_x',
-  ruler_assist_line_y = 'ruler_assist_line_y',
-  ruler_assist_line_both = 'ruler_assist_line_both'
+  ruler_zone_horizontal = 'ruler_zone_horizontal',
+  ruler_zone_vertical = 'ruler_zone_vertical',
+  ruler_zone_both = 'ruler_zone_both'
 }
+
+export enum Ruler_Direction {
+  ruler_line_horizontal = 'ruler_line_horizontal',
+  ruler_line_vertical = 'ruler_line_vertical'
+}
+
+export const rulerZoneIds: string[] = [Graph_Id.ruler_zone_horizontal, Graph_Id.ruler_zone_vertical]
 
 export const isCtrlHandleShape = (shape: IShape) => {
   return (
@@ -25,6 +32,20 @@ export const isCtrlHandleShape = (shape: IShape) => {
 // 是用户绘制出来的图形
 export const isWbGraphShape = (shape: IShape) => {
   return ToolEnum.has(shape.data.extraData?.wbType)
+}
+
+// 是拖拽出来的 红色标尺
+export const isRulerLineHorizontal = (shape: IShape) => {
+  const type = shape?.data.extraData?.type
+
+  return type === Ruler_Direction.ruler_line_horizontal
+}
+
+// 是拖拽出来的 红色标尺
+export const isRulerLineVertical = (shape: IShape) => {
+  const type = shape?.data.extraData?.type
+
+  return type === Ruler_Direction.ruler_line_vertical
 }
 
 export const calcRotateRad = (mt: Matrix) => {

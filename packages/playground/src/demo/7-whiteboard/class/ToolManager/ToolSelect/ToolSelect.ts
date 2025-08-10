@@ -8,7 +8,6 @@ import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
 import { duplicateCursor, getCursorRotation, WbCursor } from '../../cursorManager'
-import { findHover_v2 } from 'rmst-render/_stage/findHover'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -32,21 +31,10 @@ export default class ToolSelect implements ITool {
     wbEditor.selectManager.disableHover()
   }
 
-  onPointerMoveNotDragging({ moveEvt, isInWbCanvas }) {
+  onPointerMoveNotDragging({ hovered, moveEvt, isInWbCanvas }) {
     const { wbEditor } = this
 
     if (!isInWbCanvas) {
-      this.currentHoverStrategyTypeId = null
-
-      wbEditor.selectManager.onHover(null, false)
-      wbEditor.cursorManager.setCursor(this.cursor)
-      return
-    }
-
-    const worldPoint = wbEditor.coordSys.client2World(moveEvt, true)
-    const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
-
-    if (!hovered) {
       this.currentHoverStrategyTypeId = null
 
       wbEditor.selectManager.onHover(null, false)
@@ -92,12 +80,6 @@ export default class ToolSelect implements ITool {
       wbEditor.selectManager.onHover(hovered.data.id, true)
 
       this.updateCursor_Select_Or_Duplicate()
-    } else {
-      console.log('ruler')
-      this.currentHoverStrategyTypeId = null
-      // 标尺
-      wbEditor.selectManager.onHover(null, false)
-      wbEditor.cursorManager.setCursor(this.cursor)
     }
   }
 
