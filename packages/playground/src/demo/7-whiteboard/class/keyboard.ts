@@ -20,12 +20,16 @@ export class Keyboard {
   isAltKeyPressing = false
   isShiftKeyPressing = false
 
+  isKeyDown = false
+
   bindEvent() {
     const documentKeydown = (evt: KeyboardEvent) => {
       // 按下 空格 ctrl alt shift 时
       if (evt.code === 'Space' || evt.ctrlKey || evt.altKey || evt.shiftKey) {
         evt.preventDefault()
       }
+
+      this.isKeyDown = evt.type === 'keydown'
 
       const prevIsSpacePressing = this.isSpaceKeyPressing
       const prevIsCtrlPressing = this.isCtrlKeyPressing

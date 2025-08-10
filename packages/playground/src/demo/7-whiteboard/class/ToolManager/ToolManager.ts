@@ -18,7 +18,6 @@ import { nextTick } from '@/utils'
 import { ToolRuler } from './ToolRuler'
 import { findHover_v2 } from 'rmst-render/_stage/findHover'
 import { Graph_Id, rulerIds } from '../../constant'
-import { checkIfStateModificationsAreAllowed } from 'mobx/dist/internal'
 import { ICoord } from 'rmst-render'
 
 const ToolClassMap = {
@@ -65,15 +64,11 @@ export default class ToolManager {
 
       if (this.currentTool !== ToolEnum.Pan) {
         if (isSpaceKeyPressing) {
-          this.currentToolClass.onTempActive()
-
           this.toolTempPan = new ToolPan(this.wbEditor)
           this.wbEditor.cursorManager.setCursor(this.toolTempPan.cursor)
         } else {
           if (isPointerDown) {
           } else {
-            this.currentToolClass.onTempDeActive()
-
             this.toolTempPan = null
             this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
           }
@@ -161,12 +156,11 @@ export default class ToolManager {
       this.pointerContext.moveEvt = moveEvt
       this.pointerContext.sceneCoord = sceneCoord
 
-      const finalToolClass = this.toolTempPan || this.currentToolClass
-      if (!isPointerDown) {
+      if (!isPointerDown && !keyboard.isKeyDown) {
         this.onPointerMoveNotDragging()
       }
 
-      finalToolClass?.onPointerMove?.(this.pointerContext)
+      this.currentToolClass?.onPointerMove?.(this.pointerContext)
     }
 
     container.addEventListener('pointerenter', onPointerEnter, { signal: this.abCt.signal })
@@ -223,13 +217,13 @@ export default class ToolManager {
     }
 
     const hovered = this.findHover()
-
     if (!hovered) {
-      wbEditor.cursorManager.setCursor('default')
+      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+      wbEditor.selectManager.onHover(null, false)
       return
     }
 
-    if (rulerIds.includes(hovered.id)) {
+    if (rulerIds.includes(hovered?.id)) {
       if (hovered.id === Graph_Id.ruler_assist_line_both) {
         wbEditor.cursorManager.setCursor('crosshair')
       }
@@ -244,6 +238,6 @@ export default class ToolManager {
     }
 
     const finalToolClass = this.toolTempPan || this.currentToolClass
-    finalToolClass?.onPointerMoveNotDragging?.({ moveEvt, sceneCoord, isInWbCanvas })
+    finalToolClass?.onPointerMoveNotDragging?.({ hovered, moveEvt, sceneCoord, isInWbCanvas })
   }
 }
