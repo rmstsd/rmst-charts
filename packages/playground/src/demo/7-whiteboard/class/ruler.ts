@@ -137,6 +137,19 @@ export class Ruler {
     rulerLayer.append(g_x, g_y, ruler_tl)
 
     {
+      // 图形拾取
+      const rect_tl_cloned = rect_tl.clone()
+      rect_tl_cloned.attr({ id: 'Graph_Id.ruler_zone_both', opacity: 0 })
+
+      const rect_bg_x_cloned = rect_bg_x.clone()
+      const rect_bg_y_cloned = rect_bg_y.clone()
+      rect_bg_x_cloned.attr({ id: Graph_Id.ruler_zone_horizontal, opacity: 0 })
+      rect_bg_y_cloned.attr({ id: Graph_Id.ruler_zone_vertical, opacity: 0 })
+
+      rulerLayer.append(rect_bg_x_cloned, rect_bg_y_cloned, rect_tl_cloned)
+    }
+
+    {
       const horizontal = this.rulerData.horizontal.map(item => {
         const coord = this.wbEditor.coordSys.scene2World({ x: 0, y: item.pos })
         const y = coord.y + rulerSize
@@ -169,19 +182,6 @@ export class Ruler {
       const rulerLineGroup = new Group({ name: 'rulerLineGroup' })
       rulerLineGroup.append([...horizontal, ...vertical])
       rulerLayer.append(rulerLineGroup)
-    }
-
-    {
-      // 图形拾取
-      const rect_tl_cloned = rect_tl.clone()
-      rect_tl_cloned.attr({ id: 'Graph_Id.ruler_zone_both', opacity: 0 })
-
-      const rect_bg_x_cloned = rect_bg_x.clone()
-      const rect_bg_y_cloned = rect_bg_y.clone()
-      rect_bg_x_cloned.attr({ id: Graph_Id.ruler_zone_horizontal, opacity: 0 })
-      rect_bg_y_cloned.attr({ id: Graph_Id.ruler_zone_vertical, opacity: 0 })
-
-      rulerLayer.append(rect_bg_x_cloned, rect_bg_y_cloned, rect_tl_cloned)
     }
   }
 }
