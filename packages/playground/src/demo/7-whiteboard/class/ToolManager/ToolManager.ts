@@ -65,6 +65,8 @@ export default class ToolManager {
         if (isSpaceKeyPressing) {
           this.toolTempPan = new ToolPan(this.wbEditor)
           this.wbEditor.cursorManager.setCursor(this.toolTempPan.cursor)
+
+          this.wbEditor.selectManager.clearHover()
         } else {
           if (isPointerDown) {
           } else {
@@ -232,7 +234,7 @@ export default class ToolManager {
 
     if (!hovered) {
       wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
-      wbEditor.selectManager.onHover(null, false)
+      wbEditor.selectManager.clearHover()
       return
     }
 
@@ -240,7 +242,7 @@ export default class ToolManager {
     const isVer = isRulerLineVertical(hovered)
 
     if (rulerZoneIds.includes(hovered?.id) || isHor || isVer) {
-      wbEditor.selectManager.onHover(null, false)
+      wbEditor.selectManager.clearHover()
 
       if (hovered.id === Graph_Id.ruler_zone_horizontal || isHor) {
         wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Horizontal)

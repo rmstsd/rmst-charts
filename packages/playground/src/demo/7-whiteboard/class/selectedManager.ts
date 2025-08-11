@@ -365,6 +365,10 @@ export default class selectedManager {
     this.renderHovered()
   }
 
+  clearHover() {
+    this.onHover(null, false)
+  }
+
   renderHovered() {
     const { hoveredLayer } = this.wbEditor
     hoveredLayer.removeAllChildren()
