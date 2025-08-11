@@ -8,8 +8,6 @@
 
 ---
 
-在线示例：[https://c.rmst.fun/#/rmst-render/overview/index](https://c.rmst.fun/#/rmst-render/overview/index)
-
 # 快速开始
 
 ```typescript

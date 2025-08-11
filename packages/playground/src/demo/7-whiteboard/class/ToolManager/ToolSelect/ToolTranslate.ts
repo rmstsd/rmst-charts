@@ -3,9 +3,7 @@ import { ITool } from '../type'
 import { compose, translate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
-
-const horizontalCursor = `ew-resize`
-const verticalCursor = `ns-resize`
+import { translateHorizontalCursor, translateVerticalCursor } from '../../cursorManager'
 
 export default class ToolTranslate implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -71,10 +69,10 @@ export default class ToolTranslate implements ITool {
 
       if (isShiftKeyPressing) {
         if (Math.abs(dx) > Math.abs(dy)) {
-          this.wbEditor.cursorManager.setCursor(horizontalCursor)
+          this.wbEditor.cursorManager.setCursor(translateHorizontalCursor)
           dy = 0
         } else {
-          this.wbEditor.cursorManager.setCursor(verticalCursor)
+          this.wbEditor.cursorManager.setCursor(translateVerticalCursor)
           dx = 0
         }
       } else {
