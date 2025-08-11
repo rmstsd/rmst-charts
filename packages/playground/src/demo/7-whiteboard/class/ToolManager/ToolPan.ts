@@ -1,17 +1,17 @@
 import { ICoord } from 'rmst-render'
 import WhiteboardEditor from '../../whiteboardEditor'
 import { ITool } from './type'
-import { WbCursor } from '../cursorManager'
+import { grabbingCursor, grabCursor, WbCursor } from '../cursorManager'
 
 export default class ToolPan implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
 
-  cursor?: WbCursor = 'grab'
+  cursor?: WbCursor = grabCursor
 
   downPos?: ICoord
 
   onPointerDown(downEvt: PointerEvent, sceneCoord: ICoord) {
-    this.wbEditor.cursorManager.setCursor('grabbing')
+    this.wbEditor.cursorManager.setCursor(grabbingCursor)
   }
 
   onDragStart(downEvt, sceneCoord) {
@@ -30,11 +30,11 @@ export default class ToolPan implements ITool {
   }
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
-    this.wbEditor.cursorManager.setCursor('grab')
+    this.wbEditor.cursorManager.setCursor(this.cursor)
   }
 
   onPointerUp(downEvt: PointerEvent, sceneCoord: ICoord) {
-    this.wbEditor.cursorManager.setCursor('grab')
+    this.wbEditor.cursorManager.setCursor(this.cursor)
   }
 
   onDrawAfterEnd() {

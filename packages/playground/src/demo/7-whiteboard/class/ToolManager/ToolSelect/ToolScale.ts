@@ -7,7 +7,6 @@ import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
 import { resizeRect, TransformRect } from './resizeStrategy'
 import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
-import { ass } from '../ass'
 
 export default class ToolScale implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {

@@ -18,7 +18,6 @@ import { nextTick } from '@/utils'
 import { ToolRuler } from './ToolRuler'
 import { findHover_v2 } from 'rmst-render/_stage/findHover'
 import { Graph_Id, isRulerLineHorizontal, isRulerLineVertical, rulerZoneIds } from '../../constant'
-import { rulerRemoveCursor } from '../cursorManager'
 
 const ToolClassMap = {
   [ToolEnum.Pan]: ToolPan,
