@@ -16,19 +16,18 @@ export class Ruler {
   constructor(private wbEditor: WhiteboardEditor) {}
 
   rulerData = {
-    horizontal: [] as { id: string; pos: number; visible: boolean }[],
-    vertical: [] as { id: string; pos: number; visible: boolean }[]
+    horizontal: [] as { id: string; pos: number }[],
+    vertical: [] as { id: string; pos: number }[]
   }
 
   addRuler(type: 'horizontal' | 'vertical', id: string, pos: number) {
-    this.rulerData[type].push({ id, pos, visible: true })
+    this.rulerData[type].push({ id, pos })
   }
 
-  updateRuler(type: 'horizontal' | 'vertical', id: string, pos: number, visible: boolean) {
+  updateRuler(type: 'horizontal' | 'vertical', id: string, pos: number) {
     const index = this.rulerData[type].findIndex(item => item.id === id)
     if (index !== -1) {
       this.rulerData[type][index].pos = pos
-      this.rulerData[type][index].visible = visible
     }
 
     this.drawRuler()
@@ -158,7 +157,7 @@ export class Ruler {
           id: item.id,
           points: [0, y, rulerViewSize.width, y],
           strokeStyle: OpenColor.red[5],
-          visible: item.visible,
+          visible: coord.y > 0,
           extraData: {
             type: Ruler_Direction.ruler_line_horizontal
           }
@@ -172,7 +171,7 @@ export class Ruler {
           id: item.id,
           points: [x, 0, x, rulerViewSize.height],
           strokeStyle: OpenColor.red[5],
-          visible: item.visible,
+          visible: coord.x > 0,
           extraData: {
             type: Ruler_Direction.ruler_line_vertical
           }

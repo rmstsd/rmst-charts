@@ -37,7 +37,7 @@ export default class ToolSelect implements ITool {
     if (!isInWbCanvas) {
       this.currentHoverStrategyTypeId = null
 
-      wbEditor.selectManager.onHover(null, false)
+      wbEditor.selectManager.clearHover()
       wbEditor.cursorManager.setCursor(this.cursor)
       return
     }
@@ -46,7 +46,7 @@ export default class ToolSelect implements ITool {
     const isWbGraph = isWbGraphShape(hovered)
 
     if (isCtrlHandle) {
-      wbEditor.selectManager.onHover(null, false)
+      wbEditor.selectManager.clearHover()
 
       const downRect = wbEditor.selectManager.transformRect
       const cursorType = hovered.data.extraData?.cursorType
@@ -100,7 +100,7 @@ export default class ToolSelect implements ITool {
       wbEditor.triggerRender()
     } else {
       if (isWbGraphShape(hovered)) {
-        wbEditor.selectManager.onHover(hovered.data.id, false)
+        wbEditor.selectManager.clearHover()
         wbEditor.selectManager.select(hovered.data.id)
 
         this.currentStrategy = new ToolTranslate(wbEditor)

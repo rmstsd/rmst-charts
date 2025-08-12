@@ -69,10 +69,10 @@ export class ToolRuler implements ITool {
     this.wbEditor.cursorManager.setCursor(cursor)
 
     const updateX = () => {
-      this.wbEditor.ruler.updateRuler('horizontal', this.id, sceneCoord.y, visibleHor)
+      this.wbEditor.ruler.updateRuler('horizontal', this.id, sceneCoord.y)
     }
     const updateY = () => {
-      this.wbEditor.ruler.updateRuler('vertical', this.id, sceneCoord.x, visibleVer)
+      this.wbEditor.ruler.updateRuler('vertical', this.id, sceneCoord.x)
     }
 
     if (this.isHorizontal) {
