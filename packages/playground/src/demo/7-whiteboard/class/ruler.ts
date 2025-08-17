@@ -138,7 +138,7 @@ export class Ruler {
     {
       // 图形拾取
       const rect_tl_cloned = rect_tl.clone()
-      rect_tl_cloned.attr({ id: 'Graph_Id.ruler_zone_both', opacity: 0 })
+      rect_tl_cloned.attr({ id: Graph_Id.ruler_zone_both, opacity: 0 })
 
       const rect_bg_x_cloned = rect_bg_x.clone()
       const rect_bg_y_cloned = rect_bg_y.clone()

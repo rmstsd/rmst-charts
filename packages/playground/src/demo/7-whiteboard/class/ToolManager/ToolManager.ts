@@ -100,7 +100,7 @@ export default class ToolManager {
       const isHor = isRulerLineHorizontal(hovered)
       const isVer = isRulerLineVertical(hovered)
 
-      const isRulerZone = rulerZoneIds.includes(hovered?.id)
+      const isRulerZone = rulerZoneIds.includes(hovered?.id) && hovered?.id !== Graph_Id.ruler_zone_both
 
       const isRuler = isRulerZone || (this.isHitRulerLine() && isHor) || (this.isHitRulerLine() && isVer)
 
@@ -249,6 +249,9 @@ export default class ToolManager {
       }
       if (hovered.id === Graph_Id.ruler_zone_vertical || isVer) {
         wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Vertical)
+      }
+      if (hovered.id === Graph_Id.ruler_zone_both) {
+        wbEditor.cursorManager.setCursor('default')
       }
 
       return

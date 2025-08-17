@@ -19,7 +19,7 @@ export enum Ruler_Direction {
   ruler_line_vertical = 'ruler_line_vertical'
 }
 
-export const rulerZoneIds: string[] = [Graph_Id.ruler_zone_horizontal, Graph_Id.ruler_zone_vertical]
+export const rulerZoneIds: string[] = [Graph_Id.ruler_zone_horizontal, Graph_Id.ruler_zone_vertical, Graph_Id.ruler_zone_both]
 
 export const isCtrlHandleShape = (shape: IShape) => {
   return (
