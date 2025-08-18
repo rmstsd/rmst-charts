@@ -102,7 +102,7 @@ export default class ToolManager {
 
       const isRulerZone = rulerZoneIds.includes(hovered?.id) && hovered?.id !== Graph_Id.ruler_zone_both
 
-      const isRuler = isRulerZone || (this.isHitRulerLine() && isHor) || (this.isHitRulerLine() && isVer)
+      const isRuler = isRulerZone || (this.isHitRulerRedLine() && isHor) || (this.isHitRulerRedLine() && isVer)
 
       let finalToolClass
       if (keyboard.isSpaceKeyPressing && this.toolTempPan) {
@@ -233,34 +233,58 @@ export default class ToolManager {
     }
 
     if (!hovered) {
-      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
       wbEditor.selectManager.clearHover()
       return
     }
 
-    const isHor = this.isHitRulerLine() && isRulerLineHorizontal(hovered)
-    const isVer = this.isHitRulerLine() && isRulerLineVertical(hovered)
+    const handleInfo = this.handleInfo()
 
-    if (rulerZoneIds.includes(hovered?.id) || isHor || isVer) {
-      wbEditor.selectManager.clearHover()
-
-      if (hovered.id === Graph_Id.ruler_zone_horizontal || isHor) {
-        wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Horizontal)
-      }
-      if (hovered.id === Graph_Id.ruler_zone_vertical || isVer) {
-        wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Vertical)
-      }
-      if (hovered.id === Graph_Id.ruler_zone_both) {
-        wbEditor.cursorManager.setCursor('default')
-      }
-
+    if (handleInfo) {
+      this.wbEditor.cursorManager.setCursor(handleInfo)
       return
     }
 
     this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
   }
 
-  isHitRulerLine() {
+  isHitRulerRedLine() {
     return this.currentTool === ToolEnum.Select
+  }
+
+  // todo  优化 handle 的拾取
+  handleInfo() {
+    const { wbEditor } = this
+    const { hovered } = this.pointerContext
+
+    const isHorRedLine = isRulerLineHorizontal(hovered)
+    const isVerRedLine = isRulerLineVertical(hovered)
+
+    const isHitRulerRedLine = this.isHitRulerRedLine()
+
+    if (rulerZoneIds.includes(hovered.id) || isHorRedLine || isVerRedLine) {
+      wbEditor.selectManager.clearHover()
+
+      if (isHitRulerRedLine && isHorRedLine) {
+        return ToolRuler.Cursor_Horizontal
+      }
+      if (isHitRulerRedLine && isVerRedLine) {
+        return ToolRuler.Cursor_Vertical
+      }
+
+      if (hovered.id === Graph_Id.ruler_zone_horizontal) {
+        return ToolRuler.Cursor_Horizontal
+      }
+
+      if (hovered.id === Graph_Id.ruler_zone_vertical) {
+        return ToolRuler.Cursor_Vertical
+      }
+
+      if (hovered.id === Graph_Id.ruler_zone_both) {
+        return 'default'
+      }
+    }
+
+    return null
   }
 }

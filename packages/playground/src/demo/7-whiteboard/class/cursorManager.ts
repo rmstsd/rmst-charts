@@ -93,6 +93,11 @@ export default class CursorManager {
   constructor(private wbEditor: WhiteboardEditor) {}
 
   public setCursor(cursor: WbCursor) {
+    if (!cursor) {
+      console.warn('cursor 为空')
+      cursor = 'default'
+    }
+
     const cursorString = typeof cursor === 'string' ? cursor : getCursor_v2(cursor)
 
     this.wbEditor.stage.canvasElement.style.setProperty('cursor', cursorString)

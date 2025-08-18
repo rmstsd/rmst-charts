@@ -10,6 +10,8 @@ import fitCurve from 'fit-curve'
 import { defaultGraphPencilColor } from '@/demo/7-whiteboard/color'
 
 export default class ToolDrawPencil implements ITool {
+  cursor = 'crosshair'
+
   constructor(private wbEditor: WhiteboardEditor) {}
 
   graphShape: Path
