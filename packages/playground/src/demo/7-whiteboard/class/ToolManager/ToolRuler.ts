@@ -20,13 +20,13 @@ export class ToolRuler implements ITool {
 
   private id = ''
 
-  setRuler({ isRulerZone, zone, line }) {
-    this.isRulerZone = isRulerZone
+  setRuler({ handleInfo, line }) {
+    this.isRulerZone = handleInfo.handleName === 'ruler_zone_horizontal' || handleInfo.handleName === 'ruler_zone_vertical'
 
     this.id = line.id
 
-    this.isHorizontal = zone.id === Graph_Id.ruler_zone_horizontal || line.isHor
-    this.isVertical = zone.id === Graph_Id.ruler_zone_vertical || line.isVer
+    this.isHorizontal = handleInfo.handleName.includes('horizontal')
+    this.isVertical = handleInfo.handleName.includes('vertical')
   }
 
   onDragStart(evt: PointerEvent, sceneCoord: ICoord) {

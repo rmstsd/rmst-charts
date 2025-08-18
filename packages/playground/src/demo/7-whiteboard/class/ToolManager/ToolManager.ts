@@ -71,7 +71,7 @@ export default class ToolManager {
           if (isPointerDown) {
           } else {
             this.toolTempPan = null
-            this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+            this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
           }
         }
       }
@@ -89,31 +89,22 @@ export default class ToolManager {
     const onPointerDown = async (downEvt: PointerEvent) => {
       await nextTick() // 让输入框能触发 blur 事件
 
-      isPointerDown = true
       if (downEvt.button !== Pointer_Button.Left) {
         console.warn('非左键操作')
         return
       }
 
+      isPointerDown = true
+
       const hovered = this.findHover()
-
-      const isHor = isRulerLineHorizontal(hovered)
-      const isVer = isRulerLineVertical(hovered)
-
-      const isRulerZone = rulerZoneIds.includes(hovered?.id) && hovered?.id !== Graph_Id.ruler_zone_both
-
-      const isRuler = isRulerZone || (this.isHitRulerRedLine() && isHor) || (this.isHitRulerRedLine() && isVer)
+      this.pointerContext.hovered = hovered
+      const handleInfo = this.handleInfo()
 
       let finalToolClass
       if (keyboard.isSpaceKeyPressing && this.toolTempPan) {
         finalToolClass = this.toolTempPan
-      } else if (isRuler) {
-        this.toolRuler.setRuler({
-          isRulerZone,
-          zone: { id: hovered?.id },
-          line: { id: hovered?.id, isHor, isVer }
-        })
-
+      } else if (handleInfo) {
+        this.toolRuler.setRuler({ handleInfo, id: hovered?.id })
         finalToolClass = this.toolRuler
       } else {
         finalToolClass = this.currentToolClass
@@ -213,7 +204,7 @@ export default class ToolManager {
     }
 
     this.currentToolClass.onActive?.()
-    this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+    this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
   }
 
   findHover() {
@@ -241,47 +232,46 @@ export default class ToolManager {
     const handleInfo = this.handleInfo()
 
     if (handleInfo) {
-      this.wbEditor.cursorManager.setCursor(handleInfo)
+      this.wbEditor.cursorManager.setCursor(handleInfo.cursor)
       return
     }
 
     this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
   }
 
-  isHitRulerRedLine() {
-    return this.currentTool === ToolEnum.Select
-  }
-
   // todo  优化 handle 的拾取
-  handleInfo() {
+  handleInfo(): { handleName: string; cursor: any } {
     const { wbEditor } = this
     const { hovered } = this.pointerContext
+    if (!hovered) {
+      return null
+    }
 
     const isHorRedLine = isRulerLineHorizontal(hovered)
     const isVerRedLine = isRulerLineVertical(hovered)
 
-    const isHitRulerRedLine = this.isHitRulerRedLine()
+    const isHitRulerRedLine = this.currentTool === ToolEnum.Select
 
     if (rulerZoneIds.includes(hovered.id) || isHorRedLine || isVerRedLine) {
       wbEditor.selectManager.clearHover()
 
       if (isHitRulerRedLine && isHorRedLine) {
-        return ToolRuler.Cursor_Horizontal
+        return { handleName: 'ruler_red_line_horizontal', cursor: ToolRuler.Cursor_Horizontal }
       }
       if (isHitRulerRedLine && isVerRedLine) {
-        return ToolRuler.Cursor_Vertical
+        return { handleName: 'ruler_red_line_vertical', cursor: ToolRuler.Cursor_Vertical }
       }
 
       if (hovered.id === Graph_Id.ruler_zone_horizontal) {
-        return ToolRuler.Cursor_Horizontal
+        return { handleName: 'ruler_zone_horizontal', cursor: ToolRuler.Cursor_Horizontal }
       }
 
       if (hovered.id === Graph_Id.ruler_zone_vertical) {
-        return ToolRuler.Cursor_Vertical
+        return { handleName: 'ruler_zone_vertical', cursor: ToolRuler.Cursor_Vertical }
       }
 
       if (hovered.id === Graph_Id.ruler_zone_both) {
-        return 'default'
+        return { handleName: '', cursor: 'default' }
       }
     }
 
