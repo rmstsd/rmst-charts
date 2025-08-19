@@ -20,10 +20,10 @@ export class ToolRuler implements ITool {
 
   private id = ''
 
-  setRuler({ handleInfo, line }) {
+  setRuler({ handleInfo, id }) {
     this.isRulerZone = handleInfo.handleName === 'ruler_zone_horizontal' || handleInfo.handleName === 'ruler_zone_vertical'
 
-    this.id = line.id
+    this.id = id
 
     this.isHorizontal = handleInfo.handleName.includes('horizontal')
     this.isVertical = handleInfo.handleName.includes('vertical')
