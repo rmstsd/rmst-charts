@@ -2,7 +2,7 @@ import { ICoord, uuid } from 'rmst-render'
 import { Graph_Id } from '../../constant'
 import WhiteboardEditor from '../../whiteboardEditor'
 import { ITool } from './type'
-import { rulerRemoveCursor } from '../cursorManager'
+import { rulerRemoveCursor } from '../cursorManager/icon'
 
 export class ToolRuler implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -20,13 +20,13 @@ export class ToolRuler implements ITool {
 
   private id = ''
 
-  setRuler({ isRulerZone, zone, line }) {
-    this.isRulerZone = isRulerZone
+  setRuler({ handleInfo, id }) {
+    this.isRulerZone = handleInfo.handleName === 'ruler_zone_horizontal' || handleInfo.handleName === 'ruler_zone_vertical'
 
-    this.id = line.id
+    this.id = id
 
-    this.isHorizontal = zone.id === Graph_Id.ruler_zone_horizontal || line.isHor
-    this.isVertical = zone.id === Graph_Id.ruler_zone_vertical || line.isVer
+    this.isHorizontal = handleInfo.handleName.includes('horizontal')
+    this.isVertical = handleInfo.handleName.includes('vertical')
   }
 
   onDragStart(evt: PointerEvent, sceneCoord: ICoord) {

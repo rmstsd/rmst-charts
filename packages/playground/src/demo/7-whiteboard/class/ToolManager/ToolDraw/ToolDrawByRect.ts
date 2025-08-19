@@ -10,6 +10,8 @@ import { ass } from '../ass'
 export default abstract class ToolDrawByRect implements ITool {
   constructor(protected wbEditor: WhiteboardEditor) {}
 
+  cursor = 'crosshair'
+
   private downPos: ICoord
   private movePos: ICoord
 

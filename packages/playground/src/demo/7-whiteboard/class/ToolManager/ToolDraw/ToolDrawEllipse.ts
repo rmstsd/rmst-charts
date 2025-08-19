@@ -4,6 +4,8 @@ import ToolDrawByRect from './ToolDrawByRect'
 import { ToolEnum } from './../constant'
 
 export default class ToolDrawEllipse extends ToolDrawByRect {
+  cursor = 'crosshair'
+
   constructor(wbEditor: WhiteboardEditor) {
     super(wbEditor)
   }

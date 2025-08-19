@@ -1,7 +1,8 @@
 import { ICoord } from 'rmst-render'
 import WhiteboardEditor from '../../whiteboardEditor'
 import { ITool } from './type'
-import { grabbingCursor, grabCursor, WbCursor } from '../cursorManager'
+import { WbCursor } from '../cursorManager'
+import { grabbingCursor, grabCursor } from '../cursorManager/icon'
 
 export default class ToolPan implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}

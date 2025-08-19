@@ -1,12 +1,4 @@
-import type * as CSS from 'csstype'
-import WhiteboardEditor from '../whiteboardEditor'
-import { calcRotateRad, isFlipped, normalizeAngle } from '../constant'
-import { rad2deg } from 'rmst-render'
-import { range } from 'es-toolkit'
-
-import selectCursorSvg from './icon/cursor.svg?raw'
-
-const getScaleSvg = (rotateDeg: number) => {
+export const getScaleSvg = (rotateDeg: number) => {
   return `
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -27,7 +19,7 @@ const getScaleSvg = (rotateDeg: number) => {
   `
 }
 
-const getRotationSvg = (rotateDeg: number) => {
+export const getRotationSvg = (rotateDeg: number) => {
   rotateDeg = Math.floor(rotateDeg)
 
   return `
@@ -64,133 +56,3 @@ export const grabCursor =
 
 export const grabbingCursor =
   'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMzJweCIgaGVpZ2h0PSIzMnB4Ij48aW1hZ2UgeGxpbms6aHJlZj0iZGF0YTppbWFnZS9wbmc7YmFzZTY0LGlWQk9SdzBLR2dvQUFBQU5TVWhFVWdBQUFEQUFBQUF3Q0FZQUFBQlhBdm1IQUFBRi9VbEVRVlI0QWV5WVgwaVZkeGpIMzlQTXRxbHBkZG1pRTkxWURSY29Dd25weEloZ281djBSaW82dGRGb01BYmQxTnp3ejJDb0Y4SmdNV1ZNL0VkT3RndWo0VGJXU0hGTXhEL29wcWpnaFhwanpqOXpPblc1dHR6MzgrYXZuU3lQNy91ZXMwWnc0dmVjNS9mM2VaN3Y5M2wrNy92YUp1c3AveGNEOEg4bk1KYUJXQVlpWkNCV1FoRVNHUEh4V0FZaXBqQkNBN0VNUkVoZ3hNZGpHWGdNaFQ3TlFjd3owbkdTelJJMFk5WTBqRjdEVVRTc1lZY2d0OGpZYzVJRVNaSmthNGdrcXMvOHM5S0FpZ29nSE11ZTV3YWpKbkNDMjlyYTJ2cHFTVW5KUzZPam94OHNMeS8vdkxLeU1qMC9QLzlOVDAvUG0yVmxaV21WbFpVdnlodmdBQnF2UGtDa3ZMVklBSmpnWVRScFptYm1Nd1U3bVpXVjllWGx5NWQvMkwxNzk5djE5ZlU3Q3dzTHJlN3U3cGNQSGp4WWV1blNwUi9QbnovZnViQ3c4UFhnNE9BRmhSd0t4Rk1zbmc3Sk1ZMnpsRUtDQXJxeGZmdjJuT3JxYXV2Y3VYTVdRYU9Sb3FJaTYralJvdy9OVFUxTkhVcE5UUzNyNnVwNlE0WlNKSlFYUkdBUHU1cHkxbHh0RGpISk9kS2ZrSitmdno4aEllR1FDYnFscGNXcXFhbXhBQk1NQmkxbHhmTDcvUlpBbUdOOXo1NDkxdWpvcUpXZW5sNDhPenZiT0QwOS9hbEthNy9zVTFaeDBqNkpvMFlnamphdWJzSXdEbUNMbWsvT3pzNCt4UnBCRjZwY1JrWkdMQUpuN3V6WnM2Z0hZOVlRdndBQkJ1bnQ3YzNZc1dOSDl1blRwNitYbDVlbjZnQzI4YUh1eHMwTmdORGdFOFZndnRnZFRrdExleDAzR3FOc09YTGtpSzNYL2hBNGMyZ3lRb2xSWHVqNCtQaWR4NDhmUDZOMUF3Qi9Hb1p2TGdCWTdMWExocHJua2xJT09FZUhkL1BvS2lESVJsVlZsVVVtSUNBbEpTVlRPNStYa0FIOHFSdStPZHEwYW9MSDNaYW1wcVpYcUhtY3dwN1JxM3RzRlFnRXJHQXdhQVVDQVhzc3NQWTlzQWVyUDM2LzM1NWpIMVBZMmJadFc3cjZaSURMSE5VTVlNd0dzSGZ2M2l3NXNTOGx6bFZHRnJYUFhLakFyQm16cjdtNTJReXRnb0lDV3g1TVBOd2hlSHc1SXRmUkp0azNBRGFML1JjMHRrZzVHbG12NWxrejRoZmpwazltRUROZW8wM3crRnl6OU9qUUtRQnpjdFBRMEZBdkF3SXlJQWlHTE1Bc2F4RUtnU09PekRnRnNDSnJ5TDFqeDQ1OXRiaTRPTWtqa3N0clFFUXBlTGx4MTV3Q3dPbzkvZHhGQkdBQzF0VzNBSUgyS29ZQU1ycTB0UFNMN09BSHN0VGR1RGtGZ01HL1pPNVB5WjJPam81dkE0R0EvUlRoZWE0NXo4MFFFQXdHcmZIeDhaOWs2RytKWXhCT0FjaW1oVkVid0lrVEo2NHJDNU9VRFF6eUNHU0RGeGtiRzdPSjRPemMzTnh0YVlneUlEUU0zOXdDd1BnZk1yblUzOS8vSGF5UmVqNGpOT2U2QVo3THozM2ljR2RuWjVjMEpPR0hyR3NZdnJrQmdFRU1MOHZrVWtWRnhRMnlnSFBLd0VzcDhSYUhBRUJNVEV6MFhieDRzVTIyc1k4Zk1xNWgrT1lHQUpaSUxRNFdWVGJEZlgxOU4zRWUwSDFBYTQ0OWpvUzNPTUROQzA5L1EzeW9nMHNTN0FNQXdqUU0zOXdDZ0pXN01ra1pMV1JtWm41Q0Zuakx3aVNNSXBTRzlqeTJBWkxQYVlMbkRnRyt2YjM5V20xdDdiQU9MRW9BQUZIcWJ0emNBc0FpeG5HeW9NR2MwdjRPSVBndzQwNFFHQUhDTUdBb0xUUnpQcC9QL29NSHNJQW1hMjF0YlorTGlLdXlOUzhCQUhjQW9qVGN1SGtCZ0hHY2tPNjV1cnE2Z2NURXhOeUJnWUZteW9IQVlCYlhnSUZ4QktZQmFQWmtaR1JNbFphV3ZudjQ4T0dQdGZkWENRRHVTSk5oUitXanZmWW5NdHF0a0FXY2tZVlpIWjQ2Y09CQUFRSEZ4Y1VONkcvZmFZQ1FGWVFQUGdKSGNuSnlwdlE1Y2lzcEtlblVsU3RYYnVuc3RHUk80cHA5bmZFTUFJYTRhTndGbUp1UnNVa0Y5UDJ1WGJ2ZVNrNU9QbE5jWFB4ZVEwUERWZjB2eFJmb2t5ZFBYdkQ1Zks4cDhOeDkrL2E5ci8wVGtra0pCRUFFWlFreG1uTGV2SlNRc1I1YVNnWUVud0s4akc3bjVlWGR6TTNOdmFZdjFZL1FqWTJOdkdYdE5SbGdIOHovcGo3QmswMElnUmhOT1crUkFNQUxEbkZNSm43WEJHd1NHT3lhWUVNMTg3RE9Ib0kzWmVPYWVmbXlXNlFBTUFJSUFqQVhHeURVTkJlVDBpSllOQUpBc2tYZ2xBd1hsa3hpeDVORUE0QnhEQkNDSVNoS2dxd1FLRThyTkdQbUFRcGc5cHF6bm5VMEFmd2J4UDBlZ0JBQ1JTUDNWNkw0KzE4Q2lHS1k2NXVLQVZpZm15ZXpFc3ZBaytGNWZTLy9BQUFBLy85Y0E5WU5BQUFBQmtsRVFWUURBQzlmY0gvR1ZxalFBQUFBQUVsRlRrU3VRbUNDIiB3aWR0aD0iMzIiIGhlaWdodD0iMzIiLz48L3N2Zz4=) 16 16,auto'
-
-export enum CursorType {
-  scale_top = 'scale_top',
-  scale_right = 'scale_right',
-  scale_tr = 'scale_tr',
-  scale_br = 'scale_br',
-
-  rotate_tl = 'rotate_tl',
-  rotate_tr = 'rotate_tr',
-  rotate_br = 'rotate_br',
-  rotate_bl = 'rotate_bl'
-}
-
-type CursorResize = { type: 'resize'; rotation: number } // 角度
-type CursorRotation = { type: 'rotation'; rotation: number } // 角度
-type CursorSelect = { type: 'select' } // 角度
-
-type ICursorCustom = CursorResize | CursorRotation | CursorSelect
-
-export type WbCursor = CSS.Property.Cursor | ICursorCustom
-
-export function getCssCursorValue(url: string) {
-  return `url("${url}") 16 16, auto`
-}
-
-export default class CursorManager {
-  constructor(private wbEditor: WhiteboardEditor) {}
-
-  public setCursor(cursor: WbCursor) {
-    const cursorString = typeof cursor === 'string' ? cursor : getCursor_v2(cursor)
-
-    this.wbEditor.stage.canvasElement.style.setProperty('cursor', cursorString)
-  }
-}
-
-const cursorCached = new Map<string, string>()
-
-{
-  genCursor()
-
-  function genCursor() {
-    cursorCached.set('select', 'default')
-
-    range(0, 61).forEach(item => {
-      const dataAngle = scaleValue(item, 60, 360)
-      {
-        const key = `rotation-${item}`
-        const svgString = getRotationSvg(dataAngle)
-
-        const url = svgToBase64(svgString)
-        cursorCached.set(key, getCssCursorValue(url))
-      }
-
-      {
-        const svgString2 = getScaleSvg(dataAngle)
-        const key2 = `resize-${item}`
-        const url2 = svgToBase64(svgString2)
-        cursorCached.set(key2, getCssCursorValue(url2))
-      }
-    })
-  }
-}
-
-function scaleValue(value, oldMax, newMax) {
-  return (value / oldMax) * newMax
-}
-
-function getCursor_v2(cursor: ICursorCustom) {
-  if (cursor.type === 'select') {
-    return cursorCached.get(cursor.type)
-  }
-
-  const cc = scaleValue(normalizeAngle(cursor.rotation), 360, 60)
-  const rotation = Math.round(cc)
-
-  const key = `${cursor.type}-${rotation}`
-
-  if (cursorCached.has(key)) {
-    return cursorCached.get(key)
-  }
-
-  console.warn('请提前生成')
-}
-
-export function getCursorRotation(type: 'resize' | 'rotation', cursorType, mt) {
-  if (!cursorType || !mt) {
-    console.warn('getRotation cursorType or mt is undefined')
-  }
-
-  if (type === 'rotation') {
-    const isFlip = isFlipped(mt)
-    const data = {
-      [CursorType.rotate_tl]: isFlip ? -90 : 0,
-      [CursorType.rotate_tr]: isFlip ? 180 : 90,
-      [CursorType.rotate_br]: isFlip ? 90 : 180,
-      [CursorType.rotate_bl]: isFlip ? 0 : -90
-    }
-    const shapeROtation = rad2deg(calcRotateRad(mt))
-    const ansRotation = data[cursorType] + shapeROtation
-
-    return ansRotation
-  }
-
-  if (type === 'resize') {
-    const isFlip = isFlipped(mt)
-    const data = {
-      [CursorType.scale_top]: isFlip ? 0 : 0,
-      [CursorType.scale_right]: isFlip ? 90 : 90,
-      [CursorType.scale_tr]: isFlip ? -45 : 45,
-      [CursorType.scale_br]: isFlip ? 45 : -45
-    }
-    const shapeRotation = rad2deg(calcRotateRad(mt))
-    const ansRotation = data[cursorType] + shapeRotation
-
-    return ansRotation
-  }
-
-  console.warn('待实现')
-}
-
-function svgToBase64(svgString) {
-  // 1. 去除不必要的空白（可选）
-  const cleanedSvg = svgString.replace(/\s+/g, ' ').trim()
-
-  // 2. 对 SVG 字符串进行 Base64 编码
-  const base64 = btoa(unescape(encodeURIComponent(cleanedSvg)))
-
-  // 3. 添加 data URI 前缀
-  return `data:image/svg+xml;base64,${base64}`
-}

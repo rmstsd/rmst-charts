@@ -19,7 +19,7 @@ export enum Ruler_Direction {
   ruler_line_vertical = 'ruler_line_vertical'
 }
 
-export const rulerZoneIds: string[] = [Graph_Id.ruler_zone_horizontal, Graph_Id.ruler_zone_vertical]
+export const rulerZoneIds: string[] = [Graph_Id.ruler_zone_horizontal, Graph_Id.ruler_zone_vertical, Graph_Id.ruler_zone_both]
 
 export const isCtrlHandleShape = (shape: IShape) => {
   return (
@@ -31,6 +31,10 @@ export const isCtrlHandleShape = (shape: IShape) => {
 
 // 是用户绘制出来的图形
 export const isWbGraphShape = (shape: IShape) => {
+  if (!shape) {
+    return false
+  }
+
   return ToolEnum.has(shape.data.extraData?.wbType)
 }
 

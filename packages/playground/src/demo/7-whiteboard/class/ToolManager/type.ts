@@ -1,7 +1,7 @@
-import { ICoord } from 'rmst-render'
+import { ICoord, IShape } from 'rmst-render'
 import { WbCursor } from '../cursorManager'
 
-export type PointerContext = { hovered; moveEvt: PointerEvent; sceneCoord: ICoord; isInWbCanvas: boolean }
+export type PointerContext = { hovered: IShape; clientCoord: ICoord; sceneCoord: ICoord; isInWbCanvas: boolean }
 
 export interface ITool {
   cursor?: WbCursor
@@ -15,9 +15,9 @@ export interface ITool {
   // 移动时, 不管鼠标是否按下
   onPointerMove?: (context: { moveEvt?: PointerEvent; sceneCoord?: ICoord; isInWbCanvas: boolean }) => void
 
-  // 移动时 不是拖拽
+  // 在非拖拽时, 鼠标移动
   onPointerMoveNotDragging?: (context: PointerContext) => void
-  onPointerUp?: (downEvt: PointerEvent, sceneCoord: ICoord) => void
+  onPointerUp?: (UpEvt: PointerEvent, sceneCoord: ICoord) => void
 
   onDragStart: (downEvt: PointerEvent, sceneCoord: ICoord) => void
   onDragMove: (moveEvt: PointerEvent, sceneCoord: ICoord) => void

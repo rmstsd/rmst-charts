@@ -71,7 +71,7 @@ export default class ToolManager {
           if (isPointerDown) {
           } else {
             this.toolTempPan = null
-            this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+            this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
           }
         }
       }
@@ -89,31 +89,22 @@ export default class ToolManager {
     const onPointerDown = async (downEvt: PointerEvent) => {
       await nextTick() // 让输入框能触发 blur 事件
 
-      isPointerDown = true
       if (downEvt.button !== Pointer_Button.Left) {
         console.warn('非左键操作')
         return
       }
 
+      isPointerDown = true
+
       const hovered = this.findHover()
-
-      const isHor = isRulerLineHorizontal(hovered)
-      const isVer = isRulerLineVertical(hovered)
-
-      const isRulerZone = rulerZoneIds.includes(hovered?.id)
-
-      const isRuler = isRulerZone || (this.isHitRulerLine() && isHor) || (this.isHitRulerLine() && isVer)
+      this.pointerContext.hovered = hovered
+      const handleInfo = this.handleInfo()
 
       let finalToolClass
       if (keyboard.isSpaceKeyPressing && this.toolTempPan) {
         finalToolClass = this.toolTempPan
-      } else if (isRuler) {
-        this.toolRuler.setRuler({
-          isRulerZone,
-          zone: { id: hovered?.id },
-          line: { id: hovered?.id, isHor, isVer }
-        })
-
+      } else if (handleInfo) {
+        this.toolRuler.setRuler({ handleInfo, id: hovered?.id })
         finalToolClass = this.toolRuler
       } else {
         finalToolClass = this.currentToolClass
@@ -168,7 +159,8 @@ export default class ToolManager {
 
     const onPointerMove = (moveEvt: PointerEvent) => {
       const sceneCoord = wbEditor.coordSys.client2Scene(moveEvt)
-      this.pointerContext.moveEvt = moveEvt
+      const clientCoord = { x: moveEvt.clientX, y: moveEvt.y }
+      this.pointerContext.clientCoord = clientCoord
       this.pointerContext.sceneCoord = sceneCoord
       this.pointerContext.hovered = this.findHover()
 
@@ -213,12 +205,12 @@ export default class ToolManager {
     }
 
     this.currentToolClass.onActive?.()
-    this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+    this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
   }
 
   findHover() {
     const { wbEditor } = this
-    const worldPoint = wbEditor.coordSys.client2World(this.pointerContext.moveEvt, true)
+    const worldPoint = wbEditor.coordSys.client2World(this.pointerContext.clientCoord, true)
     const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
 
     return hovered
@@ -233,31 +225,57 @@ export default class ToolManager {
     }
 
     if (!hovered) {
-      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor || 'crosshair')
+      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
       wbEditor.selectManager.clearHover()
       return
     }
 
-    const isHor = this.isHitRulerLine() && isRulerLineHorizontal(hovered)
-    const isVer = this.isHitRulerLine() && isRulerLineVertical(hovered)
+    const handleInfo = this.handleInfo()
 
-    if (rulerZoneIds.includes(hovered?.id) || isHor || isVer) {
-      wbEditor.selectManager.clearHover()
-
-      if (hovered.id === Graph_Id.ruler_zone_horizontal || isHor) {
-        wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Horizontal)
-      }
-      if (hovered.id === Graph_Id.ruler_zone_vertical || isVer) {
-        wbEditor.cursorManager.setCursor(ToolRuler.Cursor_Vertical)
-      }
-
+    if (handleInfo) {
+      this.wbEditor.cursorManager.setCursor(handleInfo.cursor)
       return
     }
 
     this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
   }
 
-  isHitRulerLine() {
-    return this.currentTool === ToolEnum.Select
+  // todo  优化 handle 的拾取
+  handleInfo(): { handleName: string; cursor: any } {
+    const { wbEditor } = this
+    const { hovered } = this.pointerContext
+    if (!hovered) {
+      return null
+    }
+
+    const isHorRedLine = isRulerLineHorizontal(hovered)
+    const isVerRedLine = isRulerLineVertical(hovered)
+
+    const isHitRulerRedLine = this.currentTool === ToolEnum.Select
+
+    if (rulerZoneIds.includes(hovered.id) || isHorRedLine || isVerRedLine) {
+      wbEditor.selectManager.clearHover()
+
+      if (isHitRulerRedLine && isHorRedLine) {
+        return { handleName: 'ruler_red_line_horizontal', cursor: ToolRuler.Cursor_Horizontal }
+      }
+      if (isHitRulerRedLine && isVerRedLine) {
+        return { handleName: 'ruler_red_line_vertical', cursor: ToolRuler.Cursor_Vertical }
+      }
+
+      if (hovered.id === Graph_Id.ruler_zone_horizontal) {
+        return { handleName: 'ruler_zone_horizontal', cursor: ToolRuler.Cursor_Horizontal }
+      }
+
+      if (hovered.id === Graph_Id.ruler_zone_vertical) {
+        return { handleName: 'ruler_zone_vertical', cursor: ToolRuler.Cursor_Vertical }
+      }
+
+      if (hovered.id === Graph_Id.ruler_zone_both) {
+        return { handleName: '', cursor: 'default' }
+      }
+    }
+
+    return null
   }
 }
