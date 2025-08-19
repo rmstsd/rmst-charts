@@ -31,7 +31,7 @@ export default class ToolSelect implements ITool {
     wbEditor.selectManager.disableHover()
   }
 
-  onPointerMoveNotDragging({ hovered, moveEvt, isInWbCanvas }) {
+  onPointerMoveNotDragging({ hovered, isInWbCanvas }) {
     const { wbEditor } = this
 
     if (!isInWbCanvas) {

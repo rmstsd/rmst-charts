@@ -159,7 +159,8 @@ export default class ToolManager {
 
     const onPointerMove = (moveEvt: PointerEvent) => {
       const sceneCoord = wbEditor.coordSys.client2Scene(moveEvt)
-      this.pointerContext.moveEvt = moveEvt
+      const clientCoord = { x: moveEvt.clientX, y: moveEvt.y }
+      this.pointerContext.clientCoord = clientCoord
       this.pointerContext.sceneCoord = sceneCoord
       this.pointerContext.hovered = this.findHover()
 
@@ -209,7 +210,7 @@ export default class ToolManager {
 
   findHover() {
     const { wbEditor } = this
-    const worldPoint = wbEditor.coordSys.client2World(this.pointerContext.moveEvt, true)
+    const worldPoint = wbEditor.coordSys.client2World(this.pointerContext.clientCoord, true)
     const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
 
     return hovered

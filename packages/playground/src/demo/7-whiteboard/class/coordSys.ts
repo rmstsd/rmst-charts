@@ -25,9 +25,11 @@ export class CoordSys {
     return this.world2Scene(this.centerWorld)
   }
 
-  client2World(evt: MouseEvent, withRuler = false) {
+  client2World(evt: MouseEvent | ICoord, withRuler = false) {
+    const clientCoord = evt instanceof Event ? { x: evt.clientX, y: evt.clientY } : evt
+
     const rect = this.wbEditor.container.getBoundingClientRect()
-    const coord = { x: evt.clientX - rect.left, y: evt.clientY - rect.top }
+    const coord = { x: clientCoord.x - rect.left, y: clientCoord.y - rect.top }
 
     if (withRuler) {
       return coord
