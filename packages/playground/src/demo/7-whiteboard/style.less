@@ -15,12 +15,25 @@
 
   .tools-bar {
     .tool-btn {
+      width: 28px;
+      height: 28px;
+      color: #333;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+      svg {
+        height: 18px;
+      }
+
       &:hover {
-        background-color: #e5dbff;
+        background-color: #eee8fd;
       }
 
       &.selected {
-        background-color: #b197fc;
+        background-color: #8a62ff;
         color: white;
       }
     }

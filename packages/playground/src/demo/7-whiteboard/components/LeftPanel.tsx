@@ -8,6 +8,8 @@ export default function LeftPanel() {
   const [list, setList] = useState<UiBase[]>([])
 
   useEffect(() => {
+    setList([...wbEditor.graphLayer.children])
+
     const un = wbEditor.eventEmitter.on('render', () => {
       setList([...wbEditor.graphLayer.children])
     })

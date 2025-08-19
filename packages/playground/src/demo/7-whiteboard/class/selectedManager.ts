@@ -15,17 +15,15 @@ import {
   Text
 } from 'rmst-render'
 import svgPath from 'svgpath'
-import { IGraph } from '../type'
 import { calcRotateRad, Graph_Id } from '../constant'
 import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
-import EventEmitter from 'rmst-render/event_emitter'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
 
 let debugHandle = false
 
-const ctrlSize = 10
+const ctrlSize = 8
 const rotateSize = ctrlSize * 1.5
 
 interface Events {

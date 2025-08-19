@@ -12,10 +12,13 @@ export default function InfoRightPanel() {
   const [selectedItems, setSelectedItems] = useState<IShape[]>([])
 
   useEffect(() => {
-    const off = wbEditor.eventEmitter.on('render', () => {
+    const setData = () => {
       const data = wbEditor.selectManager.selectedGraphs
-
       setSelectedItems(data)
+    }
+    setData()
+    const off = wbEditor.eventEmitter.on('render', () => {
+      setData()
     })
 
     setZoom(wbEditor.camera.zoom)
@@ -33,7 +36,7 @@ export default function InfoRightPanel() {
 
   return (
     <div className="right-attr-panel flex-shrink-0 p-2 overflow-auto " style={{ width: 200 }}>
-      <div className="zoom-container flex flex-wrap bg-white shadow-xl rounded-lg p-2 border flex gap-1 items-center">
+      <div className="zoom-container flex flex-wrap bg-white rounded-lg p-2 border gap-1 items-center">
         <button onClick={() => wbEditor.camera.zoomOut()}>缩小</button>
         <span style={{ width: 90 }} className="text-center">
           zoom: {round(zoom * 100)}%
@@ -42,6 +45,8 @@ export default function InfoRightPanel() {
         <button onClick={() => wbEditor.camera.zoomToValue(1)}>100%</button>
         <button onClick={() => wbEditor.camera.zoomToFit()}>适应画布</button>
       </div>
+
+      <hr />
 
       <WbInputNumber
         value={count}
@@ -53,8 +58,6 @@ export default function InfoRightPanel() {
 
       {selectedItems.map(item => {
         const { data } = item
-
-        item.attr({})
 
         return (
           <div key={data.id}>
@@ -76,7 +79,9 @@ export default function InfoRightPanel() {
               <WbInputNumber
                 value={data.mt.f}
                 onChange={val => {
-                  item.attr({ mt: compose(translate(0, val - data.mt.f), data.mt) })
+                  item.attr({
+                    mt: compose(translate(0, val - data.mt.f), data.mt)
+                  })
                   wbEditor.triggerRender()
                 }}
               />
@@ -114,7 +119,7 @@ export default function InfoRightPanel() {
             <div className="flex gap-2 items-center">
               <span>scale</span>
               <span>
-                {getScaleFromMatrix_x(data.mt)} {getScaleFromMatrix_y(data.mt)}
+                {round(getScaleFromMatrix_x(data.mt), 2).toString()} {round(getScaleFromMatrix_y(data.mt), 2).toString()}
               </span>
             </div>
           </div>
@@ -130,7 +135,7 @@ const WbInputNumber = props => {
   const inputRet = useRef<HTMLInputElement>()
 
   useLayoutEffect(() => {
-    inputRet.current.value = value
+    inputRet.current.value = round(value, 2).toString()
   }, [value])
 
   return (

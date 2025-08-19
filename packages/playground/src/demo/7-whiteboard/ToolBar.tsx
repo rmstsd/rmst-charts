@@ -19,13 +19,14 @@ export default function ToolBar() {
   return (
     <div className="tools-bar flex gap-2 absolute z-50 shadow-lg p-2 left-0 bottom-2 border right-0 mx-auto w-fit rounded-lg bg-white">
       {ToolEnum.items.map(item => (
-        <button
+        <span
           key={item.key}
-          className={clsx('tool-btn', currentTool === item.key && 'selected')}
+          title={item.raw.label}
+          className={clsx('tool-btn flex ', currentTool === item.key && 'selected')}
           onClick={() => wbEditor.toolManager.switchTool(item.key)}
         >
-          {item.label}
-        </button>
+          {item.raw.icon || item.raw.label}
+        </span>
       ))}
     </div>
   )

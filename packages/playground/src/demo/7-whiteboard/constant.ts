@@ -31,6 +31,10 @@ export const isCtrlHandleShape = (shape: IShape) => {
 
 // 是用户绘制出来的图形
 export const isWbGraphShape = (shape: IShape) => {
+  if (!shape) {
+    return false
+  }
+
   return ToolEnum.has(shape.data.extraData?.wbType)
 }
 

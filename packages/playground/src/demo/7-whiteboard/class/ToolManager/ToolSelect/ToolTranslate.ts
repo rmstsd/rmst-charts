@@ -3,7 +3,7 @@ import { ITool } from '../type'
 import { compose, translate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
-import { translateHorizontalCursor, translateVerticalCursor } from '../../cursorManager'
+import { translateHorizontalCursor, translateVerticalCursor } from '../../cursorManager/icon'
 
 export default class ToolTranslate implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}

@@ -2,7 +2,7 @@ import { ICoord, uuid } from 'rmst-render'
 import { Graph_Id } from '../../constant'
 import WhiteboardEditor from '../../whiteboardEditor'
 import { ITool } from './type'
-import { rulerRemoveCursor } from '../cursorManager'
+import { rulerRemoveCursor } from '../cursorManager/icon'
 
 export class ToolRuler implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}

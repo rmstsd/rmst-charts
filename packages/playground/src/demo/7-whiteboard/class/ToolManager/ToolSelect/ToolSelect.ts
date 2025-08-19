@@ -7,7 +7,7 @@ import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
-import { duplicateCursor, getCursorRotation, WbCursor } from '../../cursorManager'
+import { getCursorRotation, WbCursor } from '../../cursorManager'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -87,9 +87,7 @@ export default class ToolSelect implements ITool {
     this.isPointerDown = true
 
     const { wbEditor } = this
-
-    const stage_eventDispatcher = wbEditor.stage.eventDispatcher
-    const hovered = stage_eventDispatcher.hovered
+    const hovered = wbEditor.toolManager.pointerContext.hovered
 
     if (!hovered) {
       console.log('按在 空白处')
@@ -166,7 +164,11 @@ export default class ToolSelect implements ITool {
   onAltToggle(isAltKeyPressing: boolean) {
     this.currentStrategy?.onAltToggle?.(isAltKeyPressing)
 
-    this.updateCursor_Select_Or_Duplicate()
+    const { hovered } = this.wbEditor.toolManager.pointerContext
+    const isDuplicate = isWbGraphShape(hovered) || hovered?.id === Graph_Id.graph_ctrl_translate
+    if (isDuplicate) {
+      this.updateCursor_Select_Or_Duplicate()
+    }
   }
 
   private updateCursor_Select_Or_Duplicate() {
@@ -174,10 +176,8 @@ export default class ToolSelect implements ITool {
       return
     }
 
-    if (this.currentHoverStrategyTypeId === Graph_Id.graph_ctrl_translate) {
-      const cursor = this.wbEditor.keyboard.isAltKeyPressing ? duplicateCursor : this.cursor
-      this.wbEditor.cursorManager.setCursor(cursor)
-    }
+    const cursor = this.wbEditor.keyboard.isAltKeyPressing ? { type: 'duplicate' as const } : this.cursor
+    this.wbEditor.cursorManager.setCursor(cursor)
   }
 
   private disposePrev() {

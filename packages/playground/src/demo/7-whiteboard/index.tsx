@@ -11,8 +11,6 @@ import { isProd } from '@/utils'
 import './style.less'
 import LeftPanel from './components/LeftPanel'
 
-// let isProd = false
-
 const Whiteboard = function Whiteboard() {
   const domRef = useRef()
   const [wbEditor, setWbEditor] = useState(() => new WhiteboardEditor())
