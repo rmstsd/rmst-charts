@@ -1,7 +1,7 @@
 import { isLine, isText } from '../utils'
 import { Stage, Text, measureText } from '..'
 import { IShape } from '../type'
-import { applyToPoint, compose, inverse, scale, transform, translate } from 'transformation-matrix'
+import { applyToPoint, compose, inverse, scale, translate } from 'transformation-matrix'
 
 export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: number) {
   const { ctx, camera } = stage
@@ -18,7 +18,7 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
     isHit = isHitText(elementItem)
   } else if (!elementItem.path2D) {
     //
-  } else if (isLine(elementItem) && !elementItem.data.closed) {
+  } else if ((isLine(elementItem) && !elementItem.data.closed) || !elementItem.data.fillStyle) {
     isHit = isInStroke()
   } else {
     isHit = isInPath() || isInStroke()
