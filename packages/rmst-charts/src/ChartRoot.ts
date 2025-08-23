@@ -17,7 +17,7 @@ import { SeriesManager } from './SeriesMgr'
 import { isInnerRect, stClone } from './utils'
 
 export class ChartRoot {
-  constructor(canvasContainer: HTMLElement) {
+  constructor(public canvasContainer: HTMLElement) {
     const div = document.createElement('div')
     div.classList.add('chart-root')
     div.style.setProperty('position', 'relative')
@@ -64,6 +64,11 @@ export class ChartRoot {
       this.tooltip?.hide()
       this.assistLine?.setVisible(false)
     }
+  }
+
+  dispose() {
+    this.canvasContainer.innerHTML = ''
+    this.stage.dispose()
   }
 
   private onwheel(evt: WheelEvent) {

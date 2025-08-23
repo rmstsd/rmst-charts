@@ -4,12 +4,12 @@ import WhiteboardEditor from './whiteboardEditor'
 import { WbEditorContext } from './context'
 
 import ToolBar from './ToolBar'
-import InfoRightPanel from './components/InfoRightPanel'
+import InfoRightPanel from './Panels/InfoRightPanel'
 
 import { isProd } from '@/utils'
 
 import './style.less'
-import LeftPanel from './components/LeftPanel'
+import LeftPanel from './Panels/LeftPanel'
 
 const Whiteboard = function Whiteboard() {
   const domRef = useRef()

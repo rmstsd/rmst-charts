@@ -8,6 +8,11 @@ interface Events {
   shiftKeyToggle: (isShiftKeyPressing: boolean) => void
 }
 
+// 是输入框时
+function isInputElement(el: Element) {
+  return el instanceof HTMLInputElement
+}
+
 export class Keyboard {
   constructor(private wbEditor: WhiteboardEditor) {}
 
@@ -22,6 +27,10 @@ export class Keyboard {
 
   bindEvent() {
     const documentKeydown = (evt: KeyboardEvent) => {
+      if (isInputElement(evt.target as Element)) {
+        return
+      }
+
       // 按下 空格 ctrl alt shift 时
       if (evt.code === 'Space' || evt.ctrlKey || evt.altKey || evt.shiftKey) {
         evt.preventDefault()

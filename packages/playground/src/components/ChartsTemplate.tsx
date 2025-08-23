@@ -13,6 +13,10 @@ const ChartsTemplate: React.FC<{ option: ICharts.IOption }> = ({ option }) => {
     insRef.current = ins
 
     ins.setOption(option)
+
+    return () => {
+      insRef.current.dispose()
+    }
   }, [])
 
   const setOption = () => {
