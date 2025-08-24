@@ -33,12 +33,14 @@ const Whiteboard = function Whiteboard() {
   const wbApp = (
     <WbEditorContext.Provider value={wbEditorContextValue}>
       <div className={clsx('whiteboard-app', isProd && 'prod')}>
-        <ToolBar />
-
         <main className="flex h-full">
           <LeftPanel />
 
-          <div className="whiteboard-canvas flex-grow h-full relative border" ref={domRef}></div>
+          <div className="wb-center-section flex-grow h-full relative border">
+            <div className="whiteboard-canvas h-full" ref={domRef}></div>
+
+            <ToolBar />
+          </div>
 
           <InfoRightPanel />
         </main>

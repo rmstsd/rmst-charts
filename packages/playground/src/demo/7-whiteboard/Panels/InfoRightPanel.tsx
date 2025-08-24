@@ -1,25 +1,26 @@
 import { useEffect, useState } from 'react'
 import { useWbEditor } from '../context'
-import { calcRotateRad, getScaleFromMatrix_x, getScaleFromMatrix_y } from '../constant'
-import { deg2rad, rad2deg, UiBase } from 'rmst-render'
+import { calcRotateRad, getScaleFromMatrix_x, getScaleFromMatrix_y, isImageShape, isPencilShape } from '../constant'
+import { deg2rad, rad2deg, RmstImage, UiBase } from 'rmst-render'
 import { round } from 'es-toolkit'
 
 import { WbInputNumber } from '../components/WbInputNumber'
 import { applyToPoint, compose, inverse, rotate } from 'transformation-matrix'
 import OpenColor from 'open-color'
 import { SelectColor } from '../components/SelectColor'
+import { showOpenFilePicker } from 'show-open-file-picker'
 import clsx from 'clsx'
-import { ToolEnum } from '../class/ToolManager/constant'
 
 import './right.less'
 
 const bgColors = Object.keys(OpenColor)
   .filter(k => Array.isArray(OpenColor[k]))
-  .map(k => OpenColor[k][3])
+  .map(k => OpenColor[k][2])
 
 const strokeColors = Object.keys(OpenColor)
   .filter(k => Array.isArray(OpenColor[k]))
-  .map(k => OpenColor[k][8])
+  .map(k => OpenColor[k][7])
+strokeColors.unshift(OpenColor.gray[3])
 
 const attrList = [
   { label: 'X', dataKey: 'mt_x', getValue: (shapeItem: UiBase) => shapeItem.data.mt.e },
@@ -30,12 +31,27 @@ const attrList = [
 ]
 
 const colorAttrList = [
-  { label: '背景', dataKey: 'fillStyle', getValue: (shapeItem: UiBase) => shapeItem.data.fillStyle, options: bgColors },
+  {
+    label: '背景',
+    dataKey: 'fillStyle',
+    support: (shapeItem: UiBase) => !isImageShape(shapeItem) && !isPencilShape(shapeItem),
+    getValue: (shapeItem: UiBase) => shapeItem.data.fillStyle,
+    options: bgColors
+  },
   { label: '描边', dataKey: 'strokeStyle', getValue: (shapeItem: UiBase) => shapeItem.data.strokeStyle, options: strokeColors }
 ]
 
 const strokeWidthAttrList = [
   { label: '描边宽度', dataKey: 'lineWidth', getValue: (shapeItem: UiBase) => shapeItem.data.lineWidth, options: [1, 2, 3, 4] }
+]
+
+const imageSrcAttrList = [
+  {
+    label: '图片',
+    dataKey: 'src',
+    support: (shapeItem: UiBase) => isImageShape(shapeItem),
+    getValue: (shapeItem: RmstImage) => shapeItem.data.src
+  }
 ]
 
 export default function InfoRightPanel() {
@@ -79,12 +95,17 @@ export default function InfoRightPanel() {
   const colorAttrData =
     selectedItems.length === 0
       ? []
-      : colorAttrList.map(item => {
-          const values = new Set(selectedItems.map(shapeItem => item.getValue(shapeItem)))
-          const isMulti = values.size > 1
+      : colorAttrList
+          .map(item => {
+            const support = item.support || (() => true)
+            const supportItems = selectedItems.filter(shapeItem => support(shapeItem))
 
-          return { ...item, isMulti, value: isMulti ? null : [...values][0] }
-        })
+            const values = new Set(supportItems.map(shapeItem => item.getValue(shapeItem)))
+            const isMulti = values.size > 1
+
+            return { ...item, isSupport: supportItems.length > 0, isMulti, value: isMulti ? null : [...values][0] }
+          })
+          .filter(item => item.isSupport)
 
   const strokeWidthAttrData =
     selectedItems.length === 0
@@ -96,12 +117,26 @@ export default function InfoRightPanel() {
           return { ...item, isMulti, value: isMulti ? null : round([...values][0], 2) }
         })
 
+  const imageSrcAttrListAttrData =
+    selectedItems.length === 0
+      ? []
+      : imageSrcAttrList
+          .map(item => {
+            const support = item.support || (() => true)
+            const supportItems = selectedItems.filter(shapeItem => support(shapeItem))
+
+            const values = new Set(supportItems.map(shapeItem => item.getValue(shapeItem as RmstImage)))
+            const isMulti = values.size > 1
+
+            return { ...item, isSupport: supportItems.length > 0, isMulti, value: isMulti ? null : [...values][0] }
+          })
+          .filter(item => item.isSupport)
+
   const onChange = (item, value) => {
     switch (item.dataKey) {
       case 'mt_x': {
         selectedItems.forEach(shapeItem => {
-          const mt = { ...shapeItem.data.mt }
-          mt.e = value
+          const mt = { ...shapeItem.data.mt, e: value }
           shapeItem.attr('mt', mt)
         })
 
@@ -109,8 +144,7 @@ export default function InfoRightPanel() {
       }
       case 'mt_y': {
         selectedItems.forEach(shapeItem => {
-          const mt = { ...shapeItem.data.mt }
-          mt.f = value
+          const mt = { ...shapeItem.data.mt, f: value }
           shapeItem.attr('mt', mt)
         })
 
@@ -136,12 +170,10 @@ export default function InfoRightPanel() {
       }
 
       default: {
-        selectedItems.forEach(shapeItem => {
-          // 铅笔工具不能设置背景颜色
-          if (shapeItem.type === 'Path' && shapeItem.data.extraData.wbType === ToolEnum.Pencil && item.dataKey === 'fillStyle') {
-            return
-          }
+        const support = item.support || (() => true)
+        const supportItems = selectedItems.filter(shapeItem => support(shapeItem))
 
+        supportItems.forEach(shapeItem => {
           shapeItem.attr(item.dataKey as any, value)
         })
         break
@@ -198,9 +230,7 @@ export default function InfoRightPanel() {
                 key={value}
                 className={clsx(
                   'shrink-0 w-5 h-5 flex rounded-sm items-center justify-center cursor-pointer border border-gray-300',
-                  {
-                    selected: value === item.value
-                  }
+                  { selected: value === item.value }
                 )}
                 onClick={() => {
                   if (value === item.value) {
@@ -213,6 +243,35 @@ export default function InfoRightPanel() {
                 {value}
               </span>
             ))}
+          </div>
+        </div>
+      ))}
+
+      {imageSrcAttrListAttrData.map(item => (
+        <div className="mt-2" key={item.label}>
+          <div className="my-1">{item.label}</div>
+
+          <div className="flex items-end gap-1">
+            <div className="w-16 h-16 content-center text-center border">
+              {item.isMulti ? '多值' : <img src={item.value} className="w-full h-full object-cover" />}
+            </div>
+            <button
+              onClick={async () => {
+                const files = await showOpenFilePicker({
+                  types: [{ description: 'Images', accept: { 'image/*': ['.png', '.jpeg', '.jpg'] } }]
+                }).catch(() => Promise.reject())
+
+                if (files.length === 0) {
+                  return
+                }
+
+                const url = URL.createObjectURL(await files[0].getFile())
+
+                onChange(item, url)
+              }}
+            >
+              上传
+            </button>
           </div>
         </div>
       ))}

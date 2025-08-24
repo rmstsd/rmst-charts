@@ -38,6 +38,26 @@ export const isWbGraphShape = (shape: IShape) => {
   return ToolEnum.has(shape.data.extraData?.wbType)
 }
 
+export const isRectShape = (shape: IShape) => {
+  return shape.data.extraData?.wbType === ToolEnum.Rect
+}
+
+export const isEllipseShape = (shape: IShape) => {
+  return shape.data.extraData?.wbType === ToolEnum.Ellipse
+}
+
+export const isRhombusShape = (shape: IShape) => {
+  return shape.data.extraData?.wbType === ToolEnum.Rhombus
+}
+
+export const isPencilShape = (shape: IShape) => {
+  return shape.data.extraData?.wbType === ToolEnum.Pencil
+}
+
+export const isImageShape = (shape: IShape) => {
+  return shape.data.extraData?.wbType === ToolEnum.Image
+}
+
 // 是拖拽出来的 红色标尺
 export const isRulerLineHorizontal = (shape: IShape) => {
   const type = shape?.data.extraData?.type
