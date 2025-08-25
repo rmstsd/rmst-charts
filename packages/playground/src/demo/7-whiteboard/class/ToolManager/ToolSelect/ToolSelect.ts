@@ -19,15 +19,9 @@ export default class ToolSelect implements ITool {
 
   currentHoverStrategyTypeId
 
-  onActive() {
-    const { wbEditor } = this
-    wbEditor.selectManager.enableHover()
-  }
+  onActive() {}
 
-  onDeActive() {
-    const { wbEditor } = this
-    wbEditor.selectManager.disableHover()
-  }
+  onDeActive() {}
 
   onPointerMoveNotDragging({ hovered, isInWbCanvas }) {
     const { wbEditor } = this
@@ -87,6 +81,7 @@ export default class ToolSelect implements ITool {
 
     if (!hovered) {
       // 按在空白处 -> 框选
+
       wbEditor.selectManager.clearSelect()
       this.currentStrategy = new ToolBoxSelection(wbEditor)
 
@@ -114,14 +109,7 @@ export default class ToolSelect implements ITool {
     }
   }
 
-  onPointerUp() {
-    this.disposePrev()
-    this.currentStrategy = null
-  }
-
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
-    this.wbEditor.selectManager.disableHover()
-
     this.currentStrategy?.onDragStart(downEvt, sceneCoord)
   }
 
@@ -131,10 +119,13 @@ export default class ToolSelect implements ITool {
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
     this.currentStrategy?.onDragEnd(upEvt, sceneCoord)
-    this.currentStrategy = null
     this.disposePrev()
+    this.currentStrategy = null
+  }
 
-    this.wbEditor.selectManager.enableHover()
+  onPointerUp() {
+    this.disposePrev()
+    this.currentStrategy = null
   }
 
   onShiftToggle(isShiftKeyPressing: boolean) {
@@ -156,10 +147,6 @@ export default class ToolSelect implements ITool {
   }
 
   private updateCursor_Select_Or_Duplicate() {
-    if (this.wbEditor.toolManager.pointerContext.isPointerDown) {
-      return
-    }
-
     const cursor = this.wbEditor.keyboard.isAltKeyPressing ? { type: 'duplicate' as const } : this.cursor
     this.wbEditor.cursorManager.setCursor(cursor)
   }

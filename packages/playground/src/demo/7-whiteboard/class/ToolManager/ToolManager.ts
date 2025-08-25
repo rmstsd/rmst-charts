@@ -53,6 +53,7 @@ export default class ToolManager {
     const { container, keyboard } = wbEditor
 
     this.toolRuler = new ToolRuler(this.wbEditor)
+    this.toolTempPan = new ToolPan(this.wbEditor)
 
     keyboard.onSpaceToggle = isSpaceKeyPressing => {
       if (this.pointerContext.isPointerDown) {
@@ -63,14 +64,12 @@ export default class ToolManager {
 
       if (this.currentTool !== ToolEnum.Pan) {
         if (isSpaceKeyPressing) {
-          this.toolTempPan = new ToolPan(this.wbEditor)
           this.wbEditor.cursorManager.setCursor(this.toolTempPan.cursor)
 
           this.wbEditor.selectManager.clearHover()
         } else {
           if (this.pointerContext.isPointerDown) {
           } else {
-            this.toolTempPan = null
             this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
           }
         }
@@ -99,7 +98,7 @@ export default class ToolManager {
       const handleInfo = this.handleInfo()
 
       let finalToolClass
-      if (keyboard.isSpaceKeyPressing && this.toolTempPan) {
+      if (keyboard.isSpaceKeyPressing) {
         finalToolClass = this.toolTempPan
       } else if (handleInfo) {
         this.toolRuler.setRuler({ handleInfo, id: hovered?.id })

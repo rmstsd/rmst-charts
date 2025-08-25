@@ -5,7 +5,7 @@ import EventEmitter from 'rmst-render/event_emitter'
 import { ICoord, mergeBox } from 'rmst-render'
 import { cloneDeep } from 'es-toolkit'
 
-const zoomSpeed = 1.3
+const zoomSpeed = 1.4
 const scrollSpeed = 100
 
 const Min_Zoom = 0.01
@@ -28,16 +28,14 @@ export default class Camera {
 
   bindEvent() {
     const { wbEditor } = this
-    const { container, graphLayer } = this.wbEditor
-    container.addEventListener(
+
+    wbEditor.container.addEventListener(
       'wheel',
       evt => {
         evt.preventDefault()
 
-        let mt = graphLayer.data.mt
-
         if (evt.ctrlKey) {
-          const nvOrigin = wbEditor.coordSys.client2World(evt)
+          const nvOrigin = wbEditor.coordSys.client2Scene(evt)
           let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
           this.zoomTo(newZoom, nvOrigin)
         } else {
@@ -45,21 +43,12 @@ export default class Camera {
 
           if (evt.shiftKey) {
             tmt = evt.deltaY > 0 ? translate(-scrollSpeed, 0) : translate(scrollSpeed, 0)
-
-            // mt = compose(tmt, mt)
           } else {
             tmt = evt.deltaY > 0 ? translate(0, -scrollSpeed) : translate(0, scrollSpeed)
-
-            // mt = compose(tmt, mt)
           }
 
           const sceneCoord = { x: tmt.e / this.zoom, y: tmt.f / this.zoom }
           this.pan(sceneCoord.x, sceneCoord.y)
-          return
-
-          graphLayer.attr('mt', mt)
-
-          this.triggerCameraChange()
         }
       },
       { signal: this.abCt.signal }
@@ -104,44 +93,13 @@ export default class Camera {
 
     newZoom = Math.max(Min_Zoom, Math.min(Max_Zoom, newZoom))
 
-    {
-      // https://codesandbox.io/p/sandbox/tm25rv gg_demo
+    // https://codesandbox.io/p/sandbox/tm25rv gg_demo
+    const delta = newZoom / this.zoom
+    this.zoom = newZoom
 
-      const delta = newZoom / this.zoom
-      this.zoom = newZoom
-
-      // const nvOrigin = wbEditor.coordSys.client2Scene(evt)
-      const mt = compose(scale(delta, delta, origin.x, origin.y), wbEditor.graphLayer.data.mt)
-      wbEditor.graphLayer.attr('mt', mt)
-      this.triggerCameraChange()
-      return
-    }
-
-    {
-      // https://codesandbox.io/p/sandbox/tm25rv gg_demo
-      const delta = newZoom / this.zoom
-      this.zoom = newZoom
-
-      const mt = compose(wbEditor.graphLayer.data.mt, scale(delta, delta, origin.x, origin.y))
-      wbEditor.graphLayer.attr('mt', mt)
-      this.triggerCameraChange()
-      return
-    }
-
-    {
-      let mt = cloneDeep(wbEditor.graphLayer.data.mt)
-
-      const newMt = scale(this.zoom, this.zoom, origin.x, origin.y)
-      const tt = compose(mt, inverse(newMt))
-
-      newZoom = Math.max(Min_Zoom, Math.min(Max_Zoom, newZoom))
-
-      this.zoom = newZoom
-
-      mt = compose(tt, scale(newZoom, newZoom, origin.x, origin.y))
-      wbEditor.graphLayer.attr('mt', mt)
-      this.triggerCameraChange()
-    }
+    const mt = compose(wbEditor.graphLayer.data.mt, scale(delta, delta, origin.x, origin.y))
+    wbEditor.graphLayer.attr('mt', mt)
+    this.triggerCameraChange()
   }
 
   // 缩放到适合 (适应画布)
