@@ -8,9 +8,7 @@ import { Box, Polygon, System } from 'detect-collisions'
 import { ass } from '../ass'
 
 export default class ToolBoxSelection implements ITool {
-  constructor(private wbEditor: WhiteboardEditor) {
-    console.log('ToolBoxSelection')
-  }
+  constructor(private wbEditor: WhiteboardEditor) {}
 
   private downPos: ICoord
   private movePos: ICoord
@@ -48,8 +46,6 @@ export default class ToolBoxSelection implements ITool {
   }
 
   onDeActive() {
-    console.log('ToolBoxSelection onDeActive')
-
     this.boxSelectionRect.remove()
     this.unBind?.()
   }

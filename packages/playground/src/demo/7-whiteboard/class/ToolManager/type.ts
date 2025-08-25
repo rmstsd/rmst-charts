@@ -1,7 +1,13 @@
 import { ICoord, IShape } from 'rmst-render'
 import { WbCursor } from '../cursorManager'
 
-export type PointerContext = { hovered: IShape; clientCoord: ICoord; sceneCoord: ICoord; isInWbCanvas: boolean }
+export type PointerContext = {
+  hovered: IShape
+  clientCoord: ICoord
+  sceneCoord: ICoord
+  isInWbCanvas: boolean
+  isPointerDown: boolean
+}
 
 export interface ITool {
   cursor?: WbCursor

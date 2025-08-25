@@ -55,7 +55,7 @@ export default class ToolManager {
     this.toolRuler = new ToolRuler(this.wbEditor)
 
     keyboard.onSpaceToggle = isSpaceKeyPressing => {
-      if (isPointerDown) {
+      if (this.pointerContext.isPointerDown) {
         this.currentToolClass?.onSpaceToggle?.(isSpaceKeyPressing)
 
         return
@@ -68,7 +68,7 @@ export default class ToolManager {
 
           this.wbEditor.selectManager.clearHover()
         } else {
-          if (isPointerDown) {
+          if (this.pointerContext.isPointerDown) {
           } else {
             this.toolTempPan = null
             this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
@@ -84,8 +84,6 @@ export default class ToolManager {
       this.currentToolClass?.onAltToggle?.(isAltKeyPressing)
     }
 
-    let isPointerDown = false
-
     const onPointerDown = async (downEvt: PointerEvent) => {
       await nextTick() // 让输入框能触发 blur 事件
 
@@ -94,7 +92,7 @@ export default class ToolManager {
         return
       }
 
-      isPointerDown = true
+      this.pointerContext.isPointerDown = true
 
       const hovered = this.findHover()
       this.pointerContext.hovered = hovered
@@ -130,14 +128,14 @@ export default class ToolManager {
           finalToolClass.onDragMove(moveEvt, wbEditor.coordSys.client2Scene(moveEvt))
         },
         onDragEnd: upEvt => {
-          isPointerDown = false
+          this.pointerContext.isPointerDown = false
           finalToolClass.onDragEnd(upEvt, wbEditor.coordSys.client2Scene(upEvt))
 
           const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
         },
         onPointerUp: upEvt => {
-          isPointerDown = false
+          this.pointerContext.isPointerDown = false
           finalToolClass.onPointerUp?.(upEvt, wbEditor.coordSys.client2Scene(upEvt))
 
           const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
@@ -164,7 +162,7 @@ export default class ToolManager {
       this.pointerContext.sceneCoord = sceneCoord
       this.pointerContext.hovered = this.findHover()
 
-      if (!isPointerDown && !keyboard.isSpaceKeyPressing) {
+      if (!this.pointerContext.isPointerDown && !keyboard.isSpaceKeyPressing) {
         this.onPointerMoveNotDragging()
       }
 

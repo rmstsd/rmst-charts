@@ -5,4 +5,4 @@ export const primaryColor = oc.indigo[9]
 export const primaryAlphaColor = colorAlpha(primaryColor, 0.1)
 
 export const defaultGraphFillColor = oc.gray[2]
-export const defaultGraphPencilColor = oc.gray[5]
+export const defaultGraphPencilColor = oc.gray[7]

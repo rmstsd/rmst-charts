@@ -15,19 +15,20 @@ import './right.less'
 
 const bgColors = Object.keys(OpenColor)
   .filter(k => Array.isArray(OpenColor[k]))
-  .map(k => OpenColor[k][2])
+  .map(k => OpenColor[k][1])
 
 const strokeColors = Object.keys(OpenColor)
   .filter(k => Array.isArray(OpenColor[k]))
   .map(k => OpenColor[k][7])
 strokeColors.unshift(OpenColor.gray[3])
 
+// 取到小数点后 5 位, 判断是否相等
 const attrList = [
-  { label: 'X', dataKey: 'mt_x', getValue: (shapeItem: UiBase) => shapeItem.data.mt.e },
-  { label: 'Y', dataKey: 'mt_y', getValue: (shapeItem: UiBase) => shapeItem.data.mt.f },
-  { label: 'W', dataKey: 'width', getValue: (shapeItem: UiBase) => shapeItem.data.width },
-  { label: 'H', dataKey: 'height', getValue: (shapeItem: UiBase) => shapeItem.data.height },
-  { label: 'R', dataKey: 'mt_rotate', getValue: (shapeItem: UiBase) => rad2deg(calcRotateRad(shapeItem.data.mt)) }
+  { label: 'X', dataKey: 'mt_x', getValue: (shapeItem: UiBase) => round(shapeItem.data.mt.e, 5) },
+  { label: 'Y', dataKey: 'mt_y', getValue: (shapeItem: UiBase) => round(shapeItem.data.mt.f, 5) },
+  { label: 'W', dataKey: 'width', getValue: (shapeItem: UiBase) => round(shapeItem.data.width, 5) },
+  { label: 'H', dataKey: 'height', getValue: (shapeItem: UiBase) => round(shapeItem.data.height, 5) },
+  { label: 'R', dataKey: 'mt_rotate', getValue: (shapeItem: UiBase) => round(rad2deg(calcRotateRad(shapeItem.data.mt)), 5) }
 ]
 
 const colorAttrList = [
@@ -85,11 +86,10 @@ export default function InfoRightPanel() {
     selectedItems.length === 0
       ? []
       : attrList.map(item => {
-          // 取到小数点后 5 位, 判断是否相等
-          const values = new Set(selectedItems.map(shapeItem => round(item.getValue(shapeItem), 5)))
+          const values = new Set(selectedItems.map(shapeItem => item.getValue(shapeItem)))
           const isMulti = values.size > 1
 
-          return { ...item, isMulti, value: isMulti ? null : round([...values][0], 2) }
+          return { ...item, isMulti, value: isMulti ? null : [...values][0] }
         })
 
   const colorAttrData =
@@ -132,7 +132,7 @@ export default function InfoRightPanel() {
           })
           .filter(item => item.isSupport)
 
-  const onChange = (item, value) => {
+  const onValueChange = (item, value) => {
     switch (item.dataKey) {
       case 'mt_x': {
         selectedItems.forEach(shapeItem => {
@@ -203,7 +203,7 @@ export default function InfoRightPanel() {
             <div className="form-item" key={item.label}>
               <div className="label">{item.label}</div>
 
-              <WbInputNumber value={item.isMulti ? '多值' : item.value} onChange={value => onChange(item, value)} />
+              <WbInputNumber value={item.isMulti ? '多值' : item.value} onChange={value => onValueChange(item, value)} />
             </div>
           )
         })}
@@ -215,7 +215,7 @@ export default function InfoRightPanel() {
           <SelectColor
             value={item.isMulti ? null : (item.value as string)}
             options={item.options}
-            onChange={val => onChange(item, val)}
+            onChange={val => onValueChange(item, val)}
           />
         </div>
       ))}
@@ -237,7 +237,7 @@ export default function InfoRightPanel() {
                     return
                   }
 
-                  onChange(item, value)
+                  onValueChange(item, value)
                 }}
               >
                 {value}
@@ -267,7 +267,7 @@ export default function InfoRightPanel() {
 
                 const url = URL.createObjectURL(await files[0].getFile())
 
-                onChange(item, url)
+                onValueChange(item, url)
               }}
             >
               上传

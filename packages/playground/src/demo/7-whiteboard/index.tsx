@@ -2,14 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import WhiteboardEditor from './whiteboardEditor'
 import { WbEditorContext } from './context'
-
 import ToolBar from './ToolBar'
-import InfoRightPanel from './Panels/InfoRightPanel'
-
 import { isProd } from '@/utils'
 
-import './style.less'
 import LeftPanel from './Panels/LeftPanel'
+import RightPanel from './Panels/RightPanel'
+
+import './style.less'
 
 const Whiteboard = function Whiteboard() {
   const domRef = useRef()
@@ -42,7 +41,7 @@ const Whiteboard = function Whiteboard() {
             <ToolBar />
           </div>
 
-          <InfoRightPanel />
+          <RightPanel />
         </main>
       </div>
     </WbEditorContext.Provider>
