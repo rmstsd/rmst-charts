@@ -19,8 +19,6 @@ export default class ToolSelect implements ITool {
 
   currentHoverStrategyTypeId
 
-  isPointerDown = false
-
   onActive() {
     const { wbEditor } = this
     wbEditor.selectManager.enableHover()
@@ -84,14 +82,11 @@ export default class ToolSelect implements ITool {
   }
 
   onPointerDown(downEvt: PointerEvent) {
-    this.isPointerDown = true
-
     const { wbEditor } = this
     const hovered = wbEditor.toolManager.pointerContext.hovered
 
     if (!hovered) {
-      console.log('按在 空白处')
-
+      // 按在空白处 -> 框选
       wbEditor.selectManager.clearSelect()
       this.currentStrategy = new ToolBoxSelection(wbEditor)
 
@@ -105,16 +100,10 @@ export default class ToolSelect implements ITool {
 
         wbEditor.triggerRender()
       } else if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
-        console.log('平移操作')
-
         this.currentStrategy = new ToolTranslate(wbEditor)
       } else if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
-        console.log('旋转操作')
-
         this.currentStrategy = new ToolRotate(wbEditor, hovered.data.extraData?.cursorType)
       } else if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
-        console.log('缩放操作')
-
         const { transformOrigin, cursorType } = hovered.data.extraData
         this.currentStrategy = new ToolScale(wbEditor, transformOrigin, cursorType)
       }
@@ -126,9 +115,6 @@ export default class ToolSelect implements ITool {
   }
 
   onPointerUp() {
-    console.log('onPointerUp')
-
-    this.isPointerDown = false
     this.disposePrev()
     this.currentStrategy = null
   }
@@ -144,8 +130,6 @@ export default class ToolSelect implements ITool {
   }
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
-    this.isPointerDown = false
-
     this.currentStrategy?.onDragEnd(upEvt, sceneCoord)
     this.currentStrategy = null
     this.disposePrev()
@@ -172,7 +156,7 @@ export default class ToolSelect implements ITool {
   }
 
   private updateCursor_Select_Or_Duplicate() {
-    if (this.isPointerDown) {
+    if (this.wbEditor.toolManager.pointerContext.isPointerDown) {
       return
     }
 

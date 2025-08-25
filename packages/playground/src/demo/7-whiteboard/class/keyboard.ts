@@ -1,5 +1,6 @@
 import EventEmitter from 'rmst-render/event_emitter'
 import WhiteboardEditor from '../whiteboardEditor'
+import { ToolEnum } from './ToolManager/constant'
 
 interface Events {
   spaceToggle: (isSpaceKeyPressing: boolean) => void
@@ -10,7 +11,7 @@ interface Events {
 
 // 是输入框时
 function isInputElement(el: Element) {
-  return el instanceof HTMLInputElement
+  return el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
 }
 
 export class Keyboard {
@@ -79,14 +80,18 @@ export class Keyboard {
   }
 
   onCtrlToggle(isCtrlKeyPressing: boolean) {}
-
   onAltToggle(isAltKeyPressing: boolean) {}
-
   onSpaceToggle(isSpaceKeyPressing: boolean) {}
-
   onShiftToggle(isShiftKeyPressing: boolean) {}
 
+  dispose() {
+    this.eventEmitter.offAll()
+    this.abCt.abort()
+  }
+
   private onKeyDown(evt: KeyboardEvent) {
+    const { wbEditor } = this
+
     if (evt.code === 'Delete') {
       const { selectManager } = this.wbEditor
 
@@ -99,10 +104,15 @@ export class Keyboard {
         this.wbEditor.triggerRender()
       }
     }
-  }
 
-  dispose() {
-    this.eventEmitter.offAll()
-    this.abCt.abort()
+    if (evt.code === 'Escape') {
+      if (this.wbEditor.toolManager.currentTool === ToolEnum.Select) {
+        wbEditor.selectManager.clearSelect()
+
+        this.wbEditor.triggerRender()
+      } else {
+        wbEditor.toolManager.switchTool(ToolEnum.Select)
+      }
+    }
   }
 }

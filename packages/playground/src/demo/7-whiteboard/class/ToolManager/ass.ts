@@ -1,9 +1,9 @@
-import { getRectByTwoPoint } from 'rmst-render'
+import { getRectByTwoPoint, ICoord } from 'rmst-render'
 
 //  alt shift space
 export const ass = (
-  downPos,
-  movePos,
+  downPos: ICoord,
+  movePos: ICoord,
   { isSpaceKeyPressing, isAltKeyPressing, isShiftKeyPressing, spacePrevPos, spaceDownPos }
 ) => {
   if (isSpaceKeyPressing) {
