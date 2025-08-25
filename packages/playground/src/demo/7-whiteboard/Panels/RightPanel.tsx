@@ -22,12 +22,12 @@ const strokeColors = Object.keys(OpenColor)
   .map(k => OpenColor[k][7])
 strokeColors.unshift(OpenColor.gray[3])
 
-// 取到小数点后 5 位, 判断是否相等
+// 取到小数点后 2 位, 既是为了显示好看, 也用来判断是否相等
 const attrList = [
-  { label: 'X', dataKey: 'mt_x', getValue: (shapeItem: UiBase) => round(shapeItem.data.mt.e, 5) },
-  { label: 'Y', dataKey: 'mt_y', getValue: (shapeItem: UiBase) => round(shapeItem.data.mt.f, 5) },
-  { label: 'W', dataKey: 'width', getValue: (shapeItem: UiBase) => round(shapeItem.data.width, 5) },
-  { label: 'H', dataKey: 'height', getValue: (shapeItem: UiBase) => round(shapeItem.data.height, 5) },
+  { label: 'X', dataKey: 'mt_x', getValue: (shapeItem: UiBase) => round(shapeItem.data.mt.e, 2) },
+  { label: 'Y', dataKey: 'mt_y', getValue: (shapeItem: UiBase) => round(shapeItem.data.mt.f, 2) },
+  { label: 'W', dataKey: 'width', getValue: (shapeItem: UiBase) => round(shapeItem.data.width, 2) },
+  { label: 'H', dataKey: 'height', getValue: (shapeItem: UiBase) => round(shapeItem.data.height, 2) },
   { label: 'R', dataKey: 'mt_rotate', getValue: (shapeItem: UiBase) => round(rad2deg(calcRotateRad(shapeItem.data.mt)), 5) }
 ]
 
