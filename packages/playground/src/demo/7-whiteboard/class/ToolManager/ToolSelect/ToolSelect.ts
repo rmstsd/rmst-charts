@@ -147,6 +147,11 @@ export default class ToolSelect implements ITool {
   }
 
   private updateCursor_Select_Or_Duplicate() {
+    // 如果按下了, 则不更新
+    if (this.wbEditor.toolManager.pointerContext.isPointerDown) {
+      return
+    }
+
     const cursor = this.wbEditor.keyboard.isAltKeyPressing ? { type: 'duplicate' as const } : this.cursor
     this.wbEditor.cursorManager.setCursor(cursor)
   }

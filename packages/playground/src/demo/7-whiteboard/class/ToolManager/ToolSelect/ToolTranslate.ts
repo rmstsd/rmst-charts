@@ -17,10 +17,13 @@ export default class ToolTranslate implements ITool {
   private originSelected
   private clonedList
 
+  private isDragging = false
+
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     const { selectManager, keyboard } = this.wbEditor
     const { isAltKeyPressing } = keyboard
 
+    this.isDragging = true
     this.downPos = sceneCoord
 
     selectManager.hideCtrlBox()
@@ -62,6 +65,10 @@ export default class ToolTranslate implements ITool {
 
   onAltToggle(isAltKeyPressing: boolean) {
     const { selectManager } = this.wbEditor
+
+    if (!this.isDragging) {
+      return
+    }
 
     if (isAltKeyPressing) {
       this.resetClonedList()
