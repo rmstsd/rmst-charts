@@ -147,7 +147,7 @@ export default class ToolSelect implements ITool {
   }
 
   private updateCursor_Select_Or_Duplicate() {
-    // 如果按下了, 则不更新
+    // 如果鼠标按下了, 则应该由策略模式内部处理, 而不是在这里处理
     if (this.wbEditor.toolManager.pointerContext.isPointerDown) {
       return
     }
