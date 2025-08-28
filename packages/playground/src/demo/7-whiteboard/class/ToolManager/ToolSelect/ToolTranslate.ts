@@ -4,7 +4,6 @@ import { compose, translate } from 'transformation-matrix'
 import { cloneDeep, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { translateHorizontalCursor, translateVerticalCursor } from '../../cursorManager/icon'
-import { randomColor } from '@/utils'
 
 export default class ToolTranslate implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -17,10 +16,14 @@ export default class ToolTranslate implements ITool {
   private originSelected
   private clonedList
 
+  private isDragging = false
+  private dxThanDy = false
+
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     const { selectManager, keyboard } = this.wbEditor
     const { isAltKeyPressing } = keyboard
 
+    this.isDragging = true
     this.downPos = sceneCoord
 
     selectManager.hideCtrlBox()
@@ -63,6 +66,12 @@ export default class ToolTranslate implements ITool {
   onAltToggle(isAltKeyPressing: boolean) {
     const { selectManager } = this.wbEditor
 
+    this.updateCursor()
+
+    if (!this.isDragging) {
+      return
+    }
+
     if (isAltKeyPressing) {
       this.resetClonedList()
 
@@ -101,25 +110,17 @@ export default class ToolTranslate implements ITool {
     let dx = moveLocalPos.x - this.downPos.x
     let dy = moveLocalPos.y - this.downPos.y
 
-    {
-      let cursor
-      if (isAltKeyPressing) {
-        cursor = { type: 'duplicate' as const }
+    if (isShiftKeyPressing) {
+      this.dxThanDy = Math.abs(dx) > Math.abs(dy)
+
+      if (this.dxThanDy) {
+        dy = 0
       } else {
-        if (isShiftKeyPressing) {
-          if (Math.abs(dx) > Math.abs(dy)) {
-            cursor = translateHorizontalCursor
-            dy = 0
-          } else {
-            cursor = translateVerticalCursor
-            dx = 0
-          }
-        } else {
-          cursor = 'default'
-        }
+        dx = 0
       }
-      this.wbEditor.cursorManager.setCursor(cursor)
     }
+
+    this.updateCursor()
 
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = snap[item.id]
@@ -129,5 +130,27 @@ export default class ToolTranslate implements ITool {
     })
 
     this.wbEditor.triggerRender()
+  }
+
+  // 调用该方法的地方略微有点乱
+  private updateCursor() {
+    const { isShiftKeyPressing, isAltKeyPressing } = this.wbEditor.keyboard
+
+    let cursor
+    if (isAltKeyPressing) {
+      cursor = { type: 'duplicate' as const }
+    } else {
+      if (isShiftKeyPressing) {
+        if (this.dxThanDy) {
+          cursor = translateHorizontalCursor
+        } else {
+          cursor = translateVerticalCursor
+        }
+      } else {
+        cursor = 'default'
+      }
+    }
+
+    this.wbEditor.cursorManager.setCursor(cursor)
   }
 }

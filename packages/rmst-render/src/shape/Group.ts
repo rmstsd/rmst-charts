@@ -26,7 +26,7 @@ export class Group<Data = GroupData> extends UiBase<Data> {
   append(p: IShape): void
   append(...args: IShape[]): void
   append(...args) {
-    const elements = args.flat(1)
+    const elements = args.flat(1).filter(Boolean)
 
     if (!Array.isArray(this.data.children)) {
       this.data.children = []

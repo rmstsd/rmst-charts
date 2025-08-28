@@ -6,7 +6,8 @@ export const ass = (
   movePos: ICoord,
   { isSpaceKeyPressing, isAltKeyPressing, isShiftKeyPressing, spacePrevPos, spaceDownPos }
 ) => {
-  if (isSpaceKeyPressing) {
+  // 处理 按下鼠标后不拖动 - 按下空格 - 拖动鼠标 报错的情况
+  if (isSpaceKeyPressing && spacePrevPos && spaceDownPos) {
     const dx = movePos.x - spacePrevPos.x
     const dy = movePos.y - spacePrevPos.y
 
