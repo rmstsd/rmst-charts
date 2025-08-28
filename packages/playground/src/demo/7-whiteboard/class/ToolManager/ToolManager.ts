@@ -132,6 +132,8 @@ export default class ToolManager {
 
           const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
+
+          // todo 极致追求 更新 cursor 样式
         },
         onPointerUp: upEvt => {
           this.pointerContext.isPointerDown = false
@@ -139,6 +141,8 @@ export default class ToolManager {
 
           const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
+
+          // todo 极致追求 更新 cursor 样式
         }
       })
     }
@@ -228,13 +232,17 @@ export default class ToolManager {
     }
 
     const handleInfo = this.handleInfo()
-
     if (handleInfo) {
       this.wbEditor.cursorManager.setCursor(handleInfo.cursor)
       return
     }
 
-    this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
+    if (this.currentTool === ToolEnum.Select) {
+      this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
+    } else {
+      // 处理在 矩形工具下, 按下空格-按下鼠标-松开空格-松开鼠标 光标异常的问题
+      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
+    }
   }
 
   // todo  优化 handle 的拾取
