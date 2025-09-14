@@ -9,9 +9,13 @@ export default class ToolPan implements ITool {
 
   cursor?: WbCursor = grabCursor
 
+  isPointerDown = false
+
   downPos?: ICoord
 
   onPointerDown(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.isPointerDown = true
+
     this.wbEditor.cursorManager.setCursor(grabbingCursor)
   }
 
@@ -31,10 +35,14 @@ export default class ToolPan implements ITool {
   }
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {
+    this.isPointerDown = false
+
     this.wbEditor.cursorManager.setCursor(this.cursor)
   }
 
   onPointerUp(downEvt: PointerEvent, sceneCoord: ICoord) {
+    this.isPointerDown = false
+
     this.wbEditor.cursorManager.setCursor(this.cursor)
   }
 
