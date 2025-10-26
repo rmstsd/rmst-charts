@@ -56,7 +56,8 @@ export class RefLine {
     }
 
     if (!isNil(offsetX)) {
-      const values = vLineMap.get(closestMinX_ans).concat(point.y, point.y)
+      const xs = points.filter(item => item.x + offsetX === closestMinX_ans).map(item => item.y)
+      const values = vLineMap.get(closestMinX_ans).concat(xs)
       const minY = Math.min(...values)
       const maxY = Math.max(...values)
 

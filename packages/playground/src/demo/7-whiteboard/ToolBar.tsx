@@ -17,7 +17,7 @@ export default function ToolBar() {
   }, [wbEditor])
 
   return (
-    <div className="tools-bar flex gap-2 absolute z-50 shadow-lg p-2 left-0 bottom-2 border right-0 mx-auto w-fit rounded-lg bg-white">
+    <div className="tools-bar flex gap-2 absolute z-50 shadow-lg left-0 bottom-2 border right-0 mx-auto w-fit rounded-lg bg-white">
       {ToolEnum.items.map(item => (
         <span
           key={item.key}
