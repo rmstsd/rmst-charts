@@ -55,7 +55,10 @@ export class RefLine {
       const minY = Math.min(...values)
       const maxY = Math.max(...values)
 
-      this.refLine = { start: { x: kx, y: minY }, end: { x: kx, y: maxY } }
+      this.refLine = {
+        start: this.wbEditor.coordSys.scene2World({ x: kx, y: minY }),
+        end: this.wbEditor.coordSys.scene2World({ x: kx, y: maxY })
+      }
     } else {
       this.refLine = null
     }

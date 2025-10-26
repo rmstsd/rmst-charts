@@ -1,7 +1,7 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint, compose, inverse } from 'transformation-matrix'
-import { cloneDeep, keyBy } from 'es-toolkit'
+import { cloneDeep, isNotNil, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
@@ -44,9 +44,7 @@ export default class ToolScale implements ITool {
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
-
-    this.movePos = movePos
+    this.movePos = sceneCoord
 
     this.updateSize()
   }
@@ -65,8 +63,17 @@ export default class ToolScale implements ITool {
 
     let transformRect: TransformRect
 
+    const offset = this.wbEditor.refLine.getOffset(
+      this.movePos,
+      this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
+    )
+    if (isNotNil(offset.x)) {
+      this.movePos.x += offset.x
+    }
+
+    const localPos = applyToPoint(inverse(this.downRect.mt), this.movePos)
     if (this.isSingleSelect) {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+      transformRect = resizeRect(this.transformOrigin, localPos, this.downRect, {
         keepRatio: isShiftKeyPressing,
         scaleFromCenter: isAltKeyPressing
       })
@@ -74,7 +81,7 @@ export default class ToolScale implements ITool {
       const item = this.wbEditor.selectManager.selectedGraphs[0]
       item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+      transformRect = resizeRect(this.transformOrigin, localPos, this.downRect, {
         changeWidthAndHeight: false,
         keepRatio: isShiftKeyPressing,
         scaleFromCenter: isAltKeyPressing
@@ -95,6 +102,7 @@ export default class ToolScale implements ITool {
       this.wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
     }
 
+    this.wbEditor.refLine.drawRefLine()
     this.wbEditor.triggerRender()
   }
 
