@@ -72,7 +72,7 @@ const LayoutView = () => {
 
       <Divider style={{ margin: 0 }} />
       <section className="flex-grow h-0 flex" style={{ backgroundColor: '#f9f9f9' }}>
-        {sideMenuKeys.length > 1 && (
+        {siderItems.length > 1 && (
           <aside className="menu-aside">
             <Menu
               mode="inline"
