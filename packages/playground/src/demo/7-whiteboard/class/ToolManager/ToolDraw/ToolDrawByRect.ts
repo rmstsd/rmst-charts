@@ -73,9 +73,7 @@ export default abstract class ToolDrawByRect implements ITool {
     const { isSpaceKeyPressing, isAltKeyPressing, isShiftKeyPressing } = wbEditor.keyboard
 
     // 吸附
-    const offset = wbEditor.refLine.getOffset(movePos, [this.graphItem.graphShape.id])
-    console.log(offset)
-
+    const offset = wbEditor.refLine.getOffset([movePos], [this.graphItem.graphShape.id])
     if (isNotNil(offset.x)) {
       movePos.x += offset.x
     }

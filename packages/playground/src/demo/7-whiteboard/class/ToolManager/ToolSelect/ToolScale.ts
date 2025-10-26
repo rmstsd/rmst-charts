@@ -64,7 +64,7 @@ export default class ToolScale implements ITool {
     let transformRect: TransformRect
 
     const offset = this.wbEditor.refLine.getOffset(
-      this.movePos,
+      [this.movePos],
       this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
     )
     if (isNotNil(offset.x)) {

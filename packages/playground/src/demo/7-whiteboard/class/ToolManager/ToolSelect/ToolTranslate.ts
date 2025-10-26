@@ -1,7 +1,7 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { compose, translate } from 'transformation-matrix'
-import { cloneDeep, keyBy } from 'es-toolkit'
+import { cloneDeep, isNotNil, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { translateHorizontalCursor, translateVerticalCursor } from '../../cursorManager/icon'
 
@@ -122,13 +122,46 @@ export default class ToolTranslate implements ITool {
 
     this.updateCursor()
 
+    const newData = this.wbEditor.selectManager.selectedGraphs.map(item => {
+      const dSnap = snap[item.id]
+
+      const tmt = translate(dx, dy)
+      return {
+        width: item.data.width,
+        height: item.data.height,
+        mt: compose(tmt, dSnap.downMt)
+      }
+    })
+
+    const item = newData[0]
+
+    const points = [
+      { x: item.mt.e, y: item.mt.f },
+      { x: item.mt.e + item.width, y: item.mt.f },
+      { x: item.mt.e + item.width, y: item.mt.f + item.height },
+      { x: item.mt.e, y: item.mt.f + item.height },
+      // Mid
+      { x: item.mt.e + item.width / 2, y: item.mt.f + item.height / 2 }
+    ]
+    const offset = this.wbEditor.refLine.getOffset(
+      points,
+      this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
+    )
+
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = snap[item.id]
 
       const tmt = translate(dx, dy)
-      item.attr('mt', compose(tmt, dSnap.downMt))
+      const newMt = compose(tmt, dSnap.downMt)
+
+      if (isNotNil(offset.x)) {
+        newMt.e += offset.x
+      }
+
+      item.attr('mt', newMt)
     })
 
+    this.wbEditor.refLine.drawRefLine()
     this.wbEditor.triggerRender()
   }
 
