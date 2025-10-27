@@ -11,8 +11,21 @@ export class RefLine {
   getOffset(points: ICoord[], excludeGraphIds: string[]) {
     const refGraphs = this.wbEditor.graphLayer.children.filter(item => !excludeGraphIds.includes(item.id))
 
-    const vLineMap = new Map<number, number[]>()
+    const x_map = new Map<number, number[]>()
+    for (const element of points) {
+      if (x_map.has(element.x)) {
+        const value = x_map.get(element.x)
+        value.push(element.y)
+      } else {
+        x_map.set(element.x, [element.y])
+      }
+    }
 
+    console.log(x_map)
+
+    const x_keys = [...x_map.keys()]
+
+    const vLineMap = new Map<number, number[]>()
     for (const item of refGraphs) {
       const { mt, width, height } = item.data
 
@@ -21,21 +34,20 @@ export class RefLine {
       vLineMap.set(mt.e + width, [mt.f, mt.f + height])
     }
 
-    const xks = [...vLineMap.keys()]
+    const v_xks = [...vLineMap.keys()]
 
-    let point = { x: 0, y: 0 }
     let closestXDist = Infinity
     let realOffsetX = 0
     let closestMinX_ans
-    for (const item of points) {
-      const closestMinX = getClosestVal(xks, item.x)
-      const distMinX = Math.abs(closestMinX - item.x)
+
+    for (const item of x_keys) {
+      const closestMinX = getClosestVal(v_xks, item)
+      const distMinX = Math.abs(closestMinX - item)
 
       if (distMinX < closestXDist) {
         closestXDist = distMinX
 
-        point = item
-        realOffsetX = closestMinX - item.x
+        realOffsetX = closestMinX - item
         closestMinX_ans = closestMinX
       }
     }
