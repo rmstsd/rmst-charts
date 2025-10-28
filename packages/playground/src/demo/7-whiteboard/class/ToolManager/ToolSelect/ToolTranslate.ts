@@ -127,11 +127,7 @@ export default class ToolTranslate implements ITool {
     const newData = this.wbEditor.selectManager.selectedGraphs.map(item => {
       const dSnap = snap[item.id]
 
-      return {
-        width: item.data.width,
-        height: item.data.height,
-        mt: compose(tmt, dSnap.downMt)
-      }
+      return { width: item.data.width, height: item.data.height, mt: compose(tmt, dSnap.downMt) }
     })
 
     let points = []
