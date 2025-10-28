@@ -7,6 +7,8 @@ const Ani_1000个动画 = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<Stage>(null)
 
+  let aniCanRunRef = useRef(false)
+
   useEffect(() => {
     const stage = new Stage({
       container: canvasRef.current
@@ -16,6 +18,7 @@ const Ani_1000个动画 = () => {
     renderRects()
 
     return () => {
+      aniCanRunRef.current = false
       stageRef.current.dispose()
     }
   }, [])
@@ -27,6 +30,8 @@ const Ani_1000个动画 = () => {
   }
 
   function renderRects() {
+    aniCanRunRef.current = true
+
     const stage = stageRef.current
     const start_x = 5
     const start_y = 5
@@ -67,6 +72,12 @@ const Ani_1000个动画 = () => {
       exec()
 
       async function exec() {
+        if (!aniCanRunRef.current) {
+          return
+        }
+
+        console.log('run')
+
         await item.animateCartoon({ width: width - 10, height: height - 10 })
         await item.animateCartoon({ width, height })
 
