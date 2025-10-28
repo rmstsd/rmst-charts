@@ -51,6 +51,7 @@ export default class ToolScale implements ITool {
 
   onDragEnd(upEvt: PointerEvent) {
     console.log('ToolScale onDragEnd')
+    this.wbEditor.refLine.clearRefLine()
   }
 
   private updateSize() {
@@ -67,9 +68,8 @@ export default class ToolScale implements ITool {
       [this.movePos],
       this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
     )
-    if (isNotNil(offset.x)) {
-      this.movePos.x += offset.x
-    }
+    this.movePos.x += offset.x
+    this.movePos.y += offset.y
 
     const localPos = applyToPoint(inverse(this.downRect.mt), this.movePos)
     if (this.isSingleSelect) {

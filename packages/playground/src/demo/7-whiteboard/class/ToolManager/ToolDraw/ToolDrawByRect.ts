@@ -74,9 +74,8 @@ export default abstract class ToolDrawByRect implements ITool {
 
     // 吸附
     const offset = wbEditor.refLine.getOffset([movePos], [this.graphItem.graphShape.id])
-    if (isNotNil(offset.x)) {
-      movePos.x += offset.x
-    }
+    movePos.x += offset.x
+    movePos.y += offset.y
 
     const rectAns = ass(downPos, movePos, {
       isSpaceKeyPressing,
@@ -98,7 +97,9 @@ export default abstract class ToolDrawByRect implements ITool {
     wbEditor.triggerRender()
   }
 
-  onDragEnd(upEvt: PointerEvent) {}
+  onDragEnd(upEvt: PointerEvent) {
+    this.wbEditor.refLine.clearRefLine()
+  }
 
   onPointerUp(upEvt: PointerEvent, sceneCoord: ICoord) {
     const width = 100

@@ -6,8 +6,6 @@ import OpenColor from 'open-color'
 export class RefLine {
   constructor(private wbEditor: WhiteboardEditor) {}
 
-  refLine = { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } }
-
   refLines = [] as { start: ICoord; end: ICoord }[]
 
   getOffset(points: ICoord[], excludeGraphIds: string[]) {
@@ -23,60 +21,73 @@ export class RefLine {
       }
     }
 
+    const y_map = new Map<number, number[]>()
+    for (const element of points) {
+      if (y_map.has(element.y)) {
+        const value = y_map.get(element.y)
+        value.push(element.x)
+      } else {
+        y_map.set(element.y, [element.x])
+      }
+    }
+
     const x_keys = [...x_map.keys()]
+    const y_keys = [...y_map.keys()]
 
     const vLineMap = new Map<number, number[]>()
     for (const item of refGraphs) {
       const { mt, width, height } = item.data
-
-      vLineMap.set(mt.e, [mt.f, mt.f + height])
-      vLineMap.set(mt.e + width / 2, [mt.f, mt.f + height])
-      vLineMap.set(mt.e + width, [mt.f, mt.f + height])
+      const value = [mt.f, mt.f + height]
+      vLineMap.set(mt.e, value)
+      vLineMap.set(mt.e + width / 2, value)
+      vLineMap.set(mt.e + width, value)
     }
-
     const v_xks = [...vLineMap.keys()]
 
-    // let closestXDist = Infinity
-    // let realOffsetX = 0
-    // let closestMinX_ans
+    const hLineMap = new Map<number, number[]>()
+    for (const item of refGraphs) {
+      const { mt, width, height } = item.data
+      const value = [mt.e, mt.e + width]
+      hLineMap.set(mt.f, value)
+      hLineMap.set(mt.f + height / 2, value)
+      hLineMap.set(mt.f + height, value)
+    }
+    const h_xks = [...hLineMap.keys()]
 
-    const ddd = x_keys.map(item => {
+    const ddd_x_list = x_keys.map(item => {
       const closestMinX = getClosestVal(v_xks, item)
       const distMinX = Math.abs(closestMinX - item)
 
-      return {
-        distMinX,
-        realOffsetX: closestMinX - item,
-        closestMinX
-      }
+      return { distMinX, realOffsetX: closestMinX - item, closestMinX }
     })
+    const closestXDist = Math.min(...ddd_x_list.map(item => item.distMinX))
 
-    const closestXDist = Math.min(...ddd.map(item => item.distMinX))
+    const ddd_y_list = y_keys.map(item => {
+      const closestMinY = getClosestVal(h_xks, item)
+      const distMinY = Math.abs(closestMinY - item)
 
-    // for (const item of x_keys) {
-    //   const closestMinX = getClosestVal(v_xks, item)
-    //   const distMinX = Math.abs(closestMinX - item)
+      return { distMinY, realOffsetY: closestMinY - item, closestMinY }
+    })
+    const closestYDist = Math.min(...ddd_y_list.map(item => item.distMinY))
 
-    //   if (distMinX < closestXDist) {
-    //     closestXDist = distMinX
-
-    //     realOffsetX = closestMinX - item
-    //     closestMinX_ans = closestMinX
-    //   }
-    // }
-
-    const isEqualNum = (a: number, b: number) => Math.abs(a - b) < 0.00001
-    const tol = 5 // 最小距离不能超过这个
+    const tol = 5
 
     let offsetX
-    // 确认偏移值 offsetX
+    let offsetY
+
     if (closestXDist <= tol) {
-      const realOffsetX = ddd.find(item => item.distMinX === closestXDist).realOffsetX
+      const realOffsetX = ddd_x_list.find(item => item.distMinX === closestXDist).realOffsetX
       offsetX = realOffsetX
     }
 
+    if (closestYDist <= tol) {
+      const realOffsetY = ddd_y_list.find(item => item.distMinY === closestYDist).realOffsetY
+      offsetY = realOffsetY
+    }
+
+    this.refLines = []
     if (!isNil(offsetX)) {
-      const refLines = ddd
+      const x_refLines = ddd_x_list
         .filter(item => item.distMinX === closestXDist)
         .map(dItem => {
           const xs = points.filter(item => item.x + offsetX === dItem.closestMinX).map(item => item.y)
@@ -89,16 +100,29 @@ export class RefLine {
 
       const { coordSys } = this.wbEditor
 
-      this.refLines = refLines.map(item => ({ start: coordSys.scene2World(item.start), end: coordSys.scene2World(item.end) }))
-      //  {
-      //   start: this.wbEditor.coordSys.scene2World({ x: dItem.closestMinX, y: minY }),
-      //   end: this.wbEditor.coordSys.scene2World({ x: dItem.closestMinX, y: maxY })
-      // }
-    } else {
-      this.refLines = []
+      this.refLines.push(
+        ...x_refLines.map(item => ({ start: coordSys.scene2World(item.start), end: coordSys.scene2World(item.end) }))
+      )
+    }
+    if (!isNil(offsetY)) {
+      const y_refLines = ddd_y_list
+        .filter(item => item.distMinY === closestYDist)
+        .map(dItem => {
+          const ys = points.filter(item => item.y + offsetY === dItem.closestMinY).map(item => item.x)
+          const values = hLineMap.get(dItem.closestMinY).concat(ys)
+          const minX = Math.min(...values)
+          const maxX = Math.max(...values)
+
+          return { start: { x: minX, y: dItem.closestMinY }, end: { x: maxX, y: dItem.closestMinY } }
+        })
+
+      const { coordSys } = this.wbEditor
+      this.refLines.push(
+        ...y_refLines.map(item => ({ start: coordSys.scene2World(item.start), end: coordSys.scene2World(item.end) }))
+      )
     }
 
-    return { x: offsetX, y: 0 }
+    return { x: offsetX ?? 0, y: offsetY ?? 0 }
   }
 
   drawRefLine() {
@@ -115,6 +139,11 @@ export class RefLine {
       refLineLayer.append(line)
     })
   }
+
+  clearRefLine() {
+    this.refLines = []
+    this.drawRefLine()
+  }
 }
 
 // 获取最近的
@@ -130,3 +159,5 @@ function getClosestVal(ks: number[], x: number) {
 
   return ans
 }
+
+const isEqualNum = (a: number, b: number) => Math.abs(a - b) < 0.00001

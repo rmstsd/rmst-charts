@@ -106,6 +106,10 @@ export class Keyboard {
     }
 
     if (evt.code === 'Escape') {
+      if (this.wbEditor.toolManager.pointerContext.isPointerDown) {
+        return
+      }
+
       if (this.wbEditor.toolManager.currentTool === ToolEnum.Select) {
         wbEditor.selectManager.clearSelect()
 

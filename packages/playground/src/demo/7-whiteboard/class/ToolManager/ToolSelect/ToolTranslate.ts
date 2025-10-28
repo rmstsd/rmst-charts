@@ -57,6 +57,7 @@ export default class ToolTranslate implements ITool {
 
   onDragEnd(upEvt: PointerEvent) {
     this.wbEditor.selectManager.showCtrlBox()
+    this.wbEditor.refLine.clearRefLine()
   }
 
   onShiftToggle(isShiftKeyPressing: boolean) {
@@ -154,9 +155,8 @@ export default class ToolTranslate implements ITool {
       const tmt = translate(dx, dy)
       const newMt = compose(tmt, dSnap.downMt)
 
-      if (isNotNil(offset.x)) {
-        newMt.e += offset.x
-      }
+      newMt.e += offset.x
+      newMt.f += offset.y
 
       item.attr('mt', newMt)
     })
