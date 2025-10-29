@@ -1,7 +1,8 @@
-import { ICoord, Line } from 'rmst-render'
+import { ICoord, Line, mergeBox } from 'rmst-render'
 import WhiteboardEditor from '../whiteboardEditor'
 import { isNil, isNotNil } from 'es-toolkit'
 import OpenColor from 'open-color'
+import { applyToPoint } from 'transformation-matrix'
 
 export class RefLine {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -36,22 +37,35 @@ export class RefLine {
     const y_keys = [...y_map.keys()]
 
     const vLineMap = new Map<number, number[]>()
+
     for (const item of refGraphs) {
-      const { mt, width, height } = item.data
-      const value = [mt.f, mt.f + height]
-      vLineMap.set(mt.e, value)
-      vLineMap.set(mt.e + width / 2, value)
-      vLineMap.set(mt.e + width, value)
+      const tl = applyToPoint(item.data.mt, { x: 0, y: 0 })
+      const tr = applyToPoint(item.data.mt, { x: item.data.width, y: 0 })
+      const br = applyToPoint(item.data.mt, { x: item.data.width, y: item.data.height })
+      const bl = applyToPoint(item.data.mt, { x: 0, y: item.data.height })
+      const selRect = { tl, tr, br, bl }
+      const { minX, minY, maxX, maxY } = mergeBox([selRect])
+
+      const value = [minY, maxY]
+      vLineMap.set(minX, value)
+      vLineMap.set((minX + maxX) / 2, value)
+      vLineMap.set(maxX, value)
     }
     const v_xks = [...vLineMap.keys()]
 
     const hLineMap = new Map<number, number[]>()
     for (const item of refGraphs) {
-      const { mt, width, height } = item.data
-      const value = [mt.e, mt.e + width]
-      hLineMap.set(mt.f, value)
-      hLineMap.set(mt.f + height / 2, value)
-      hLineMap.set(mt.f + height, value)
+      const tl = applyToPoint(item.data.mt, { x: 0, y: 0 })
+      const tr = applyToPoint(item.data.mt, { x: item.data.width, y: 0 })
+      const br = applyToPoint(item.data.mt, { x: item.data.width, y: item.data.height })
+      const bl = applyToPoint(item.data.mt, { x: 0, y: item.data.height })
+      const selRect = { tl, tr, br, bl }
+      const { minX, minY, maxX, maxY } = mergeBox([selRect])
+
+      const value = [minX, maxX]
+      hLineMap.set(minY, value)
+      hLineMap.set((minY + maxY) / 2, value)
+      hLineMap.set(maxY, value)
     }
     const h_xks = [...hLineMap.keys()]
 
@@ -71,7 +85,7 @@ export class RefLine {
     })
     const closestYDist = Math.min(...ddd_y_list.map(item => item.distMinY))
 
-    const tol = 5
+    const tol = 5 / this.wbEditor.camera.zoom
 
     let offsetX
     let offsetY

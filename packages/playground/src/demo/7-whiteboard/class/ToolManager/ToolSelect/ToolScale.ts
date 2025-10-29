@@ -7,6 +7,7 @@ import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
 import { resizeRect, TransformRect } from './resizeStrategy'
 import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
+import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 
 export default class ToolScale implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {
@@ -62,14 +63,24 @@ export default class ToolScale implements ITool {
 
     const { isShiftKeyPressing, isAltKeyPressing } = this.wbEditor.keyboard
 
-    let transformRect: TransformRect
-
-    const offset = this.wbEditor.refLine.getOffset(
-      [this.movePos],
-      this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
+    const isHandleFourVertex = [TransformOrigin.tr, TransformOrigin.tr, TransformOrigin.br, TransformOrigin.bl].includes(
+      this.transformOrigin
     )
-    this.movePos.x += offset.x
-    this.movePos.y += offset.y
+    const isHandleFourSide_x90Deg =
+      [TransformOrigin.Top, TransformOrigin.Left, TransformOrigin.Bottom, TransformOrigin.Right].includes(this.transformOrigin) &&
+      calcRotateRad(this.downRect.mt) % (Math.PI / 2) === 0
+
+    // 拽四个角 || (拽单边 && 旋转角度是 90 度的倍数)
+    if (isHandleFourVertex || isHandleFourSide_x90Deg) {
+      const offset = this.wbEditor.refLine.getOffset(
+        [this.movePos],
+        this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
+      )
+      this.movePos.x += offset.x
+      this.movePos.y += offset.y
+    }
+
+    let transformRect: TransformRect
 
     const localPos = applyToPoint(inverse(this.downRect.mt), this.movePos)
     if (this.isSingleSelect) {
