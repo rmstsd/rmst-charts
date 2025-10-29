@@ -16,7 +16,6 @@
   "license": "ISC",
   "dependencies": {
     "@leafer-in/editor": "^1.7.0",
-    "@react-spring/web": "^9.7.3",
     "antd": "^5.2.2",
     "clsx": "^2.1.1",
     "color-alpha": "^1.1.3",

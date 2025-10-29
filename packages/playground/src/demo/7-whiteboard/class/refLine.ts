@@ -4,6 +4,7 @@ import { isNil, isNotNil } from 'es-toolkit'
 import OpenColor from 'open-color'
 import { applyToPoint } from 'transformation-matrix'
 
+// 吸附线
 export class RefLine {
   constructor(private wbEditor: WhiteboardEditor) {}
 
@@ -35,6 +36,11 @@ export class RefLine {
 
     const x_keys = [...x_map.keys()]
     const y_keys = [...y_map.keys()]
+
+    const { ruler } = this.wbEditor
+
+    const verticalRulers = ruler.rulerData.vertical.filter(item => !excludeGraphIds.includes(item.id)).map(item => item.pos)
+    const horizontalRulers = ruler.rulerData.horizontal.filter(item => !excludeGraphIds.includes(item.id)).map(item => item.pos)
 
     const vLineMap = new Map<number, number[]>()
 
@@ -70,18 +76,35 @@ export class RefLine {
     const h_xks = [...hLineMap.keys()]
 
     const ddd_x_list = x_keys.map(item => {
-      const closestMinX = getClosestVal(v_xks, item)
+      let closestMinX = getClosestVal(v_xks, item)
+      const closestMinX_ruler = getClosestVal(verticalRulers, item)
+
+      let isSnappingRuler = false
+      if (closestMinX_ruler < closestMinX) {
+        closestMinX = closestMinX_ruler
+        isSnappingRuler = true
+      }
+
       const distMinX = Math.abs(closestMinX - item)
 
-      return { distMinX, realOffsetX: closestMinX - item, closestMinX }
+      return { distMinX, realOffsetX: closestMinX - item, closestMinX, isSnappingRuler }
     })
     const closestXDist = Math.min(...ddd_x_list.map(item => item.distMinX))
 
     const ddd_y_list = y_keys.map(item => {
-      const closestMinY = getClosestVal(h_xks, item)
+      let closestMinY = getClosestVal(h_xks, item)
+
+      const closestMinY_ruler = getClosestVal(horizontalRulers, item)
+
+      let isSnappingRuler = false
+      if (closestMinY_ruler < closestMinY) {
+        closestMinY = closestMinY_ruler
+        isSnappingRuler = true
+      }
+
       const distMinY = Math.abs(closestMinY - item)
 
-      return { distMinY, realOffsetY: closestMinY - item, closestMinY }
+      return { distMinY, realOffsetY: closestMinY - item, closestMinY, isSnappingRuler }
     })
     const closestYDist = Math.min(...ddd_y_list.map(item => item.distMinY))
 
@@ -106,7 +129,7 @@ export class RefLine {
     if (!isNil(offsetX)) {
       // 垂直线
       const x_refLines = ddd_x_list
-        .filter(item => item.distMinX === closestXDist)
+        .filter(item => !item.isSnappingRuler && item.distMinX === closestXDist)
         .map(dItem => {
           const xs = points.filter(item => item.x + offsetX === dItem.closestMinX).map(item => item.y)
 
@@ -138,7 +161,7 @@ export class RefLine {
     if (!isNil(offsetY)) {
       // 水平线
       const y_refLines = ddd_y_list
-        .filter(item => item.distMinY === closestYDist)
+        .filter(item => !item.isSnappingRuler && item.distMinY === closestYDist)
         .map(dItem => {
           const ys = points.filter(item => item.y + offsetY === dItem.closestMinY).map(item => item.x)
 
@@ -209,6 +232,10 @@ export class RefLine {
 
 // 获取最近的
 function getClosestVal(ks: number[], x: number) {
+  if (ks.length === 0) {
+    return Infinity
+  }
+
   let ans = ks[0]
   let d = Math.abs(ks[0] - x)
   for (let i = 1; i < ks.length; i++) {

@@ -9,7 +9,6 @@ import BBox from '@/demo/6-other/BBox'
 import LineAnimate from '@/demo/6-other/折线计算动画'
 import 贝塞尔曲线峰值吸附 from '@/demo/6-other/贝塞尔曲线峰值吸附'
 import CanvasTransform from '@/demo/6-other/mtDe/CanvasTransform'
-import UpAniEnd from '@/demo/6-other/UpAniEnd'
 import XiFu from '@/demo/6-other/xifu/XiFu'
 
 import { IRouteObject } from './router'
@@ -45,7 +44,6 @@ const otherRouteConfig: IRouteObject = {
     { path: 'linePath', element: <LinePath />, uiConfig: { title: '过点曲线' } },
     { path: 'curveRect', element: <CurveRect />, uiConfig: { title: '渐变' } },
     { path: 'brush', element: <BBox /> },
-    { path: 'UpAniEnd', element: <UpAniEnd /> },
     { path: 'XiFu', element: <XiFu /> }
   ]
 }

@@ -50,6 +50,11 @@ export class ToolRuler implements ITool {
   }
 
   onDragMove(evt: PointerEvent, sceneCoord: ICoord) {
+    // 吸附
+    const offset = this.wbEditor.refLine.getOffset([sceneCoord], [this.id])
+    sceneCoord.x += offset.x
+    sceneCoord.y += offset.y
+
     const worldCoord = this.wbEditor.coordSys.scene2World(sceneCoord)
 
     const visibleHor = worldCoord.y > 0
