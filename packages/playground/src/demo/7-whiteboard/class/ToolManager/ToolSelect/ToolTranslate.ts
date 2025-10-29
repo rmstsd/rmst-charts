@@ -1,8 +1,8 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
-import { compose, translate } from 'transformation-matrix'
-import { cloneDeep, keyBy } from 'es-toolkit'
-import { ICoord } from 'rmst-render'
+import { applyToPoint, compose, translate } from 'transformation-matrix'
+import { cloneDeep, isNotNil, keyBy } from 'es-toolkit'
+import { ICoord, mergeBox } from 'rmst-render'
 import { translateHorizontalCursor, translateVerticalCursor } from '../../cursorManager/icon'
 
 export default class ToolTranslate implements ITool {
@@ -57,6 +57,7 @@ export default class ToolTranslate implements ITool {
 
   onDragEnd(upEvt: PointerEvent) {
     this.wbEditor.selectManager.showCtrlBox()
+    this.wbEditor.refLine.clearRefLine()
   }
 
   onShiftToggle(isShiftKeyPressing: boolean) {
@@ -122,13 +123,64 @@ export default class ToolTranslate implements ITool {
 
     this.updateCursor()
 
+    const tmt = translate(dx, dy)
+    const newData = this.wbEditor.selectManager.selectedGraphs.map(item => {
+      const dSnap = snap[item.id]
+
+      return { width: item.data.width, height: item.data.height, mt: compose(tmt, dSnap.downMt) }
+    })
+
+    let points = []
+    if (newData.length === 1) {
+      const item = newData[0]
+      points = [
+        { x: 0, y: 0 },
+        { x: item.width, y: 0 },
+        { x: item.width, y: item.height },
+        { x: 0, y: item.height },
+        // Mid
+        { x: item.width / 2, y: item.height / 2 }
+      ].map(pItem => applyToPoint(item.mt, pItem))
+    } else {
+      // 多个
+      const selRects = newData.map(item => {
+        const tl = applyToPoint(item.mt, { x: 0, y: 0 })
+        const tr = applyToPoint(item.mt, { x: item.width, y: 0 })
+        const br = applyToPoint(item.mt, { x: item.width, y: item.height })
+        const bl = applyToPoint(item.mt, { x: 0, y: item.height })
+        return { tl, tr, br, bl }
+      })
+
+      const { minX, minY, maxX, maxY } = mergeBox(selRects)
+
+      points = [
+        { x: minX, y: minY },
+        { x: maxX, y: minY },
+        { x: maxX, y: maxY },
+        { x: minX, y: maxY },
+        // Mid
+        { x: (minX + maxX) / 2, y: (minY + maxY) / 2 }
+      ]
+    }
+
+    const offset = this.wbEditor.refLine.getOffset(
+      points,
+      this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
+    )
+
     this.wbEditor.selectManager.selectedGraphs.forEach(item => {
       const dSnap = snap[item.id]
 
       const tmt = translate(dx, dy)
-      item.attr('mt', compose(tmt, dSnap.downMt))
+      const newMt = compose(tmt, dSnap.downMt)
+
+      newMt.e += offset.x
+      newMt.f += offset.y
+
+      item.attr('mt', newMt)
     })
 
+    this.wbEditor.refLine.drawRefLine()
     this.wbEditor.triggerRender()
   }
 

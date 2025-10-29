@@ -4,7 +4,7 @@ import { ITool } from './../type'
 import { translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
 import { defaultGraphFillColor } from '@/demo/7-whiteboard/color'
-import { cloneDeep, noop } from 'es-toolkit'
+import { cloneDeep, isNotNil, noop } from 'es-toolkit'
 import { ass } from '../ass'
 
 export default abstract class ToolDrawByRect implements ITool {
@@ -72,6 +72,11 @@ export default abstract class ToolDrawByRect implements ITool {
 
     const { isSpaceKeyPressing, isAltKeyPressing, isShiftKeyPressing } = wbEditor.keyboard
 
+    // 吸附
+    const offset = wbEditor.refLine.getOffset([movePos], [this.graphItem.graphShape.id])
+    movePos.x += offset.x
+    movePos.y += offset.y
+
     const rectAns = ass(downPos, movePos, {
       isSpaceKeyPressing,
       isAltKeyPressing,
@@ -88,10 +93,13 @@ export default abstract class ToolDrawByRect implements ITool {
       lineWidth: 1
     })
 
+    wbEditor.refLine.drawRefLine()
     wbEditor.triggerRender()
   }
 
-  onDragEnd(upEvt: PointerEvent) {}
+  onDragEnd(upEvt: PointerEvent) {
+    this.wbEditor.refLine.clearRefLine()
+  }
 
   onPointerUp(upEvt: PointerEvent, sceneCoord: ICoord) {
     const width = 100

@@ -1,12 +1,13 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint, compose, inverse } from 'transformation-matrix'
-import { cloneDeep, keyBy } from 'es-toolkit'
+import { cloneDeep, isNotNil, keyBy } from 'es-toolkit'
 import { ICoord } from 'rmst-render'
 import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
 import { resizeRect, TransformRect } from './resizeStrategy'
 import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
+import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 
 export default class ToolScale implements ITool {
   constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {
@@ -44,15 +45,14 @@ export default class ToolScale implements ITool {
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
-    const movePos = applyToPoint(inverse(this.downRect.mt), sceneCoord)
-
-    this.movePos = movePos
+    this.movePos = sceneCoord
 
     this.updateSize()
   }
 
   onDragEnd(upEvt: PointerEvent) {
     console.log('ToolScale onDragEnd')
+    this.wbEditor.refLine.clearRefLine()
   }
 
   private updateSize() {
@@ -63,10 +63,28 @@ export default class ToolScale implements ITool {
 
     const { isShiftKeyPressing, isAltKeyPressing } = this.wbEditor.keyboard
 
+    const isHandleFourVertex = [TransformOrigin.tr, TransformOrigin.tr, TransformOrigin.br, TransformOrigin.bl].includes(
+      this.transformOrigin
+    )
+    const isHandleFourSide_x90Deg =
+      [TransformOrigin.Top, TransformOrigin.Left, TransformOrigin.Bottom, TransformOrigin.Right].includes(this.transformOrigin) &&
+      calcRotateRad(this.downRect.mt) % (Math.PI / 2) === 0
+
+    // 拽四个角 || (拽单边 && 旋转角度是 90 度的倍数)
+    if (isHandleFourVertex || isHandleFourSide_x90Deg) {
+      const offset = this.wbEditor.refLine.getOffset(
+        [this.movePos],
+        this.wbEditor.selectManager.selectedGraphs.map(item => item.id)
+      )
+      this.movePos.x += offset.x
+      this.movePos.y += offset.y
+    }
+
     let transformRect: TransformRect
 
+    const localPos = applyToPoint(inverse(this.downRect.mt), this.movePos)
     if (this.isSingleSelect) {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+      transformRect = resizeRect(this.transformOrigin, localPos, this.downRect, {
         keepRatio: isShiftKeyPressing,
         scaleFromCenter: isAltKeyPressing
       })
@@ -74,7 +92,7 @@ export default class ToolScale implements ITool {
       const item = this.wbEditor.selectManager.selectedGraphs[0]
       item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
-      transformRect = resizeRect(this.transformOrigin, movePos, this.downRect, {
+      transformRect = resizeRect(this.transformOrigin, localPos, this.downRect, {
         changeWidthAndHeight: false,
         keepRatio: isShiftKeyPressing,
         scaleFromCenter: isAltKeyPressing
@@ -95,6 +113,7 @@ export default class ToolScale implements ITool {
       this.wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
     }
 
+    this.wbEditor.refLine.drawRefLine()
     this.wbEditor.triggerRender()
   }
 

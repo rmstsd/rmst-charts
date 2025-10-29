@@ -39,6 +39,11 @@ export default class Camera {
           let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
           this.zoomTo(newZoom, nvOrigin)
         } else {
+          // 当触发了鼠标按下平移, 则禁止滚轮平移
+          if (wbEditor.toolManager.toolTempPan.isPointerDown) {
+            return
+          }
+
           let tmt
 
           if (evt.shiftKey) {

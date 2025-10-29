@@ -13,6 +13,7 @@ import { Keyboard } from './class/keyboard'
 
 import { Graph_Id } from './constant'
 import EventEmitter from 'rmst-render/event_emitter'
+import { RefLine } from './class/refLine'
 
 // 只是为了 log 的时候好区别
 class GraphLayerWithRulerWrapper extends Group {}
@@ -21,6 +22,7 @@ class GraphLayer extends Group {}
 class HoveredLayer extends Group {}
 class CtrlBoxLayer extends Group {}
 class TempLayer extends Group {}
+class RefLineLayer extends Group {}
 
 export interface Events {
   render: () => void // 只要白板内的元素的状态有变化，就触发 (不包含相机的平移缩放)
@@ -43,6 +45,7 @@ class WhiteboardEditor {
   tempLayer = new TempLayer({ name: 'temp 层' })
 
   rulerLayer = new RulerLayer({ name: '标尺层' })
+  refLineLayer = new RefLineLayer({ name: '参考线层' })
 
   camera = new Camera(this)
   keyboard = new Keyboard(this)
@@ -51,6 +54,7 @@ class WhiteboardEditor {
   selectManager = new SelectedManager(this)
   controlHandleManager = new ControlHandleManager(this)
   cursorManager = new CursorManager(this)
+  refLine = new RefLine(this)
   ruler = new Ruler(this)
 
   dispose() {
@@ -66,7 +70,13 @@ class WhiteboardEditor {
     this.container = container
 
     this.stage = new Stage({ container, enableCamera: false, enableCursor: false })
-    this.graphLayerWithRulerWrapper.append(this.graphLayer, this.hoveredLayer, this.ctrlBoxLayer, this.tempLayer)
+    this.graphLayerWithRulerWrapper.append(
+      this.graphLayer,
+      this.hoveredLayer,
+      this.ctrlBoxLayer,
+      this.tempLayer,
+      this.refLineLayer
+    )
     this.stage.append(this.graphLayerWithRulerWrapper, this.rulerLayer)
 
     this.toolManager.switchTool(ToolEnum.Select)
