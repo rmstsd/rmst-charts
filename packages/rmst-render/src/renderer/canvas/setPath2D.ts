@@ -27,14 +27,11 @@ export function setTrapezoidPath2D(elementItem: Trapezoid) {
 }
 
 export function setRectPath2D(elementItem: Rect) {
-  elementItem.path2D = createRectPath2D(elementItem.data)
+  elementItem.path2D = createRectPath2D({ ...elementItem.data, x: 0, y: 0 })
 }
 
 export function createRectPath2D(data) {
   let { x, y, width, height, cornerRadius = 0 } = data
-
-  x = 0
-  y = 0
 
   return new Path2D(createRoundedRectPath(x, y, width, height, cornerRadius))
 

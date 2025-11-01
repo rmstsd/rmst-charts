@@ -32,6 +32,12 @@ const TextDemo = () => {
       // new Circle({ x: 210, y: 10, radius: 2, fillStyle: 'red' })
     ]
 
+    texts.forEach(item => {
+      item.onmouseenter = () => {
+        console.log(item.data.content)
+      }
+    })
+
     stage.append(texts)
   })
 

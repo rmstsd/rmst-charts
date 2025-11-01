@@ -15,7 +15,8 @@ export function isHitShape(stage: Stage, elementItem: IShape, x: number, y: numb
 
   let isHit = false
   if (isText(elementItem)) {
-    isHit = isHitText(elementItem)
+    isHit = elementItem.path2D ? ctx.isPointInPath(elementItem.path2D, x, y) : false
+    // isHit = isHitText(elementItem)
   } else if (!elementItem.path2D) {
     //
   } else if ((isLine(elementItem) && !elementItem.data.closed) || !elementItem.data.fillStyle) {

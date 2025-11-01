@@ -217,14 +217,7 @@ export const createPolarElements = (
   const polarAxisData = getDataForDraw(stage, innerOption, seriesData)
 
   const circleShapes = polarAxisData.circlesData.map(
-    item =>
-      new Circle({
-        x: item.x,
-        y: item.y,
-        radius: item.radius,
-        fillStyle: 'transparent',
-        strokeStyle: item.strokeStyle
-      })
+    item => new Circle({ x: item.x, y: item.y, radius: item.radius, fillStyle: 'transparent', strokeStyle: item.strokeStyle })
   )
 
   const lineAxisShape = new Line({
@@ -240,12 +233,7 @@ export const createPolarElements = (
   })
 
   const textShapes = polarAxisData.lineAxisTicks.map(item => {
-    return new Text({
-      x: item.text.x,
-      y: item.text.y,
-      content: String(item.text.value),
-      fillStyle: tickColor
-    })
+    return new Text({ x: item.text.x, y: item.text.y, content: String(item.text.value), fillStyle: tickColor })
   })
 
   const outerTickShapes = polarAxisData.outerTicks.map(
@@ -257,15 +245,7 @@ export const createPolarElements = (
   )
 
   const outerTickTextShapes = polarAxisData.outerTicks.map(
-    item =>
-      new Text({
-        x: item.text.x,
-        y: item.text.y,
-        content: item.text.value,
-        fillStyle: tickColor,
-        textAlign: 'center',
-        textBaseline: 'middle'
-      })
+    item => new Text({ x: item.text.x, y: item.text.y, content: item.text.value, fillStyle: tickColor, textAlign: 'center' })
   )
 
   const ccToTickLineShapes = (polarAxisData.ccToTickLines || []).map(

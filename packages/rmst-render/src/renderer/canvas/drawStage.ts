@@ -145,11 +145,19 @@ export function drawStage(stage: Stage) {
           const textSize = measureText(content, fontSize)
 
           const padding = boxData?.padding ?? 0
+
+          let x = 0
+          if (textAlign === 'center') {
+            x = -textSize.textWidth / 2
+          } else if (textAlign === 'right') {
+            x = -textSize.textWidth
+          }
+
           textElementItem.path2D = createRectPath2D({
-            x: 0,
+            x,
             y: 0,
             width: textSize.textWidth + padding * 2,
-            height: textSize.textHeight + padding * 2,
+            height: fontSize + padding * 2,
             cornerRadius: boxData?.cornerRadius ?? 0
           })
 
@@ -163,8 +171,7 @@ export function drawStage(stage: Stage) {
             setCtxFontSize(ctx, fontSize)
 
             ctx.textBaseline = textBaseline
-            ctx.textAlign = textAlign
-            ctx.fillText(content, padding, padding)
+            ctx.fillText(content, x + padding, padding)
           })
 
           stroke(ctx, textElementItem)

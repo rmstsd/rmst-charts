@@ -105,12 +105,7 @@ class PieMain extends _Chart<ICharts.PieSeries> {
 
   createLabel(item, idx) {
     // 圆弧中心点坐标
-    const radianCenterPoint = getPointOnArc(
-      this.center.x,
-      this.center.y,
-      this.outerRadius,
-      (item.startAngle + item.endAngle) / 2
-    )
+    const radianCenterPoint = getPointOnArc(this.center.x, this.center.y, this.outerRadius, (item.startAngle + item.endAngle) / 2)
 
     const extendLineLength = 15
 
@@ -128,9 +123,7 @@ class PieMain extends _Chart<ICharts.PieSeries> {
 
     const extendLineThirdPoint_y = extendLineSecondPoint_y
 
-    const extendLine_2_x_end = isInRight
-      ? extendLineSecondPoint_x + extendLineLength
-      : extendLineSecondPoint_x - extendLineLength
+    const extendLine_2_x_end = isInRight ? extendLineSecondPoint_x + extendLineLength : extendLineSecondPoint_x - extendLineLength
 
     const extendLinePoints = [
       { x: radianCenterPoint.x, y: radianCenterPoint.y },

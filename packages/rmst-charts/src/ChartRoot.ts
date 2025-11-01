@@ -258,6 +258,9 @@ export class ChartRoot {
       this.seriesManager.onSelect = (index, pie) => {
         this.tooltip.externalShow(pie, index)
       }
+      this.seriesManager.onCancelSelect = (index, pie) => {
+        this.tooltip.hide()
+      }
       this.renderedElements.push(...this.seriesManager.elements)
     }
 

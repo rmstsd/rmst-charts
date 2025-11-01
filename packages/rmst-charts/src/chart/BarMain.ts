@@ -133,18 +133,12 @@ export default class BarMain extends _Chart<ICharts.BarSeries> {
       seriesIndex === 0 ? null : finalSeries[seriesIndex - 1].data
     )
 
-    const x_axis_start_y = xAxisData.axis.start.y
+    const x_axis_start_y = yAxisData.axis.end.y
 
+    const height = Math.abs(yAxisData.axis.end.y - yAxisData.axis.start.y)
     this.backgroundElements = seriesItem.showBackground
       ? this.data.map(
-          item =>
-            new Rect({
-              x: item.x,
-              y: x_axis_start_y,
-              width: item.width,
-              height: yAxisData.axis.end.y - yAxisData.axis.start.y,
-              fillStyle: 'rgba(180, 180, 180, 0.2)'
-            })
+          item => new Rect({ x: item.x, y: x_axis_start_y, width: item.width, height, fillStyle: 'rgba(180, 180, 180, 0.2)' })
         )
       : []
 

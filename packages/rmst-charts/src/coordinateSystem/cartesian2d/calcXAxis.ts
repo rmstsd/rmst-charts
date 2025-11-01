@@ -1,12 +1,6 @@
 import { Stage, Line, Text, measureText, Group, pointToFlatArray } from 'rmst-render'
 
-import {
-  canvasPaddingBottom,
-  canvasPaddingLeft,
-  canvasPaddingRight,
-  dataZoomHeight,
-  tickColor
-} from '../../constant.js'
+import { canvasPaddingBottom, canvasPaddingLeft, canvasPaddingRight, dataZoomHeight, tickColor } from '../../constant.js'
 import { hasDataZoom } from '../../components/dataZoom'
 
 function getXAxis(option: ICharts.IOption, containerWidth, containerHeight) {
