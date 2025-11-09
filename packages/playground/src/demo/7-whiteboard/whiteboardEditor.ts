@@ -44,7 +44,7 @@ class WhiteboardEditor {
 
   tempLayer = new TempLayer({ name: 'temp 层' })
 
-  rulerLayer = new RulerLayer({ name: '标尺层' })
+  rulerLayer = new RulerLayer({ name: '标尺层' }) // 拖出来的红线
   refLineLayer = new RefLineLayer({ name: '参考线层' })
 
   camera = new Camera(this)

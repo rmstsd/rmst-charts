@@ -76,11 +76,11 @@ export class RefLine {
     const h_xks = [...hLineMap.keys()]
 
     const ddd_x_list = x_keys.map(item => {
-      let closestMinX = getClosestVal(v_xks, item)
-      const closestMinX_ruler = getClosestVal(verticalRulers, item)
+      let { ksItem: closestMinX, distance: d_ref_x } = getClosestVal(v_xks, item)
+      const { ksItem: closestMinX_ruler, distance: d_ruler_x } = getClosestVal(verticalRulers, item)
 
       let isSnappingRuler = false
-      if (closestMinX_ruler < closestMinX) {
+      if (d_ruler_x < d_ref_x) {
         closestMinX = closestMinX_ruler
         isSnappingRuler = true
       }
@@ -92,12 +92,11 @@ export class RefLine {
     const closestXDist = Math.min(...ddd_x_list.map(item => item.distMinX))
 
     const ddd_y_list = y_keys.map(item => {
-      let closestMinY = getClosestVal(h_xks, item)
-
-      const closestMinY_ruler = getClosestVal(horizontalRulers, item)
+      let { ksItem: closestMinY, distance: d_ref_y } = getClosestVal(h_xks, item)
+      const { ksItem: closestMinY_ruler, distance: d_ruler_y } = getClosestVal(horizontalRulers, item)
 
       let isSnappingRuler = false
-      if (closestMinY_ruler < closestMinY) {
+      if (d_ruler_y < d_ref_y) {
         closestMinY = closestMinY_ruler
         isSnappingRuler = true
       }
@@ -233,19 +232,19 @@ export class RefLine {
 // 获取最近的
 function getClosestVal(ks: number[], x: number) {
   if (ks.length === 0) {
-    return Infinity
+    return { ksItem: Infinity, distance: Infinity }
   }
 
-  let ans = ks[0]
-  let d = Math.abs(ks[0] - x)
+  let ksItem = ks[0]
+  let distance = Math.abs(ks[0] - x)
   for (let i = 1; i < ks.length; i++) {
-    if (Math.abs(ks[i] - x) < d) {
-      d = Math.abs(ks[i] - x)
-      ans = ks[i]
+    if (Math.abs(ks[i] - x) < distance) {
+      distance = Math.abs(ks[i] - x)
+      ksItem = ks[i]
     }
   }
 
-  return ans
+  return { ksItem, distance }
 }
 
 const isEqualNum = (a: number, b: number) => Math.abs(a - b) < 0.00001
