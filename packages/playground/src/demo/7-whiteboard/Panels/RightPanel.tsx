@@ -4,7 +4,7 @@ import { calcRotateRad, getScaleFromMatrix_x, getScaleFromMatrix_y, isImageShape
 import { deg2rad, rad2deg, RmstImage, UiBase } from 'rmst-render'
 import { round } from 'es-toolkit'
 
-import { WbInputNumber } from '../components/WbInputNumber'
+import { WbInputNumber, WbInputNumberProps } from '../components/WbInputNumber'
 import { applyToPoint, compose, inverse, rotate } from 'transformation-matrix'
 import OpenColor from 'open-color'
 import { SelectColor } from '../components/SelectColor'
@@ -184,8 +184,8 @@ export default function InfoRightPanel() {
   }
 
   return (
-    <div className="right-attr-panel flex-shrink-0 p-2 overflow-auto " style={{ width: 200 }}>
-      <div className="zoom-container flex flex-wrap bg-white rounded-lg p-2 border gap-1 items-center">
+    <div className="right-attr-panel flex-shrink-0 p-2 pt-0 overflow-auto " style={{ width: 200 }}>
+      <div className="zoom-container flex flex-wrap bg-white p-2 border gap-1 items-center">
         <button onClick={() => wbEditor.camera.zoomOut()}>缩小</button>
         <span style={{ width: 90 }} className="text-center">
           zoom: {round(zoom * 100)}%

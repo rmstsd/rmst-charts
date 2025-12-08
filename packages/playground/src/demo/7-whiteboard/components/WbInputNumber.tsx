@@ -1,18 +1,24 @@
+import { useEffectEvent } from '@/utils/hooks'
 import { isNil } from 'es-toolkit'
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
-interface WbInputNumber {
+export interface WbInputNumberProps {
   value?: number | string
   onChange?: (val: number) => void
 }
 
-export const WbInputNumber = (props: WbInputNumber) => {
+export const WbInputNumber = (props: WbInputNumberProps) => {
   const { value, onChange } = props
 
   const inputRef = useRef<HTMLInputElement>()
+  const setFocusedRef = useRef(false)
+
+  const getProps = useEffectEvent(() => props)
 
   useLayoutEffect(() => {
-    setInputValue(getValue(value))
+    if (!setFocusedRef.current) {
+      setInputValue(getValue(getProps().value))
+    }
   }, [value])
 
   const setInputValue = value => {
@@ -24,16 +30,29 @@ export const WbInputNumber = (props: WbInputNumber) => {
       className="px-1 py-[4px] border border-gray-300 rounded-md hover:border-gray-500 focus:outline-blue-500 "
       style={{ width: '100%' }}
       ref={inputRef}
+      type="number"
+      onFocus={() => {
+        setFocusedRef.current = true
+      }}
+      onKeyDown={evt => {
+        if (evt.key === 'Enter') {
+          evt.preventDefault()
+          inputRef.current.blur()
+        }
+      }}
       onBlur={evt => {
-        let val = Number(evt.target.value)
+        setFocusedRef.current = false
+        const nativeValue = evt.target.value
+        // todo 处理清空值的情况
+
+        let val = Number(nativeValue)
 
         if (isNaN(val)) {
           setInputValue(value)
         } else {
-          if (val === value) {
-            return
-          }
+          setInputValue(value)
 
+          // 对比新旧值 才 发出 onChange 事件?
           onChange?.(val)
         }
       }}
