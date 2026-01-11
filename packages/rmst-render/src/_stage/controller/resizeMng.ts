@@ -13,10 +13,8 @@ export class ResizeMng {
     matchMedia(mqString).addEventListener('change', updatePixelRatio, { signal: abCt.signal })
 
     const ob = new ResizeObserver(() => {
-      stage.updateCanvasSize()
+      stage.render()
       this.onResize()
-
-      stage.syncRender()
     })
 
     ob.observe(container)
