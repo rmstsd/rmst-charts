@@ -4,6 +4,8 @@ interface DragOptions {
   onDragEnd?: (upEvt: PointerEvent) => void
 
   onPointerUp?: (upEvt: PointerEvent) => void // 与 html 类似, 发生了 drag 后, 就不会触发 onPointerUp 事件
+
+  isDocumentMove?: boolean
 }
 
 let disableClick = false
@@ -18,12 +20,14 @@ document.addEventListener(
 )
 
 export const startDrag = (downEvt: React.PointerEvent | PointerEvent, options: DragOptions) => {
-  const { onDragStart, onDragMove, onDragEnd, onPointerUp } = options
+  const { onDragStart, onDragMove, onDragEnd, onPointerUp, isDocumentMove } = options
 
   const abCt = new AbortController()
 
-  const target = downEvt.target as HTMLElement
-  target.setPointerCapture(downEvt.pointerId)
+  const target: HTMLElement = isDocumentMove ? (document as any) : downEvt.target
+  if (!isDocumentMove) {
+    target.setPointerCapture(downEvt.pointerId)
+  }
 
   let isMoved = false
 

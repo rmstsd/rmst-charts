@@ -23,7 +23,9 @@ export default class ToolDrawRhombus extends ToolDrawByRect {
       d: this.getGraphPathD(rect).d,
       ...rect,
       name: ToolEnum.label(ToolEnum.Rhombus),
-      extraData: { wbType: ToolEnum.Rhombus }
+      extraData: {
+        wbType: ToolEnum.Rhombus
+      }
     })
   }
 }

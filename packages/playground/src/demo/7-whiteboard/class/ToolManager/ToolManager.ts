@@ -13,7 +13,11 @@ import ToolDrawEllipse from './ToolDraw/ToolDrawEllipse'
 import ToolDrawRhombus from './ToolDraw/ToolDrawRhombus'
 import ToolDrawPencil from './ToolDraw/ToolDrawPencil'
 import ToolDrawImage from './ToolDraw/ToolDrawImage'
+import ToolDrawPolygon from './ToolDraw/ToolDrawPolygon'
+import ToolDrawStar from './ToolDraw/ToolDrawStar'
+
 import EventEmitter from 'rmst-render/event_emitter'
+
 import { nextTick } from '@/utils'
 import { ToolRuler } from './ToolRuler'
 import { findHover_v2 } from 'rmst-render/_stage/findHover'
@@ -26,7 +30,9 @@ const ToolClassMap = {
   [ToolEnum.Ellipse]: ToolDrawEllipse,
   [ToolEnum.Rhombus]: ToolDrawRhombus,
   [ToolEnum.Pencil]: ToolDrawPencil,
-  [ToolEnum.Image]: ToolDrawImage
+  [ToolEnum.Image]: ToolDrawImage,
+  [ToolEnum.Polygon]: ToolDrawPolygon,
+  [ToolEnum.Star]: ToolDrawStar
 }
 
 type Events = {

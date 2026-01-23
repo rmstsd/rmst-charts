@@ -7,6 +7,8 @@ export default function MyTest() {
     const ctx = canvas.getContext('2d')
 
     const drawStage = () => {
+      canvas.width = container.clientWidth
+      canvas.height = container.clientHeight
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       ctx.rect(90, 90, 90, 90)
@@ -27,9 +29,6 @@ export default function MyTest() {
     }
 
     const ob = new ResizeObserver(() => {
-      canvas.width = container.clientWidth
-      canvas.height = container.clientHeight
-
       render()
     })
 

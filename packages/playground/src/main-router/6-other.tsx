@@ -5,7 +5,7 @@ import AniCurve from '@/demo/6-other/贝塞尔曲线计算动画'
 import LinePath from '@/demo/6-other/过点曲线'
 import CurveRect from '@/demo/6-other/渐变'
 import Translation from '@/demo/6-other/mtDe/Translation'
-import BBox from '@/demo/6-other/BBox'
+import CrossCoord from '@/demo/6-other/CrossCoord'
 import LineAnimate from '@/demo/6-other/折线计算动画'
 import 贝塞尔曲线峰值吸附 from '@/demo/6-other/贝塞尔曲线峰值吸附'
 import CanvasTransform from '@/demo/6-other/mtDe/CanvasTransform'
@@ -43,7 +43,7 @@ const otherRouteConfig: IRouteObject = {
     { path: '折线计算动画', element: <LineAnimate /> },
     { path: 'linePath', element: <LinePath />, uiConfig: { title: '过点曲线' } },
     { path: 'curveRect', element: <CurveRect />, uiConfig: { title: '渐变' } },
-    { path: 'brush', element: <BBox /> },
+    { path: 'CrossCoord', element: <CrossCoord /> },
     { path: 'XiFu', element: <XiFu /> }
   ]
 }

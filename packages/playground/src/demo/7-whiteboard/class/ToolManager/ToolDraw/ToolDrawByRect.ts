@@ -1,10 +1,10 @@
-import { getRectByTwoPoint, ICoord, IShape } from 'rmst-render'
+import { ICoord, IShape } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from './../type'
 import { translate } from 'transformation-matrix'
 import { IGraph } from '../../../type'
 import { defaultGraphFillColor } from '@/demo/7-whiteboard/color'
-import { cloneDeep, isNotNil, noop } from 'es-toolkit'
+import { cloneDeep, noop } from 'es-toolkit'
 import { ass } from '../ass'
 
 export default abstract class ToolDrawByRect implements ITool {
