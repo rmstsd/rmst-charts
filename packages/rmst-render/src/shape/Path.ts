@@ -8,7 +8,7 @@ const defaultData = {
   d: ''
 }
 
-interface PathData extends UiBaseData {
+export interface PathData extends UiBaseData {
   d?: string
   width?: number
   height?: number

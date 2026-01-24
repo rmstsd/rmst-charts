@@ -172,7 +172,7 @@ export default class selectedManager {
       closed: true,
       fillStyle: 'transparent',
       strokeStyle: primaryColor,
-      lineWidth: 2
+      lineWidth: 1
     })
 
     const rad = calcRotateRad(downRect.mt)

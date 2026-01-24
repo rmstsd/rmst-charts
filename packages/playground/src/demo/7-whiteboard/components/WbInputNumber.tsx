@@ -30,7 +30,7 @@ export const WbInputNumber = (props: WbInputNumberProps) => {
       className="px-1 py-[4px] border border-gray-300 rounded-md hover:border-gray-500 focus:outline-blue-500 "
       style={{ width: '100%' }}
       ref={inputRef}
-      type="number"
+      // type="number"
       onFocus={() => {
         setFocusedRef.current = true
       }}

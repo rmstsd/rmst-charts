@@ -57,7 +57,9 @@ export function drawStage(stage: Stage) {
           fillOrStroke(ctx, elementItem)
           break
         }
-        case 'Path': {
+        case 'Path':
+        case 'Star':
+        case 'Polygon': {
           elementItem.path2D = new Path2D((elementItem as Path).data.d)
           fillOrStroke(ctx, elementItem)
           break

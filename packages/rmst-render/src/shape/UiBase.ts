@@ -42,7 +42,7 @@ export interface UiBaseData extends EventOpt {
 
   rotate?: number // 角度
 
-  extraData?: any
+  extraData?: any // 不能存储函数 只能存 JSON
 
   mt?: Matrix
 
@@ -89,13 +89,13 @@ export abstract class UiBase<T = UiBaseData> extends AbsEvent {
 
   readonly type: IShapeType
 
-  extraData
-
   declare data: UiBaseData
 
   declare path2D: Path2D
 
   stage: Stage
+
+  extraFunction
 
   get id() {
     return this.data.id

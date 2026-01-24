@@ -58,6 +58,14 @@ export const isImageShape = (shape: IShape) => {
   return shape.data.extraData?.wbType === ToolEnum.Image
 }
 
+export const isStarShape = (shape: IShape) => {
+  return shape.data.extraData?.wbType === ToolEnum.Star
+}
+
+export const isPolygonShape = (shape: IShape) => {
+  return shape.data.extraData?.wbType === ToolEnum.Polygon
+}
+
 // 是拖拽出来的 红色标尺
 export const isRulerLineHorizontal = (shape: IShape) => {
   const type = shape?.data.extraData?.type

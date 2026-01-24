@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useWbEditor } from '../context'
-import { calcRotateRad, getScaleFromMatrix_x, getScaleFromMatrix_y, isImageShape, isPencilShape } from '../constant'
+import {
+  calcRotateRad,
+  getScaleFromMatrix_x,
+  getScaleFromMatrix_y,
+  isImageShape,
+  isPencilShape,
+  isPolygonShape,
+  isStarShape
+} from '../constant'
 import { deg2rad, rad2deg, RmstImage, UiBase } from 'rmst-render'
 import { round } from 'es-toolkit'
 
@@ -28,7 +36,13 @@ const attrList = [
   { label: 'Y', dataKey: 'mt_y', getValue: (shapeItem: UiBase) => round(shapeItem.data.mt.f, 2) },
   { label: 'W', dataKey: 'width', getValue: (shapeItem: UiBase) => round(shapeItem.data.width, 2) },
   { label: 'H', dataKey: 'height', getValue: (shapeItem: UiBase) => round(shapeItem.data.height, 2) },
-  { label: 'R', dataKey: 'mt_rotate', getValue: (shapeItem: UiBase) => round(rad2deg(calcRotateRad(shapeItem.data.mt)), 5) }
+  { label: '角度', dataKey: 'mt_rotate', getValue: (shapeItem: UiBase) => round(rad2deg(calcRotateRad(shapeItem.data.mt)), 2) },
+  {
+    label: 'count',
+    dataKey: 'side',
+    getValue: (shapeItem: UiBase) => (shapeItem.data as any).side,
+    support: (shapeItem: UiBase) => isStarShape(shapeItem) || isPolygonShape(shapeItem)
+  }
 ]
 
 const colorAttrList = [
@@ -85,12 +99,17 @@ export default function InfoRightPanel() {
   const baseAttrData =
     selectedItems.length === 0
       ? []
-      : attrList.map(item => {
-          const values = new Set(selectedItems.map(shapeItem => item.getValue(shapeItem)))
-          const isMulti = values.size > 1
+      : attrList
+          .map(item => {
+            const support = item.support || (() => true)
+            const supportItems = selectedItems.filter(shapeItem => support(shapeItem))
 
-          return { ...item, isMulti, value: isMulti ? null : [...values][0] }
-        })
+            const values = new Set(supportItems.map(shapeItem => item.getValue(shapeItem)))
+            const isMulti = values.size > 1
+
+            return { ...item, isSupport: supportItems.length > 0, isMulti, value: isMulti ? null : [...values][0] }
+          })
+          .filter(item => item.isSupport)
 
   const colorAttrData =
     selectedItems.length === 0

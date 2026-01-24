@@ -8,6 +8,8 @@ export * from './Line'
 export * from './Trapezoid'
 export * from './Path'
 export * from './Image'
+export * from './Star'
+export * from './Polygon'
 
 export * from './Group'
 export * from './Box'
