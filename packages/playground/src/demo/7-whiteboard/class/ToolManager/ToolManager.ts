@@ -123,6 +123,8 @@ export default class ToolManager {
         } else {
           this.switchTool(ToolEnum.Select)
         }
+
+        this.wbEditor.triggerRender()
       }
 
       startDrag(downEvt, {
@@ -234,13 +236,13 @@ export default class ToolManager {
     if (!hovered) {
       wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
       wbEditor.selectManager.clearHover()
-      return
+      // return
     }
 
     const handleInfo = this.handleInfo()
     if (handleInfo) {
       this.wbEditor.cursorManager.setCursor(handleInfo.cursor)
-      return
+      // return
     }
 
     if (this.currentTool === ToolEnum.Select) {

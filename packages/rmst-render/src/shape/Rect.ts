@@ -1,5 +1,8 @@
+import { omit } from 'es-toolkit'
 import { IShapeType } from '../type'
 import UiBase, { UiBaseData } from './UiBase'
+import { createRoundedRectPath } from '../renderer/canvas'
+import Path from './Path'
 
 export const defaultRectData = {
   cornerRadius: 0,
@@ -19,6 +22,15 @@ export class Rect extends UiBase<RectData> {
   type: IShapeType = 'Rect'
 
   declare data: RectData
+
+  override getOutLineShape(): UiBase<RectData> {
+    let newData = omit(this.data, ['children'])
+
+    newData = structuredClone(newData)
+    newData.d = createRoundedRectPath(newData.x, newData.y, newData.width, newData.height, newData.cornerRadius)
+
+    return new Path(newData)
+  }
 
   getBBox() {
     const data = this.data

@@ -11,7 +11,10 @@ export enum Graph_Id {
 
   ruler_zone_horizontal = 'ruler_zone_horizontal',
   ruler_zone_vertical = 'ruler_zone_vertical',
-  ruler_zone_both = 'ruler_zone_both'
+  ruler_zone_both = 'ruler_zone_both',
+
+  //
+  corner_handle = 'custom_corner_handle'
 }
 
 export enum Ruler_Direction {
@@ -25,8 +28,13 @@ export const isCtrlHandleShape = (shape: IShape) => {
   return (
     shape.data.id === Graph_Id.graph_ctrl_translate ||
     shape.data.id === Graph_Id.graph_ctrl_rotate ||
-    shape.data.id === Graph_Id.graph_ctrl_scale
+    shape.data.id === Graph_Id.graph_ctrl_scale ||
+    isCustomHandleShape(shape)
   )
+}
+
+export const isCustomHandleShape = (shape: IShape) => {
+  return shape.data.id.startsWith('custom_')
 }
 
 // 是用户绘制出来的图形

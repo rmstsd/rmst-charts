@@ -1,9 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import WhiteboardEditor from '../whiteboardEditor'
-import { applyToPoint, compose, inverse, rotateDEG, scale, skew, translate } from 'transformation-matrix'
+import { applyToPoint, compose, scale, translate } from 'transformation-matrix'
 import EventEmitter from 'rmst-render/event_emitter'
 import { ICoord, mergeBox } from 'rmst-render'
-import { cloneDeep } from 'es-toolkit'
 
 const zoomSpeed = 1.4
 const scrollSpeed = 100
@@ -36,7 +35,13 @@ export default class Camera {
 
         if (evt.ctrlKey) {
           const nvOrigin = wbEditor.coordSys.client2Scene(evt)
-          let newZoom = evt.deltaY > 0 ? this.zoom / zoomSpeed : this.zoom * zoomSpeed
+
+          let delta = evt.deltaY
+          const isTrackpad = evt.deltaMode === 0 && Math.abs(evt.deltaY) < 50
+          const speed = isTrackpad ? 0.01 : 0.002
+          let zoom = Math.exp(-delta * speed)
+          let newZoom = this.zoom * zoom
+
           this.zoomTo(newZoom, nvOrigin)
         } else {
           // 当触发了鼠标按下平移, 则禁止滚轮平移
@@ -49,7 +54,9 @@ export default class Camera {
           if (evt.shiftKey) {
             tmt = evt.deltaY > 0 ? translate(-scrollSpeed, 0) : translate(scrollSpeed, 0)
           } else {
-            tmt = evt.deltaY > 0 ? translate(0, -scrollSpeed) : translate(0, scrollSpeed)
+            // tmt = evt.deltaY > 0 ? translate(0, -scrollSpeed) : translate(0, scrollSpeed)
+
+            tmt = translate(-evt.deltaX, -evt.deltaY)
           }
 
           const sceneCoord = { x: tmt.e / this.zoom, y: tmt.f / this.zoom }

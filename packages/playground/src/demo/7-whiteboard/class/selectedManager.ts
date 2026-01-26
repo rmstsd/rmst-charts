@@ -2,6 +2,7 @@ import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, noop, pull } from 'es-toolkit'
 import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
 import {
+  Circle,
   distanceTowPoint,
   Group,
   ICoord,
@@ -20,6 +21,7 @@ import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
+import { maxCornerRadius } from './ToolManager/ToolSelect/ToolHandle/HandleRect'
 
 let debugHandle = false
 
@@ -311,6 +313,42 @@ export default class selectedManager {
       extraData: { transformOrigin: TransformOrigin.Right, cursorType: CursorType.scale_right }
     })
 
+    let customHandles = []
+
+    if (this.customHandleVisible) {
+      {
+        const selectedGraph = this.selectedGraphs[0] as Rect
+        let radius = selectedGraph.data.cornerRadius
+        if (!this.wbEditor.toolManager.pointerContext.isPointerDown) {
+          radius = Math.max(radius, 10)
+        }
+        radius = Math.min(radius, maxCornerRadius(selectedGraph.data.width, selectedGraph.data.height))
+
+        const cornerHandles = [
+          { x: radius, y: radius, type: 'tl' },
+          { x: tr.x - radius, y: radius, type: 'tr' },
+          { x: br.x - radius, y: br.y - radius, type: 'br' },
+          { x: radius, y: bl.y - radius, type: 'bl' }
+        ].map(item => {
+          const point = applyToPoint(mtWorld, item)
+          return new Circle({
+            id: Graph_Id.corner_handle,
+            x: point.x,
+            y: point.y,
+            radius: 5,
+            fillStyle: 'white',
+            strokeStyle: primaryColor,
+            extraData: {
+              cursorType: 'default',
+              handleType: item.type
+            }
+          })
+        })
+
+        customHandles.push(...cornerHandles)
+      }
+    }
+
     const g = new Group({ name: 'ctrl-box' })
     g.append([
       ...clonedOutlines,
@@ -331,11 +369,24 @@ export default class selectedManager {
       tlText,
       trText,
       brText,
-      blText
+      blText,
+
+      ...customHandles
     ])
 
     this.wbEditor.ctrlBoxLayer.removeAllChildren()
     this.wbEditor.ctrlBoxLayer.append(g)
+  }
+
+  customHandleVisible = true
+
+  showCustomHandles() {
+    this.customHandleVisible = true
+    this.renderSelected()
+  }
+  hideCustomHandles() {
+    this.customHandleVisible = false
+    this.renderSelected()
   }
 
   enableHover() {

@@ -1,13 +1,14 @@
 import { ICoord } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import { ITool } from '../type'
-import { Graph_Id, isCtrlHandleShape, isWbGraphShape } from '@/demo/7-whiteboard/constant'
+import { Graph_Id, isCtrlHandleShape, isCustomHandleShape, isWbGraphShape } from '@/demo/7-whiteboard/constant'
 import ToolBoxSelection from './ToolBoxSelection'
 import ToolTranslate from './ToolTranslate'
 import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
 import { getCursorRotation, WbCursor } from '../../cursorManager'
+import { ToolHandleRect } from './ToolHandle/HandleRect'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -25,12 +26,14 @@ export default class ToolSelect implements ITool {
 
   onPointerMoveNotDragging({ hovered, isInWbCanvas }) {
     const { wbEditor } = this
+    this.wbEditor.selectManager.hideCustomHandles()
 
-    if (!isInWbCanvas) {
+    if (!isInWbCanvas || !hovered) {
       this.currentHoverStrategyTypeId = null
 
       wbEditor.selectManager.clearHover()
       wbEditor.cursorManager.setCursor(this.cursor)
+      this.wbEditor.selectManager.hideCustomHandles()
       return
     }
 
@@ -39,6 +42,7 @@ export default class ToolSelect implements ITool {
 
     if (isCtrlHandle) {
       wbEditor.selectManager.clearHover()
+      this.wbEditor.selectManager.showCustomHandles()
 
       const downRect = wbEditor.selectManager.transformRect
       const cursorType = hovered.data.extraData?.cursorType
@@ -59,6 +63,13 @@ export default class ToolSelect implements ITool {
           this.currentHoverStrategyTypeId = Graph_Id.graph_ctrl_scale
           const rotation = getCursorRotation('resize', cursorType, downRect.mt)
           wbEditor.cursorManager.setCursor({ type: 'resize', rotation })
+          break
+        }
+
+        case Graph_Id.corner_handle: {
+          this.currentHoverStrategyTypeId = Graph_Id.corner_handle
+          this.wbEditor.cursorManager.setCursor(cursorType)
+
           break
         }
 
@@ -94,13 +105,24 @@ export default class ToolSelect implements ITool {
         this.currentStrategy = new ToolTranslate(wbEditor)
 
         wbEditor.triggerRender()
-      } else if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
-        this.currentStrategy = new ToolTranslate(wbEditor)
-      } else if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
-        this.currentStrategy = new ToolRotate(wbEditor, hovered.data.extraData?.cursorType)
-      } else if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
-        const { transformOrigin, cursorType } = hovered.data.extraData
-        this.currentStrategy = new ToolScale(wbEditor, transformOrigin, cursorType)
+      } else {
+        if (isCustomHandleShape(hovered)) {
+          if (hovered.data.id === Graph_Id.corner_handle) {
+            const { handleType } = hovered.data.extraData
+            this.currentStrategy = new ToolHandleRect(wbEditor, handleType)
+          }
+        } else {
+          this.wbEditor.selectManager.hideCustomHandles()
+
+          if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
+            this.currentStrategy = new ToolTranslate(wbEditor)
+          } else if (hovered.data.id === Graph_Id.graph_ctrl_rotate) {
+            this.currentStrategy = new ToolRotate(wbEditor, hovered.data.extraData?.cursorType)
+          } else if (hovered.data.id === Graph_Id.graph_ctrl_scale) {
+            const { transformOrigin, cursorType } = hovered.data.extraData
+            this.currentStrategy = new ToolScale(wbEditor, transformOrigin, cursorType)
+          }
+        }
       }
     }
 

@@ -1,4 +1,4 @@
-import { IRect, Path } from 'rmst-render'
+import { IRect, Path, Rect } from 'rmst-render'
 import WhiteboardEditor from '../../../whiteboardEditor'
 import ToolDrawByRect from './ToolDrawByRect'
 import { ToolEnum } from './../constant'
@@ -17,8 +17,7 @@ export default class ToolDrawRect extends ToolDrawByRect {
   getShape() {
     const rect = { x: 0, y: 0, width: 1, height: 1 }
 
-    return new Path({
-      d: this.getGraphPathD(rect),
+    return new Rect({
       ...rect,
       name: ToolEnum.label(ToolEnum.Rect),
       extraData: { wbType: ToolEnum.Rect }

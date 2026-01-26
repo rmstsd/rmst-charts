@@ -1,19 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useWbEditor } from '../context'
-import {
-  calcRotateRad,
-  getScaleFromMatrix_x,
-  getScaleFromMatrix_y,
-  isImageShape,
-  isPencilShape,
-  isPolygonShape,
-  isStarShape
-} from '../constant'
+import { calcRotateRad, isImageShape, isPencilShape, isPolygonShape, isRectShape, isStarShape } from '../constant'
 import { deg2rad, rad2deg, RmstImage, UiBase } from 'rmst-render'
 import { round } from 'es-toolkit'
 
-import { WbInputNumber, WbInputNumberProps } from '../components/WbInputNumber'
-import { applyToPoint, compose, inverse, rotate } from 'transformation-matrix'
+import { WbInputNumber } from '../components/WbInputNumber'
+import { applyToPoint, compose, rotate } from 'transformation-matrix'
 import OpenColor from 'open-color'
 import { SelectColor } from '../components/SelectColor'
 import { showOpenFilePicker } from 'show-open-file-picker'
@@ -42,6 +34,12 @@ const attrList = [
     dataKey: 'side',
     getValue: (shapeItem: UiBase) => (shapeItem.data as any).side,
     support: (shapeItem: UiBase) => isStarShape(shapeItem) || isPolygonShape(shapeItem)
+  },
+  {
+    label: 'radius',
+    dataKey: 'cornerRadius',
+    getValue: (shapeItem: UiBase) => (shapeItem.data as any).cornerRadius,
+    support: (shapeItem: UiBase) => isRectShape(shapeItem) || isImageShape(shapeItem)
   }
 ]
 
