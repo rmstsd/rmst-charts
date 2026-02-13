@@ -1,6 +1,6 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, noop, pull } from 'es-toolkit'
-import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
+import { applyToPoint, compose, identity, inverse, rotate, translate } from 'transformation-matrix'
 import {
   Circle,
   distanceTowPoint,
@@ -22,6 +22,7 @@ import { TransformOrigin } from './ToolManager/constant'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
 import { maxCornerRadius } from './ToolManager/ToolSelect/ToolHandle/HandleRect'
+import { cornerRadiusCursor } from './cursorManager/icon'
 
 let debugHandle = false
 
@@ -315,14 +316,25 @@ export default class selectedManager {
 
     let customHandles = []
 
-    if (this.customHandleVisible) {
-      {
+    if (this.customHandleVisible && this.selectedGraphs.length === 1) {
+      let w = brCoord.x - tlCoord.x
+      let h = brCoord.y - tlCoord.y
+      let minSize = Math.min(w, h)
+      if (minSize > 50) {
         const selectedGraph = this.selectedGraphs[0] as Rect
         let radius = selectedGraph.data.cornerRadius
-        if (!this.wbEditor.toolManager.pointerContext.isPointerDown) {
-          radius = Math.max(radius, 10)
-        }
         radius = Math.min(radius, maxCornerRadius(selectedGraph.data.width, selectedGraph.data.height))
+
+        // 防止离四边太近
+        if (!this.wbEditor.toolManager.pointerContext.isPointerDown) {
+          let mmt = { ...mtWorld, e: 0, f: 0 }
+          const point = applyToPoint(mmt, { x: 0, y: radius })
+          if (point.y < 14) {
+            point.y = 14
+            let invPoint = applyToPoint(inverse(mmt), { x: 0, y: point.y })
+            radius = invPoint.y
+          }
+        }
 
         const cornerHandles = [
           { x: radius, y: radius, type: 'tl' },
@@ -339,7 +351,7 @@ export default class selectedManager {
             fillStyle: 'white',
             strokeStyle: primaryColor,
             extraData: {
-              cursorType: 'default',
+              cursorType: cornerRadiusCursor,
               handleType: item.type
             }
           })
