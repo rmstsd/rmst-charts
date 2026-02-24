@@ -8,7 +8,8 @@ import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
 import { getCursorRotation, WbCursor } from '../../cursorManager'
-import { ToolHandleRect } from './ToolHandle/HandleRect'
+import { ICustomHandleController } from '../type'
+import { ToolEnumKey } from '../constant'
 
 export default class ToolSelect implements ITool {
   constructor(private wbEditor: WhiteboardEditor) {}
@@ -109,7 +110,15 @@ export default class ToolSelect implements ITool {
         if (isCustomHandleShape(hovered)) {
           if (hovered.data.id === Graph_Id.corner_handle) {
             const { handleType } = hovered.data.extraData
-            this.currentStrategy = new ToolHandleRect(wbEditor, handleType)
+            const selectedShape = wbEditor.selectManager.selectedGraphs[0]
+            const wbType = selectedShape?.data.extraData?.wbType
+
+            if (wbType) {
+              const controller = wbEditor.controlHandleManager.getController(wbType)
+              if (controller) {
+                this.currentStrategy = controller.getDragTool(wbEditor, handleType)
+              }
+            }
           }
         } else {
           this.wbEditor.selectManager.hideCustomHandles()

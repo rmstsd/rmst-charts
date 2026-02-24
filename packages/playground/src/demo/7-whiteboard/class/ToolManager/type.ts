@@ -35,3 +35,8 @@ export interface ITool {
   onAltToggle?: (isAltKeyPressing: boolean) => void
   onSpaceToggle?: (isSpaceKeyPressing: boolean) => void
 }
+
+export interface ICustomHandleController {
+  renderHandles: (wbEditor: any, selectedShape: IShape) => IShape[]
+  getDragTool: (wbEditor: any, handleType: string) => ITool
+}

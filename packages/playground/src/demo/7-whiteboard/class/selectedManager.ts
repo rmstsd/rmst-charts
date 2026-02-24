@@ -21,7 +21,6 @@ import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
-import { maxCornerRadius } from './ToolManager/ToolSelect/ToolHandle/HandleRect'
 import { cornerRadiusCursor } from './cursorManager/icon'
 
 let debugHandle = false
@@ -317,47 +316,15 @@ export default class selectedManager {
     let customHandles = []
 
     if (this.customHandleVisible && this.selectedGraphs.length === 1) {
-      let w = brCoord.x - tlCoord.x
-      let h = brCoord.y - tlCoord.y
-      let minSize = Math.min(w, h)
-      if (minSize > 50) {
-        const selectedGraph = this.selectedGraphs[0] as Rect
-        let radius = selectedGraph.data.cornerRadius
-        radius = Math.min(radius, maxCornerRadius(selectedGraph.data.width, selectedGraph.data.height))
+      const selectedGraph = this.selectedGraphs[0]
+      const wbType = selectedGraph.data.extraData?.wbType
 
-        // 防止离四边太近
-        if (!this.wbEditor.toolManager.pointerContext.isPointerDown) {
-          let mmt = { ...mtWorld, e: 0, f: 0 }
-          const point = applyToPoint(mmt, { x: 0, y: radius })
-          if (point.y < 14) {
-            point.y = 14
-            let invPoint = applyToPoint(inverse(mmt), { x: 0, y: point.y })
-            radius = invPoint.y
-          }
+      if (wbType) {
+        const controller = this.wbEditor.controlHandleManager.getController(wbType)
+        if (controller) {
+          const handles = controller.renderHandles(this.wbEditor, selectedGraph)
+          customHandles.push(...handles)
         }
-
-        const cornerHandles = [
-          { x: radius, y: radius, type: 'tl' },
-          { x: tr.x - radius, y: radius, type: 'tr' },
-          { x: br.x - radius, y: br.y - radius, type: 'br' },
-          { x: radius, y: bl.y - radius, type: 'bl' }
-        ].map(item => {
-          const point = applyToPoint(mtWorld, item)
-          return new Circle({
-            id: Graph_Id.corner_handle,
-            x: point.x,
-            y: point.y,
-            radius: 5,
-            fillStyle: 'white',
-            strokeStyle: primaryColor,
-            extraData: {
-              cursorType: cornerRadiusCursor,
-              handleType: item.type
-            }
-          })
-        })
-
-        customHandles.push(...cornerHandles)
       }
     }
 
