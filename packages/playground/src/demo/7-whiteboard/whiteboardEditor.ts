@@ -7,7 +7,6 @@ import ToolManager from './class/ToolManager/ToolManager'
 import Camera from './class/camera'
 import { CoordSys } from './class/coordSys'
 import CursorManager from './class/cursorManager'
-import ControlHandleManager from './class/controlHandleManager'
 import { Ruler, rulerSize } from './class/ruler'
 import { Keyboard } from './class/keyboard'
 
@@ -52,7 +51,6 @@ class WhiteboardEditor {
   coordSys = new CoordSys(this)
   toolManager = new ToolManager(this)
   selectManager = new SelectedManager(this)
-  controlHandleManager = new ControlHandleManager(this)
   cursorManager = new CursorManager(this)
   refLine = new RefLine(this)
   ruler = new Ruler(this)

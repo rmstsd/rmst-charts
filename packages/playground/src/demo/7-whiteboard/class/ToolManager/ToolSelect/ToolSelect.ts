@@ -8,14 +8,18 @@ import ToolRotate from './ToolRotate'
 import ToolScale from './ToolScale'
 import { isFunction } from 'es-toolkit'
 import { getCursorRotation, WbCursor } from '../../cursorManager'
-import { ToolHandleRect } from './ToolHandle/HandleRect'
+import ToolCustomHandle from './ToolCustomHandle/ToolCustomHandle'
 
 export default class ToolSelect implements ITool {
-  constructor(private wbEditor: WhiteboardEditor) {}
+  toolCustomHandle: ToolCustomHandle
+
+  constructor(private wbEditor: WhiteboardEditor) {
+    this.toolCustomHandle = new ToolCustomHandle(this.wbEditor)
+  }
 
   cursor?: WbCursor = { type: 'select' }
 
-  currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选
+  currentStrategy: ITool // 平移 | 缩放 | 旋转 | 框选 | 独有的 handle
   currentStrategyDispose
 
   currentHoverStrategyTypeId
@@ -26,14 +30,14 @@ export default class ToolSelect implements ITool {
 
   onPointerMoveNotDragging({ hovered, isInWbCanvas }) {
     const { wbEditor } = this
-    this.wbEditor.selectManager.hideCustomHandles()
+    wbEditor.selectManager.setCustomHandleVisible(false)
 
     if (!isInWbCanvas || !hovered) {
       this.currentHoverStrategyTypeId = null
 
       wbEditor.selectManager.clearHover()
       wbEditor.cursorManager.setCursor(this.cursor)
-      this.wbEditor.selectManager.hideCustomHandles()
+      wbEditor.selectManager.setCustomHandleVisible(false)
       return
     }
 
@@ -42,7 +46,7 @@ export default class ToolSelect implements ITool {
 
     if (isCtrlHandle) {
       wbEditor.selectManager.clearHover()
-      this.wbEditor.selectManager.showCustomHandles()
+      wbEditor.selectManager.setCustomHandleVisible(true)
 
       const downRect = wbEditor.selectManager.transformRect
       const cursorType = hovered.data.extraData?.cursorType
@@ -109,10 +113,18 @@ export default class ToolSelect implements ITool {
         if (isCustomHandleShape(hovered)) {
           if (hovered.data.id === Graph_Id.corner_handle) {
             const { handleType } = hovered.data.extraData
-            this.currentStrategy = new ToolHandleRect(wbEditor, handleType)
+            const selectedShape = wbEditor.selectManager.selectedGraphs[0]
+            const wbType = selectedShape?.data.extraData?.wbType
+
+            if (wbType) {
+              const provider = this.toolCustomHandle.getProvider(wbType)
+              if (provider) {
+                this.currentStrategy = provider.getDragTool(wbEditor, handleType)
+              }
+            }
           }
         } else {
-          this.wbEditor.selectManager.hideCustomHandles()
+          this.wbEditor.selectManager.setCustomHandleVisible(false)
 
           if (hovered.data.id === Graph_Id.graph_ctrl_translate) {
             this.currentStrategy = new ToolTranslate(wbEditor)

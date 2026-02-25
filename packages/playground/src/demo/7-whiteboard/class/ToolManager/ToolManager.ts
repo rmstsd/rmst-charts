@@ -217,6 +217,16 @@ export default class ToolManager {
     this.wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
   }
 
+  getCurrentToolClass(tool: ToolEnumKey): ITool | undefined {
+    // Return early if we can't fetch it, although typically tools are instantiated on switch.
+    // However, ToolClassMap doesn't keep instances, it's just classes.
+    // If the user expects to get the constructed instance, it must be currentToolClass.
+    if (this.currentTool === tool) {
+      return this.currentToolClass
+    }
+    return undefined
+  }
+
   findHover() {
     const { wbEditor } = this
     const worldPoint = wbEditor.coordSys.client2World(this.pointerContext.clientCoord, true)
