@@ -1,8 +1,8 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { IToolCustomHandle, ITool } from '../../type'
 import { IShape, Rect, Circle } from 'rmst-render'
-import { applyToPoint, inverse } from 'transformation-matrix'
-import { Graph_Id } from '@/demo/7-whiteboard/constant'
+import { applyToPoint, compose, inverse } from 'transformation-matrix'
+import { getScaleFromMatrix_x, getScaleFromMatrix_y, Graph_Id } from '@/demo/7-whiteboard/constant'
 import { primaryColor } from '@/demo/7-whiteboard/color'
 import { cornerRadiusCursor } from '@/demo/7-whiteboard/class/cursorManager/icon'
 import { ICoord } from 'rmst-render'
@@ -105,30 +105,19 @@ export class ToolCustomHandleRect implements IToolCustomHandle {
   renderHandles(wbEditor: WhiteboardEditor, selectedShape: IShape): IShape[] {
     const rectShape = selectedShape as Rect
 
-    // Extracted from selectedManager.ts
     const downRect = wbEditor.selectManager.transformRect
-    const tlCoord = applyToPoint(wbEditor.graphLayer.data.mt, applyToPoint(downRect.mt, { x: 0, y: 0 }))
-    const trCoord = applyToPoint(wbEditor.graphLayer.data.mt, applyToPoint(downRect.mt, { x: downRect.width, y: 0 }))
-    const brCoord = applyToPoint(
-      wbEditor.graphLayer.data.mt,
-      applyToPoint(downRect.mt, { x: downRect.width, y: downRect.height })
-    )
-    const blCoord = applyToPoint(wbEditor.graphLayer.data.mt, applyToPoint(downRect.mt, { x: 0, y: downRect.height }))
 
-    let w = brCoord.x - tlCoord.x
-    let h = brCoord.y - tlCoord.y
+    const mtWorld = compose(wbEditor.graphLayer.data.mt, downRect.mt)
+
+    let w = getScaleFromMatrix_x(mtWorld) * downRect.width
+    let h = getScaleFromMatrix_y(mtWorld) * downRect.height
     let minSize = Math.min(w, h)
-
     if (minSize <= 50) {
       return []
     }
 
     let radius = rectShape.data.cornerRadius || 0
     radius = Math.min(radius, maxCornerRadius(rectShape.data.width, rectShape.data.height))
-
-    const mtWorld = { ...wbEditor.graphLayer.data.mt }
-    mtWorld.e += downRect.mt.e
-    mtWorld.f += downRect.mt.f
 
     if (!wbEditor.toolManager.pointerContext.isPointerDown) {
       let mmt = { ...mtWorld, e: 0, f: 0 }
