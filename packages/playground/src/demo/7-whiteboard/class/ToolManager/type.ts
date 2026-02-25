@@ -1,5 +1,6 @@
 import { ICoord, IShape } from 'rmst-render'
 import { WbCursor } from '../cursorManager'
+import WhiteboardEditor from '../../whiteboardEditor'
 
 export type PointerContext = {
   hovered: IShape
@@ -36,7 +37,7 @@ export interface ITool {
   onSpaceToggle?: (isSpaceKeyPressing: boolean) => void
 }
 
-export interface ICustomHandleController {
-  renderHandles: (wbEditor: any, selectedShape: IShape) => IShape[]
-  getDragTool: (wbEditor: any, handleType: string) => ITool
+export interface IToolCustomHandle {
+  renderHandles: (wbEditor: WhiteboardEditor, selectedShape: IShape) => IShape[]
+  getDragTool: (wbEditor: WhiteboardEditor, handleType: string) => ITool
 }

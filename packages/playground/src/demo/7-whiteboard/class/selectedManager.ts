@@ -1,8 +1,7 @@
 import WhiteboardEditor from '../whiteboardEditor'
 import { cloneDeep, noop, pull } from 'es-toolkit'
-import { applyToPoint, compose, identity, inverse, rotate, translate } from 'transformation-matrix'
+import { applyToPoint, compose, identity, rotate, translate } from 'transformation-matrix'
 import {
-  Circle,
   distanceTowPoint,
   Group,
   ICoord,
@@ -21,7 +20,8 @@ import { primaryColor } from '../color'
 import { TransformOrigin } from './ToolManager/constant'
 import colorAlpha from 'color-alpha'
 import { CursorType } from './cursorManager'
-import { cornerRadiusCursor } from './cursorManager/icon'
+import { ToolEnum } from './ToolManager/constant'
+import ToolSelect from './ToolManager/ToolSelect/ToolSelect'
 
 let debugHandle = false
 
@@ -320,9 +320,11 @@ export default class selectedManager {
       const wbType = selectedGraph.data.extraData?.wbType
 
       if (wbType) {
-        const controller = this.wbEditor.controlHandleManager.getController(wbType)
-        if (controller) {
-          const handles = controller.renderHandles(this.wbEditor, selectedGraph)
+        // 由于 ToolCustomHandle 只会在选择工具中被使用，所以从 ToolSelect 中获取
+        const toolSelect = this.wbEditor.toolManager.getCurrentToolClass(ToolEnum.Select) as ToolSelect
+        const provider = toolSelect?.toolCustomHandle?.getProvider(wbType)
+        if (provider) {
+          const handles = provider.renderHandles(this.wbEditor, selectedGraph)
           customHandles.push(...handles)
         }
       }
@@ -357,14 +359,9 @@ export default class selectedManager {
     this.wbEditor.ctrlBoxLayer.append(g)
   }
 
-  customHandleVisible = true
-
-  showCustomHandles() {
-    this.customHandleVisible = true
-    this.renderSelected()
-  }
-  hideCustomHandles() {
-    this.customHandleVisible = false
+  private customHandleVisible = true
+  setCustomHandleVisible(visible: boolean) {
+    this.customHandleVisible = visible
     this.renderSelected()
   }
 
