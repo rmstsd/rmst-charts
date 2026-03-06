@@ -13,6 +13,7 @@ import { Keyboard } from './class/keyboard'
 import { Graph_Id } from './constant'
 import EventEmitter from 'rmst-render/event_emitter'
 import { RefLine } from './class/refLine'
+import { PreferenceConfig } from './class/preference-config'
 
 // 只是为了 log 的时候好区别
 class GraphLayerWithRulerWrapper extends Group {}
@@ -54,6 +55,8 @@ class WhiteboardEditor {
   cursorManager = new CursorManager(this)
   refLine = new RefLine(this)
   ruler = new Ruler(this)
+
+  preferenceConfig = new PreferenceConfig(this)
 
   dispose() {
     this.stage?.dispose()

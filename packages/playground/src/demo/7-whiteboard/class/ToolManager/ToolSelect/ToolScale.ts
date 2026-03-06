@@ -10,7 +10,11 @@ import { recomputeTransformRect } from '@/demo/6-other/mtDe/Xg_multi/util'
 import { calcRotateRad } from '@/demo/7-whiteboard/constant'
 
 export default class ToolScale implements ITool {
-  constructor(private wbEditor: WhiteboardEditor, private transformOrigin: TransformOrigin, private cursorType) {
+  constructor(
+    private wbEditor: WhiteboardEditor,
+    private transformOrigin: TransformOrigin,
+    private cursorType
+  ) {
     console.log(transformOrigin)
 
     if (!transformOrigin) {
@@ -92,9 +96,24 @@ export default class ToolScale implements ITool {
       const item = this.wbEditor.selectManager.selectedGraphs[0]
       item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
+      // 存在非 90 度倍数旋转角度的项
+      const isExistNot_x90Deg = this.wbEditor.selectManager.selectedGraphs.some(
+        item => calcRotateRad(this.downSnap[item.id].graphShapeRect.mt) % (Math.PI / 2) !== 0
+      )
+
+      let keepRatio = isShiftKeyPressing
+      const { preference } = this.wbEditor.preferenceConfig
+      if (preference.skewInResize) {
+      } else {
+        if (isExistNot_x90Deg) {
+          keepRatio = true
+        } else {
+        }
+      }
+
       transformRect = resizeRect(this.transformOrigin, localPos, this.downRect, {
         changeWidthAndHeight: false,
-        keepRatio: isShiftKeyPressing,
+        keepRatio: keepRatio,
         scaleFromCenter: isAltKeyPressing
       })
 

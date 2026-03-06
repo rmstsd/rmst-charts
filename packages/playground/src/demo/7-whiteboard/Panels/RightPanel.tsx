@@ -12,6 +12,7 @@ import { showOpenFilePicker } from 'show-open-file-picker'
 import clsx from 'clsx'
 
 import './right.less'
+import { PreferenceConfig } from './PreferenceConfig'
 
 const bgColors = Object.keys(OpenColor)
   .filter(k => Array.isArray(OpenColor[k]))
@@ -210,6 +211,8 @@ export default function InfoRightPanel() {
         <button onClick={() => wbEditor.camera.zoomIn()}>放大</button>
         <button onClick={() => wbEditor.camera.zoomToValue(1)}>100%</button>
         <button onClick={() => wbEditor.camera.zoomToFit()}>适应画布</button>
+
+        <PreferenceConfig />
       </div>
 
       <hr />
