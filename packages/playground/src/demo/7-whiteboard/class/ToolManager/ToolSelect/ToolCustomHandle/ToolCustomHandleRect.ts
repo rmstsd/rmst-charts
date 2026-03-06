@@ -8,8 +8,6 @@ import { cornerRadiusCursor } from '@/demo/7-whiteboard/class/cursorManager/icon
 import { ICoord } from 'rmst-render'
 
 class ToolHandleRect implements ITool {
-  private downPos: ICoord
-
   constructor(
     private wbEditor: WhiteboardEditor,
     private handleType
@@ -17,9 +15,6 @@ class ToolHandleRect implements ITool {
 
   onDragStart(downEvt: PointerEvent, sceneCoord: ICoord) {
     console.log('handle rect drag start')
-
-    const selectedShape = this.wbEditor.selectManager.selectedGraphs[0]
-    this.downPos = applyToPoint(selectedShape.data.mt, sceneCoord)
   }
 
   onDragMove(moveEvt: PointerEvent, sceneCoord: ICoord) {
@@ -74,8 +69,6 @@ class ToolHandleRect implements ITool {
     selGraph.attr({ cornerRadius: edgeLength })
 
     this.wbEditor.triggerRender()
-
-    // 计算
   }
 
   onDragEnd(upEvt: PointerEvent, sceneCoord: ICoord) {}
@@ -121,11 +114,13 @@ export class ToolCustomHandleRect implements IToolCustomHandle {
 
     if (!wbEditor.toolManager.pointerContext.isPointerDown) {
       let mmt = { ...mtWorld, e: 0, f: 0 }
-      const point = applyToPoint(mmt, { x: 0, y: radius })
-      if (point.y < 14) {
-        point.y = 14
-        let invPoint = applyToPoint(inverse(mmt), { x: 0, y: point.y })
-        radius = invPoint.y
+      let radius_world = applyToPoint(mmt, { x: 0, y: radius }).y
+
+      if (Math.abs(radius_world) < 14) {
+        radius_world = radius_world >= 0 ? 14 : -14
+        let invPoint = applyToPoint(inverse(mmt), { x: 0, y: radius_world })
+
+        radius = Math.abs(invPoint.y)
       }
     }
 
