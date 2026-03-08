@@ -20,7 +20,9 @@ export class Polygon extends Path {
     super({ ...data, ...defaultData, d })
   }
 
-  type: IShapeType = 'Polygon'
+  get type(): IShapeType {
+    return 'Polygon'
+  }
 
   override attr(...args: any[]): void {
     const attrs = normalizedAttrs(args) as PolygonData

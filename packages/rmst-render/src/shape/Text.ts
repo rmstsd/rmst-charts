@@ -23,7 +23,10 @@ export class Text extends UiBase<TextData> {
     super(data, defaultData)
   }
 
-  type: IShapeType = 'Text'
+  get type(): IShapeType {
+    return 'Text'
+  }
+
   declare data: TextData
 }
 

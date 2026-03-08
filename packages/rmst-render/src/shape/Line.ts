@@ -24,7 +24,9 @@ export class Line extends UiBase<LineData> {
     this.path2D = data.path2D ? data.path2D : createLinePath2D(this.data)
   }
 
-  type: IShapeType = 'Line'
+  get type(): IShapeType {
+    return 'Line'
+  }
 
   declare data: LineData
 }

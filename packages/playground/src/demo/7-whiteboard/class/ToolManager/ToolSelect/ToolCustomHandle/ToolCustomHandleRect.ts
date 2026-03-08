@@ -113,14 +113,11 @@ export class ToolCustomHandleRect implements IToolCustomHandle {
     radius = Math.min(radius, maxCornerRadius(rectShape.data.width, rectShape.data.height))
 
     if (!wbEditor.toolManager.pointerContext.isPointerDown) {
-      let mmt = { ...mtWorld, e: 0, f: 0 }
-      let radius_world = applyToPoint(mmt, { x: 0, y: radius }).y
+      const zoom = getScaleFromMatrix_x(mtWorld)
 
-      if (Math.abs(radius_world) < 14) {
-        radius_world = radius_world >= 0 ? 14 : -14
-        let invPoint = applyToPoint(inverse(mmt), { x: 0, y: radius_world })
-
-        radius = Math.abs(invPoint.y)
+      const radius_world = radius * zoom
+      if (radius_world < 14) {
+        radius = 14 / zoom
       }
     }
 

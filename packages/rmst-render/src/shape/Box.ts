@@ -17,7 +17,9 @@ export class Box<Data = BoxData> extends Group<Data> {
 
   data: BoxData
 
-  type: IShapeType = 'Box'
+  get type(): IShapeType {
+    return 'Box'
+  }
 
   override getOutLineShape(): UiBase<RectData> {
     let newData = omit(this.data, ['children'])

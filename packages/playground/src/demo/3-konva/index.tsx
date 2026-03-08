@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { App, Rect } from 'leafer-ui'
+import { App, Image, Rect } from 'leafer-ui'
 import '@leafer-in/editor'
 
 export default function Lor() {
@@ -18,8 +18,14 @@ export default function Lor() {
 
     setApp(app)
 
-    app.tree.add(Rect.one({ editable: true, fill: '#FEB027', stroke: 'red', strokeWidth: 4 }, 50, 50, 200, 100))
-    app.tree.add(Rect.one({ editable: true, fill: '#FFE04B', stroke: 'red', strokeWidth: 4 }, 300, 100))
+    const image = new Image({
+      url: 'https://konvajs.org/assets/lion.png',
+      width: 11
+    })
+
+    app.tree.add(image)
+
+    console.log(image.height)
 
     return () => {
       app.destroy()

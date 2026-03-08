@@ -1,14 +1,12 @@
 import { scale, translate, compose } from 'transformation-matrix'
 import { fitAndPosition } from 'object-fit-math'
 
-import { Box, Circle, Ellipse, Group, RmstImage, Line, Path, Text, Trapezoid } from '../../shape'
-import { clipRect, createLinePath2D, measureText, setCtxFontSize } from '../../utils'
+import { Box, Group, RmstImage, Line } from '../../shape'
+import { clipRect, measureText, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
 import { fill, fillOrStroke, setCtxStyleProp, stroke } from './fillOrStroke'
-import { createRectPath2D, setCirclePath2D, setEllipsePath2D, setRectPath2D, setTrapezoidPath2D } from './setPath2D'
 import { sortChildren } from './util'
-import { isNil } from 'es-toolkit'
 
 export function drawStage(stage: Stage) {
   const { ctx, camera, dpr } = stage
@@ -48,30 +46,25 @@ export function drawStage(stage: Stage) {
 
       switch (elementItem.type) {
         case 'Circle': {
-          setCirclePath2D(elementItem as Circle)
           fillOrStroke(ctx, elementItem)
           break
         }
         case 'Ellipse': {
-          setEllipsePath2D(elementItem as Ellipse)
           fillOrStroke(ctx, elementItem)
           break
         }
         case 'Path':
         case 'Star':
         case 'Polygon': {
-          elementItem.path2D = new Path2D((elementItem as Path).data.d)
           fillOrStroke(ctx, elementItem)
           break
         }
         case 'Trapezoid': {
-          setTrapezoidPath2D(elementItem as Trapezoid)
           fillOrStroke(ctx, elementItem)
           break
         }
         case 'Line': {
           const { closed, path2D } = (elementItem as Line).data
-          elementItem.path2D = path2D ? path2D : createLinePath2D(data)
 
           stroke(ctx, elementItem)
           if (closed) {
@@ -80,7 +73,6 @@ export function drawStage(stage: Stage) {
           break
         }
         case 'Rect': {
-          setRectPath2D(elementItem)
           fillOrStroke(ctx, elementItem)
           break
         }
@@ -90,7 +82,6 @@ export function drawStage(stage: Stage) {
         }
         case 'Box': {
           // 在有描边的情况下, 必须先 fill, 再 stoke, 否则会出现内容覆盖描边的问题
-          setRectPath2D(elementItem)
           fill(ctx, elementItem)
 
           clipRect(ctx, elementItem.path2D, () => {
@@ -104,17 +95,8 @@ export function drawStage(stage: Stage) {
           const rrImageElementItem = elementItem as RmstImage
           let { width, height, cornerRadius, src, objectFit } = rrImageElementItem.data
 
-          if (rrImageElementItem.nativeImage && rrImageElementItem._oldSrc === src) {
+          if (rrImageElementItem.nativeImage) {
             const image = rrImageElementItem.nativeImage
-            const ratio = image.naturalWidth / image.naturalHeight
-
-            if (width && isNil(height)) {
-              height = width / ratio
-            } else if (height && isNil(width)) {
-              width = height * ratio
-            }
-
-            rrImageElementItem.path2D = createRectPath2D({ x: 0, y: 0, width, height, cornerRadius })
             fill(ctx, rrImageElementItem)
             clipRect(ctx, rrImageElementItem.path2D, () => {
               const rect = fitAndPosition(
@@ -122,20 +104,10 @@ export function drawStage(stage: Stage) {
                 { width: image.naturalWidth, height: image.naturalHeight },
                 objectFit
               )
+
               ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, rect.x, rect.y, rect.width, rect.height)
             })
             stroke(ctx, rrImageElementItem)
-          } else {
-            rrImageElementItem._oldSrc = src
-
-            const image = new Image()
-            image.src = src
-
-            image.onload = () => {
-              rrImageElementItem.nativeImage = image
-              rrImageElementItem.onLoad?.()
-              drawStage(stage)
-            }
           }
 
           break
@@ -154,14 +126,6 @@ export function drawStage(stage: Stage) {
           } else if (textAlign === 'right') {
             x = -textSize.textWidth
           }
-
-          textElementItem.path2D = createRectPath2D({
-            x,
-            y: 0,
-            width: textSize.textWidth + padding * 2,
-            height: fontSize + padding * 2,
-            cornerRadius: boxData?.cornerRadius ?? 0
-          })
 
           if (boxData?.fillStyle) {
             ctx.fillStyle = boxData.fillStyle

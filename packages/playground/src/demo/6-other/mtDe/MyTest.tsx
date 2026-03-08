@@ -1,45 +1,49 @@
-import { useEffect } from 'react'
+import { useEffectStage } from '@/utils/hooks'
+import { useEffect, useRef } from 'react'
+import { Rect } from 'rmst-render'
+import { findHover_v2 } from 'rmst-render/_stage/findHover'
 
 export default function MyTest() {
-  useEffect(() => {
-    const container = document.querySelector('.container')
-    const canvas = document.querySelector('canvas')
-    const ctx = canvas.getContext('2d')
+  const ref = useRef<HTMLDivElement>(null)
+  useEffectStage(ref, stage => {
+    const container = ref.current
 
-    const drawStage = () => {
-      canvas.width = container.clientWidth
-      canvas.height = container.clientHeight
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+    container.onmousemove = evt => {
+      stage.removeAllChildren()
 
-      ctx.rect(90, 90, 90, 90)
-      ctx.fill()
-    }
-
-    let hasTask = false
-
-    const render = () => {
-      if (hasTask) {
-        return
-      }
-
-      requestAnimationFrame(() => {
-        drawStage()
-        hasTask = false
+      const rect = new Rect({
+        x: 44,
+        y: 44,
+        width: 100,
+        height: 100,
+        fillStyle: 'red',
+        cursor: 'pointer'
       })
+      stage.append(rect)
+
+      const rec2 = new Rect({
+        x: 160,
+        y: 44,
+        width: 100,
+        height: 100,
+        fillStyle: 'beige',
+        cursor: 'pointer'
+      })
+
+      stage.append(rec2)
+
+      const hovered = findHover_v2(stage, evt.offsetX, evt.offsetY)
+      console.log(hovered)
     }
-
-    const ob = new ResizeObserver(() => {
-      render()
-    })
-
-    ob.observe(container)
-  }, [])
+  })
 
   return (
     <div>
-      <div className="container  relative border" style={{ width: 400, height: 400, resize: 'both', overflow: 'hidden' }}>
-        <canvas className="absolute"></canvas>
-      </div>
+      <div
+        ref={ref}
+        className="ca-container  relative border"
+        style={{ width: 400, height: 400, resize: 'both', overflow: 'hidden' }}
+      ></div>
     </div>
   )
 }

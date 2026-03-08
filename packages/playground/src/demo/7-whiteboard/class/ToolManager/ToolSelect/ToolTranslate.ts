@@ -44,7 +44,6 @@ export default class ToolTranslate implements ITool {
       const originMt = this.downSnap[item.id].downMt
 
       const newItem = item.clone()
-      // newItem.attr('fillStyle', randomColor()) // debug
       newItem.attr('mt', originMt)
       return newItem
     })

@@ -1,8 +1,8 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { ITool } from '../type'
 import { applyToPoint, compose, inverse } from 'transformation-matrix'
-import { cloneDeep, isNotNil, keyBy } from 'es-toolkit'
-import { ICoord } from 'rmst-render'
+import { cloneDeep, isNotNil, keyBy, round } from 'es-toolkit'
+import { ICoord, rad2deg } from 'rmst-render'
 import { TransformOrigin } from '../constant'
 import { getCursorRotation } from '../../cursorManager'
 import { resizeRect, TransformRect } from './resizeStrategy'
@@ -97,9 +97,11 @@ export default class ToolScale implements ITool {
       item.attr({ width: transformRect.width, height: transformRect.height, mt: transformRect.mt })
     } else {
       // 存在非 90 度倍数旋转角度的项
-      const isExistNot_x90Deg = this.wbEditor.selectManager.selectedGraphs.some(
-        item => calcRotateRad(this.downSnap[item.id].graphShapeRect.mt) % (Math.PI / 2) !== 0
-      )
+      const isExistNot_x90Deg = this.wbEditor.selectManager.selectedGraphs.some(item => {
+        const rad = calcRotateRad(this.downSnap[item.id].graphShapeRect.mt)
+        const deg = round(rad2deg(rad), 2) // 防止计算精度问题
+        return deg % 90 !== 0
+      })
 
       let keepRatio = isShiftKeyPressing
       const { preference } = this.wbEditor.preferenceConfig

@@ -19,7 +19,9 @@ export class Path extends UiBase<PathData> {
     super(data, defaultData)
   }
 
-  type: IShapeType = 'Path'
+  get type(): IShapeType {
+    return 'Path'
+  }
 
   declare data: PathData
 

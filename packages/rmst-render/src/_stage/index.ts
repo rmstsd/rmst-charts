@@ -23,7 +23,6 @@ const defaultOption: IOption = {
 export class Stage extends Group {
   constructor(option: IOption) {
     super()
-
     const mergedOptions = { ...defaultOption, ...option }
     const { container, dpr, enableCamera, enableRuler } = mergedOptions
     this.options = mergedOptions
@@ -47,7 +46,9 @@ export class Stage extends Group {
 
   options: IOption
 
-  type: IShapeType = 'Stage'
+  get type(): IShapeType {
+    return 'Stage'
+  }
 
   data = { children: [] }
 
@@ -135,8 +136,6 @@ export class Stage extends Group {
     mountStageInChildren(this.data.children, this)
 
     this.render()
-
-    // this.syncRender()
   }
 
   // 异步绘制
@@ -152,7 +151,7 @@ export class Stage extends Group {
   }
 
   // 同步绘制
-  syncRender() {
+  private syncRender() {
     drawStage(this)
 
     if (this.enableRuler) {

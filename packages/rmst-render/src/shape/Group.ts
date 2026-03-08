@@ -18,7 +18,9 @@ export class Group<Data = GroupData> extends UiBase<Data> {
     mountParentInChildren(this)
   }
 
-  type: IShapeType = 'Group'
+  get type(): IShapeType {
+    return 'Group'
+  }
 
   data: GroupData
 

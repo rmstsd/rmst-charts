@@ -19,7 +19,9 @@ export class Rect extends UiBase<RectData> {
     super(data, defaultRectData)
   }
 
-  type: IShapeType = 'Rect'
+  get type(): IShapeType {
+    return 'Rect'
+  }
 
   declare data: RectData
 

@@ -16,7 +16,10 @@ export class Trapezoid extends UiBase<TrapezoidData> {
     super('Trapezoid', data)
   }
 
-  type: IShapeType = 'Trapezoid'
+  get type(): IShapeType {
+    return 'Trapezoid'
+  }
+
   declare data: TrapezoidData
 }
 

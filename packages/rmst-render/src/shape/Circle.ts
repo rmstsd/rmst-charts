@@ -22,7 +22,9 @@ export class Circle extends UiBase<CircleData> {
     super(data, defaultData)
   }
 
-  type: IShapeType = 'Circle'
+  get type(): IShapeType {
+    return 'Circle'
+  }
 
   declare data: CircleData
 }

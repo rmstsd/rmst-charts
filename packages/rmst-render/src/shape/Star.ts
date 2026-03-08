@@ -18,7 +18,9 @@ export class Star extends Path {
     super({ ...data, ...defaultData, d })
   }
 
-  type: IShapeType = 'Star'
+  get type(): IShapeType {
+    return 'Star'
+  }
 
   override attr(...args: any[]): void {
     const attrs = normalizedAttrs(args) as StarData

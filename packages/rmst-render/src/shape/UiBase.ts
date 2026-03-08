@@ -6,7 +6,12 @@ import { ICursor, IRect, IShape, IShapeType } from '../type'
 import { attrDirty } from '../_stage/controller/DirtyRect'
 import { compose, identity, Matrix, translate } from 'transformation-matrix'
 import { normalizedAttrs } from '../utils/attr'
-import { uuid } from '../utils'
+import { createLinePath2D, measureText, uuid } from '../utils'
+import { createRectPath2D, setCirclePath2D, setEllipsePath2D, setRectPath2D, setTrapezoidPath2D } from '../renderer/canvas'
+import Line from './Line'
+import Text from './Text'
+import RmstImage from './Image'
+import { isNil } from 'es-toolkit'
 
 export interface UiBaseData extends EventOpt {
   id?: string
@@ -85,13 +90,138 @@ export abstract class UiBase<T = UiBaseData> extends AbsEvent {
     }
 
     this.data.mt = compose(translate(this.data.x ?? 0, this.data.y ?? 0), this.data.mt)
+
+    this.updatePath2D()
   }
 
-  readonly type: IShapeType
+  // 使用 getter 定义而不是属性, 是为了定义在原型上, 能在 new 的时候就访问到
+  abstract get type(): IShapeType
 
   declare data: UiBaseData
 
   declare path2D: Path2D
+
+  private updatePath2D() {
+    if (this.type === 'Stage') {
+      return
+    }
+
+    switch (this.type) {
+      case 'Circle': {
+        setCirclePath2D(this)
+        break
+      }
+      case 'Ellipse': {
+        setEllipsePath2D(this)
+        break
+      }
+      case 'Path':
+      case 'Star':
+      case 'Polygon': {
+        this.path2D = new Path2D(this.data.d)
+        break
+      }
+      case 'Trapezoid': {
+        setTrapezoidPath2D(this as any)
+        break
+      }
+      case 'Line': {
+        const { closed, path2D } = (this as Line).data
+        this.path2D = path2D ? path2D : createLinePath2D(this.data)
+
+        break
+      }
+      case 'Rect': {
+        setRectPath2D(this)
+        break
+      }
+      case 'Group': {
+        break
+      }
+      case 'Box': {
+        // 在有描边的情况下, 必须先 fill, 再 stoke, 否则会出现内容覆盖描边的问题
+        setRectPath2D(this)
+        break
+      }
+      case 'Image': {
+        const rrImageElementItem = this as unknown as RmstImage
+        let { width, height, cornerRadius, src, objectFit } = rrImageElementItem.data
+
+        if (!src) {
+          break
+        }
+
+        if (rrImageElementItem.nativeImage && rrImageElementItem._oldSrc === src) {
+          const image = rrImageElementItem.nativeImage
+          const ratio = image.naturalWidth / image.naturalHeight
+
+          if (width && isNil(height)) {
+            height = width / ratio
+          } else if (height && isNil(width)) {
+            width = height * ratio
+          }
+
+          rrImageElementItem.path2D = createRectPath2D({ x: 0, y: 0, width, height, cornerRadius })
+        } else {
+          rrImageElementItem.nativeImage = null
+          rrImageElementItem._oldSrc = src
+
+          const image = new Image()
+          image.src = src
+
+          image.onload = () => {
+            rrImageElementItem.nativeImage = image
+            const ratio = image.naturalWidth / image.naturalHeight
+
+            // 如果只设置了宽或者高, 则根据图片的宽高比自动计算另一个属性, 保持图片不变形
+            if (width && isNil(height)) {
+              height = width / ratio
+              rrImageElementItem.data.height = height
+            } else if (height && isNil(width)) {
+              width = height * ratio
+              rrImageElementItem.data.width = width
+            }
+
+            rrImageElementItem.path2D = createRectPath2D({ x: 0, y: 0, width, height, cornerRadius })
+
+            rrImageElementItem.onLoad?.()
+            this.stage?.render()
+          }
+        }
+
+        break
+      }
+      case 'Text': {
+        const textElementItem = this as Text
+        let { content, fontSize, textAlign = 'left', textBaseline, boxData } = textElementItem.data
+
+        const textSize = measureText(content, fontSize)
+
+        const padding = boxData?.padding ?? 0
+
+        let x = 0
+        if (textAlign === 'center') {
+          x = -textSize.textWidth / 2
+        } else if (textAlign === 'right') {
+          x = -textSize.textWidth
+        }
+
+        textElementItem.path2D = createRectPath2D({
+          x,
+          y: 0,
+          width: textSize.textWidth + padding * 2,
+          height: fontSize + padding * 2,
+          cornerRadius: boxData?.cornerRadius ?? 0
+        })
+
+        break
+      }
+
+      default:
+        console.log(this.type, '该图形 暂未实现')
+        break
+    }
+  }
 
   stage: Stage
 
@@ -141,6 +271,8 @@ export abstract class UiBase<T = UiBaseData> extends AbsEvent {
     if (Reflect.has(attrs, 'y')) {
       this.data.mt.f = attrs.y
     }
+
+    this.updatePath2D()
 
     this.stage?.render()
   }

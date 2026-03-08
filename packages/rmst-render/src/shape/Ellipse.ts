@@ -16,7 +16,9 @@ export class Ellipse extends UiBase<EllipseData> {
     super(data, defaultData)
   }
 
-  type: IShapeType = 'Ellipse'
+  get type(): IShapeType {
+    return 'Ellipse'
+  }
 
   declare data: EllipseData
 
