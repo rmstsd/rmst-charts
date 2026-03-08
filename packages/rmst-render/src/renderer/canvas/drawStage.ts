@@ -1,7 +1,7 @@
 import { scale, translate, compose } from 'transformation-matrix'
 import { fitAndPosition } from 'object-fit-math'
 
-import { Box, Group, RmstImage, Line } from '../../shape'
+import { Box, Group, RmstImage, Line, Text } from '../../shape'
 import { clipRect, measureText, setCtxFontSize } from '../../utils'
 import { Stage } from '../../_stage'
 import { IShape } from '../../type'
