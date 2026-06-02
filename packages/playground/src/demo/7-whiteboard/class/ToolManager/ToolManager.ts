@@ -140,8 +140,6 @@ export default class ToolManager {
 
           const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
-
-          // todo 极致追求 更新 cursor 样式
         },
         onPointerUp: upEvt => {
           this.pointerContext.isPointerDown = false
@@ -150,7 +148,9 @@ export default class ToolManager {
           const exitCurrentTool = finalToolClass.onDrawAfterEnd?.()
           drawWbGraphEnd(exitCurrentTool)
 
-          // todo 极致追求 更新 cursor 样式
+          const handleInfo = this.handleInfo()
+          const cursor = handleInfo?.cursor ?? this.currentToolClass.cursor
+          this.wbEditor.cursorManager.setCursor(cursor)
         }
       })
     }
@@ -161,6 +161,8 @@ export default class ToolManager {
 
     const onPointerLeave = () => {
       this.pointerContext.isInWbCanvas = false
+      this.pointerContext.isInWbCanvasWithoutRuler = false
+      this.pointerContext.isInRuler = false
 
       this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
       this.currentToolClass?.onPointerMove?.(this.pointerContext)
@@ -172,6 +174,11 @@ export default class ToolManager {
       this.pointerContext.clientCoord = clientCoord
       this.pointerContext.sceneCoord = sceneCoord
       this.pointerContext.hovered = this.findHover()
+
+      const isInRuler = this.pointerContext.hovered?.parent.id === Graph_Id.ruler_root_group
+
+      // this.pointerContext.isInRuler = isInRuler
+      // this.pointerContext.isInWbCanvasWithoutRuler = !isInRuler
 
       if (!this.pointerContext.isPointerDown && !keyboard.isSpaceKeyPressing) {
         this.onPointerMoveNotDragging()
@@ -227,7 +234,7 @@ export default class ToolManager {
     return undefined
   }
 
-  findHover() {
+  private findHover() {
     const { wbEditor } = this
     const worldPoint = wbEditor.coordSys.client2World(this.pointerContext.clientCoord, true)
     const hovered = findHover_v2(wbEditor.stage, worldPoint.x, worldPoint.y)
@@ -244,27 +251,18 @@ export default class ToolManager {
     }
 
     if (!hovered) {
-      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
       wbEditor.selectManager.clearHover()
-      // return
     }
 
     const handleInfo = this.handleInfo()
-    if (handleInfo) {
-      this.wbEditor.cursorManager.setCursor(handleInfo.cursor)
-      // return
-    }
+    const cursor = handleInfo ? handleInfo.cursor : this.currentToolClass.cursor
+    wbEditor.cursorManager.setCursor(cursor)
 
-    if (this.currentTool === ToolEnum.Select) {
-      this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
-    } else {
-      // 处理在 矩形工具下, 按下空格-按下鼠标-松开空格-松开鼠标 光标异常的问题
-      wbEditor.cursorManager.setCursor(this.currentToolClass.cursor)
-    }
+    this.currentToolClass?.onPointerMoveNotDragging?.(this.pointerContext)
   }
 
   // todo  优化 handle 的拾取
-  handleInfo(): { handleName: string; cursor: any } {
+  private handleInfo(): { handleName: string; cursor: any } {
     const { wbEditor } = this
     const { hovered } = this.pointerContext
     if (!hovered) {

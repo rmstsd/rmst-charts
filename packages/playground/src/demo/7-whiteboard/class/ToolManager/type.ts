@@ -6,7 +6,9 @@ export type PointerContext = {
   hovered: IShape
   clientCoord: ICoord
   sceneCoord: ICoord
-  isInWbCanvas: boolean
+  isInWbCanvas: boolean // 在画布内, 包含标尺
+  isInRuler: boolean // 在标尺上
+  isInWbCanvasWithoutRuler: boolean // 在画布内, 不包含标尺
   isPointerDown: boolean
 }
 

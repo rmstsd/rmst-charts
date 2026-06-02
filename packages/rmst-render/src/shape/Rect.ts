@@ -29,6 +29,7 @@ export class Rect extends UiBase<RectData> {
     let newData = omit(this.data, ['children'])
 
     newData = structuredClone(newData)
+
     newData.d = createRoundedRectPath(newData.x, newData.y, newData.width, newData.height, newData.cornerRadius)
 
     return new Path(newData)

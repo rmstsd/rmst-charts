@@ -1,13 +1,12 @@
 import WhiteboardEditor from '@/demo/7-whiteboard/whiteboardEditor'
 import { IToolCustomHandle, ITool } from '../../type'
-import { Circle, IShape } from 'rmst-render'
+import { Circle, Ellipse, IShape } from 'rmst-render'
 import { applyToPoint, compose } from 'transformation-matrix'
 import { Graph_Id } from '@/demo/7-whiteboard/constant'
 import { primaryColor } from '@/demo/7-whiteboard/color'
 import { cornerRadiusCursor } from '../../../cursorManager/icon'
 import { ICoord, Path } from 'rmst-render'
 import { inverse } from 'transformation-matrix'
-import { drawDonutEllipsePath } from '../../ToolDraw/ToolDrawEllipse'
 
 export let activeInnerDragAngle: number | null = null
 
@@ -39,15 +38,7 @@ class ToolHandleEllipse implements ITool {
 
     activeInnerDragAngle = Math.atan2(dy, dx)
 
-    const newD = drawDonutEllipsePath(cx, cy, rx, ry, innerRatio)
-
-    selectedShape.attr({
-      d: newD,
-      extraData: {
-        ...selectedShape.data.extraData,
-        innerRadius: innerRatio
-      }
-    })
+    selectedShape.attr({ innerRadius: innerRatio })
 
     this.wbEditor.triggerRender()
   }
@@ -59,9 +50,9 @@ class ToolHandleEllipse implements ITool {
 }
 
 export class ToolCustomHandleEllipse implements IToolCustomHandle {
-  renderHandles(wbEditor: WhiteboardEditor, selectedShape: IShape): IShape[] {
+  renderHandles(wbEditor: WhiteboardEditor, selectedShape: Ellipse): IShape[] {
     const { width, height } = selectedShape.data
-    const innerRatio: number = selectedShape.data.extraData?.innerRadius ?? 0
+    const innerRatio: number = selectedShape.data.innerRadius ?? 0
 
     // 计算 handle 位置
     const rx = width / 2

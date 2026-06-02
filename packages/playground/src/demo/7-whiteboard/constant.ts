@@ -9,6 +9,7 @@ export enum Graph_Id {
   graph_ctrl_rotate = 'graph_ctrl_rotate',
   graph_ctrl_scale = 'graph_ctrl_scale',
 
+  ruler_root_group = 'ruler_root_group',
   ruler_zone_horizontal = 'ruler_zone_horizontal',
   ruler_zone_vertical = 'ruler_zone_vertical',
   ruler_zone_both = 'ruler_zone_both',
